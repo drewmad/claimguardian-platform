@@ -6,17 +6,17 @@
  * @status stable
  */
 
-import { Metadata } from 'next'
-import { PricingPlans } from '@/components/pricing/pricing-plans'
-import { PricingFAQ } from '@/components/pricing/pricing-faq'
-import { Button } from '@/components/ui/button'
-import Link from 'next/link'
-import { ArrowLeft } from 'lucide-react'
+import { Metadata } from "next";
+import { PricingPlans } from "@/components/pricing/pricing-plans";
+import { PricingFAQ } from "@/components/pricing/pricing-faq";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: 'Pricing | ClaimGuardian',
-  description: 'Choose the perfect plan for protecting your Florida property',
-}
+  title: "Pricing | ClaimGuardian",
+  description: "Choose the perfect plan for protecting your Florida property",
+};
 
 export default function PricingPage() {
   return (
@@ -26,10 +26,16 @@ export default function PricingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center space-x-2">
-              <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-gray-400 hover:text-white"
+              >
                 <ArrowLeft className="h-5 w-5" />
               </Button>
-              <span className="text-lg font-semibold text-white">Back to Home</span>
+              <span className="text-lg font-semibold text-white">
+                Back to Home
+              </span>
             </Link>
           </div>
         </div>
@@ -43,7 +49,8 @@ export default function PricingPage() {
             Simple, transparent pricing
           </h1>
           <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-12">
-            Choose the plan that's right for you. Upgrade or downgrade at any time.
+            Choose the plan that's right for you. Upgrade or downgrade at any
+            time.
           </p>
           <div className="flex items-center justify-center space-x-4">
             <span className="text-sm text-gray-400">Monthly</span>
@@ -98,46 +105,86 @@ export default function PricingPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
                     Properties
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">1</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">3</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">10</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-green-400">Unlimited</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">
+                    1
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">
+                    3
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">
+                    10
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-green-400">
+                    Unlimited
+                  </td>
                 </tr>
                 <tr className="hover:bg-gray-700/50 transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
                     Claims per year
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">1</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-green-400">Unlimited</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-green-400">Unlimited</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-green-400">Unlimited</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">
+                    1
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-green-400">
+                    Unlimited
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-green-400">
+                    Unlimited
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-green-400">
+                    Unlimited
+                  </td>
                 </tr>
                 <tr className="hover:bg-gray-700/50 transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
                     AI requests/month
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">50</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">1,000</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">5,000</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-green-400">Unlimited</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">
+                    50
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">
+                    1,000
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">
+                    5,000
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-green-400">
+                    Unlimited
+                  </td>
                 </tr>
                 <tr className="hover:bg-gray-700/50 transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
                     Storage
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">1 GB</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">10 GB</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">50 GB</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-green-400">Unlimited</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">
+                    1 GB
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">
+                    10 GB
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">
+                    50 GB
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-green-400">
+                    Unlimited
+                  </td>
                 </tr>
                 <tr className="hover:bg-gray-700/50 transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
                     Support
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">Community</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">Priority</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">Priority</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-green-400">Dedicated</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">
+                    Community
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">
+                    Priority
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">
+                    Priority
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-green-400">
+                    Dedicated
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -163,7 +210,8 @@ export default function PricingPage() {
             Ready to protect your property?
           </h2>
           <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
-            Join ClaimGuardian and protect your property with AI-powered intelligence
+            Join ClaimGuardian and protect your property with AI-powered
+            intelligence
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/auth/signup">
@@ -187,5 +235,5 @@ export default function PricingPage() {
         </div>
       </section>
     </div>
-  )
+  );
 }

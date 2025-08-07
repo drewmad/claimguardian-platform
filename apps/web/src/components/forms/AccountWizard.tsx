@@ -8,81 +8,81 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { createBrowserSupabaseClient } from '@claimguardian/db'
-import { CheckCircle, AlertCircle } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import React, { useState } from 'react'
-import { logger } from "@/lib/logger/production-logger"
+import { createBrowserSupabaseClient } from "@claimguardian/db";
+import { CheckCircle, AlertCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import { logger } from "@/lib/logger/production-logger";
 
-import { ProgressBar } from './ProgressBar'
-import { Agreements } from './steps/Agreements'
-import { PersonalInfo } from './steps/PersonalInfo'
+import { ProgressBar } from "./ProgressBar";
+import { Agreements } from "./steps/Agreements";
+import { PersonalInfo } from "./steps/PersonalInfo";
 
-import { Alert, AlertDescription } from '@/components/ui/alert'
-
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface FormData {
-  firstName: string
-  lastName: string
-  email: string
-  phone: string
-  password: string
-  confirmPassword: string
-  agreed: boolean
-  ageVerified: boolean
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  password: string;
+  confirmPassword: string;
+  agreed: boolean;
+  ageVerified: boolean;
 }
 
 export function AccountWizard() {
-  const router = useRouter()
-  const [step, setStep] = useState(1)
-  const [formData, setFormData] = useState<Partial<FormData>>({})
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
+  const router = useRouter();
+  const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState<Partial<FormData>>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
-  const supabase = createBrowserSupabaseClient()
+  const supabase = createBrowserSupabaseClient();
 
   const nextStep = (data: Partial<FormData>) => {
-    setFormData({ ...formData, ...data })
-    setStep(step + 1)
-    setError(null)
-  }
+    setFormData({ ...formData, ...data });
+    setStep(step + 1);
+    setError(null);
+  };
 
   const prevStep = () => {
-    setStep(step - 1)
-    setError(null)
-  }
+    setStep(step - 1);
+    setError(null);
+  };
 
   const submitForm = async (data: Partial<FormData>) => {
-    const finalData = { ...formData, ...data }
-    setIsLoading(true)
-    setError(null)
+    const finalData = { ...formData, ...data };
+    setIsLoading(true);
+    setError(null);
 
     try {
       // Create user account
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email: finalData.email!,
-        password: finalData.password!,
-        options: {
-          data: {
-            first_name: finalData.firstName,
-            last_name: finalData.lastName,
-            phone: finalData.phone,
-            full_name: `${finalData.firstName} ${finalData.lastName}`
-          }
-        }
-      })
+      const { data: signUpData, error: signUpError } =
+        await supabase.auth.signUp({
+          email: finalData.email!,
+          password: finalData.password!,
+          options: {
+            data: {
+              first_name: finalData.firstName,
+              last_name: finalData.lastName,
+              phone: finalData.phone,
+              full_name: `${finalData.firstName} ${finalData.lastName}`,
+            },
+          },
+        });
 
       if (signUpError) {
-        throw new Error(signUpError.message)
+        throw new Error(signUpError.message);
       }
 
       if (signUpData?.user) {
         // Log consents
         try {
-          await supabase.rpc('link_consent_to_user', {
+          await supabase.rpc("link_consent_to_user", {
             p_user_id: signUpData.user.id,
             p_consents: {
               terms_of_service: finalData.agreed,
@@ -90,30 +90,32 @@ export function AccountWizard() {
               data_processing: finalData.agreed,
               age_verification: finalData.ageVerified,
               cookies: finalData.agreed,
-              ai_disclaimer: finalData.agreed
+              ai_disclaimer: finalData.agreed,
             },
             p_ip_address: null,
-            p_user_agent: navigator.userAgent
-          })
+            p_user_agent: navigator.userAgent,
+          });
         } catch (consentError) {
           // Log but don't fail the signup
-          logger.error('Error logging consents:', consentError)
+          logger.error("Error logging consents:", consentError);
         }
 
-        setSuccess(true)
+        setSuccess(true);
 
         // Redirect to onboarding after success message
         setTimeout(() => {
-          router.push('/onboarding')
-        }, 2000)
+          router.push("/onboarding");
+        }, 2000);
       }
     } catch (err) {
-      logger.error('Signup error:', err)
-      setError(err instanceof Error ? err.message : 'An unexpected error occurred')
+      logger.error("Signup error:", err);
+      setError(
+        err instanceof Error ? err.message : "An unexpected error occurred",
+      );
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   if (success) {
     return (
@@ -124,13 +126,14 @@ export function AccountWizard() {
             <div className="space-y-2">
               <p className="font-medium">Account created successfully! 🎉</p>
               <p className="text-sm">
-                Welcome to ClaimGuardian! Check your email for a confirmation link, then we'll redirect you to your dashboard.
+                Welcome to ClaimGuardian! Check your email for a confirmation
+                link, then we'll redirect you to your dashboard.
               </p>
             </div>
           </AlertDescription>
         </Alert>
       </div>
-    )
+    );
   }
 
   return (
@@ -153,10 +156,7 @@ export function AccountWizard() {
 
         {/* Step Content */}
         {step === 1 && (
-          <PersonalInfo
-            onNext={nextStep}
-            defaultValues={formData}
-          />
+          <PersonalInfo onNext={nextStep} defaultValues={formData} />
         )}
 
         {step === 2 && (
@@ -175,5 +175,5 @@ export function AccountWizard() {
         </p>
       </div>
     </div>
-  )
+  );
 }

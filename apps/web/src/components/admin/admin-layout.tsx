@@ -5,30 +5,44 @@
  * @owner admin-team
  * @status stable
  */
-'use client'
+"use client";
 
-import { AlertTriangle, Bug, Database, FileText, Home, Shield, Users, Heart, BarChart3 } from 'lucide-react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import {
+  AlertTriangle,
+  Bug,
+  Database,
+  FileText,
+  Home,
+  Shield,
+  Users,
+  Heart,
+  BarChart3,
+} from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 interface AdminLayoutProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 export function AdminLayout({ children }: AdminLayoutProps) {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   const navItems = [
-    { href: '/admin', icon: Home, label: 'Overview' },
-    { href: '/admin/clara-admin', icon: Heart, label: 'Clara AI Companion' },
-    { href: '/admin/oracle-admin', icon: BarChart3, label: 'Oracle Settlement Analytics' },
-    { href: '/admin/errors', icon: AlertTriangle, label: 'Error Logs' },
-    { href: '/admin/compliance', icon: Shield, label: 'Compliance' },
-    { href: '/debug-auth', icon: Bug, label: 'Debug Auth' },
-    { href: '/admin/users', icon: Users, label: 'Users' },
-    { href: '/admin/database', icon: Database, label: 'Database' },
-    { href: '/admin/legal', icon: FileText, label: 'Legal Docs' },
-  ]
+    { href: "/admin", icon: Home, label: "Overview" },
+    { href: "/admin/clara-admin", icon: Heart, label: "Clara AI Companion" },
+    {
+      href: "/admin/oracle-admin",
+      icon: BarChart3,
+      label: "Oracle Settlement Analytics",
+    },
+    { href: "/admin/errors", icon: AlertTriangle, label: "Error Logs" },
+    { href: "/admin/compliance", icon: Shield, label: "Compliance" },
+    { href: "/debug-auth", icon: Bug, label: "Debug Auth" },
+    { href: "/admin/users", icon: Users, label: "Users" },
+    { href: "/admin/database", icon: Database, label: "Database" },
+    { href: "/admin/legal", icon: FileText, label: "Legal Docs" },
+  ];
 
   return (
     <div className="min-h-screen bg-gray-900">
@@ -40,30 +54,28 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           </div>
           <nav className="space-y-2">
             {navItems.map((item) => {
-              const isActive = pathname === item.href
+              const isActive = pathname === item.href;
               return (
                 <Link
                   key={item.href}
                   href={item.href}
                   className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
                     isActive
-                      ? 'bg-blue-600 text-white'
-                      : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                      ? "bg-blue-600 text-white"
+                      : "text-gray-300 hover:bg-gray-700 hover:text-white"
                   }`}
                 >
                   <item.icon className="w-5 h-5" />
                   <span>{item.label}</span>
                 </Link>
-              )
+              );
             })}
           </nav>
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 p-8">
-          {children}
-        </div>
+        <div className="flex-1 p-8">{children}</div>
       </div>
     </div>
-  )
+  );
 }

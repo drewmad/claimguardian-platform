@@ -8,18 +8,18 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
 // This module handles PDF.js imports for client-side only usage
 export async function getPdfLib() {
-  if (typeof window === 'undefined') {
-    throw new Error('PDF.js can only be used in the browser')
+  if (typeof window === "undefined") {
+    throw new Error("PDF.js can only be used in the browser");
   }
 
-  const pdfjs = await import('pdfjs-dist')
+  const pdfjs = await import("pdfjs-dist");
 
   // Configure worker to use local file
-  pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.js`
+  pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.js`;
 
-  return pdfjs
+  return pdfjs;
 }

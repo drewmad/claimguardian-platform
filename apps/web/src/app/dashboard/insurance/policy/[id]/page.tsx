@@ -5,77 +5,95 @@
  * @dependencies ["react", "next", "lucide-react"]
  * @status stable
  */
-'use client'
+"use client";
 
-import { ArrowLeft, Shield, DollarSign, Calendar, User, Phone, Building, FileText, AlertTriangle, ChevronDown, Edit, Loader2 } from 'lucide-react'
-import { useRouter, useParams } from 'next/navigation'
-import { useState, useEffect } from 'react'
-import { ProtectedRoute } from '@/components/auth/protected-route'
-import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card-variants'
-import { Badge } from '@/components/ui/badge'
-import { InsuranceBadge } from '@/components/ui/insurance-badges'
-import { Progress } from '@/components/ui/progress'
-import { InsuranceBreadcrumb } from '@/components/ui/breadcrumb'
+import {
+  ArrowLeft,
+  Shield,
+  DollarSign,
+  Calendar,
+  User,
+  Phone,
+  Building,
+  FileText,
+  AlertTriangle,
+  ChevronDown,
+  Edit,
+  Loader2,
+} from "lucide-react";
+import { useRouter, useParams } from "next/navigation";
+import { useState, useEffect } from "react";
+import { ProtectedRoute } from "@/components/auth/protected-route";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card-variants";
+import { Badge } from "@/components/ui/badge";
+import { InsuranceBadge } from "@/components/ui/insurance-badges";
+import { Progress } from "@/components/ui/progress";
+import { InsuranceBreadcrumb } from "@/components/ui/breadcrumb";
 
 interface PolicyDetails {
-  id: string
-  carrier: string
-  policyNumber: string
-  policyType: string
-  effectiveDate: string
-  expirationDate: string
-  propertyAddress: string
+  id: string;
+  carrier: string;
+  policyNumber: string;
+  policyType: string;
+  effectiveDate: string;
+  expirationDate: string;
+  propertyAddress: string;
   coverages: {
-    dwelling: number
-    otherStructures: number
-    personalProperty: number
-    lossOfUse: number
-    personalLiability: number
-    medicalPayments: number
-  }
+    dwelling: number;
+    otherStructures: number;
+    personalProperty: number;
+    lossOfUse: number;
+    personalLiability: number;
+    medicalPayments: number;
+  };
   deductibles: {
-    standard: number
-    windHurricane?: number
-    windHurricanePercent?: number
-  }
+    standard: number;
+    windHurricane?: number;
+    windHurricanePercent?: number;
+  };
   premium: {
-    annual: number
-    paymentMethod: string
-  }
+    annual: number;
+    paymentMethod: string;
+  };
   contacts: {
-    agentName?: string
-    agentPhone?: string
-    claimsPhone?: string
-  }
+    agentName?: string;
+    agentPhone?: string;
+    claimsPhone?: string;
+  };
   mortgage: {
-    lenderName?: string
-    loanNumber?: string
-  }
-  riders: string[]
+    lenderName?: string;
+    loanNumber?: string;
+  };
+  riders: string[];
 }
 
 function PolicyDetailsContent() {
-  const router = useRouter()
-  const params = useParams()
-  const [expandedSection, setExpandedSection] = useState<string | null>(null)
-  const [policy, setPolicy] = useState<PolicyDetails | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const router = useRouter();
+  const params = useParams();
+  const [expandedSection, setExpandedSection] = useState<string | null>(null);
+  const [policy, setPolicy] = useState<PolicyDetails | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // TODO: Fetch policy details from database
   useEffect(() => {
     // This would be replaced with actual API call
-    setIsLoading(false)
-  }, [params.id])
+    setIsLoading(false);
+  }, [params.id]);
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(amount)
-  }
+    }).format(amount);
+  };
 
   if (isLoading) {
     return (
@@ -86,7 +104,7 @@ function PolicyDetailsContent() {
           </div>
         </div>
       </DashboardLayout>
-    )
+    );
   }
 
   if (!policy) {
@@ -95,7 +113,7 @@ function PolicyDetailsContent() {
         <div className="p-6 bg-gray-900 min-h-screen">
           <div className="max-w-7xl mx-auto">
             <button
-              onClick={() => router.push('/dashboard/insurance')}
+              onClick={() => router.push("/dashboard/insurance")}
               className="text-gray-400 hover:text-white flex items-center gap-2 mb-4"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -105,19 +123,27 @@ function PolicyDetailsContent() {
             <Card variant="insurance">
               <CardContent className="p-12 text-center">
                 <Shield className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-white mb-2">Policy Not Found</h3>
-                <p className="text-gray-400">This policy could not be found or you don't have access to view it.</p>
+                <h3 className="text-xl font-semibold text-white mb-2">
+                  Policy Not Found
+                </h3>
+                <p className="text-gray-400">
+                  This policy could not be found or you don't have access to
+                  view it.
+                </p>
               </CardContent>
             </Card>
           </div>
         </div>
       </DashboardLayout>
-    )
+    );
   }
 
-  const totalCoverage = Object.values(policy.coverages).reduce((sum, val) => sum + val, 0)
-  const coveredAmount = policy.coverages.personalProperty
-  const coveragePercent = (coveredAmount / totalCoverage) * 100
+  const totalCoverage = Object.values(policy.coverages).reduce(
+    (sum, val) => sum + val,
+    0,
+  );
+  const coveredAmount = policy.coverages.personalProperty;
+  const coveragePercent = (coveredAmount / totalCoverage) * 100;
 
   return (
     <DashboardLayout>
@@ -139,8 +165,12 @@ function PolicyDetailsContent() {
                       <Shield className="w-6 h-6 text-blue-400" />
                     </div>
                     <div>
-                      <h1 className="text-2xl font-bold text-white mb-1">{policy.carrier}</h1>
-                      <p className="text-gray-400">POLICY #{policy.policyNumber}</p>
+                      <h1 className="text-2xl font-bold text-white mb-1">
+                        {policy.carrier}
+                      </h1>
+                      <p className="text-gray-400">
+                        POLICY #{policy.policyNumber}
+                      </p>
                     </div>
                   </div>
                   <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2">
@@ -165,15 +195,21 @@ function PolicyDetailsContent() {
                 <div>
                   <div className="flex justify-between mb-2">
                     <span className="text-gray-300">A: Dwelling</span>
-                    <span className="text-white font-semibold">{formatCurrency(policy.coverages.dwelling)}</span>
+                    <span className="text-white font-semibold">
+                      {formatCurrency(policy.coverages.dwelling)}
+                    </span>
                   </div>
                   <div className="flex justify-between mb-2">
                     <span className="text-gray-300">B: Other Structures</span>
-                    <span className="text-white font-semibold">{formatCurrency(policy.coverages.otherStructures)}</span>
+                    <span className="text-white font-semibold">
+                      {formatCurrency(policy.coverages.otherStructures)}
+                    </span>
                   </div>
                   <div className="flex justify-between mb-2">
                     <span className="text-gray-300">C: Personal Property</span>
-                    <span className="text-white font-semibold">{formatCurrency(policy.coverages.personalProperty)}</span>
+                    <span className="text-white font-semibold">
+                      {formatCurrency(policy.coverages.personalProperty)}
+                    </span>
                   </div>
 
                   {/* Progress Bar */}
@@ -182,22 +218,34 @@ function PolicyDetailsContent() {
                       <span>Covered: {formatCurrency(coveredAmount)}</span>
                       <span>Total Value: {formatCurrency(10500)}</span>
                     </div>
-                    <Progress value={coveragePercent} className="h-2 bg-gray-700">
-                      <div className="h-full bg-green-500 rounded-full" style={{ width: `${coveragePercent}%` }} />
+                    <Progress
+                      value={coveragePercent}
+                      className="h-2 bg-gray-700"
+                    >
+                      <div
+                        className="h-full bg-green-500 rounded-full"
+                        style={{ width: `${coveragePercent}%` }}
+                      />
                     </Progress>
                   </div>
 
                   <div className="flex justify-between mb-2">
                     <span className="text-gray-300">D: Loss of Use</span>
-                    <span className="text-white font-semibold">{formatCurrency(policy.coverages.lossOfUse)}</span>
+                    <span className="text-white font-semibold">
+                      {formatCurrency(policy.coverages.lossOfUse)}
+                    </span>
                   </div>
                   <div className="flex justify-between mb-2">
                     <span className="text-gray-300">Personal Liability</span>
-                    <span className="text-white font-semibold">{formatCurrency(policy.coverages.personalLiability)}</span>
+                    <span className="text-white font-semibold">
+                      {formatCurrency(policy.coverages.personalLiability)}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-300">Medical Payments</span>
-                    <span className="text-white font-semibold">{formatCurrency(policy.coverages.medicalPayments)}</span>
+                    <span className="text-white font-semibold">
+                      {formatCurrency(policy.coverages.medicalPayments)}
+                    </span>
                   </div>
                 </div>
               </CardContent>
@@ -215,15 +263,23 @@ function PolicyDetailsContent() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-gray-400 text-sm mb-1">Policy Type</p>
-                    <p className="text-white font-medium">{policy.policyType}</p>
+                    <p className="text-white font-medium">
+                      {policy.policyType}
+                    </p>
                   </div>
                   <div>
                     <p className="text-gray-400 text-sm mb-1">Effective Date</p>
-                    <p className="text-white font-medium">{new Date(policy.effectiveDate).toLocaleDateString()}</p>
+                    <p className="text-white font-medium">
+                      {new Date(policy.effectiveDate).toLocaleDateString()}
+                    </p>
                   </div>
                   <div>
-                    <p className="text-gray-400 text-sm mb-1">Expiration Date</p>
-                    <p className="text-white font-medium">{new Date(policy.expirationDate).toLocaleDateString()}</p>
+                    <p className="text-gray-400 text-sm mb-1">
+                      Expiration Date
+                    </p>
+                    <p className="text-white font-medium">
+                      {new Date(policy.expirationDate).toLocaleDateString()}
+                    </p>
                   </div>
                 </div>
 
@@ -235,11 +291,15 @@ function PolicyDetailsContent() {
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <span className="text-gray-300">Annual Premium</span>
-                      <span className="text-white font-semibold">{formatCurrency(policy.premium.annual)}</span>
+                      <span className="text-white font-semibold">
+                        {formatCurrency(policy.premium.annual)}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-300">Payment Method</span>
-                      <span className="text-white">{policy.premium.paymentMethod}</span>
+                      <span className="text-white">
+                        {policy.premium.paymentMethod}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -257,7 +317,9 @@ function PolicyDetailsContent() {
               <CardContent className="space-y-4">
                 <div className="flex justify-between">
                   <span className="text-gray-300">Standard Deductible</span>
-                  <span className="text-white font-semibold">{formatCurrency(policy.deductibles.standard)}</span>
+                  <span className="text-white font-semibold">
+                    {formatCurrency(policy.deductibles.standard)}
+                  </span>
                 </div>
                 {policy.deductibles.windHurricane && (
                   <div className="flex justify-between">
@@ -266,7 +328,8 @@ function PolicyDetailsContent() {
                       <AlertTriangle className="w-4 h-4 text-yellow-400" />
                     </span>
                     <span className="text-yellow-400 font-semibold">
-                      {policy.deductibles.windHurricanePercent}% ({formatCurrency(policy.deductibles.windHurricane)})
+                      {policy.deductibles.windHurricanePercent}% (
+                      {formatCurrency(policy.deductibles.windHurricane)})
                     </span>
                   </div>
                 )}
@@ -284,16 +347,22 @@ function PolicyDetailsContent() {
               <CardContent className="space-y-4">
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Agent Name</p>
-                  <p className="text-white font-medium">{policy.contacts.agentName || 'N/A'}</p>
+                  <p className="text-white font-medium">
+                    {policy.contacts.agentName || "N/A"}
+                  </p>
                 </div>
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Agent Phone</p>
-                  <p className="text-white font-medium">{policy.contacts.agentPhone || 'N/A'}</p>
+                  <p className="text-white font-medium">
+                    {policy.contacts.agentPhone || "N/A"}
+                  </p>
                 </div>
                 {policy.contacts.claimsPhone && (
                   <div>
                     <p className="text-gray-400 text-sm mb-1">Claims Phone</p>
-                    <p className="text-white font-medium">{policy.contacts.claimsPhone}</p>
+                    <p className="text-white font-medium">
+                      {policy.contacts.claimsPhone}
+                    </p>
                   </div>
                 )}
               </CardContent>
@@ -310,7 +379,10 @@ function PolicyDetailsContent() {
               <CardContent>
                 <div className="space-y-2">
                   {policy.riders.map((rider, index) => (
-                    <Badge key={index} className="bg-gray-700 text-gray-300 mr-2">
+                    <Badge
+                      key={index}
+                      className="bg-gray-700 text-gray-300 mr-2"
+                    >
                       {rider}
                     </Badge>
                   ))}
@@ -329,11 +401,15 @@ function PolicyDetailsContent() {
               <CardContent className="space-y-4">
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Lender Name</p>
-                  <p className="text-white font-medium">{policy.mortgage.lenderName || 'N/A'}</p>
+                  <p className="text-white font-medium">
+                    {policy.mortgage.lenderName || "N/A"}
+                  </p>
                 </div>
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Loan Number</p>
-                  <p className="text-white font-medium">{policy.mortgage.loanNumber || 'N/A'}</p>
+                  <p className="text-white font-medium">
+                    {policy.mortgage.loanNumber || "N/A"}
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -351,13 +427,19 @@ function PolicyDetailsContent() {
               <div className="space-y-3">
                 <div
                   className="bg-gray-700/30 border border-gray-600/50 rounded-lg p-4 cursor-pointer hover:bg-gray-700/50 transition-colors"
-                  onClick={() => setExpandedSection(expandedSection === 'lifecycle' ? null : 'lifecycle')}
+                  onClick={() =>
+                    setExpandedSection(
+                      expandedSection === "lifecycle" ? null : "lifecycle",
+                    )
+                  }
                 >
                   <div className="flex justify-between items-center">
                     <span className="text-white">Policy Lifecycle (1)</span>
-                    <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSection === 'lifecycle' ? 'rotate-180' : ''}`} />
+                    <ChevronDown
+                      className={`w-4 h-4 text-gray-400 transition-transform ${expandedSection === "lifecycle" ? "rotate-180" : ""}`}
+                    />
                   </div>
-                  {expandedSection === 'lifecycle' && (
+                  {expandedSection === "lifecycle" && (
                     <div className="mt-4 space-y-2">
                       <div className="text-sm text-gray-400">
                         • Policy Declaration Page
@@ -368,13 +450,21 @@ function PolicyDetailsContent() {
 
                 <div
                   className="bg-gray-700/30 border border-gray-600/50 rounded-lg p-4 cursor-pointer hover:bg-gray-700/50 transition-colors"
-                  onClick={() => setExpandedSection(expandedSection === 'regulatory' ? null : 'regulatory')}
+                  onClick={() =>
+                    setExpandedSection(
+                      expandedSection === "regulatory" ? null : "regulatory",
+                    )
+                  }
                 >
                   <div className="flex justify-between items-center">
-                    <span className="text-white">Regulatory, Legal, and Financial (1)</span>
-                    <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedSection === 'regulatory' ? 'rotate-180' : ''}`} />
+                    <span className="text-white">
+                      Regulatory, Legal, and Financial (1)
+                    </span>
+                    <ChevronDown
+                      className={`w-4 h-4 text-gray-400 transition-transform ${expandedSection === "regulatory" ? "rotate-180" : ""}`}
+                    />
                   </div>
-                  {expandedSection === 'regulatory' && (
+                  {expandedSection === "regulatory" && (
                     <div className="mt-4 space-y-2">
                       <div className="text-sm text-gray-400">
                         • Terms and Conditions
@@ -388,7 +478,7 @@ function PolicyDetailsContent() {
         </div>
       </div>
     </DashboardLayout>
-  )
+  );
 }
 
 export default function PolicyDetailsPage() {
@@ -396,5 +486,5 @@ export default function PolicyDetailsPage() {
     <ProtectedRoute>
       <PolicyDetailsContent />
     </ProtectedRoute>
-  )
+  );
 }

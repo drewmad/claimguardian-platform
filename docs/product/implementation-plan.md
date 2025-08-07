@@ -5,6 +5,7 @@
 This document provides a comprehensive implementation plan for ClaimGuardian's business features, designed to transform the platform from MVP to a scalable, revenue-generating SaaS platform. The implementation focuses on subscription management, team collaboration, administrative capabilities, revenue optimization, and business intelligence.
 
 **Financial Projections:**
+
 - Total Investment: $690K
 - Expected Annual Revenue: $1.4M+
 - ROI: 203% Year 1
@@ -13,6 +14,7 @@ This document provides a comprehensive implementation plan for ClaimGuardian's b
 ## Architecture Overview
 
 ### Current State Analysis
+
 Based on analysis of the existing codebase:
 
 1. **Database Schema**: Strong foundation with user management, claims, properties, and AI usage tracking
@@ -73,10 +75,12 @@ graph TB
 ## Implementation Phases
 
 ### Phase 1: Foundation (Weeks 1-4) - Critical Path
+
 **Revenue Impact**: Enable subscription billing
 **Investment**: $150K
 
 #### Sprint 1: Core Billing Infrastructure
+
 - **Database Enhancements**
   - Extend subscription_tiers table with Stripe price IDs
   - Add billing_history table for transaction records
@@ -90,12 +94,14 @@ graph TB
   - Add payment failure recovery flows
 
 **Deliverables:**
+
 - Secure payment processing
 - Automated subscription management
 - Usage limit enforcement
 - Basic billing dashboard
 
 #### Sprint 2: Usage Tracking & Limits
+
 - **Real-time Usage Monitoring**
   - Implement middleware for tracking billable actions
   - Create usage aggregation service
@@ -109,16 +115,19 @@ graph TB
   - Build self-service upgrade flows
 
 **Deliverables:**
+
 - Real-time usage tracking
 - Automatic limit enforcement
 - User upgrade workflows
 - Performance monitoring
 
 ### Phase 2: Team & Multi-User (Weeks 5-8) - Growth Enabler
+
 **Revenue Impact**: Enable Enterprise tier sales
 **Investment**: $180K
 
 #### Sprint 3: Team Management Foundation
+
 - **Team Structure**
   - Create teams table with organization hierarchy
   - Implement team invitation system
@@ -132,12 +141,14 @@ graph TB
   - Add audit logging for team actions
 
 **Deliverables:**
+
 - Team creation and management
 - Role-based access control
 - User invitation system
 - Team activity tracking
 
 #### Sprint 4: Advanced Team Features
+
 - **Collaboration Tools**
   - Team activity dashboards
   - Shared property and claim management
@@ -151,16 +162,19 @@ graph TB
   - Enterprise support portal
 
 **Deliverables:**
+
 - Advanced team collaboration
 - Enterprise-grade user management
 - Team analytics and reporting
 - Custom role configuration
 
 ### Phase 3: Admin & Analytics (Weeks 9-12) - Business Intelligence
+
 **Revenue Impact**: Enable data-driven optimization
 **Investment**: $160K
 
 #### Sprint 5: Admin Dashboard Foundation
+
 - **Platform Management**
   - User management interface
   - Subscription management tools
@@ -174,12 +188,14 @@ graph TB
   - Customer success indicators
 
 **Deliverables:**
+
 - Comprehensive admin dashboard
 - User and subscription management
 - Business intelligence reporting
 - System monitoring tools
 
 #### Sprint 6: Advanced Analytics
+
 - **Predictive Analytics**
   - Churn prediction models
   - Customer lifetime value calculation
@@ -193,16 +209,19 @@ graph TB
   - A/B testing infrastructure
 
 **Deliverables:**
+
 - Predictive analytics models
 - Advanced business metrics
   - Operational optimization tools
 - Feature experimentation platform
 
 ### Phase 4: Optimization & Scaling (Weeks 13-16) - Revenue Growth
+
 **Revenue Impact**: Maximize ARPU and reduce churn
 **Investment**: $200K
 
 #### Sprint 7: Revenue Optimization
+
 - **Conversion Optimization**
   - Freemium onboarding optimization
   - Premium feature showcasing
@@ -216,12 +235,14 @@ graph TB
   - Success metric tracking
 
 **Deliverables:**
+
 - Optimized conversion funnels
 - Automated customer success
 - Retention improvement tools
 - Revenue growth mechanisms
 
 #### Sprint 8: Advanced Features
+
 - **Market Expansion**
   - Referral program implementation
   - Affiliate marketing system
@@ -235,6 +256,7 @@ graph TB
   - Enterprise security features
 
 **Deliverables:**
+
 - Referral and affiliate systems
 - Enterprise scaling capabilities
 - Advanced integration options
@@ -245,6 +267,7 @@ graph TB
 ### Database Schema Changes
 
 #### New Tables Required:
+
 ```sql
 -- Enhanced subscription management
 CREATE TABLE subscription_plans (
@@ -318,6 +341,7 @@ CREATE TABLE analytics_events (
 ```
 
 #### Enhanced Existing Tables:
+
 ```sql
 -- Add team context to existing tables
 ALTER TABLE properties ADD COLUMN team_id UUID REFERENCES teams(id);
@@ -335,6 +359,7 @@ ALTER TABLE profiles
 ### API Endpoints Design
 
 #### Subscription Management
+
 ```typescript
 // Subscription endpoints
 POST   /api/subscriptions/checkout        // Create Stripe checkout
@@ -352,6 +377,7 @@ POST   /api/billing/payment-method       // Update payment method
 ```
 
 #### Team Management
+
 ```typescript
 // Team endpoints
 POST   /api/teams                        // Create team
@@ -369,6 +395,7 @@ POST   /api/invitations/:token/accept    // Accept invitation
 ```
 
 #### Admin & Analytics
+
 ```typescript
 // Admin endpoints
 GET    /api/admin/dashboard              // Dashboard metrics
@@ -389,6 +416,7 @@ GET    /api/analytics/cohorts           // Cohort analysis
 ## Integration Requirements
 
 ### Stripe Integration
+
 - **Checkout Flow**: Seamless subscription purchase experience
 - **Customer Portal**: Self-service billing management
 - **Webhooks**: Real-time subscription event handling
@@ -396,12 +424,14 @@ GET    /api/analytics/cohorts           // Cohort analysis
 - **Multi-Currency**: Support for international customers
 
 ### Email Integration
+
 - **Transactional Emails**: Payment confirmations, failures, receipts
 - **Marketing Emails**: Onboarding sequences, upgrade campaigns
 - **Team Notifications**: Invitation emails, activity summaries
 - **Admin Alerts**: System notifications, revenue milestones
 
 ### AI Service Integration
+
 - **Usage Tracking**: Token consumption and cost allocation
 - **Rate Limiting**: Per-tier API usage limits
 - **Cost Optimization**: Efficient model selection and caching
@@ -410,12 +440,14 @@ GET    /api/analytics/cohorts           // Cohort analysis
 ## Security & Compliance
 
 ### Data Protection
+
 - **Encryption**: All sensitive data encrypted at rest and in transit
 - **Access Control**: Role-based permissions with least privilege
 - **Audit Trails**: Complete activity logging for compliance
 - **Data Retention**: Configurable retention policies per regulation
 
 ### Payment Security
+
 - **PCI Compliance**: Stripe handles all card data
 - **Fraud Prevention**: Advanced fraud detection and prevention
 - **Secure Webhooks**: Validated webhook signatures
@@ -424,12 +456,14 @@ GET    /api/analytics/cohorts           // Cohort analysis
 ## Performance & Scalability
 
 ### Caching Strategy
+
 - **Redis**: Session data, usage counters, frequently accessed data
 - **CDN**: Static assets and API responses where appropriate
 - **Database**: Query optimization and indexing strategy
 - **Application**: In-memory caching for permission checks
 
 ### Monitoring & Alerting
+
 - **Application Performance**: Response times, error rates, throughput
 - **Business Metrics**: Revenue, churn, conversion rates
 - **Infrastructure**: Database performance, API usage, resource utilization
@@ -438,12 +472,14 @@ GET    /api/analytics/cohorts           // Cohort analysis
 ## Risk Management
 
 ### Technical Risks
+
 - **Payment Processing**: Backup payment providers and retry logic
 - **Data Migration**: Careful migration planning with rollback procedures
 - **Performance**: Load testing and gradual rollout
 - **Security**: Regular security audits and penetration testing
 
 ### Business Risks
+
 - **Customer Migration**: Grandfathering existing customers during transition
 - **Feature Parity**: Maintaining current functionality during upgrades
 - **Compliance**: Ensuring all changes meet regulatory requirements
@@ -452,6 +488,7 @@ GET    /api/analytics/cohorts           // Cohort analysis
 ## Success Metrics
 
 ### Financial KPIs
+
 - **Monthly Recurring Revenue (MRR)**: Target $120K by month 6
 - **Customer Acquisition Cost (CAC)**: Target <$100 for Homeowner tier
 - **Customer Lifetime Value (CLV)**: Target >$300 across all tiers
@@ -459,6 +496,7 @@ GET    /api/analytics/cohorts           // Cohort analysis
 - **Conversion Rate**: Target 15% free-to-paid conversion
 
 ### Product KPIs
+
 - **Feature Adoption**: Target 60% adoption of premium features
 - **User Engagement**: Target 70% monthly active users
 - **Support Efficiency**: Target <24hr response time
@@ -507,6 +545,7 @@ GET    /api/analytics/cohorts           // Cohort analysis
    - API rate limiting and throttling
 
 ### Files for Architect Review:
+
 - `/Users/madengineering/ClaimGuardian/docs/product/backlog.md` - Complete product requirements
 - `/Users/madengineering/ClaimGuardian/memory/project-glossary.md` - Domain terminology
 - `/Users/madengineering/ClaimGuardian/apps/web/src/config/pricing.ts` - Current pricing structure

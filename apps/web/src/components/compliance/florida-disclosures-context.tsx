@@ -8,40 +8,48 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { createContext, useContext, useState, ReactNode } from 'react'
+import { createContext, useContext, useState, ReactNode } from "react";
 
-import { FloridaDisclosuresModal } from './florida-disclosures-modal'
+import { FloridaDisclosuresModal } from "./florida-disclosures-modal";
 
 interface FloridaDisclosuresContextType {
-  showDisclosures: (userId: string) => void
-  hasSeenDisclosures: boolean
+  showDisclosures: (userId: string) => void;
+  hasSeenDisclosures: boolean;
 }
 
-const FloridaDisclosuresContext = createContext<FloridaDisclosuresContextType | undefined>(undefined)
+const FloridaDisclosuresContext = createContext<
+  FloridaDisclosuresContextType | undefined
+>(undefined);
 
-export function FloridaDisclosuresProvider({ children }: { children: ReactNode }) {
-  const [isOpen, setIsOpen] = useState(false)
-  const [userId, setUserId] = useState<string | null>(null)
-  const [hasSeenDisclosures, setHasSeenDisclosures] = useState(false)
+export function FloridaDisclosuresProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [hasSeenDisclosures, setHasSeenDisclosures] = useState(false);
 
   const showDisclosures = (userId: string) => {
-    setUserId(userId)
-    setIsOpen(true)
-  }
+    setUserId(userId);
+    setIsOpen(true);
+  };
 
   const handleAccept = () => {
-    setIsOpen(false)
-    setHasSeenDisclosures(true)
-  }
+    setIsOpen(false);
+    setHasSeenDisclosures(true);
+  };
 
   const handleCancel = () => {
-    setIsOpen(false)
-  }
+    setIsOpen(false);
+  };
 
   return (
-    <FloridaDisclosuresContext.Provider value={{ showDisclosures, hasSeenDisclosures }}>
+    <FloridaDisclosuresContext.Provider
+      value={{ showDisclosures, hasSeenDisclosures }}
+    >
       {children}
       {userId && (
         <FloridaDisclosuresModal
@@ -52,13 +60,15 @@ export function FloridaDisclosuresProvider({ children }: { children: ReactNode }
         />
       )}
     </FloridaDisclosuresContext.Provider>
-  )
+  );
 }
 
 export function useFloridaDisclosures() {
-  const context = useContext(FloridaDisclosuresContext)
+  const context = useContext(FloridaDisclosuresContext);
   if (!context) {
-    throw new Error('useFloridaDisclosures must be used within FloridaDisclosuresProvider')
+    throw new Error(
+      "useFloridaDisclosures must be used within FloridaDisclosuresProvider",
+    );
   }
-  return context
+  return context;
 }

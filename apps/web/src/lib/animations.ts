@@ -6,33 +6,33 @@
  * @status stable
  */
 
-import { Variants } from 'framer-motion'
+import { Variants } from "framer-motion";
 
 // Fade animations
 export const fadeIn: Variants = {
   initial: { opacity: 0 },
   animate: { opacity: 1 },
-  exit: { opacity: 0 }
-}
+  exit: { opacity: 0 },
+};
 
 export const fadeInUp: Variants = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -20 }
-}
+  exit: { opacity: 0, y: -20 },
+};
 
 export const fadeInDown: Variants = {
   initial: { opacity: 0, y: -20 },
   animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: 20 }
-}
+  exit: { opacity: 0, y: 20 },
+};
 
 // Scale animations
 export const scaleIn: Variants = {
   initial: { scale: 0.8, opacity: 0 },
   animate: { scale: 1, opacity: 1 },
-  exit: { scale: 0.8, opacity: 0 }
-}
+  exit: { scale: 0.8, opacity: 0 },
+};
 
 export const scalePulse: Variants = {
   initial: { scale: 1 },
@@ -40,23 +40,23 @@ export const scalePulse: Variants = {
     scale: [1, 1.05, 1],
     transition: {
       duration: 0.3,
-      ease: "easeInOut"
-    }
-  }
-}
+      ease: "easeInOut",
+    },
+  },
+};
 
 // Slide animations
 export const slideInLeft: Variants = {
   initial: { x: -100, opacity: 0 },
   animate: { x: 0, opacity: 1 },
-  exit: { x: -100, opacity: 0 }
-}
+  exit: { x: -100, opacity: 0 },
+};
 
 export const slideInRight: Variants = {
   initial: { x: 100, opacity: 0 },
   animate: { x: 0, opacity: 1 },
-  exit: { x: 100, opacity: 0 }
-}
+  exit: { x: 100, opacity: 0 },
+};
 
 // Container animations
 export const staggerContainer: Variants = {
@@ -64,10 +64,10 @@ export const staggerContainer: Variants = {
   animate: {
     transition: {
       staggerChildren: 0.1,
-      delayChildren: 0.2
-    }
-  }
-}
+      delayChildren: 0.2,
+    },
+  },
+};
 
 export const staggerItem: Variants = {
   initial: { opacity: 0, y: 20 },
@@ -76,10 +76,10 @@ export const staggerItem: Variants = {
     y: 0,
     transition: {
       duration: 0.5,
-      ease: "easeOut"
-    }
-  }
-}
+      ease: "easeOut",
+    },
+  },
+};
 
 // Card hover effects
 export const cardHover: Variants = {
@@ -88,16 +88,16 @@ export const cardHover: Variants = {
     scale: 1.02,
     transition: {
       duration: 0.2,
-      ease: "easeInOut"
-    }
+      ease: "easeInOut",
+    },
   },
   tap: {
     scale: 0.98,
     transition: {
-      duration: 0.1
-    }
-  }
-}
+      duration: 0.1,
+    },
+  },
+};
 
 // Page transitions
 export const pageTransition: Variants = {
@@ -107,30 +107,30 @@ export const pageTransition: Variants = {
     y: 0,
     transition: {
       duration: 0.5,
-      ease: "easeOut"
-    }
+      ease: "easeOut",
+    },
   },
   exit: {
     opacity: 0,
     y: -20,
     transition: {
-      duration: 0.3
-    }
-  }
-}
+      duration: 0.3,
+    },
+  },
+};
 
 // Modal animations
 export const modalOverlay: Variants = {
   initial: { opacity: 0 },
   animate: { opacity: 1 },
-  exit: { opacity: 0 }
-}
+  exit: { opacity: 0 },
+};
 
 export const modalContent: Variants = {
   initial: {
     scale: 0.95,
     opacity: 0,
-    y: 20
+    y: 20,
   },
   animate: {
     scale: 1,
@@ -138,62 +138,62 @@ export const modalContent: Variants = {
     y: 0,
     transition: {
       duration: 0.3,
-      ease: "easeOut"
-    }
+      ease: "easeOut",
+    },
   },
   exit: {
     scale: 0.95,
     opacity: 0,
     y: 20,
     transition: {
-      duration: 0.2
-    }
-  }
-}
+      duration: 0.2,
+    },
+  },
+};
 
 // List animations
 export const listContainer: Variants = {
   initial: {},
   animate: {
     transition: {
-      staggerChildren: 0.05
-    }
-  }
-}
+      staggerChildren: 0.05,
+    },
+  },
+};
 
 export const listItem: Variants = {
   initial: {
     opacity: 0,
-    x: -20
+    x: -20,
   },
   animate: {
     opacity: 1,
     x: 0,
     transition: {
-      duration: 0.3
-    }
-  }
-}
+      duration: 0.3,
+    },
+  },
+};
 
 // Tab animations
 export const tabContent: Variants = {
   initial: {
     opacity: 0,
-    y: 10
+    y: 10,
   },
   animate: {
     opacity: 1,
     y: 0,
     transition: {
       duration: 0.3,
-      ease: "easeOut"
-    }
+      ease: "easeOut",
+    },
   },
   exit: {
     opacity: 0,
     y: -10,
     transition: {
-      duration: 0.2
-    }
-  }
-}
+      duration: 0.2,
+    },
+  },
+};

@@ -3,9 +3,9 @@ name: Database Schema Review
 on:
   pull_request:
     paths:
-      - 'supabase/schema.sql'
-      - 'supabase/sql/**'
-      - 'supabase/functions/**'
+      - "supabase/schema.sql"
+      - "supabase/sql/**"
+      - "supabase/functions/**"
 
 env:
   SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}

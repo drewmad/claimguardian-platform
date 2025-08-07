@@ -68,6 +68,7 @@ pnpm dev
 ### 4. Type Generation
 
 Types are automatically generated during:
+
 - Pre-commit hooks (if Supabase is running)
 - CI/CD pipeline (on migration changes)
 - Manual generation with `pnpm db:types`
@@ -98,6 +99,7 @@ git commit -m "chore: update database types"
 **Symptom**: Migrations fail due to conflicting changes
 
 **Solution**:
+
 ```bash
 # Check migration history
 supabase migration list
@@ -114,6 +116,7 @@ supabase db reset
 **Symptom**: `pnpm db:types` errors
 
 **Solution**:
+
 ```bash
 # Ensure you're linked
 supabase link --project-ref tmlrvecuwgppbaynesji
@@ -130,6 +133,7 @@ supabase gen types typescript --project-id tmlrvecuwgppbaynesji
 **Symptom**: Local and remote schemas out of sync
 
 **Solution**:
+
 ```bash
 # See differences
 supabase db diff --linked
@@ -146,6 +150,7 @@ supabase db push
 **Symptom**: `db:lint` finds schema issues
 
 **Solution**:
+
 ```bash
 # Run with details
 supabase db lint --local --level warning
@@ -162,6 +167,7 @@ supabase db lint --local --level warning
 ### 1. Migration Naming
 
 Use descriptive names with underscores:
+
 - ✅ `create_user_profiles_table`
 - ✅ `add_property_search_index`
 - ❌ `fix`
@@ -188,15 +194,16 @@ Use descriptive names with underscores:
 - Use the generated types in your code:
 
 ```typescript
-import { Database, Tables } from '@claimguardian/db'
+import { Database, Tables } from "@claimguardian/db";
 
-type Property = Tables<'properties'>
-type ClaimStatus = Database['public']['Enums']['claim_status']
+type Property = Tables<"properties">;
+type ClaimStatus = Database["public"]["Enums"]["claim_status"];
 ```
 
 ### 5. Backup Strategy
 
 Before major changes:
+
 ```bash
 # Backup schema
 pnpm db:dump
@@ -211,11 +218,13 @@ git tag pre-migration-backup
 ## CI/CD Integration
 
 The GitHub Actions workflow automatically:
+
 1. Generates types when migrations change
 2. Creates a PR if types are outdated
 3. Runs on a weekly schedule for drift detection
 
 To trigger manually:
+
 ```bash
 gh workflow run database-types.yml
 ```

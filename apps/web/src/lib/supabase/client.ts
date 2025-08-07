@@ -8,37 +8,44 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { createBrowserSupabaseClient } from '@claimguardian/db'
-import { useMemo } from 'react'
+import { createBrowserSupabaseClient } from "@claimguardian/db";
+import { useMemo } from "react";
 
-import { authLogger } from '@/lib/logger'
+import { authLogger } from "@/lib/logger";
 
-let browserClient: ReturnType<typeof createBrowserSupabaseClient> | undefined
+let browserClient: ReturnType<typeof createBrowserSupabaseClient> | undefined;
 
 export function createClient() {
   if (!browserClient) {
     try {
-      browserClient = createBrowserSupabaseClient()
-      if (process.env.NODE_ENV === 'development') {
-        authLogger.info('Supabase browser client initialized (singleton)')
+      browserClient = createBrowserSupabaseClient();
+      if (process.env.NODE_ENV === "development") {
+        authLogger.info("Supabase browser client initialized (singleton)");
       }
     } catch (error) {
-      authLogger.error('Failed to initialize Supabase client', {}, error as Error)
+      authLogger.error(
+        "Failed to initialize Supabase client",
+        {},
+        error as Error,
+      );
       // Re-throw to prevent silent failures
-      throw error
+      throw error;
     }
   } else {
     // Reusing existing client to prevent multiple auth listeners
-    if (process.env.NODE_ENV === 'development' && process.env.VERBOSE_LOGS === 'true') {
-      authLogger.debug('Reusing existing Supabase browser client')
+    if (
+      process.env.NODE_ENV === "development" &&
+      process.env.VERBOSE_LOGS === "true"
+    ) {
+      authLogger.debug("Reusing existing Supabase browser client");
     }
   }
-  return browserClient
+  return browserClient;
 }
 
 export function useSupabase() {
-  const supabase = useMemo(() => createClient(), [])
-  return { supabase }
+  const supabase = useMemo(() => createClient(), []);
+  return { supabase };
 }

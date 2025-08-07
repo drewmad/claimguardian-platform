@@ -5,75 +5,85 @@
  * @owner legal-team
  * @status stable
  */
-'use client'
+"use client";
 
-import type { LegalDocument, LegalDocumentType } from '@claimguardian/db'
-import { FileText, Calendar, Hash, Shield, ChevronLeft, Download, Printer } from 'lucide-react'
-import Link from 'next/link'
-import { useState, useEffect } from 'react'
+import type { LegalDocument, LegalDocumentType } from "@claimguardian/db";
+import {
+  FileText,
+  Calendar,
+  Hash,
+  Shield,
+  ChevronLeft,
+  Download,
+  Printer,
+} from "lucide-react";
+import Link from "next/link";
+import { useState, useEffect } from "react";
 
-import { logger } from '@/lib/logger'
-import { legalService } from '@/lib/legal/legal-service'
+import { logger } from "@/lib/logger";
+import { legalService } from "@/lib/legal/legal-service";
 
 interface LegalDocumentViewProps {
-  documentType: LegalDocumentType
+  documentType: LegalDocumentType;
 }
 
 export function LegalDocumentView({ documentType }: LegalDocumentViewProps) {
-  const [document, setDocument] = useState<LegalDocument | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+  const [document, setDocument] = useState<LegalDocument | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const loadDocument = async () => {
       try {
-        setLoading(true)
-        setError('')
+        setLoading(true);
+        setError("");
 
-        const doc = await legalService.getDocumentByType(documentType)
+        const doc = await legalService.getDocumentByType(documentType);
 
         if (!doc) {
-          setError('Document not found')
-          return
+          setError("Document not found");
+          return;
         }
 
-        setDocument(doc)
+        setDocument(doc);
 
-        logger.track('legal_document_viewed', {
+        logger.track("legal_document_viewed", {
           documentType,
           documentId: doc.id,
-          version: doc.version
-        })
-
+          version: doc.version,
+        });
       } catch (err) {
-        logger.error('Failed to load legal document', { documentType }, err instanceof Error ? err : new Error(String(err)))
-        setError('Failed to load document. Please try again.')
+        logger.error(
+          "Failed to load legal document",
+          { documentType },
+          err instanceof Error ? err : new Error(String(err)),
+        );
+        setError("Failed to load document. Please try again.");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    loadDocument()
-  }, [documentType])
-
+    loadDocument();
+  }, [documentType]);
 
   const handlePrint = () => {
-    window.print()
-    logger.track('legal_document_printed', {
+    window.print();
+    logger.track("legal_document_printed", {
       documentType,
-      version: document?.version
-    })
-  }
+      version: document?.version,
+    });
+  };
 
   const handleDownload = () => {
     if (document?.storage_url) {
-      window.open(document.storage_url, '_blank')
-      logger.track('legal_document_downloaded', {
+      window.open(document.storage_url, "_blank");
+      logger.track("legal_document_downloaded", {
         documentType,
-        version: document.version
-      })
+        version: document.version,
+      });
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -86,20 +96,24 @@ export function LegalDocumentView({ documentType }: LegalDocumentViewProps) {
           ))}
         </div>
       </div>
-    )
+    );
   }
 
   if (error || !document) {
     return (
       <div className="text-center py-16">
         <FileText className="w-16 h-16 text-slate-600 mx-auto mb-4" />
-        <h2 className="text-xl font-semibold text-slate-300 mb-2">Document Not Available</h2>
-        <p className="text-slate-400 mb-6">{error || 'The requested document could not be found.'}</p>
+        <h2 className="text-xl font-semibold text-slate-300 mb-2">
+          Document Not Available
+        </h2>
+        <p className="text-slate-400 mb-6">
+          {error || "The requested document could not be found."}
+        </p>
         <Link href="/" className="btn-primary">
           Return Home
         </Link>
       </div>
-    )
+    );
   }
 
   return (
@@ -116,11 +130,16 @@ export function LegalDocumentView({ documentType }: LegalDocumentViewProps) {
 
         <div className="flex items-start justify-between gap-6">
           <div>
-            <h1 className="text-3xl font-bold text-white mb-2">{document.title}</h1>
+            <h1 className="text-3xl font-bold text-white mb-2">
+              {document.title}
+            </h1>
             <div className="flex items-center gap-6 text-sm text-slate-400">
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
-                <span>Effective: {new Date(document.effective_date).toLocaleDateString()}</span>
+                <span>
+                  Effective:{" "}
+                  {new Date(document.effective_date).toLocaleDateString()}
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <Shield className="w-4 h-4" />
@@ -128,7 +147,9 @@ export function LegalDocumentView({ documentType }: LegalDocumentViewProps) {
               </div>
               <div className="flex items-center gap-2">
                 <Hash className="w-4 h-4" />
-                <span className="font-mono text-xs">{document.sha256_hash.substring(0, 8)}...</span>
+                <span className="font-mono text-xs">
+                  {document.sha256_hash.substring(0, 8)}...
+                </span>
               </div>
             </div>
           </div>
@@ -184,8 +205,13 @@ export function LegalDocumentView({ documentType }: LegalDocumentViewProps) {
       <div className="mt-8 bg-gradient-to-r from-blue-600/10 to-purple-600/10 border border-blue-500/20 rounded-lg p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-white mb-2">Ready to Join?</h3>
-            <p className="text-slate-300">Protect your assets with ClaimGuardian's AI-powered property intelligence.</p>
+            <h3 className="text-lg font-semibold text-white mb-2">
+              Ready to Join?
+            </h3>
+            <p className="text-slate-300">
+              Protect your assets with ClaimGuardian's AI-powered property
+              intelligence.
+            </p>
           </div>
           <div className="flex items-center gap-3">
             <Link
@@ -207,7 +233,9 @@ export function LegalDocumentView({ documentType }: LegalDocumentViewProps) {
       {/* Footer */}
       <div className="mt-12 pt-8 border-t border-slate-700">
         <div className="flex items-center justify-between text-sm text-slate-500">
-          <p>Last updated: {new Date(document.created_at).toLocaleDateString()}</p>
+          <p>
+            Last updated: {new Date(document.created_at).toLocaleDateString()}
+          </p>
           <div className="flex items-center gap-4">
             <Link
               href="/legal/privacy-policy"
@@ -244,7 +272,8 @@ export function LegalDocumentView({ documentType }: LegalDocumentViewProps) {
             background: white !important;
             border: 1px solid #ccc !important;
           }
-          button, a {
+          button,
+          a {
             display: none !important;
           }
           .no-print {
@@ -253,7 +282,7 @@ export function LegalDocumentView({ documentType }: LegalDocumentViewProps) {
         }
       `}</style>
     </div>
-  )
+  );
 }
 
 // Format content with proper HTML structure
@@ -261,26 +290,30 @@ function formatContent(content: string): string {
   // This is a simple formatter. In production, you'd use a proper markdown parser
   // or store HTML content directly
   return content
-    .split('\n\n')
-    .map(paragraph => {
-      if (paragraph.startsWith('#')) {
-        const level = paragraph.match(/^#+/)?.[0].length || 1
-        const text = paragraph.replace(/^#+\s*/, '')
-        return `<h${level} class="text-white font-semibold mb-4 mt-8">${text}</h${level}>`
+    .split("\n\n")
+    .map((paragraph) => {
+      if (paragraph.startsWith("#")) {
+        const level = paragraph.match(/^#+/)?.[0].length || 1;
+        const text = paragraph.replace(/^#+\s*/, "");
+        return `<h${level} class="text-white font-semibold mb-4 mt-8">${text}</h${level}>`;
       }
-      if (paragraph.startsWith('- ')) {
-        const items = paragraph.split('\n').map(item =>
-          `<li class="mb-2">${item.replace(/^-\s*/, '')}</li>`
-        ).join('')
-        return `<ul class="list-disc list-inside space-y-2 mb-6">${items}</ul>`
+      if (paragraph.startsWith("- ")) {
+        const items = paragraph
+          .split("\n")
+          .map((item) => `<li class="mb-2">${item.replace(/^-\s*/, "")}</li>`)
+          .join("");
+        return `<ul class="list-disc list-inside space-y-2 mb-6">${items}</ul>`;
       }
-      if (paragraph.startsWith('1. ')) {
-        const items = paragraph.split('\n').map(item =>
-          `<li class="mb-2">${item.replace(/^\d+\.\s*/, '')}</li>`
-        ).join('')
-        return `<ol class="list-decimal list-inside space-y-2 mb-6">${items}</ol>`
+      if (paragraph.startsWith("1. ")) {
+        const items = paragraph
+          .split("\n")
+          .map(
+            (item) => `<li class="mb-2">${item.replace(/^\d+\.\s*/, "")}</li>`,
+          )
+          .join("");
+        return `<ol class="list-decimal list-inside space-y-2 mb-6">${items}</ol>`;
       }
-      return `<p class="mb-6 text-slate-300 leading-relaxed">${paragraph}</p>`
+      return `<p class="mb-6 text-slate-300 leading-relaxed">${paragraph}</p>`;
     })
-    .join('')
+    .join("");
 }

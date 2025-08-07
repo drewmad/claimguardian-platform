@@ -10,14 +10,14 @@
  * @notes Uses simplified form with direct Supabase auth
  */
 
-import { SimpleSignInForm } from './simple-sign-in-form'
+import { SimpleSignInForm } from "./simple-sign-in-form";
 
 export default async function SignInPage({
   searchParams,
 }: {
-  searchParams: Promise<{ message?: string }>
+  searchParams: Promise<{ message?: string }>;
 }) {
-  const params = await searchParams
+  const params = await searchParams;
 
-  return <SimpleSignInForm message={params?.message} />
+  return <SimpleSignInForm message={params?.message} />;
 }

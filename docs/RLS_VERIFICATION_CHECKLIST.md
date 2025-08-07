@@ -3,6 +3,7 @@
 ## Pre-Deployment Verification
 
 ### 1. ✅ Apply Security Fixes
+
 ```bash
 # Apply all RLS policies and view fixes
 ./scripts/apply-security-fixes.sh
@@ -11,6 +12,7 @@
 ```
 
 ### 2. ✅ Run Security Tests
+
 ```bash
 # Run comprehensive RLS tests
 ./scripts/test-rls-security.sh
@@ -19,6 +21,7 @@
 ```
 
 ### 3. ✅ Secure PostGIS Tables (if using spatial features)
+
 ```bash
 # Only needed if using PostGIS features
 ./scripts/secure-postgis-tables.sh
@@ -29,6 +32,7 @@
 ### 1. Test User Data Isolation
 
 #### Setup Test Users
+
 ```sql
 -- Create two test users via Supabase Auth
 -- User 1: test1@example.com
@@ -36,51 +40,48 @@
 ```
 
 #### Test Property Isolation
+
 ```javascript
 // As User 1 - Create a property
-const { data: property1 } = await supabase
-  .from('properties')
-  .insert({
-    address: '123 Test St',
-    user_id: user1.id // Should match auth.uid()
-  })
+const { data: property1 } = await supabase.from("properties").insert({
+  address: "123 Test St",
+  user_id: user1.id, // Should match auth.uid()
+});
 
 // As User 2 - Try to read User 1's property
 const { data: properties, error } = await supabase
-  .from('properties')
-  .select('*')
+  .from("properties")
+  .select("*");
 
 // ✅ PASS: Should return empty array (no access to User 1's data)
 // ❌ FAIL: If User 2 can see User 1's property
 ```
 
 #### Test Claims Isolation
+
 ```javascript
 // As User 1 - Create a claim
-const { data: claim1 } = await supabase
-  .from('claims')
-  .insert({
-    claim_number: 'TEST-001',
-    property_id: property1.id,
-    user_id: user1.id
-  })
+const { data: claim1 } = await supabase.from("claims").insert({
+  claim_number: "TEST-001",
+  property_id: property1.id,
+  user_id: user1.id,
+});
 
 // As User 2 - Try to read User 1's claims
-const { data: claims, error } = await supabase
-  .from('claims')
-  .select('*')
+const { data: claims, error } = await supabase.from("claims").select("*");
 
 // ✅ PASS: Should return empty array
 // ❌ FAIL: If User 2 can see User 1's claims
 ```
 
 #### Test Cross-User Updates (Should Fail)
+
 ```javascript
 // As User 2 - Try to update User 1's property
 const { error } = await supabase
-  .from('properties')
-  .update({ address: 'Hacked!' })
-  .eq('id', property1.id)
+  .from("properties")
+  .update({ address: "Hacked!" })
+  .eq("id", property1.id);
 
 // ✅ PASS: Should get RLS policy violation error
 // ❌ FAIL: If update succeeds
@@ -89,20 +90,22 @@ const { error } = await supabase
 ### 2. Verify Admin Functions
 
 #### Test Service Role Access
+
 ```javascript
 // Using service role key (server-side only)
-const adminSupabase = createClient(url, serviceRoleKey)
+const adminSupabase = createClient(url, serviceRoleKey);
 
 // Should be able to see all data
 const { data: allProperties } = await adminSupabase
-  .from('properties')
-  .select('*')
+  .from("properties")
+  .select("*");
 
 // ✅ PASS: Returns all properties across all users
 // ❌ FAIL: If limited to single user
 ```
 
 #### Test Admin Dashboard Features
+
 - [ ] AI cost tracking shows all users
 - [ ] Performance dashboard shows system-wide stats
 - [ ] Error logs show all system errors
@@ -111,6 +114,7 @@ const { data: allProperties } = await adminSupabase
 ### 3. Monitor RLS Violations
 
 #### Check Error Logs
+
 ```sql
 -- Look for RLS violations
 SELECT
@@ -127,6 +131,7 @@ LIMIT 50;
 ```
 
 #### Check Audit Logs
+
 ```sql
 -- Look for unauthorized access attempts
 SELECT
@@ -144,6 +149,7 @@ LIMIT 50;
 ```
 
 #### Set Up Monitoring Alerts
+
 ```sql
 -- Create monitoring view
 CREATE OR REPLACE VIEW v_rls_violations AS
@@ -162,6 +168,7 @@ HAVING COUNT(*) > 5;  -- Alert threshold
 ### 4. PostGIS Security (If Applicable)
 
 #### Verify PostGIS Tables
+
 ```sql
 -- Check RLS status
 SELECT
@@ -182,12 +189,13 @@ FROM (
 ```
 
 #### Test Spatial Queries
+
 ```javascript
 // Should work for authenticated users
 const { data: spatialRef } = await supabase
-  .from('spatial_ref_sys')
-  .select('*')
-  .limit(1)
+  .from("spatial_ref_sys")
+  .select("*")
+  .limit(1);
 
 // ✅ PASS: Returns coordinate system data
 // ❌ FAIL: If access denied
@@ -229,6 +237,7 @@ $$;
 ### 2. Set Up Alerts
 
 Configure alerts for:
+
 - [ ] More than 10 RLS violations per hour
 - [ ] New user attempting cross-user access
 - [ ] Service role authentication failures
@@ -237,6 +246,7 @@ Configure alerts for:
 ### 3. Regular Security Audits
 
 Weekly checks:
+
 - [ ] Review RLS violation logs
 - [ ] Check for new tables without RLS
 - [ ] Verify no SECURITY DEFINER views created
@@ -282,6 +292,7 @@ Before marking RLS implementation complete:
 ## Emergency Contacts
 
 If RLS blocks critical operations:
+
 1. Check error logs first
 2. Test with service role key
 3. Review recent schema changes

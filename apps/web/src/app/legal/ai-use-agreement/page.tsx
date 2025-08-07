@@ -6,14 +6,14 @@
  * @status stable
  */
 
-import { Metadata } from 'next'
+import { Metadata } from "next";
 
-import { LegalDocumentView } from '@/components/legal/legal-document-view'
+import { LegalDocumentView } from "@/components/legal/legal-document-view";
 
 export const metadata: Metadata = {
-  title: 'AI Use Agreement | ClaimGuardian',
-  description: 'How ClaimGuardian uses AI to help with your insurance claims',
-}
+  title: "AI Use Agreement | ClaimGuardian",
+  description: "How ClaimGuardian uses AI to help with your insurance claims",
+};
 
 export default function AIUseAgreementPage() {
   return (
@@ -22,5 +22,5 @@ export default function AIUseAgreementPage() {
         <LegalDocumentView documentType="ai_use_agreement" />
       </div>
     </div>
-  )
+  );
 }

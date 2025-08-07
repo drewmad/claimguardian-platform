@@ -8,49 +8,60 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { FileText, ShieldCheck, Cookie, Brain, ArrowLeft, CheckCircle } from 'lucide-react'
-import Link from 'next/link'
-import React, { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import {
+  FileText,
+  ShieldCheck,
+  Cookie,
+  Brain,
+  ArrowLeft,
+  CheckCircle,
+} from "lucide-react";
+import Link from "next/link";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
 
-import { Accordion } from '../Accordion'
+import { Accordion } from "../Accordion";
 
-import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface AgreementsData {
-  agreed: boolean
-  ageVerified: boolean
+  agreed: boolean;
+  ageVerified: boolean;
 }
 
 interface AgreementsProps {
-  onPrev: () => void
-  onSubmit: (data: AgreementsData) => void
-  isLoading?: boolean
+  onPrev: () => void;
+  onSubmit: (data: AgreementsData) => void;
+  isLoading?: boolean;
 }
 
-export function Agreements({ onPrev, onSubmit, isLoading = false }: AgreementsProps) {
-  const [hasReadTerms, setHasReadTerms] = useState(false)
+export function Agreements({
+  onPrev,
+  onSubmit,
+  isLoading = false,
+}: AgreementsProps) {
+  const [hasReadTerms, setHasReadTerms] = useState(false);
 
   const {
     register,
     handleSubmit,
     watch,
     setValue,
-    formState: { errors }
+    formState: { errors },
   } = useForm<AgreementsData>({
-    mode: 'onChange'
-  })
+    mode: "onChange",
+  });
 
-  const agreed = watch('agreed')
-  const ageVerified = watch('ageVerified', true) // Default to true for adults
+  const agreed = watch("agreed");
+  const ageVerified = watch("ageVerified", true); // Default to true for adults
 
   const handleAgreementToggle = () => {
-    setHasReadTerms(true)
-    setValue('agreed', !agreed, { shouldValidate: true })
-  }
+    setHasReadTerms(true);
+    setValue("agreed", !agreed, { shouldValidate: true });
+  };
 
   return (
     <div className="space-y-6">
@@ -64,7 +75,11 @@ export function Agreements({ onPrev, onSubmit, isLoading = false }: AgreementsPr
         </p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" aria-label="Legal Agreements Form">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="space-y-6"
+        aria-label="Legal Agreements Form"
+      >
         <fieldset className="space-y-4">
           <legend className="sr-only">Age Verification</legend>
 
@@ -72,16 +87,25 @@ export function Agreements({ onPrev, onSubmit, isLoading = false }: AgreementsPr
             <div className="flex items-start gap-3">
               <CheckCircle className="h-5 w-5 text-amber-400 mt-0.5 flex-shrink-0" />
               <div className="flex-1">
-                <h3 className="text-sm font-medium text-amber-300 mb-2">Age Verification Required</h3>
+                <h3 className="text-sm font-medium text-amber-300 mb-2">
+                  Age Verification Required
+                </h3>
                 <label className="flex items-start gap-3 cursor-pointer">
                   <Checkbox
                     checked={ageVerified}
-                    onCheckedChange={(checked) => setValue('ageVerified', Boolean(checked), { shouldValidate: true })}
+                    onCheckedChange={(checked) =>
+                      setValue("ageVerified", Boolean(checked), {
+                        shouldValidate: true,
+                      })
+                    }
                     className="mt-0.5"
-                    {...register('ageVerified', { required: 'You must be 18 or older to create an account' })}
+                    {...register("ageVerified", {
+                      required: "You must be 18 or older to create an account",
+                    })}
                   />
                   <span className="text-sm text-gray-300">
-                    I confirm that I am 18 years of age or older and legally able to enter into contracts in the state of Florida.
+                    I confirm that I am 18 years of age or older and legally
+                    able to enter into contracts in the state of Florida.
                   </span>
                 </label>
                 {errors.ageVerified && (
@@ -147,7 +171,9 @@ export function Agreements({ onPrev, onSubmit, isLoading = false }: AgreementsPr
               </div>
 
               <div className="mt-4 p-3 bg-gray-800 rounded border border-gray-600">
-                <h4 className="text-sm font-medium text-gray-200 mb-2">Quick Summary:</h4>
+                <h4 className="text-sm font-medium text-gray-200 mb-2">
+                  Quick Summary:
+                </h4>
                 <ul className="text-xs text-gray-400 space-y-1">
                   <li>• We protect your privacy and never sell your data</li>
                   <li>• AI tools provide assistance but aren't legal advice</li>
@@ -164,16 +190,20 @@ export function Agreements({ onPrev, onSubmit, isLoading = false }: AgreementsPr
                 checked={agreed}
                 onCheckedChange={handleAgreementToggle}
                 className="mt-1"
-                {...register('agreed', {
-                  required: 'You must agree to all terms to continue'
+                {...register("agreed", {
+                  required: "You must agree to all terms to continue",
                 })}
               />
               <div className="flex-1">
                 <span className="text-sm text-gray-200 leading-relaxed">
-                  I have read, understood, and agree to be bound by all of the above legal agreements, including the Terms of Service, Privacy Policy, Data Processing Agreement, AI Tools Disclaimer, and Cookie Policy.
+                  I have read, understood, and agree to be bound by all of the
+                  above legal agreements, including the Terms of Service,
+                  Privacy Policy, Data Processing Agreement, AI Tools
+                  Disclaimer, and Cookie Policy.
                 </span>
                 <p className="text-xs text-gray-400 mt-2">
-                  <strong>Required:</strong> You must accept all agreements to use ClaimGuardian services.
+                  <strong>Required:</strong> You must accept all agreements to
+                  use ClaimGuardian services.
                 </p>
               </div>
             </label>
@@ -190,10 +220,13 @@ export function Agreements({ onPrev, onSubmit, isLoading = false }: AgreementsPr
           <div className="flex items-start gap-3">
             <ShieldCheck className="h-5 w-5 text-green-400 mt-0.5 flex-shrink-0" />
             <div>
-              <h3 className="text-sm font-medium text-green-300 mb-1">Almost Done!</h3>
+              <h3 className="text-sm font-medium text-green-300 mb-1">
+                Almost Done!
+              </h3>
               <p className="text-xs text-gray-300">
-                Your account will be created securely and you'll receive a confirmation email.
-                You can start protecting your Florida property immediately.
+                Your account will be created securely and you'll receive a
+                confirmation email. You can start protecting your Florida
+                property immediately.
               </p>
             </div>
           </div>
@@ -230,5 +263,5 @@ export function Agreements({ onPrev, onSubmit, isLoading = false }: AgreementsPr
         </div>
       </form>
     </div>
-  )
+  );
 }

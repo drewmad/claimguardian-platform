@@ -1,25 +1,23 @@
-
-
-import { createClient } from '@supabase/supabase-js';
-import { config } from 'dotenv';
-import { readFileSync } from 'fs';
-import { createHash } from 'crypto';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { createClient } from "@supabase/supabase-js";
+import { config } from "dotenv";
+import { readFileSync } from "fs";
+import { createHash } from "crypto";
+import path from "path";
+import { fileURLToPath } from "url";
 
 // --- Configuration ---
 // Get the directory name of the current module
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Load environment variables from the root .env.production file
-const envPath = path.resolve(__dirname, '../../.env.production');
+const envPath = path.resolve(__dirname, "../../.env.production");
 config({ path: envPath });
 
 const { NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } = process.env;
 
 if (!NEXT_PUBLIC_SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   console.error(
-    '❌ Error: Make sure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set in .env.production'
+    "❌ Error: Make sure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set in .env.production",
   );
   process.exit(1);
 }
@@ -32,7 +30,7 @@ if (!NEXT_PUBLIC_SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
  * @returns {string} The SHA256 hash.
  */
 function calculateHash(content) {
-  return createHash('sha256').update(content).digest('hex');
+  return createHash("sha256").update(content).digest("hex");
 }
 
 /**
@@ -60,7 +58,14 @@ function getSupabaseAdminClient() {
  * @param {string} params.changeSummary - A summary of what changed in this version.
  * @param {string} [params.createdBy] - The UUID of the user creating the version (optional).
  */
-async function versionDocument({ docType, filePath, title, summary, changeSummary, createdBy = null }) {
+async function versionDocument({
+  docType,
+  filePath,
+  title,
+  summary,
+  changeSummary,
+  createdBy = null,
+}) {
   console.log(`🚀 Starting versioning for: ${title}`);
 
   const supabase = getSupabaseAdminClient();
@@ -69,10 +74,13 @@ async function versionDocument({ docType, filePath, title, summary, changeSummar
   // 1. Read the markdown file content
   let content;
   try {
-    content = readFileSync(absoluteFilePath, 'utf-8');
+    content = readFileSync(absoluteFilePath, "utf-8");
     console.log(`📄 Read content from: ${filePath}`);
   } catch (error) {
-    console.error(`❌ Error reading file at ${absoluteFilePath}:`, error.message);
+    console.error(
+      `❌ Error reading file at ${absoluteFilePath}:`,
+      error.message,
+    );
     process.exit(1);
   }
 
@@ -84,7 +92,7 @@ async function versionDocument({ docType, filePath, title, summary, changeSummar
   const rpcParams = {
     p_doc_type: docType,
     p_title: title,
-    p_slug: docType.replace(/_/g, '-'), // e.g., 'privacy_policy' -> 'privacy-policy'
+    p_slug: docType.replace(/_/g, "-"), // e.g., 'privacy_policy' -> 'privacy-policy'
     p_content: content,
     p_summary: summary,
     p_change_summary: changeSummary,
@@ -93,18 +101,21 @@ async function versionDocument({ docType, filePath, title, summary, changeSummar
   };
 
   // 4. Call the atomic database function
-  console.log('📡 Calling database function to create new version...');
-  const { data: newDocumentId, error } = await supabase.rpc('version_legal_document', rpcParams);
+  console.log("📡 Calling database function to create new version...");
+  const { data: newDocumentId, error } = await supabase.rpc(
+    "version_legal_document",
+    rpcParams,
+  );
 
   if (error) {
-    console.error('❌ Database error during versioning:', error.message);
-    console.error('   Please check the database logs for more details.');
+    console.error("❌ Database error during versioning:", error.message);
+    console.error("   Please check the database logs for more details.");
     process.exit(1);
   }
 
-  console.log('✅ Successfully created new document version!');
+  console.log("✅ Successfully created new document version!");
   console.log(`   New Document ID: ${newDocumentId}`);
-  console.log('✨ Versioning complete.');
+  console.log("✨ Versioning complete.");
 }
 
 // --- Command-Line Interface ---
@@ -112,10 +123,12 @@ async function versionDocument({ docType, filePath, title, summary, changeSummar
 function main() {
   const args = process.argv.slice(2);
   if (args.length < 4) {
-    console.error('Usage: node scripts/legal/version-docs.mjs <docType> <filePath> <title> "<changeSummary>"');
-    console.error('\nExample:');
     console.error(
-      'node scripts/legal/version-docs.mjs privacy_policy legal/privacy-policy.md "Privacy Policy" "Updated section 3 for AI data usage."'
+      'Usage: node scripts/legal/version-docs.mjs <docType> <filePath> <title> "<changeSummary>"',
+    );
+    console.error("\nExample:");
+    console.error(
+      'node scripts/legal/version-docs.mjs privacy_policy legal/privacy-policy.md "Privacy Policy" "Updated section 3 for AI data usage."',
     );
     process.exit(1);
   }

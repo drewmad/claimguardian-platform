@@ -8,248 +8,277 @@
  * @tags ["onboarding", "ai-tools", "introduction", "interactive"]
  * @status stable
  */
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
-  Sparkles, Brain, Camera, FileText, MessageCircle,
-  BarChart3, Shield, Zap, ChevronRight, ChevronLeft,
-  X, Play, CheckCircle, ArrowRight, Info, Star,
-  Upload, Wand2, Bot, Eye, TrendingUp, AlertCircle
-} from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { toast } from 'sonner'
-import { logger } from '@/lib/logger'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
+  Sparkles,
+  Brain,
+  Camera,
+  FileText,
+  MessageCircle,
+  BarChart3,
+  Shield,
+  Zap,
+  ChevronRight,
+  ChevronLeft,
+  X,
+  Play,
+  CheckCircle,
+  ArrowRight,
+  Info,
+  Star,
+  Upload,
+  Wand2,
+  Bot,
+  Eye,
+  TrendingUp,
+  AlertCircle,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { logger } from "@/lib/logger";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 
 interface AITool {
-  id: string
-  title: string
-  description: string
-  icon: React.ComponentType<{ className?: string }>
-  features: string[]
-  useCases: string[]
-  demoPath?: string
-  comingSoon?: boolean
-  premium?: boolean
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ComponentType<{ className?: string }>;
+  features: string[];
+  useCases: string[];
+  demoPath?: string;
+  comingSoon?: boolean;
+  premium?: boolean;
 }
 
 const AI_TOOLS: AITool[] = [
   {
-    id: 'damage-analyzer',
-    title: 'Damage Analyzer',
-    description: 'AI-powered damage assessment from photos with detailed repair cost estimates.',
+    id: "damage-analyzer",
+    title: "Damage Analyzer",
+    description:
+      "AI-powered damage assessment from photos with detailed repair cost estimates.",
     icon: Camera,
     features: [
-      'Photo analysis with damage detection',
-      'Repair cost estimation',
-      'Severity scoring (1-10)',
-      'Detailed damage descriptions'
+      "Photo analysis with damage detection",
+      "Repair cost estimation",
+      "Severity scoring (1-10)",
+      "Detailed damage descriptions",
     ],
     useCases: [
-      'Document storm damage',
-      'Pre-claim assessments',
-      'Maintenance planning',
-      'Insurance evidence'
+      "Document storm damage",
+      "Pre-claim assessments",
+      "Maintenance planning",
+      "Insurance evidence",
     ],
-    demoPath: '/dashboard/ai-tools/damage-analyzer'
+    demoPath: "/dashboard/ai-tools/damage-analyzer",
   },
   {
-    id: 'policy-advisor',
-    title: 'Policy Chat',
-    description: 'Chat with your insurance policies using AI to understand coverage and exclusions.',
+    id: "policy-advisor",
+    title: "Policy Chat",
+    description:
+      "Chat with your insurance policies using AI to understand coverage and exclusions.",
     icon: MessageCircle,
     features: [
-      'Natural language policy queries',
-      'Coverage gap identification',
-      'Multi-document comparison',
-      'Claims guidance'
+      "Natural language policy queries",
+      "Coverage gap identification",
+      "Multi-document comparison",
+      "Claims guidance",
     ],
     useCases: [
-      'Understand policy terms',
-      'Compare coverage options',
-      'Pre-claim preparation',
-      'Renewal decisions'
+      "Understand policy terms",
+      "Compare coverage options",
+      "Pre-claim preparation",
+      "Renewal decisions",
     ],
-    demoPath: '/dashboard/ai-tools/policy-advisor'
+    demoPath: "/dashboard/ai-tools/policy-advisor",
   },
   {
-    id: 'inventory-scanner',
-    title: 'Inventory Scanner',
-    description: 'Automatically catalog your belongings with AI-powered item recognition.',
+    id: "inventory-scanner",
+    title: "Inventory Scanner",
+    description:
+      "Automatically catalog your belongings with AI-powered item recognition.",
     icon: BarChart3,
     features: [
-      'Barcode scanning',
-      'Image-based item identification',
-      'Automatic categorization',
-      'Value estimation'
+      "Barcode scanning",
+      "Image-based item identification",
+      "Automatic categorization",
+      "Value estimation",
     ],
     useCases: [
-      'Home inventory creation',
-      'Insurance documentation',
-      'Moving preparation',
-      'Estate planning'
+      "Home inventory creation",
+      "Insurance documentation",
+      "Moving preparation",
+      "Estate planning",
     ],
-    demoPath: '/dashboard/ai-tools/inventory-scanner'
+    demoPath: "/dashboard/ai-tools/inventory-scanner",
   },
   {
-    id: 'claim-assistant',
-    title: 'Claim Assistant',
-    description: 'Get step-by-step guidance through the insurance claims process.',
+    id: "claim-assistant",
+    title: "Claim Assistant",
+    description:
+      "Get step-by-step guidance through the insurance claims process.",
     icon: Shield,
     features: [
-      'Claim type identification',
-      'Required documentation checklist',
-      'Timeline tracking',
-      'Settlement analysis'
+      "Claim type identification",
+      "Required documentation checklist",
+      "Timeline tracking",
+      "Settlement analysis",
     ],
     useCases: [
-      'First-time claim filing',
-      'Complex claim navigation',
-      'Documentation organization',
-      'Settlement negotiation'
+      "First-time claim filing",
+      "Complex claim navigation",
+      "Documentation organization",
+      "Settlement negotiation",
     ],
-    demoPath: '/dashboard/ai-tools/claim-assistant'
+    demoPath: "/dashboard/ai-tools/claim-assistant",
   },
   {
-    id: 'document-generator',
-    title: 'Document Generator',
-    description: 'Generate professional claim documents and correspondence automatically.',
+    id: "document-generator",
+    title: "Document Generator",
+    description:
+      "Generate professional claim documents and correspondence automatically.",
     icon: FileText,
     features: [
-      'Demand letter generation',
-      'Inventory reports',
-      'Damage summaries',
-      'Professional formatting'
+      "Demand letter generation",
+      "Inventory reports",
+      "Damage summaries",
+      "Professional formatting",
     ],
     useCases: [
-      'Claim documentation',
-      'Insurance correspondence',
-      'Legal preparation',
-      'Professional reporting'
+      "Claim documentation",
+      "Insurance correspondence",
+      "Legal preparation",
+      "Professional reporting",
     ],
-    demoPath: '/dashboard/ai-tools/document-generator'
+    demoPath: "/dashboard/ai-tools/document-generator",
   },
   {
-    id: 'settlement-analyzer',
-    title: 'Settlement Analyzer',
-    description: 'Analyze settlement offers and determine if they\'re fair based on your damages.',
+    id: "settlement-analyzer",
+    title: "Settlement Analyzer",
+    description:
+      "Analyze settlement offers and determine if they're fair based on your damages.",
     icon: TrendingUp,
     features: [
-      'Offer evaluation',
-      'Market comparison',
-      'Fairness scoring',
-      'Negotiation strategies'
+      "Offer evaluation",
+      "Market comparison",
+      "Fairness scoring",
+      "Negotiation strategies",
     ],
     useCases: [
-      'Settlement evaluation',
-      'Negotiation preparation',
-      'Market research',
-      'Decision support'
+      "Settlement evaluation",
+      "Negotiation preparation",
+      "Market research",
+      "Decision support",
     ],
-    demoPath: '/dashboard/ai-tools/settlement-analyzer',
-    premium: true
-  }
-]
+    demoPath: "/dashboard/ai-tools/settlement-analyzer",
+    premium: true,
+  },
+];
 
 interface AIToolsIntroductionProps {
-  onComplete?: () => void
-  onSkip?: () => void
-  selectedTools?: string[]
-  isModal?: boolean
+  onComplete?: () => void;
+  onSkip?: () => void;
+  selectedTools?: string[];
+  isModal?: boolean;
 }
 
 export function AIToolsIntroduction({
   onComplete,
   onSkip,
   selectedTools = [],
-  isModal = true
+  isModal = true,
 }: AIToolsIntroductionProps) {
-  const router = useRouter()
-  const [currentStep, setCurrentStep] = useState(0)
-  const [selectedToolIds, setSelectedToolIds] = useState<string[]>(selectedTools)
-  const [viewMode, setViewMode] = useState<'overview' | 'detail' | 'selection'>('overview')
-  const [currentToolIndex, setCurrentToolIndex] = useState(0)
+  const router = useRouter();
+  const [currentStep, setCurrentStep] = useState(0);
+  const [selectedToolIds, setSelectedToolIds] =
+    useState<string[]>(selectedTools);
+  const [viewMode, setViewMode] = useState<"overview" | "detail" | "selection">(
+    "overview",
+  );
+  const [currentToolIndex, setCurrentToolIndex] = useState(0);
 
-  const totalSteps = 3 // Overview, Tool Details, Selection
-  const progress = ((currentStep + 1) / totalSteps) * 100
-  const currentTool = AI_TOOLS[currentToolIndex]
+  const totalSteps = 3; // Overview, Tool Details, Selection
+  const progress = ((currentStep + 1) / totalSteps) * 100;
+  const currentTool = AI_TOOLS[currentToolIndex];
 
   useEffect(() => {
     // Track introduction start
-    logger.track('ai_tools_introduction_started')
-  }, [])
+    logger.track("ai_tools_introduction_started");
+  }, []);
 
   const handleNext = () => {
     if (currentStep < totalSteps - 1) {
-      setCurrentStep(currentStep + 1)
+      setCurrentStep(currentStep + 1);
 
       // Update view mode based on step
       if (currentStep === 0) {
-        setViewMode('detail')
+        setViewMode("detail");
       } else if (currentStep === 1) {
-        setViewMode('selection')
+        setViewMode("selection");
       }
 
-      logger.track('ai_tools_introduction_step', { step: currentStep + 1 })
+      logger.track("ai_tools_introduction_step", { step: currentStep + 1 });
     } else {
-      handleComplete()
+      handleComplete();
     }
-  }
+  };
 
   const handlePrevious = () => {
     if (currentStep > 0) {
-      setCurrentStep(currentStep - 1)
+      setCurrentStep(currentStep - 1);
 
       // Update view mode based on step
       if (currentStep === 1) {
-        setViewMode('overview')
+        setViewMode("overview");
       } else if (currentStep === 2) {
-        setViewMode('detail')
+        setViewMode("detail");
       }
     }
-  }
+  };
 
   const handleComplete = () => {
-    logger.track('ai_tools_introduction_completed', {
+    logger.track("ai_tools_introduction_completed", {
       selectedTools: selectedToolIds,
-      toolsCount: selectedToolIds.length
-    })
+      toolsCount: selectedToolIds.length,
+    });
 
     // Save selected tools preference
-    localStorage.setItem('selected_ai_tools', JSON.stringify(selectedToolIds))
+    localStorage.setItem("selected_ai_tools", JSON.stringify(selectedToolIds));
 
-    toast.success(`Great! You've selected ${selectedToolIds.length} AI tools to explore.`)
-    onComplete?.()
-  }
+    toast.success(
+      `Great! You've selected ${selectedToolIds.length} AI tools to explore.`,
+    );
+    onComplete?.();
+  };
 
   const handleSkip = () => {
-    logger.track('ai_tools_introduction_skipped', { step: currentStep })
-    onSkip?.()
-  }
+    logger.track("ai_tools_introduction_skipped", { step: currentStep });
+    onSkip?.();
+  };
 
   const handleToolSelect = (toolId: string) => {
-    setSelectedToolIds(prev => {
+    setSelectedToolIds((prev) => {
       if (prev.includes(toolId)) {
-        return prev.filter(id => id !== toolId)
+        return prev.filter((id) => id !== toolId);
       } else {
-        return [...prev, toolId]
+        return [...prev, toolId];
       }
-    })
-  }
+    });
+  };
 
   const handleTryTool = (tool: AITool) => {
     if (tool.demoPath) {
-      logger.track('ai_tool_demo_started', { toolId: tool.id })
-      router.push(tool.demoPath)
+      logger.track("ai_tool_demo_started", { toolId: tool.id });
+      router.push(tool.demoPath);
     } else {
-      toast.info(`${tool.title} demo coming soon!`)
+      toast.info(`${tool.title} demo coming soon!`);
     }
-  }
+  };
 
   const renderOverview = () => (
     <motion.div
@@ -264,16 +293,19 @@ export function AIToolsIntroduction({
         </div>
         <h2 className="text-3xl font-bold text-white">AI-Powered Tools</h2>
         <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-          ClaimGuardian's AI tools help you document damage, understand policies,
-          and navigate insurance claims with confidence.
+          ClaimGuardian's AI tools help you document damage, understand
+          policies, and navigate insurance claims with confidence.
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
         {AI_TOOLS.map((tool, index) => {
-          const Icon = tool.icon
+          const Icon = tool.icon;
           return (
-            <Card key={tool.id} className="bg-gray-800/50 border-gray-700 hover:bg-gray-800/70 transition-all">
+            <Card
+              key={tool.id}
+              className="bg-gray-800/50 border-gray-700 hover:bg-gray-800/70 transition-all"
+            >
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="p-2 bg-blue-600/20 rounded-lg">
@@ -292,7 +324,9 @@ export function AIToolsIntroduction({
                     )}
                   </div>
                 </div>
-                <CardTitle className="text-lg text-white">{tool.title}</CardTitle>
+                <CardTitle className="text-lg text-white">
+                  {tool.title}
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-gray-400 mb-3">{tool.description}</p>
@@ -304,9 +338,9 @@ export function AIToolsIntroduction({
                     size="sm"
                     variant="ghost"
                     onClick={() => {
-                      setCurrentToolIndex(index)
-                      setCurrentStep(1)
-                      setViewMode('detail')
+                      setCurrentToolIndex(index);
+                      setCurrentStep(1);
+                      setViewMode("detail");
                     }}
                     className="text-blue-400 hover:text-blue-300 hover:bg-blue-600/10"
                   >
@@ -316,7 +350,7 @@ export function AIToolsIntroduction({
                 </div>
               </CardContent>
             </Card>
-          )
+          );
         })}
       </div>
 
@@ -326,10 +360,13 @@ export function AIToolsIntroduction({
             <Sparkles className="w-6 h-6 text-blue-400" />
           </div>
           <div className="text-left">
-            <h3 className="text-lg font-semibold text-white mb-2">Powered by Advanced AI</h3>
+            <h3 className="text-lg font-semibold text-white mb-2">
+              Powered by Advanced AI
+            </h3>
             <p className="text-sm text-gray-300 mb-3">
-              Our AI tools use state-of-the-art machine learning models including
-              OpenAI GPT-4 and Google Gemini to provide accurate, helpful insights.
+              Our AI tools use state-of-the-art machine learning models
+              including OpenAI GPT-4 and Google Gemini to provide accurate,
+              helpful insights.
             </p>
             <div className="flex items-center gap-4 text-xs text-gray-400">
               <span className="flex items-center gap-1">
@@ -349,11 +386,11 @@ export function AIToolsIntroduction({
         </div>
       </div>
     </motion.div>
-  )
+  );
 
   const renderToolDetail = () => {
-    if (!currentTool) return null
-    const Icon = currentTool.icon
+    if (!currentTool) return null;
+    const Icon = currentTool.icon;
 
     return (
       <motion.div
@@ -369,14 +406,18 @@ export function AIToolsIntroduction({
             <Icon className="w-12 h-12 text-blue-400" />
           </div>
           <div className="flex items-center justify-center gap-2">
-            <h2 className="text-2xl font-bold text-white">{currentTool.title}</h2>
+            <h2 className="text-2xl font-bold text-white">
+              {currentTool.title}
+            </h2>
             {currentTool.premium && (
               <Badge className="bg-yellow-600/20 text-yellow-400 border-yellow-600/30">
                 Premium
               </Badge>
             )}
           </div>
-          <p className="text-gray-300 max-w-2xl mx-auto">{currentTool.description}</p>
+          <p className="text-gray-300 max-w-2xl mx-auto">
+            {currentTool.description}
+          </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -446,7 +487,9 @@ export function AIToolsIntroduction({
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setCurrentToolIndex(Math.max(0, currentToolIndex - 1))}
+              onClick={() =>
+                setCurrentToolIndex(Math.max(0, currentToolIndex - 1))
+              }
               disabled={currentToolIndex === 0}
               className="text-gray-400 hover:text-white"
             >
@@ -460,7 +503,9 @@ export function AIToolsIntroduction({
                   key={index}
                   onClick={() => setCurrentToolIndex(index)}
                   className={`w-2 h-2 rounded-full transition-all ${
-                    index === currentToolIndex ? 'bg-blue-400 w-6' : 'bg-gray-600'
+                    index === currentToolIndex
+                      ? "bg-blue-400 w-6"
+                      : "bg-gray-600"
                   }`}
                 />
               ))}
@@ -469,7 +514,11 @@ export function AIToolsIntroduction({
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setCurrentToolIndex(Math.min(AI_TOOLS.length - 1, currentToolIndex + 1))}
+              onClick={() =>
+                setCurrentToolIndex(
+                  Math.min(AI_TOOLS.length - 1, currentToolIndex + 1),
+                )
+              }
               disabled={currentToolIndex === AI_TOOLS.length - 1}
               className="text-gray-400 hover:text-white"
             >
@@ -479,8 +528,8 @@ export function AIToolsIntroduction({
           </div>
         </div>
       </motion.div>
-    )
-  }
+    );
+  };
 
   const renderSelection = () => (
     <motion.div
@@ -495,33 +544,38 @@ export function AIToolsIntroduction({
         </div>
         <h2 className="text-2xl font-bold text-white">Choose Your AI Tools</h2>
         <p className="text-gray-300 max-w-2xl mx-auto">
-          Select the AI tools you'd like to explore first. You can always access all tools later.
+          Select the AI tools you'd like to explore first. You can always access
+          all tools later.
         </p>
       </div>
 
       <div className="space-y-3">
         {AI_TOOLS.map((tool) => {
-          const Icon = tool.icon
-          const isSelected = selectedToolIds.includes(tool.id)
+          const Icon = tool.icon;
+          const isSelected = selectedToolIds.includes(tool.id);
 
           return (
             <Card
               key={tool.id}
               className={`cursor-pointer transition-all ${
                 isSelected
-                  ? 'bg-blue-600/20 border-blue-500 shadow-lg'
-                  : 'bg-gray-800/50 border-gray-700 hover:bg-gray-800/70'
+                  ? "bg-blue-600/20 border-blue-500 shadow-lg"
+                  : "bg-gray-800/50 border-gray-700 hover:bg-gray-800/70"
               }`}
               onClick={() => handleToolSelect(tool.id)}
             >
               <CardContent className="p-4">
                 <div className="flex items-center gap-4">
-                  <div className={`p-3 rounded-lg ${
-                    isSelected ? 'bg-blue-600/30' : 'bg-gray-700/50'
-                  }`}>
-                    <Icon className={`w-6 h-6 ${
-                      isSelected ? 'text-blue-400' : 'text-gray-400'
-                    }`} />
+                  <div
+                    className={`p-3 rounded-lg ${
+                      isSelected ? "bg-blue-600/30" : "bg-gray-700/50"
+                    }`}
+                  >
+                    <Icon
+                      className={`w-6 h-6 ${
+                        isSelected ? "text-blue-400" : "text-gray-400"
+                      }`}
+                    />
                   </div>
 
                   <div className="flex-1">
@@ -541,17 +595,21 @@ export function AIToolsIntroduction({
                     <p className="text-sm text-gray-400">{tool.description}</p>
                   </div>
 
-                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                    isSelected
-                      ? 'border-blue-500 bg-blue-500'
-                      : 'border-gray-500'
-                  }`}>
-                    {isSelected && <CheckCircle className="w-4 h-4 text-white" />}
+                  <div
+                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                      isSelected
+                        ? "border-blue-500 bg-blue-500"
+                        : "border-gray-500"
+                    }`}
+                  >
+                    {isSelected && (
+                      <CheckCircle className="w-4 h-4 text-white" />
+                    )}
                   </div>
                 </div>
               </CardContent>
             </Card>
-          )
+          );
         })}
       </div>
 
@@ -561,30 +619,32 @@ export function AIToolsIntroduction({
             <Info className="w-5 h-5 text-blue-400" />
             <div>
               <p className="text-sm text-blue-300 font-medium">
-                {selectedToolIds.length} tool{selectedToolIds.length > 1 ? 's' : ''} selected
+                {selectedToolIds.length} tool
+                {selectedToolIds.length > 1 ? "s" : ""} selected
               </p>
               <p className="text-xs text-gray-400 mt-1">
-                These tools will be highlighted in your dashboard for easy access.
+                These tools will be highlighted in your dashboard for easy
+                access.
               </p>
             </div>
           </div>
         </div>
       )}
     </motion.div>
-  )
+  );
 
   const renderStepContent = () => {
     switch (viewMode) {
-      case 'overview':
-        return renderOverview()
-      case 'detail':
-        return renderToolDetail()
-      case 'selection':
-        return renderSelection()
+      case "overview":
+        return renderOverview();
+      case "detail":
+        return renderToolDetail();
+      case "selection":
+        return renderSelection();
       default:
-        return renderOverview()
+        return renderOverview();
     }
-  }
+  };
 
   const content = (
     <div className="w-full max-w-5xl mx-auto">
@@ -597,15 +657,15 @@ export function AIToolsIntroduction({
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm text-gray-400">
               <span>AI Tools Introduction</span>
-              <span>Step {currentStep + 1} of {totalSteps}</span>
+              <span>
+                Step {currentStep + 1} of {totalSteps}
+              </span>
             </div>
             <Progress value={progress} className="h-2" />
           </div>
 
           {/* Content */}
-          <div className="min-h-[500px]">
-            {renderStepContent()}
-          </div>
+          <div className="min-h-[500px]">{renderStepContent()}</div>
 
           {/* Navigation */}
           <div className="flex items-center justify-between pt-6 border-t border-gray-700">
@@ -614,7 +674,9 @@ export function AIToolsIntroduction({
               onClick={currentStep === 0 ? handleSkip : handlePrevious}
               className="text-gray-400 hover:text-white"
             >
-              {currentStep === 0 ? 'Skip Introduction' : (
+              {currentStep === 0 ? (
+                "Skip Introduction"
+              ) : (
                 <>
                   <ChevronLeft className="w-4 h-4 mr-2" />
                   Previous
@@ -649,12 +711,15 @@ export function AIToolsIntroduction({
         </motion.div>
       </AnimatePresence>
     </div>
-  )
+  );
 
   if (isModal) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={handleSkip} />
+        <div
+          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          onClick={handleSkip}
+        />
         <div className="relative bg-gradient-to-b from-slate-800 to-slate-900 rounded-2xl shadow-2xl p-6 max-w-5xl w-full max-h-[90vh] overflow-y-auto">
           <button
             onClick={handleSkip}
@@ -665,8 +730,8 @@ export function AIToolsIntroduction({
           {content}
         </div>
       </div>
-    )
+    );
   }
 
-  return content
+  return content;
 }

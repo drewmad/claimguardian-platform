@@ -1,11 +1,13 @@
 # Redis Setup for Production Caching
 
 ## Overview
+
 ClaimGuardian uses Redis for caching AI responses and improving performance. The caching infrastructure is already implemented in the `@claimguardian/ai-services` package.
 
 ## Production Setup Options
 
 ### Option 1: Upstash Redis (Recommended for Vercel)
+
 Upstash provides a serverless Redis service that works well with Vercel deployments.
 
 1. **Sign up at [Upstash](https://upstash.com/)**
@@ -18,6 +20,7 @@ Upstash provides a serverless Redis service that works well with Vercel deployme
    - Format: `redis://default:YOUR_PASSWORD@YOUR_ENDPOINT.upstash.io:6379`
 
 ### Option 2: Redis Cloud
+
 Redis Cloud provides managed Redis hosting with good performance.
 
 1. **Sign up at [Redis Cloud](https://redis.com/cloud/)**
@@ -25,6 +28,7 @@ Redis Cloud provides managed Redis hosting with good performance.
 3. **Get your connection string**
 
 ### Option 3: Self-hosted Redis
+
 For more control, you can host Redis on your own infrastructure.
 
 ## Environment Variable Configuration
@@ -57,6 +61,7 @@ The cache TTL (Time To Live) is automatically configured per feature:
 ## Monitoring Cache Performance
 
 Cache statistics are tracked automatically:
+
 - Hit rate
 - Cache misses
 - Total cached responses

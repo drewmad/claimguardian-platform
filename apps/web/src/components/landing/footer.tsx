@@ -8,12 +8,12 @@
  * @tags ["landing", "footer", "navigation"]
  * @status stable
  */
-'use client'
+"use client";
 
-import { Mail, X, FileText, Shield, Eye, LucideIcon } from 'lucide-react'
-import { useState } from 'react'
+import { Mail, X, FileText, Shield, Eye, LucideIcon } from "lucide-react";
+import { useState } from "react";
 
-import { COLORS } from '@/lib/constants'
+import { COLORS } from "@/lib/constants";
 
 // Legal Modal Component
 const LegalModal = ({
@@ -21,15 +21,15 @@ const LegalModal = ({
   onClose,
   title,
   content,
-  icon: Icon
+  icon: Icon,
 }: {
-  isOpen: boolean
-  onClose: () => void
-  title: string
-  content: string
-  icon: LucideIcon
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  content: string;
+  icon: LucideIcon;
 }) => {
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -63,8 +63,8 @@ const LegalModal = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 // Sample legal content
 const LEGAL_CONTENT = {
@@ -256,126 +256,239 @@ You can:
 • Opt-out of specific AI features
 • Export AI-generated reports and data
 
-Contact: ai-ethics@claimguardianai.com`
-}
+Contact: ai-ethics@claimguardianai.com`,
+};
 
 export function Footer() {
-  const [activeModal, setActiveModal] = useState<string | null>(null)
+  const [activeModal, setActiveModal] = useState<string | null>(null);
 
-  const openModal = (modalType: string) => setActiveModal(modalType)
-  const closeModal = () => setActiveModal(null)
+  const openModal = (modalType: string) => setActiveModal(modalType);
+  const closeModal = () => setActiveModal(null);
 
   return (
     <>
-      <footer className="px-6 md:px-12 py-12 border-t" style={{ borderColor: COLORS.glass.border, backgroundColor: 'rgba(13, 17, 23, 0.5)' }}>
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-6 gap-8">
-        <div className="col-span-1 md:col-span-2">
-          <h3 className="font-slab font-bold text-xl mb-4 text-white">ClaimGuardian</h3>
-          <p className="text-gray-300 pr-4 mb-4">
-            Your AI-powered property intelligence network for comprehensive asset protection.
-          </p>
-          <div className="space-y-2 text-sm text-gray-300">
-            <p className="flex items-center gap-2">
-              <Mail size={16} />
-              <a href="mailto:support@claimguardian.com" className="hover:text-white">support@claimguardian.com</a>
+      <footer
+        className="px-6 md:px-12 py-12 border-t"
+        style={{
+          borderColor: COLORS.glass.border,
+          backgroundColor: "rgba(13, 17, 23, 0.5)",
+        }}
+      >
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-6 gap-8">
+          <div className="col-span-1 md:col-span-2">
+            <h3 className="font-slab font-bold text-xl mb-4 text-white">
+              ClaimGuardian
+            </h3>
+            <p className="text-gray-300 pr-4 mb-4">
+              Your AI-powered property intelligence network for comprehensive
+              asset protection.
             </p>
-            <p className="text-xs text-gray-400 mt-4">
-              Florida-focused property intelligence
-            </p>
+            <div className="space-y-2 text-sm text-gray-300">
+              <p className="flex items-center gap-2">
+                <Mail size={16} />
+                <a
+                  href="mailto:support@claimguardian.com"
+                  className="hover:text-white"
+                >
+                  support@claimguardian.com
+                </a>
+              </p>
+              <p className="text-xs text-gray-400 mt-4">
+                Florida-focused property intelligence
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <h4 className="font-bold mb-4 text-white">AI Tools</h4>
+            <ul className="space-y-2 text-sm text-gray-300">
+              <li>
+                <a
+                  href="/ai-tools/damage-analyzer"
+                  className="hover:text-green-400 transition-colors"
+                >
+                  Damage Analyzer
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/ai-tools/claim-assistant"
+                  className="hover:text-green-400 transition-colors"
+                >
+                  Claim Assistant
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/ai-tools/settlement-analyzer"
+                  className="hover:text-green-400 transition-colors"
+                >
+                  Settlement Analyzer
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/ai-tools/evidence-organizer"
+                  className="hover:text-green-400 transition-colors"
+                >
+                  Evidence Organizer
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-bold mb-4 text-white">Quick Start</h4>
+            <ul className="space-y-2 text-sm text-gray-300">
+              <li>
+                <a
+                  href="/auth/signup"
+                  className="hover:text-blue-400 transition-colors"
+                >
+                  Join Community
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#how-it-works"
+                  className="hover:text-blue-400 transition-colors"
+                >
+                  How It Works
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#pricing"
+                  className="hover:text-blue-400 transition-colors"
+                >
+                  Pricing
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/hurricane-prep"
+                  className="hover:text-blue-400 transition-colors"
+                >
+                  Hurricane Prep
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-bold mb-4 text-white">Resources</h4>
+            <ul className="space-y-2 text-sm text-gray-300">
+              <li>
+                <a
+                  href="#faq"
+                  className="hover:text-purple-400 transition-colors"
+                >
+                  FAQ
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/blog"
+                  className="hover:text-purple-400 transition-colors"
+                >
+                  Florida Claims Blog
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/guides"
+                  className="hover:text-purple-400 transition-colors"
+                >
+                  Property Guides
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/contact"
+                  className="hover:text-purple-400 transition-colors"
+                >
+                  Contact Support
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-bold mb-4 text-white">Legal</h4>
+            <ul className="space-y-2 text-sm text-gray-300">
+              <li>
+                <button
+                  onClick={() => openModal("privacy")}
+                  className="hover:text-white transition-colors text-left"
+                >
+                  Privacy Policy
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => openModal("terms")}
+                  className="hover:text-white transition-colors text-left"
+                >
+                  Terms of Service
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => openModal("aiUse")}
+                  className="hover:text-white transition-colors text-left"
+                >
+                  AI Use Agreement
+                </button>
+              </li>
+              <li>
+                <a
+                  href="/legal/compliance"
+                  className="hover:text-white transition-colors"
+                >
+                  Florida Compliance
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
-
-        <div>
-          <h4 className="font-bold mb-4 text-white">AI Tools</h4>
-          <ul className="space-y-2 text-sm text-gray-300">
-            <li><a href="/ai-tools/damage-analyzer" className="hover:text-green-400 transition-colors">Damage Analyzer</a></li>
-            <li><a href="/ai-tools/claim-assistant" className="hover:text-green-400 transition-colors">Claim Assistant</a></li>
-            <li><a href="/ai-tools/settlement-analyzer" className="hover:text-green-400 transition-colors">Settlement Analyzer</a></li>
-            <li><a href="/ai-tools/evidence-organizer" className="hover:text-green-400 transition-colors">Evidence Organizer</a></li>
-          </ul>
+        <div className="mt-12 border-t border-gray-700 pt-6 flex justify-between items-center text-sm text-gray-300">
+          <div className="flex items-center gap-4">
+            <p>&copy; 2025 ClaimGuardian. All rights reserved.</p>
+            <a
+              href="https://x.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white"
+              aria-label="Visit our X page"
+            >
+              <X size={18} />
+            </a>
+          </div>
         </div>
+      </footer>
 
-        <div>
-          <h4 className="font-bold mb-4 text-white">Quick Start</h4>
-          <ul className="space-y-2 text-sm text-gray-300">
-            <li><a href="/auth/signup" className="hover:text-blue-400 transition-colors">Join Community</a></li>
-            <li><a href="#how-it-works" className="hover:text-blue-400 transition-colors">How It Works</a></li>
-            <li><a href="#pricing" className="hover:text-blue-400 transition-colors">Pricing</a></li>
-            <li><a href="/hurricane-prep" className="hover:text-blue-400 transition-colors">Hurricane Prep</a></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 className="font-bold mb-4 text-white">Resources</h4>
-          <ul className="space-y-2 text-sm text-gray-300">
-            <li><a href="#faq" className="hover:text-purple-400 transition-colors">FAQ</a></li>
-            <li><a href="/blog" className="hover:text-purple-400 transition-colors">Florida Claims Blog</a></li>
-            <li><a href="/guides" className="hover:text-purple-400 transition-colors">Property Guides</a></li>
-            <li><a href="/contact" className="hover:text-purple-400 transition-colors">Contact Support</a></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 className="font-bold mb-4 text-white">Legal</h4>
-          <ul className="space-y-2 text-sm text-gray-300">
-            <li>
-              <button
-                onClick={() => openModal('privacy')}
-                className="hover:text-white transition-colors text-left"
-              >
-                Privacy Policy
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => openModal('terms')}
-                className="hover:text-white transition-colors text-left"
-              >
-                Terms of Service
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => openModal('aiUse')}
-                className="hover:text-white transition-colors text-left"
-              >
-                AI Use Agreement
-              </button>
-            </li>
-            <li><a href="/legal/compliance" className="hover:text-white transition-colors">Florida Compliance</a></li>
-          </ul>
-        </div>
-      </div>
-      <div className="mt-12 border-t border-gray-700 pt-6 flex justify-between items-center text-sm text-gray-300">
-        <div className="flex items-center gap-4">
-          <p>&copy; 2025 ClaimGuardian. All rights reserved.</p>
-          <a href="https://x.com" target="_blank" rel="noopener noreferrer" className="hover:text-white" aria-label="Visit our X page"><X size={18}/></a>
-        </div>
-      </div>
-    </footer>
-
-    {/* Legal Modals */}
-    <LegalModal
-      isOpen={activeModal === 'privacy'}
-      onClose={closeModal}
-      title="Privacy Policy"
-      content={LEGAL_CONTENT.privacy}
-      icon={Shield}
-    />
-    <LegalModal
-      isOpen={activeModal === 'terms'}
-      onClose={closeModal}
-      title="Terms of Service"
-      content={LEGAL_CONTENT.terms}
-      icon={FileText}
-    />
-    <LegalModal
-      isOpen={activeModal === 'aiUse'}
-      onClose={closeModal}
-      title="AI Use Agreement"
-      content={LEGAL_CONTENT.aiUse}
-      icon={Eye}
-    />
+      {/* Legal Modals */}
+      <LegalModal
+        isOpen={activeModal === "privacy"}
+        onClose={closeModal}
+        title="Privacy Policy"
+        content={LEGAL_CONTENT.privacy}
+        icon={Shield}
+      />
+      <LegalModal
+        isOpen={activeModal === "terms"}
+        onClose={closeModal}
+        title="Terms of Service"
+        content={LEGAL_CONTENT.terms}
+        icon={FileText}
+      />
+      <LegalModal
+        isOpen={activeModal === "aiUse"}
+        onClose={closeModal}
+        title="AI Use Agreement"
+        content={LEGAL_CONTENT.aiUse}
+        icon={Eye}
+      />
     </>
-  )
+  );
 }

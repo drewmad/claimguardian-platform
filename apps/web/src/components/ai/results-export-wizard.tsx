@@ -8,10 +8,10 @@
  * @tags ["ai", "results", "export", "wizard", "pdf", "reports"]
  * @status stable
  */
-'use client'
+"use client";
 
-import { useState, useMemo, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useMemo, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Download,
   FileText,
@@ -37,251 +37,277 @@ import {
   Shield,
   Clock,
   Target,
-  Award
-} from 'lucide-react'
+  Award,
+} from "lucide-react";
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Progress } from '@/components/ui/progress'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Label } from '@/components/ui/label'
-import { AIResult } from './results-presentation-enhanced'
-import { useToast } from '@/components/notifications/toast-system'
-import { cn } from '@/lib/utils'
-import { logger } from '@/lib/logger'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { AIResult } from "./results-presentation-enhanced";
+import { useToast } from "@/components/notifications/toast-system";
+import { cn } from "@/lib/utils";
+import { logger } from "@/lib/logger";
 
-export type ExportFormat = 'pdf-report' | 'pdf-summary' | 'csv' | 'json' | 'excel' | 'html'
-export type ExportTemplate = 'professional' | 'detailed' | 'executive' | 'technical' | 'custom'
+export type ExportFormat =
+  | "pdf-report"
+  | "pdf-summary"
+  | "csv"
+  | "json"
+  | "excel"
+  | "html";
+export type ExportTemplate =
+  | "professional"
+  | "detailed"
+  | "executive"
+  | "technical"
+  | "custom";
 
 interface ExportSettings {
-  format: ExportFormat
-  template: ExportTemplate
-  includeImages: boolean
-  includeMetadata: boolean
-  includeRecommendations: boolean
-  includeComparisons: boolean
-  customBranding: boolean
-  watermark: boolean
-  confidential: boolean
+  format: ExportFormat;
+  template: ExportTemplate;
+  includeImages: boolean;
+  includeMetadata: boolean;
+  includeRecommendations: boolean;
+  includeComparisons: boolean;
+  customBranding: boolean;
+  watermark: boolean;
+  confidential: boolean;
 }
 
 interface ExportMetadata {
-  title: string
-  author: string
-  company: string
-  description: string
-  tags: string[]
+  title: string;
+  author: string;
+  company: string;
+  description: string;
+  tags: string[];
   dateRange: {
-    start: Date | null
-    end: Date | null
-  }
+    start: Date | null;
+    end: Date | null;
+  };
 }
 
 interface ResultsExportWizardProps {
-  results: AIResult[]
-  onExport?: (settings: ExportSettings, metadata: ExportMetadata, results: AIResult[]) => void
-  onCancel?: () => void
-  className?: string
+  results: AIResult[];
+  onExport?: (
+    settings: ExportSettings,
+    metadata: ExportMetadata,
+    results: AIResult[],
+  ) => void;
+  onCancel?: () => void;
+  className?: string;
 }
 
 const EXPORT_FORMATS = [
   {
-    id: 'pdf-report' as ExportFormat,
-    name: 'PDF Report',
-    description: 'Comprehensive PDF report with charts and analysis',
+    id: "pdf-report" as ExportFormat,
+    name: "PDF Report",
+    description: "Comprehensive PDF report with charts and analysis",
     icon: FileText,
-    features: ['Professional layout', 'Charts & graphs', 'Executive summary']
+    features: ["Professional layout", "Charts & graphs", "Executive summary"],
   },
   {
-    id: 'pdf-summary' as ExportFormat,
-    name: 'PDF Summary',
-    description: 'Condensed PDF with key insights only',
+    id: "pdf-summary" as ExportFormat,
+    name: "PDF Summary",
+    description: "Condensed PDF with key insights only",
     icon: FileText,
-    features: ['Key findings', 'Quick overview', 'Compact format']
+    features: ["Key findings", "Quick overview", "Compact format"],
   },
   {
-    id: 'csv' as ExportFormat,
-    name: 'CSV Data',
-    description: 'Raw data in CSV format for analysis',
+    id: "csv" as ExportFormat,
+    name: "CSV Data",
+    description: "Raw data in CSV format for analysis",
     icon: FileSpreadsheet,
-    features: ['Raw data', 'Import to Excel', 'Data analysis']
+    features: ["Raw data", "Import to Excel", "Data analysis"],
   },
   {
-    id: 'json' as ExportFormat,
-    name: 'JSON Export',
-    description: 'Structured data in JSON format',
+    id: "json" as ExportFormat,
+    name: "JSON Export",
+    description: "Structured data in JSON format",
     icon: FileJson,
-    features: ['Full data structure', 'API compatible', 'Developer friendly']
+    features: ["Full data structure", "API compatible", "Developer friendly"],
   },
   {
-    id: 'excel' as ExportFormat,
-    name: 'Excel Workbook',
-    description: 'Excel file with multiple worksheets',
+    id: "excel" as ExportFormat,
+    name: "Excel Workbook",
+    description: "Excel file with multiple worksheets",
     icon: Table,
-    features: ['Multiple sheets', 'Charts included', 'Formulas & analysis']
+    features: ["Multiple sheets", "Charts included", "Formulas & analysis"],
   },
   {
-    id: 'html' as ExportFormat,
-    name: 'Web Report',
-    description: 'Interactive HTML report for web viewing',
+    id: "html" as ExportFormat,
+    name: "Web Report",
+    description: "Interactive HTML report for web viewing",
     icon: Globe,
-    features: ['Interactive charts', 'Web sharing', 'Mobile friendly']
-  }
-]
+    features: ["Interactive charts", "Web sharing", "Mobile friendly"],
+  },
+];
 
 const TEMPLATES = [
   {
-    id: 'professional' as ExportTemplate,
-    name: 'Professional',
-    description: 'Clean, business-focused layout with emphasis on key insights',
-    preview: '/templates/professional.jpg'
+    id: "professional" as ExportTemplate,
+    name: "Professional",
+    description: "Clean, business-focused layout with emphasis on key insights",
+    preview: "/templates/professional.jpg",
   },
   {
-    id: 'detailed' as ExportTemplate,
-    name: 'Detailed Analysis',
-    description: 'Comprehensive report with full technical details and metadata',
-    preview: '/templates/detailed.jpg'
+    id: "detailed" as ExportTemplate,
+    name: "Detailed Analysis",
+    description:
+      "Comprehensive report with full technical details and metadata",
+    preview: "/templates/detailed.jpg",
   },
   {
-    id: 'executive' as ExportTemplate,
-    name: 'Executive Summary',
-    description: 'High-level overview optimized for leadership review',
-    preview: '/templates/executive.jpg'
+    id: "executive" as ExportTemplate,
+    name: "Executive Summary",
+    description: "High-level overview optimized for leadership review",
+    preview: "/templates/executive.jpg",
   },
   {
-    id: 'technical' as ExportTemplate,
-    name: 'Technical Report',
-    description: 'In-depth technical analysis with processing details',
-    preview: '/templates/technical.jpg'
-  }
-]
+    id: "technical" as ExportTemplate,
+    name: "Technical Report",
+    description: "In-depth technical analysis with processing details",
+    preview: "/templates/technical.jpg",
+  },
+];
 
 export function ResultsExportWizard({
   results,
   onExport,
   onCancel,
-  className
+  className,
 }: ResultsExportWizardProps) {
-  const [currentStep, setCurrentStep] = useState(0)
-  const [selectedResults, setSelectedResults] = useState<string[]>(results.map(r => r.id))
+  const [currentStep, setCurrentStep] = useState(0);
+  const [selectedResults, setSelectedResults] = useState<string[]>(
+    results.map((r) => r.id),
+  );
   const [exportSettings, setExportSettings] = useState<ExportSettings>({
-    format: 'pdf-report',
-    template: 'professional',
+    format: "pdf-report",
+    template: "professional",
     includeImages: true,
     includeMetadata: true,
     includeRecommendations: true,
     includeComparisons: false,
     customBranding: false,
     watermark: false,
-    confidential: false
-  })
+    confidential: false,
+  });
   const [metadata, setMetadata] = useState<ExportMetadata>({
-    title: 'AI Analysis Results Report',
-    author: '',
-    company: '',
-    description: '',
+    title: "AI Analysis Results Report",
+    author: "",
+    company: "",
+    description: "",
     tags: [],
-    dateRange: { start: null, end: null }
-  })
-  const [isExporting, setIsExporting] = useState(false)
-  const [exportProgress, setExportProgress] = useState(0)
+    dateRange: { start: null, end: null },
+  });
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportProgress, setExportProgress] = useState(0);
 
-  const { success, error, info } = useToast()
+  const { success, error, info } = useToast();
 
   const steps = [
-    'Select Results',
-    'Choose Format',
-    'Configure Settings',
-    'Add Metadata',
-    'Preview & Export'
-  ]
+    "Select Results",
+    "Choose Format",
+    "Configure Settings",
+    "Add Metadata",
+    "Preview & Export",
+  ];
 
   // Filtered results based on selection
   const finalResults = useMemo(() => {
-    return results.filter(result => selectedResults.includes(result.id))
-  }, [results, selectedResults])
+    return results.filter((result) => selectedResults.includes(result.id));
+  }, [results, selectedResults]);
 
   // Update export settings
   const updateSettings = useCallback((updates: Partial<ExportSettings>) => {
-    setExportSettings(prev => ({ ...prev, ...updates }))
-  }, [])
+    setExportSettings((prev) => ({ ...prev, ...updates }));
+  }, []);
 
   // Update metadata
   const updateMetadata = useCallback((updates: Partial<ExportMetadata>) => {
-    setMetadata(prev => ({ ...prev, ...updates }))
-  }, [])
+    setMetadata((prev) => ({ ...prev, ...updates }));
+  }, []);
 
   // Toggle result selection
   const toggleResultSelection = useCallback((resultId: string) => {
-    setSelectedResults(prev =>
+    setSelectedResults((prev) =>
       prev.includes(resultId)
-        ? prev.filter(id => id !== resultId)
-        : [...prev, resultId]
-    )
-  }, [])
+        ? prev.filter((id) => id !== resultId)
+        : [...prev, resultId],
+    );
+  }, []);
 
   // Handle export
   const handleExport = useCallback(async () => {
     if (finalResults.length === 0) {
-      error('No results selected', {
-        subtitle: 'Please select at least one result to export'
-      })
-      return
+      error("No results selected", {
+        subtitle: "Please select at least one result to export",
+      });
+      return;
     }
 
-    setIsExporting(true)
-    setExportProgress(0)
+    setIsExporting(true);
+    setExportProgress(0);
 
     try {
       // Simulate export progress
       for (let progress = 0; progress <= 100; progress += 10) {
-        await new Promise(resolve => setTimeout(resolve, 200))
-        setExportProgress(progress)
+        await new Promise((resolve) => setTimeout(resolve, 200));
+        setExportProgress(progress);
       }
 
-      onExport?.(exportSettings, metadata, finalResults)
+      onExport?.(exportSettings, metadata, finalResults);
 
-      success('Export completed successfully!', {
-        subtitle: `${finalResults.length} results exported as ${exportSettings.format.toUpperCase()}`
-      })
+      success("Export completed successfully!", {
+        subtitle: `${finalResults.length} results exported as ${exportSettings.format.toUpperCase()}`,
+      });
 
-      logger.track('results_exported', {
+      logger.track("results_exported", {
         format: exportSettings.format,
         template: exportSettings.template,
         resultCount: finalResults.length,
         includeImages: exportSettings.includeImages,
-        includeMetadata: exportSettings.includeMetadata
-      })
-
+        includeMetadata: exportSettings.includeMetadata,
+      });
     } catch (err) {
-      error('Export failed', {
-        subtitle: 'Please try again or contact support'
-      })
-      logger.error('Export failed', { settings: exportSettings }, err as Error)
+      error("Export failed", {
+        subtitle: "Please try again or contact support",
+      });
+      logger.error("Export failed", { settings: exportSettings }, err as Error);
     } finally {
-      setIsExporting(false)
-      setExportProgress(0)
+      setIsExporting(false);
+      setExportProgress(0);
     }
-  }, [finalResults, exportSettings, metadata, onExport, success, error])
+  }, [finalResults, exportSettings, metadata, onExport, success, error]);
 
   // Navigation
-  const goToStep = useCallback((step: number) => {
-    setCurrentStep(Math.max(0, Math.min(steps.length - 1, step)))
-  }, [steps.length])
+  const goToStep = useCallback(
+    (step: number) => {
+      setCurrentStep(Math.max(0, Math.min(steps.length - 1, step)));
+    },
+    [steps.length],
+  );
 
   const canProceed = useMemo(() => {
     switch (currentStep) {
-      case 0: return selectedResults.length > 0
-      case 1: return true
-      case 2: return true
-      case 3: return metadata.title.trim().length > 0
-      case 4: return true
-      default: return false
+      case 0:
+        return selectedResults.length > 0;
+      case 1:
+        return true;
+      case 2:
+        return true;
+      case 3:
+        return metadata.title.trim().length > 0;
+      case 4:
+        return true;
+      default:
+        return false;
     }
-  }, [currentStep, selectedResults.length, metadata.title])
+  }, [currentStep, selectedResults.length, metadata.title]);
 
   return (
     <div className={cn("max-w-4xl mx-auto p-6", className)}>
@@ -294,7 +320,8 @@ export function ResultsExportWizard({
                 Export Results
               </CardTitle>
               <p className="text-gray-600 dark:text-gray-400 mt-1">
-                Export your AI analysis results in multiple formats with customization options
+                Export your AI analysis results in multiple formats with
+                customization options
               </p>
             </div>
 
@@ -308,8 +335,8 @@ export function ResultsExportWizard({
           {/* Progress Steps */}
           <div className="flex items-center justify-between mt-6">
             {steps.map((step, index) => {
-              const isActive = currentStep === index
-              const isCompleted = currentStep > index
+              const isActive = currentStep === index;
+              const isCompleted = currentStep > index;
 
               return (
                 <div key={step} className="flex items-center">
@@ -319,28 +346,36 @@ export function ResultsExportWizard({
                       isActive
                         ? "bg-blue-500 text-white"
                         : isCompleted
-                        ? "bg-green-500 text-white"
-                        : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+                          ? "bg-green-500 text-white"
+                          : "bg-gray-200 text-gray-600 hover:bg-gray-300",
                     )}
                     onClick={() => goToStep(index)}
                   >
-                    {isCompleted ? <CheckCircle className="w-4 h-4" /> : index + 1}
+                    {isCompleted ? (
+                      <CheckCircle className="w-4 h-4" />
+                    ) : (
+                      index + 1
+                    )}
                   </div>
-                  <span className={cn(
-                    "ml-2 text-sm hidden sm:inline",
-                    isActive ? "font-medium text-blue-600" : "text-gray-500"
-                  )}>
+                  <span
+                    className={cn(
+                      "ml-2 text-sm hidden sm:inline",
+                      isActive ? "font-medium text-blue-600" : "text-gray-500",
+                    )}
+                  >
                     {step}
                   </span>
 
                   {index < steps.length - 1 && (
-                    <div className={cn(
-                      "w-8 sm:w-16 h-px mx-2",
-                      isCompleted ? "bg-green-500" : "bg-gray-200"
-                    )} />
+                    <div
+                      className={cn(
+                        "w-8 sm:w-16 h-px mx-2",
+                        isCompleted ? "bg-green-500" : "bg-gray-200",
+                      )}
+                    />
                   )}
                 </div>
-              )
+              );
             })}
           </div>
         </CardHeader>
@@ -353,7 +388,7 @@ export function ResultsExportWizard({
                 results={results}
                 selectedResults={selectedResults}
                 onToggleSelection={toggleResultSelection}
-                onSelectAll={() => setSelectedResults(results.map(r => r.id))}
+                onSelectAll={() => setSelectedResults(results.map((r) => r.id))}
                 onClearAll={() => setSelectedResults([])}
               />
             )}
@@ -443,7 +478,7 @@ export function ResultsExportWizard({
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
 
 // Step Components
@@ -452,13 +487,13 @@ function ResultSelectionStep({
   selectedResults,
   onToggleSelection,
   onSelectAll,
-  onClearAll
+  onClearAll,
 }: {
-  results: AIResult[]
-  selectedResults: string[]
-  onToggleSelection: (id: string) => void
-  onSelectAll: () => void
-  onClearAll: () => void
+  results: AIResult[];
+  selectedResults: string[];
+  onToggleSelection: (id: string) => void;
+  onSelectAll: () => void;
+  onClearAll: () => void;
 }) {
   return (
     <motion.div
@@ -494,7 +529,7 @@ function ResultSelectionStep({
               "flex items-start gap-3 p-4 border rounded-lg cursor-pointer transition-all",
               selectedResults.includes(result.id)
                 ? "border-blue-300 bg-blue-50 dark:bg-blue-950/20"
-                : "border-gray-200 dark:border-gray-700 hover:border-blue-200"
+                : "border-gray-200 dark:border-gray-700 hover:border-blue-200",
             )}
             onClick={() => onToggleSelection(result.id)}
           >
@@ -503,7 +538,7 @@ function ResultSelectionStep({
                 "w-5 h-5 border-2 rounded transition-colors flex items-center justify-center",
                 selectedResults.includes(result.id)
                   ? "bg-blue-500 border-blue-500"
-                  : "border-gray-300"
+                  : "border-gray-300",
               )}
             >
               {selectedResults.includes(result.id) && (
@@ -517,12 +552,8 @@ function ResultSelectionStep({
                 {result.description}
               </p>
               <div className="flex items-center gap-2 mt-2">
-                <Badge variant="outline">
-                  {result.confidence}% confidence
-                </Badge>
-                <Badge variant="outline">
-                  {result.type.replace('-', ' ')}
-                </Badge>
+                <Badge variant="outline">{result.confidence}% confidence</Badge>
+                <Badge variant="outline">{result.type.replace("-", " ")}</Badge>
                 <span className="text-xs text-gray-500">
                   {result.timestamp.toLocaleDateString()}
                 </span>
@@ -535,19 +566,20 @@ function ResultSelectionStep({
       <Alert>
         <CheckCircle className="w-4 h-4" />
         <AlertDescription>
-          {selectedResults.length} result{selectedResults.length !== 1 ? 's' : ''} selected for export
+          {selectedResults.length} result
+          {selectedResults.length !== 1 ? "s" : ""} selected for export
         </AlertDescription>
       </Alert>
     </motion.div>
-  )
+  );
 }
 
 function FormatSelectionStep({
   selectedFormat,
-  onFormatChange
+  onFormatChange,
 }: {
-  selectedFormat: ExportFormat
-  onFormatChange: (format: ExportFormat) => void
+  selectedFormat: ExportFormat;
+  onFormatChange: (format: ExportFormat) => void;
 }) {
   return (
     <motion.div
@@ -566,8 +598,8 @@ function FormatSelectionStep({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {EXPORT_FORMATS.map((format) => {
-          const Icon = format.icon
-          const isSelected = selectedFormat === format.id
+          const Icon = format.icon;
+          const isSelected = selectedFormat === format.id;
 
           return (
             <Card
@@ -576,7 +608,7 @@ function FormatSelectionStep({
                 "cursor-pointer transition-all hover:shadow-lg border-2",
                 isSelected
                   ? "border-blue-500 ring-2 ring-blue-200 dark:ring-blue-800"
-                  : "border-gray-200 dark:border-gray-700 hover:border-blue-300"
+                  : "border-gray-200 dark:border-gray-700 hover:border-blue-300",
               )}
               onClick={() => onFormatChange(format.id)}
             >
@@ -608,19 +640,19 @@ function FormatSelectionStep({
                 </div>
               </CardContent>
             </Card>
-          )
+          );
         })}
       </div>
     </motion.div>
-  )
+  );
 }
 
 function SettingsConfigurationStep({
   settings,
-  onSettingsChange
+  onSettingsChange,
 }: {
-  settings: ExportSettings
-  onSettingsChange: (updates: Partial<ExportSettings>) => void
+  settings: ExportSettings;
+  onSettingsChange: (updates: Partial<ExportSettings>) => void;
 }) {
   return (
     <motion.div
@@ -645,10 +677,26 @@ function SettingsConfigurationStep({
           </CardHeader>
           <CardContent className="space-y-4">
             {[
-              { key: 'includeImages', label: 'Include Images & Charts', description: 'Add visual elements to the export' },
-              { key: 'includeMetadata', label: 'Include Metadata', description: 'Processing details and timestamps' },
-              { key: 'includeRecommendations', label: 'Include Recommendations', description: 'AI-generated recommendations' },
-              { key: 'includeComparisons', label: 'Include Comparisons', description: 'Side-by-side result comparisons' }
+              {
+                key: "includeImages",
+                label: "Include Images & Charts",
+                description: "Add visual elements to the export",
+              },
+              {
+                key: "includeMetadata",
+                label: "Include Metadata",
+                description: "Processing details and timestamps",
+              },
+              {
+                key: "includeRecommendations",
+                label: "Include Recommendations",
+                description: "AI-generated recommendations",
+              },
+              {
+                key: "includeComparisons",
+                label: "Include Comparisons",
+                description: "Side-by-side result comparisons",
+              },
             ].map((option) => (
               <div key={option.key} className="flex items-start gap-3">
                 <div
@@ -656,9 +704,14 @@ function SettingsConfigurationStep({
                     "w-5 h-5 border-2 rounded transition-colors cursor-pointer flex items-center justify-center mt-0.5",
                     settings[option.key as keyof ExportSettings]
                       ? "bg-blue-500 border-blue-500"
-                      : "border-gray-300 hover:border-blue-400"
+                      : "border-gray-300 hover:border-blue-400",
                   )}
-                  onClick={() => onSettingsChange({ [option.key]: !settings[option.key as keyof ExportSettings] })}
+                  onClick={() =>
+                    onSettingsChange({
+                      [option.key]:
+                        !settings[option.key as keyof ExportSettings],
+                    })
+                  }
                 >
                   {settings[option.key as keyof ExportSettings] && (
                     <CheckCircle className="w-3 h-3 text-white" />
@@ -682,9 +735,21 @@ function SettingsConfigurationStep({
           </CardHeader>
           <CardContent className="space-y-4">
             {[
-              { key: 'customBranding', label: 'Custom Branding', description: 'Add your company logo and colors' },
-              { key: 'watermark', label: 'Add Watermark', description: 'ClaimGuardian watermark on pages' },
-              { key: 'confidential', label: 'Mark as Confidential', description: 'Add confidentiality notices' }
+              {
+                key: "customBranding",
+                label: "Custom Branding",
+                description: "Add your company logo and colors",
+              },
+              {
+                key: "watermark",
+                label: "Add Watermark",
+                description: "ClaimGuardian watermark on pages",
+              },
+              {
+                key: "confidential",
+                label: "Mark as Confidential",
+                description: "Add confidentiality notices",
+              },
             ].map((option) => (
               <div key={option.key} className="flex items-start gap-3">
                 <div
@@ -692,9 +757,14 @@ function SettingsConfigurationStep({
                     "w-5 h-5 border-2 rounded transition-colors cursor-pointer flex items-center justify-center mt-0.5",
                     settings[option.key as keyof ExportSettings]
                       ? "bg-blue-500 border-blue-500"
-                      : "border-gray-300 hover:border-blue-400"
+                      : "border-gray-300 hover:border-blue-400",
                   )}
-                  onClick={() => onSettingsChange({ [option.key]: !settings[option.key as keyof ExportSettings] })}
+                  onClick={() =>
+                    onSettingsChange({
+                      [option.key]:
+                        !settings[option.key as keyof ExportSettings],
+                    })
+                  }
                 >
                   {settings[option.key as keyof ExportSettings] && (
                     <CheckCircle className="w-3 h-3 text-white" />
@@ -726,7 +796,7 @@ function SettingsConfigurationStep({
                   "p-4 border-2 rounded-lg cursor-pointer transition-all",
                   settings.template === template.id
                     ? "border-blue-500 bg-blue-50 dark:bg-blue-950/20"
-                    : "border-gray-200 dark:border-gray-700 hover:border-blue-300"
+                    : "border-gray-200 dark:border-gray-700 hover:border-blue-300",
                 )}
                 onClick={() => onSettingsChange({ template: template.id })}
               >
@@ -740,15 +810,15 @@ function SettingsConfigurationStep({
         </CardContent>
       </Card>
     </motion.div>
-  )
+  );
 }
 
 function MetadataStep({
   metadata,
-  onMetadataChange
+  onMetadataChange,
 }: {
-  metadata: ExportMetadata
-  onMetadataChange: (updates: Partial<ExportMetadata>) => void
+  metadata: ExportMetadata;
+  onMetadataChange: (updates: Partial<ExportMetadata>) => void;
 }) {
   return (
     <motion.div
@@ -807,7 +877,9 @@ function MetadataStep({
             <Textarea
               id="description"
               value={metadata.description}
-              onChange={(e) => onMetadataChange({ description: e.target.value })}
+              onChange={(e) =>
+                onMetadataChange({ description: e.target.value })
+              }
               placeholder="Brief description of the report contents"
               className="mt-1"
               rows={4}
@@ -818,8 +890,15 @@ function MetadataStep({
             <Label htmlFor="tags">Tags (comma separated)</Label>
             <Input
               id="tags"
-              value={metadata.tags.join(', ')}
-              onChange={(e) => onMetadataChange({ tags: e.target.value.split(',').map(tag => tag.trim()).filter(Boolean) })}
+              value={metadata.tags.join(", ")}
+              onChange={(e) =>
+                onMetadataChange({
+                  tags: e.target.value
+                    .split(",")
+                    .map((tag) => tag.trim())
+                    .filter(Boolean),
+                })
+              }
               placeholder="damage analysis, insurance, AI"
               className="mt-1"
             />
@@ -827,7 +906,7 @@ function MetadataStep({
         </div>
       </div>
     </motion.div>
-  )
+  );
 }
 
 function PreviewExportStep({
@@ -836,14 +915,14 @@ function PreviewExportStep({
   metadata,
   isExporting,
   exportProgress,
-  onExport
+  onExport,
 }: {
-  results: AIResult[]
-  settings: ExportSettings
-  metadata: ExportMetadata
-  isExporting: boolean
-  exportProgress: number
-  onExport: () => void
+  results: AIResult[];
+  settings: ExportSettings;
+  metadata: ExportMetadata;
+  isExporting: boolean;
+  exportProgress: number;
+  onExport: () => void;
 }) {
   return (
     <motion.div
@@ -903,7 +982,9 @@ function PreviewExportStep({
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-gray-600">Template:</span>
-                <span className="text-sm font-medium capitalize">{settings.template}</span>
+                <span className="text-sm font-medium capitalize">
+                  {settings.template}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-gray-600">Results:</span>
@@ -911,11 +992,15 @@ function PreviewExportStep({
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-gray-600">Images:</span>
-                <span className="text-sm">{settings.includeImages ? 'Yes' : 'No'}</span>
+                <span className="text-sm">
+                  {settings.includeImages ? "Yes" : "No"}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-gray-600">Metadata:</span>
-                <span className="text-sm">{settings.includeMetadata ? 'Yes' : 'No'}</span>
+                <span className="text-sm">
+                  {settings.includeMetadata ? "Yes" : "No"}
+                </span>
               </div>
             </CardContent>
           </Card>
@@ -967,12 +1052,16 @@ function PreviewExportStep({
           <CardContent>
             <div className="space-y-3 max-h-64 overflow-y-auto">
               {results.map((result) => (
-                <div key={result.id} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <div
+                  key={result.id}
+                  className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
+                >
                   <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
                   <div className="flex-1">
                     <h4 className="font-medium text-sm">{result.title}</h4>
                     <p className="text-xs text-gray-600 dark:text-gray-400">
-                      {result.type.replace('-', ' ')} • {result.confidence}% confidence
+                      {result.type.replace("-", " ")} • {result.confidence}%
+                      confidence
                     </p>
                   </div>
                   <span className="text-xs text-gray-500">
@@ -985,7 +1074,7 @@ function PreviewExportStep({
         </Card>
       )}
     </motion.div>
-  )
+  );
 }
 
-export type { ExportSettings, ExportMetadata }
+export type { ExportSettings, ExportMetadata };

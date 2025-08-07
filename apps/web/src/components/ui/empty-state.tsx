@@ -5,37 +5,37 @@
  * @dependencies ["react", "lucide-react"]
  * @status stable
  */
-'use client'
+"use client";
 
-import { cn } from '@/lib/utils'
-import { Card, CardContent } from './card-variants'
-import { Button } from './button'
-import { LucideIcon } from 'lucide-react'
-import React from 'react'
+import { cn } from "@/lib/utils";
+import { Card, CardContent } from "./card-variants";
+import { Button } from "./button";
+import { LucideIcon } from "lucide-react";
+import React from "react";
 
 interface EmptyStateAction {
-  label: string
-  onClick?: () => void
-  href?: string
-  variant?: 'default' | 'secondary' | 'outline' | 'ghost'
-  icon?: LucideIcon
+  label: string;
+  onClick?: () => void;
+  href?: string;
+  variant?: "default" | "secondary" | "outline" | "ghost";
+  icon?: LucideIcon;
 }
 
 interface EmptyStateTip {
-  title: string
-  description: string
-  icon?: LucideIcon
+  title: string;
+  description: string;
+  icon?: LucideIcon;
 }
 
 interface EmptyStateProps {
-  icon: LucideIcon
-  title: string
-  description: string
-  actions?: EmptyStateAction[]
-  tips?: EmptyStateTip[]
-  learnMoreUrl?: string
-  className?: string
-  variant?: 'default' | 'compact' | 'full'
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  actions?: EmptyStateAction[];
+  tips?: EmptyStateTip[];
+  learnMoreUrl?: string;
+  className?: string;
+  variant?: "default" | "compact" | "full";
 }
 
 export function EmptyState({
@@ -46,31 +46,34 @@ export function EmptyState({
   tips = [],
   learnMoreUrl,
   className,
-  variant = 'default'
+  variant = "default",
 }: EmptyStateProps) {
   const sizes = {
     default: {
-      icon: 'w-16 h-16',
-      title: 'text-xl',
-      padding: 'p-12'
+      icon: "w-16 h-16",
+      title: "text-xl",
+      padding: "p-12",
     },
     compact: {
-      icon: 'w-12 h-12',
-      title: 'text-lg',
-      padding: 'p-8'
+      icon: "w-12 h-12",
+      title: "text-lg",
+      padding: "p-8",
     },
     full: {
-      icon: 'w-20 h-20',
-      title: 'text-2xl',
-      padding: 'p-16'
-    }
-  }
+      icon: "w-20 h-20",
+      title: "text-2xl",
+      padding: "p-16",
+    },
+  };
 
-  const size = sizes[variant]
+  const size = sizes[variant];
 
   return (
-    <Card variant="insurance" className={cn('relative overflow-hidden', className)}>
-      <CardContent className={cn(size.padding, 'text-center')}>
+    <Card
+      variant="insurance"
+      className={cn("relative overflow-hidden", className)}
+    >
+      <CardContent className={cn(size.padding, "text-center")}>
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600" />
@@ -82,24 +85,22 @@ export function EmptyState({
           <div className="flex justify-center mb-4">
             <div className="relative">
               <div className="absolute inset-0 bg-gray-700 rounded-full blur-xl opacity-50" />
-              <Icon className={cn(size.icon, 'text-gray-600 relative')} />
+              <Icon className={cn(size.icon, "text-gray-600 relative")} />
             </div>
           </div>
 
           {/* Title & Description */}
-          <h3 className={cn(size.title, 'font-semibold text-white mb-2')}>
+          <h3 className={cn(size.title, "font-semibold text-white mb-2")}>
             {title}
           </h3>
-          <p className="text-gray-400 mb-6 max-w-md mx-auto">
-            {description}
-          </p>
+          <p className="text-gray-400 mb-6 max-w-md mx-auto">{description}</p>
 
           {/* Actions */}
           {actions.length > 0 && (
             <div className="flex gap-3 justify-center mb-8">
               {actions.map((action, index) => {
-                const ActionIcon = action.icon
-                const isExternal = action.href?.startsWith('http')
+                const ActionIcon = action.icon;
+                const isExternal = action.href?.startsWith("http");
 
                 if (action.href) {
                   return (
@@ -107,34 +108,34 @@ export function EmptyState({
                       key={index}
                       href={action.href}
                       onClick={action.onClick}
-                      target={isExternal ? '_blank' : undefined}
-                      rel={isExternal ? 'noopener noreferrer' : undefined}
+                      target={isExternal ? "_blank" : undefined}
+                      rel={isExternal ? "noopener noreferrer" : undefined}
                       className={cn(
-                        'inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-colors',
-                        action.variant === 'secondary'
-                          ? 'bg-gray-700 hover:bg-gray-600 text-white'
-                          : action.variant === 'outline'
-                          ? 'border border-gray-600 hover:bg-gray-700 text-gray-300'
-                          : 'bg-blue-600 hover:bg-blue-700 text-white'
+                        "inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-colors",
+                        action.variant === "secondary"
+                          ? "bg-gray-700 hover:bg-gray-600 text-white"
+                          : action.variant === "outline"
+                            ? "border border-gray-600 hover:bg-gray-700 text-gray-300"
+                            : "bg-blue-600 hover:bg-blue-700 text-white",
                       )}
                     >
                       {ActionIcon && <ActionIcon className="w-4 h-4" />}
                       {action.label}
                     </a>
-                  )
+                  );
                 }
 
                 return (
                   <Button
                     key={index}
-                    variant={action.variant || 'default'}
+                    variant={action.variant || "default"}
                     onClick={action.onClick}
                     className="gap-2"
                   >
                     {ActionIcon && <ActionIcon className="w-4 h-4" />}
                     {action.label}
                   </Button>
-                )
+                );
               })}
             </div>
           )}
@@ -147,7 +148,7 @@ export function EmptyState({
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-left max-w-3xl mx-auto">
                 {tips.map((tip, index) => {
-                  const TipIcon = tip.icon
+                  const TipIcon = tip.icon;
                   return (
                     <div key={index} className="flex gap-3">
                       {TipIcon && (
@@ -164,7 +165,7 @@ export function EmptyState({
                         </p>
                       </div>
                     </div>
-                  )
+                  );
                 })}
               </div>
             </div>
@@ -186,13 +187,16 @@ export function EmptyState({
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 // Insurance-specific empty states
-export function InsuranceEmptyState({ onAddPolicy, onAddProperty }: {
-  onAddPolicy?: () => void
-  onAddProperty?: () => void
+export function InsuranceEmptyState({
+  onAddPolicy,
+  onAddProperty,
+}: {
+  onAddPolicy?: () => void;
+  onAddProperty?: () => void;
 }) {
   return (
     <EmptyState
@@ -201,40 +205,47 @@ export function InsuranceEmptyState({ onAddPolicy, onAddProperty }: {
       description="Start by adding your properties and insurance policies to track coverage, manage claims, and protect your assets."
       actions={[
         {
-          label: 'Add Property',
+          label: "Add Property",
           onClick: onAddProperty,
-          variant: 'secondary',
-          icon: Home
+          variant: "secondary",
+          icon: Home,
         },
         {
-          label: 'Add Policy',
+          label: "Add Policy",
           onClick: onAddPolicy,
-          icon: Shield
-        }
+          icon: Shield,
+        },
       ]}
       tips={[
         {
           icon: Shield,
-          title: 'Complete Coverage',
-          description: 'Track all your insurance policies in one place'
+          title: "Complete Coverage",
+          description: "Track all your insurance policies in one place",
         },
         {
           icon: AlertTriangle,
-          title: 'Claim Management',
-          description: 'File and track claims directly from the dashboard'
+          title: "Claim Management",
+          description: "File and track claims directly from the dashboard",
         },
         {
           icon: DollarSign,
-          title: 'Premium Tracking',
-          description: 'Monitor payments and renewal dates'
-        }
+          title: "Premium Tracking",
+          description: "Monitor payments and renewal dates",
+        },
       ]}
       learnMoreUrl="https://help.claimguardian.com/insurance"
     />
-  )
+  );
 }
 
 // Export for convenience
-import { Shield, Home, AlertTriangle, DollarSign, FileText, Package } from 'lucide-react'
+import {
+  Shield,
+  Home,
+  AlertTriangle,
+  DollarSign,
+  FileText,
+  Package,
+} from "lucide-react";
 
-export { Shield, Home, AlertTriangle, DollarSign }
+export { Shield, Home, AlertTriangle, DollarSign };

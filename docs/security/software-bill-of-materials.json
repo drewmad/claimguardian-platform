@@ -190,9 +190,7 @@
       "bom-ref": "supabase-service",
       "name": "Supabase Database Service",
       "description": "PostgreSQL database with Row Level Security",
-      "endpoints": [
-        "https://[project-ref].supabase.co"
-      ],
+      "endpoints": ["https://[project-ref].supabase.co"],
       "authenticated": true,
       "x-trust-boundary": false,
       "data": [
@@ -206,9 +204,7 @@
       "bom-ref": "openai-service",
       "name": "OpenAI API",
       "description": "AI processing service for document analysis",
-      "endpoints": [
-        "https://api.openai.com"
-      ],
+      "endpoints": ["https://api.openai.com"],
       "authenticated": true,
       "x-trust-boundary": true,
       "data": [

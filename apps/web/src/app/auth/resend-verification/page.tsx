@@ -8,56 +8,62 @@
  * @tags ["auth", "verification", "resend", "page"]
  * @status stable
  */
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { motion } from 'framer-motion'
-import { ArrowLeft } from 'lucide-react'
-import Link from 'next/link'
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { motion } from "framer-motion";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { EmailVerificationWizard } from '@/components/auth/email-verification-enhanced'
-import { createClient } from '@/lib/supabase/client'
-import { logger } from '@/lib/logger'
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmailVerificationWizard } from "@/components/auth/email-verification-enhanced";
+import { createClient } from "@/lib/supabase/client";
+import { logger } from "@/lib/logger";
 
 export default function ResendVerificationPage() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const [userEmail, setUserEmail] = useState<string>('')
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [userEmail, setUserEmail] = useState<string>("");
 
   // Get email from URL params or current user
   useEffect(() => {
-    const emailParam = searchParams.get('email')
+    const emailParam = searchParams.get("email");
     if (emailParam) {
-      setUserEmail(emailParam)
-      return
+      setUserEmail(emailParam);
+      return;
     }
 
     // Check if user is logged in and get their email
     const getUserEmail = async () => {
       try {
-        const supabase = createClient()
-        const { data: { user } } = await supabase.auth.getUser()
+        const supabase = createClient();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
         if (user?.email) {
-          setUserEmail(user.email)
+          setUserEmail(user.email);
         }
       } catch (error) {
-        logger.error('Failed to get user email for verification resend', {}, error as Error)
+        logger.error(
+          "Failed to get user email for verification resend",
+          {},
+          error as Error,
+        );
       }
-    }
+    };
 
-    getUserEmail()
-  }, [searchParams])
+    getUserEmail();
+  }, [searchParams]);
 
   const handleSuccess = () => {
-    router.push('/dashboard')
-  }
+    router.push("/dashboard");
+  };
 
   const handleCancel = () => {
-    router.push('/auth/signin')
-  }
+    router.push("/auth/signin");
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 flex items-center justify-center p-4">
@@ -73,7 +79,8 @@ export default function ResendVerificationPage() {
             Email Verification
           </h1>
           <p className="text-xl text-gray-300 max-w-lg mx-auto">
-            We need to verify your email address to secure your account and enable all features.
+            We need to verify your email address to secure your account and
+            enable all features.
           </p>
         </motion.div>
 
@@ -128,7 +135,8 @@ export default function ResendVerificationPage() {
                   </div>
                   <h3 className="text-white font-medium">Account Security</h3>
                   <p className="text-gray-300 text-sm">
-                    Protects your account from unauthorized access and ensures you're the rightful owner.
+                    Protects your account from unauthorized access and ensures
+                    you're the rightful owner.
                   </p>
                 </div>
 
@@ -138,7 +146,8 @@ export default function ResendVerificationPage() {
                   </div>
                   <h3 className="text-white font-medium">Important Updates</h3>
                   <p className="text-gray-300 text-sm">
-                    Receive critical notifications about your properties, claims, and account activity.
+                    Receive critical notifications about your properties,
+                    claims, and account activity.
                   </p>
                 </div>
 
@@ -148,7 +157,8 @@ export default function ResendVerificationPage() {
                   </div>
                   <h3 className="text-white font-medium">Full Features</h3>
                   <p className="text-gray-300 text-sm">
-                    Access all ClaimGuardian features including AI tools, property management, and more.
+                    Access all ClaimGuardian features including AI tools,
+                    property management, and more.
                   </p>
                 </div>
               </div>
@@ -157,5 +167,5 @@ export default function ResendVerificationPage() {
         </motion.div>
       </div>
     </div>
-  )
+  );
 }

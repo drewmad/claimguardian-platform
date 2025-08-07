@@ -8,109 +8,142 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { Card } from '@claimguardian/ui'
-import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@claimguardian/ui'
-import { Plus, Settings, Users, Building, DollarSign, BarChart3, Shield, Globe } from 'lucide-react'
-import { tenantManager, EnterpriseOrganization, OrganizationUser } from '@/lib/multi-tenant/tenant-manager'
+import { useState, useEffect } from "react";
+import { Card } from "@claimguardian/ui";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@claimguardian/ui";
+import {
+  Plus,
+  Settings,
+  Users,
+  Building,
+  DollarSign,
+  BarChart3,
+  Shield,
+  Globe,
+} from "lucide-react";
+import {
+  tenantManager,
+  EnterpriseOrganization,
+  OrganizationUser,
+} from "@/lib/multi-tenant/tenant-manager";
 
 interface MultiTenantDashboardProps {
-  currentUser?: { id: string; email?: string }
+  currentUser?: { id: string; email?: string };
 }
 
 interface OrganizationUsage {
-  users: { current: number; limit: number }
-  properties: { current: number; limit: number }
-  claims: { current: number; limit: number }
-  aiRequests: { current: number; limit: number }
-  storage: { current: number; limit: number }
-  billingPeriodStart?: Date | string
-  billingPeriodEnd?: Date | string
-  baseCost?: number
-  overageCosts?: Record<string, number>
-  totalCost?: number
-  invoiceStatus?: string
-  usersCount?: number
-  propertiesCount?: number
-  claimsCount?: number
-  aiRequestsCount?: number
-  storageGb?: number
+  users: { current: number; limit: number };
+  properties: { current: number; limit: number };
+  claims: { current: number; limit: number };
+  aiRequests: { current: number; limit: number };
+  storage: { current: number; limit: number };
+  billingPeriodStart?: Date | string;
+  billingPeriodEnd?: Date | string;
+  baseCost?: number;
+  overageCosts?: Record<string, number>;
+  totalCost?: number;
+  invoiceStatus?: string;
+  usersCount?: number;
+  propertiesCount?: number;
+  claimsCount?: number;
+  aiRequestsCount?: number;
+  storageGb?: number;
 }
 
-export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps) {
-  const [organizations, setOrganizations] = useState<EnterpriseOrganization[]>([])
-  const [selectedOrg, setSelectedOrg] = useState<EnterpriseOrganization | null>(null)
-  const [orgUsers, setOrgUsers] = useState<OrganizationUser[]>([])
-  const [orgUsage, setOrgUsage] = useState<OrganizationUsage | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'billing' | 'settings'>('overview')
+export function MultiTenantDashboard({
+  currentUser,
+}: MultiTenantDashboardProps) {
+  const [organizations, setOrganizations] = useState<EnterpriseOrganization[]>(
+    [],
+  );
+  const [selectedOrg, setSelectedOrg] = useState<EnterpriseOrganization | null>(
+    null,
+  );
+  const [orgUsers, setOrgUsers] = useState<OrganizationUser[]>([]);
+  const [orgUsage, setOrgUsage] = useState<OrganizationUsage | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<
+    "overview" | "users" | "billing" | "settings"
+  >("overview");
 
   useEffect(() => {
-    loadInitialData()
-  }, [])
+    loadInitialData();
+  }, []);
 
   useEffect(() => {
     if (selectedOrg) {
-      loadOrganizationDetails(selectedOrg.id)
+      loadOrganizationDetails(selectedOrg.id);
     }
-  }, [selectedOrg])
+  }, [selectedOrg]);
 
   const loadInitialData = async () => {
     try {
       // Load user's organization (for now, we'll simulate multiple orgs)
-      const userOrg = currentUser?.id ? await tenantManager.getUserOrganization(currentUser.id!) : null
+      const userOrg = currentUser?.id
+        ? await tenantManager.getUserOrganization(currentUser.id!)
+        : null;
       if (userOrg) {
-        setOrganizations([userOrg])
-        setSelectedOrg(userOrg)
+        setOrganizations([userOrg]);
+        setSelectedOrg(userOrg);
       }
     } catch (error) {
-      console.error('Failed to load organizations:', error)
+      console.error("Failed to load organizations:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const loadOrganizationDetails = async (orgId: string) => {
     try {
       const [users, usage] = await Promise.all([
         tenantManager.getOrganizationUsers(orgId),
-        tenantManager.getOrganizationUsage(orgId)
-      ])
+        tenantManager.getOrganizationUsage(orgId),
+      ]);
 
-      setOrgUsers(users)
-      setOrgUsage(usage as unknown as OrganizationUsage)
+      setOrgUsers(users);
+      setOrgUsage(usage as unknown as OrganizationUsage);
     } catch (error) {
-      console.error('Failed to load organization details:', error)
+      console.error("Failed to load organization details:", error);
     }
-  }
+  };
 
   const getSubscriptionTierColor = (tier: string) => {
     switch (tier) {
-      case 'standard': return 'bg-blue-100 text-blue-800'
-      case 'professional': return 'bg-purple-100 text-purple-800'
-      case 'enterprise': return 'bg-gold-100 text-gold-800'
-      case 'custom': return 'bg-emerald-100 text-emerald-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case "standard":
+        return "bg-blue-100 text-blue-800";
+      case "professional":
+        return "bg-purple-100 text-purple-800";
+      case "enterprise":
+        return "bg-gold-100 text-gold-800";
+      case "custom":
+        return "bg-emerald-100 text-emerald-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
-  }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800'
-      case 'trial': return 'bg-yellow-100 text-yellow-800'
-      case 'suspended': return 'bg-red-100 text-red-800'
-      case 'cancelled': return 'bg-gray-100 text-gray-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case "active":
+        return "bg-green-100 text-green-800";
+      case "trial":
+        return "bg-yellow-100 text-yellow-800";
+      case "suspended":
+        return "bg-red-100 text-red-800";
+      case "cancelled":
+        return "bg-gray-100 text-gray-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
-  }
+  };
 
   const calculateUsagePercentage = (current: number, limit: number) => {
-    return limit > 0 ? Math.round((current / limit) * 100) : 0
-  }
+    return limit > 0 ? Math.round((current / limit) * 100) : 0;
+  };
 
   if (loading) {
     return (
@@ -118,21 +151,25 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
         <div className="animate-pulse">
           <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[1, 2, 3].map(i => (
+            {[1, 2, 3].map((i) => (
               <div key={i} className="h-32 bg-gray-200 rounded"></div>
             ))}
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="p-8 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white">Multi-Tenant Administration</h1>
-          <p className="text-gray-400 mt-2">Manage enterprise organizations and tenants</p>
+          <h1 className="text-3xl font-bold text-white">
+            Multi-Tenant Administration
+          </h1>
+          <p className="text-gray-400 mt-2">
+            Manage enterprise organizations and tenants
+          </p>
         </div>
         <Button className="bg-blue-600 hover:bg-blue-700">
           <Plus className="w-4 h-4 mr-2" />
@@ -155,14 +192,18 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
                 key={org.id}
                 className={`p-4 rounded-lg border cursor-pointer transition-all ${
                   selectedOrg?.id === org.id
-                    ? 'border-blue-500 bg-blue-50/10'
-                    : 'border-gray-600 hover:border-gray-500'
+                    ? "border-blue-500 bg-blue-50/10"
+                    : "border-gray-600 hover:border-gray-500"
                 }`}
                 onClick={() => setSelectedOrg(org)}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold text-white">{org.organizationName}</h3>
-                  <Badge className={getSubscriptionTierColor(org.subscriptionTier)}>
+                  <h3 className="font-semibold text-white">
+                    {org.organizationName}
+                  </h3>
+                  <Badge
+                    className={getSubscriptionTierColor(org.subscriptionTier)}
+                  >
                     {org.subscriptionTier}
                   </Badge>
                 </div>
@@ -197,10 +238,16 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
                   </p>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Badge className={getSubscriptionTierColor(selectedOrg.subscriptionTier)}>
+                  <Badge
+                    className={getSubscriptionTierColor(
+                      selectedOrg.subscriptionTier,
+                    )}
+                  >
                     {selectedOrg.subscriptionTier}
                   </Badge>
-                  <Badge className={getStatusColor(selectedOrg.subscriptionStatus)}>
+                  <Badge
+                    className={getStatusColor(selectedOrg.subscriptionStatus)}
+                  >
                     {selectedOrg.subscriptionStatus}
                   </Badge>
                 </div>
@@ -211,18 +258,22 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
           {/* Tab Navigation */}
           <div className="flex space-x-1 bg-gray-800 p-1 rounded-lg border border-gray-700">
             {[
-              { id: 'overview', label: 'Overview', icon: BarChart3 },
-              { id: 'users', label: 'Users', icon: Users },
-              { id: 'billing', label: 'Billing', icon: DollarSign },
-              { id: 'settings', label: 'Settings', icon: Settings }
+              { id: "overview", label: "Overview", icon: BarChart3 },
+              { id: "users", label: "Users", icon: Users },
+              { id: "billing", label: "Billing", icon: DollarSign },
+              { id: "settings", label: "Settings", icon: Settings },
             ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as 'overview' | 'users' | 'billing' | 'settings')}
+                onClick={() =>
+                  setActiveTab(
+                    tab.id as "overview" | "users" | "billing" | "settings",
+                  )
+                }
                 className={`flex items-center px-4 py-2 rounded-md transition-all ${
                   activeTab === tab.id
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-400 hover:text-white hover:bg-gray-700'
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-400 hover:text-white hover:bg-gray-700"
                 }`}
               >
                 <tab.icon className="w-4 h-4 mr-2" />
@@ -232,7 +283,7 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
           </div>
 
           {/* Tab Content */}
-          {activeTab === 'overview' && (
+          {activeTab === "overview" && (
             <div className="space-y-6">
               {/* Usage Overview */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -245,7 +296,12 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
                           {selectedOrg.currentUsers}
                         </p>
                         <p className="text-xs text-gray-500">
-                          of {selectedOrg.userLimit} ({calculateUsagePercentage(selectedOrg.currentUsers, selectedOrg.userLimit)}%)
+                          of {selectedOrg.userLimit} (
+                          {calculateUsagePercentage(
+                            selectedOrg.currentUsers,
+                            selectedOrg.userLimit,
+                          )}
+                          %)
                         </p>
                       </div>
                       <Users className="w-8 h-8 text-blue-500" />
@@ -254,7 +310,7 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
                       <div
                         className="bg-blue-500 h-2 rounded-full"
                         style={{
-                          width: `${Math.min(calculateUsagePercentage(selectedOrg.currentUsers, selectedOrg.userLimit), 100)}%`
+                          width: `${Math.min(calculateUsagePercentage(selectedOrg.currentUsers, selectedOrg.userLimit), 100)}%`,
                         }}
                       />
                     </div>
@@ -270,7 +326,12 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
                           {selectedOrg.currentProperties}
                         </p>
                         <p className="text-xs text-gray-500">
-                          of {selectedOrg.propertyLimit} ({calculateUsagePercentage(selectedOrg.currentProperties, selectedOrg.propertyLimit)}%)
+                          of {selectedOrg.propertyLimit} (
+                          {calculateUsagePercentage(
+                            selectedOrg.currentProperties,
+                            selectedOrg.propertyLimit,
+                          )}
+                          %)
                         </p>
                       </div>
                       <Building className="w-8 h-8 text-green-500" />
@@ -279,7 +340,7 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
                       <div
                         className="bg-green-500 h-2 rounded-full"
                         style={{
-                          width: `${Math.min(calculateUsagePercentage(selectedOrg.currentProperties, selectedOrg.propertyLimit), 100)}%`
+                          width: `${Math.min(calculateUsagePercentage(selectedOrg.currentProperties, selectedOrg.propertyLimit), 100)}%`,
                         }}
                       />
                     </div>
@@ -295,7 +356,12 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
                           {selectedOrg.currentClaims}
                         </p>
                         <p className="text-xs text-gray-500">
-                          of {selectedOrg.claimLimit} ({calculateUsagePercentage(selectedOrg.currentClaims, selectedOrg.claimLimit)}%)
+                          of {selectedOrg.claimLimit} (
+                          {calculateUsagePercentage(
+                            selectedOrg.currentClaims,
+                            selectedOrg.claimLimit,
+                          )}
+                          %)
                         </p>
                       </div>
                       <Shield className="w-8 h-8 text-purple-500" />
@@ -304,7 +370,7 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
                       <div
                         className="bg-purple-500 h-2 rounded-full"
                         style={{
-                          width: `${Math.min(calculateUsagePercentage(selectedOrg.currentClaims, selectedOrg.claimLimit), 100)}%`
+                          width: `${Math.min(calculateUsagePercentage(selectedOrg.currentClaims, selectedOrg.claimLimit), 100)}%`,
                         }}
                       />
                     </div>
@@ -320,7 +386,12 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
                           {selectedOrg.currentAiRequests.toLocaleString()}
                         </p>
                         <p className="text-xs text-gray-500">
-                          of {selectedOrg.aiRequestLimit.toLocaleString()} ({calculateUsagePercentage(selectedOrg.currentAiRequests, selectedOrg.aiRequestLimit)}%)
+                          of {selectedOrg.aiRequestLimit.toLocaleString()} (
+                          {calculateUsagePercentage(
+                            selectedOrg.currentAiRequests,
+                            selectedOrg.aiRequestLimit,
+                          )}
+                          %)
                         </p>
                       </div>
                       <BarChart3 className="w-8 h-8 text-orange-500" />
@@ -329,7 +400,7 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
                       <div
                         className="bg-orange-500 h-2 rounded-full"
                         style={{
-                          width: `${Math.min(calculateUsagePercentage(selectedOrg.currentAiRequests, selectedOrg.aiRequestLimit), 100)}%`
+                          width: `${Math.min(calculateUsagePercentage(selectedOrg.currentAiRequests, selectedOrg.aiRequestLimit), 100)}%`,
                         }}
                       />
                     </div>
@@ -348,16 +419,23 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
                 <CardContent>
                   <div className="space-y-4">
                     <div>
-                      <p className="text-sm text-gray-400 mb-2">Primary State</p>
+                      <p className="text-sm text-gray-400 mb-2">
+                        Primary State
+                      </p>
                       <Badge className="bg-blue-100 text-blue-800">
                         {selectedOrg.primaryState}
                       </Badge>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-400 mb-2">Allowed States ({selectedOrg.allowedStates.length})</p>
+                      <p className="text-sm text-gray-400 mb-2">
+                        Allowed States ({selectedOrg.allowedStates.length})
+                      </p>
                       <div className="flex flex-wrap gap-2">
                         {selectedOrg.allowedStates.map((state) => (
-                          <Badge key={state} className="bg-gray-100 text-gray-800">
+                          <Badge
+                            key={state}
+                            className="bg-gray-100 text-gray-800"
+                          >
                             {state}
                           </Badge>
                         ))}
@@ -378,11 +456,17 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <p className="text-sm text-gray-400 mb-2">Compliance Requirements</p>
+                      <p className="text-sm text-gray-400 mb-2">
+                        Compliance Requirements
+                      </p>
                       <div className="space-y-2">
-                        {selectedOrg.complianceRequirements && selectedOrg.complianceRequirements.length > 0 ? (
+                        {selectedOrg.complianceRequirements &&
+                        selectedOrg.complianceRequirements.length > 0 ? (
                           selectedOrg.complianceRequirements.map((req) => (
-                            <Badge key={req} className="bg-green-100 text-green-800 mr-2">
+                            <Badge
+                              key={req}
+                              className="bg-green-100 text-green-800 mr-2"
+                            >
                               {req}
                             </Badge>
                           ))
@@ -392,18 +476,32 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
                       </div>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-400 mb-2">Security Features</p>
+                      <p className="text-sm text-gray-400 mb-2">
+                        Security Features
+                      </p>
                       <div className="space-y-2 text-sm">
                         <div className="flex items-center justify-between">
                           <span className="text-white">SSO Enabled</span>
-                          <Badge className={selectedOrg.ssoEnabled ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
-                            {selectedOrg.ssoEnabled ? 'Yes' : 'No'}
+                          <Badge
+                            className={
+                              selectedOrg.ssoEnabled
+                                ? "bg-green-100 text-green-800"
+                                : "bg-gray-100 text-gray-800"
+                            }
+                          >
+                            {selectedOrg.ssoEnabled ? "Yes" : "No"}
                           </Badge>
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-white">2FA Required</span>
-                          <Badge className={selectedOrg.require2fa ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
-                            {selectedOrg.require2fa ? 'Yes' : 'No'}
+                          <Badge
+                            className={
+                              selectedOrg.require2fa
+                                ? "bg-green-100 text-green-800"
+                                : "bg-gray-100 text-gray-800"
+                            }
+                          >
+                            {selectedOrg.require2fa ? "Yes" : "No"}
                           </Badge>
                         </div>
                         <div className="flex items-center justify-between">
@@ -420,11 +518,13 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
             </div>
           )}
 
-          {activeTab === 'users' && (
+          {activeTab === "users" && (
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-white">Organization Users</CardTitle>
+                  <CardTitle className="text-white">
+                    Organization Users
+                  </CardTitle>
                   <Button className="bg-blue-600 hover:bg-blue-700">
                     <Plus className="w-4 h-4 mr-2" />
                     Invite User
@@ -434,28 +534,46 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
               <CardContent>
                 <div className="space-y-4">
                   {orgUsers.map((user) => (
-                    <div key={user.id} className="flex items-center justify-between p-4 bg-gray-700 rounded-lg">
+                    <div
+                      key={user.id}
+                      className="flex items-center justify-between p-4 bg-gray-700 rounded-lg"
+                    >
                       <div>
-                        <p className="text-white font-medium">User ID: {user.userId}</p>
-                        <p className="text-gray-400 text-sm">Joined: {user.joinedAt.toLocaleDateString()}</p>
+                        <p className="text-white font-medium">
+                          User ID: {user.userId}
+                        </p>
+                        <p className="text-gray-400 text-sm">
+                          Joined: {user.joinedAt.toLocaleDateString()}
+                        </p>
                         {user.lastLoginAt && (
-                          <p className="text-gray-400 text-sm">Last Login: {user.lastLoginAt.toLocaleDateString()}</p>
+                          <p className="text-gray-400 text-sm">
+                            Last Login: {user.lastLoginAt.toLocaleDateString()}
+                          </p>
                         )}
                       </div>
                       <div className="flex items-center space-x-3">
-                        <Badge className={
-                          user.role === 'owner' ? 'bg-gold-100 text-gold-800' :
-                          user.role === 'admin' ? 'bg-purple-100 text-purple-800' :
-                          user.role === 'member' ? 'bg-blue-100 text-blue-800' :
-                          'bg-gray-100 text-gray-800'
-                        }>
+                        <Badge
+                          className={
+                            user.role === "owner"
+                              ? "bg-gold-100 text-gold-800"
+                              : user.role === "admin"
+                                ? "bg-purple-100 text-purple-800"
+                                : user.role === "member"
+                                  ? "bg-blue-100 text-blue-800"
+                                  : "bg-gray-100 text-gray-800"
+                          }
+                        >
                           {user.role}
                         </Badge>
-                        <Badge className={
-                          user.status === 'active' ? 'bg-green-100 text-green-800' :
-                          user.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-red-100 text-red-800'
-                        }>
+                        <Badge
+                          className={
+                            user.status === "active"
+                              ? "bg-green-100 text-green-800"
+                              : user.status === "pending"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : "bg-red-100 text-red-800"
+                          }
+                        >
                           {user.status}
                         </Badge>
                         <Button variant="secondary" size="sm">
@@ -469,66 +587,97 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
             </Card>
           )}
 
-          {activeTab === 'billing' && orgUsage && (
+          {activeTab === "billing" && orgUsage && (
             <div className="space-y-6">
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader>
-                  <CardTitle className="text-white">Current Billing Period</CardTitle>
+                  <CardTitle className="text-white">
+                    Current Billing Period
+                  </CardTitle>
                   <p className="text-gray-400">
-                    {(orgUsage.billingPeriodStart as Date)?.toLocaleDateString()} - {(orgUsage.billingPeriodEnd as Date)?.toLocaleDateString()}
+                    {(
+                      orgUsage.billingPeriodStart as Date
+                    )?.toLocaleDateString()}{" "}
+                    -{" "}
+                    {(orgUsage.billingPeriodEnd as Date)?.toLocaleDateString()}
                   </p>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="p-4 bg-gray-700 rounded-lg">
                       <p className="text-gray-400 text-sm">Base Cost</p>
-                      <p className="text-2xl font-bold text-white">${orgUsage.baseCost?.toFixed(2) || '0.00'}</p>
+                      <p className="text-2xl font-bold text-white">
+                        ${orgUsage.baseCost?.toFixed(2) || "0.00"}
+                      </p>
                     </div>
                     <div className="p-4 bg-gray-700 rounded-lg">
                       <p className="text-gray-400 text-sm">Overage Costs</p>
                       <p className="text-2xl font-bold text-white">
-                        ${Object.values(orgUsage.overageCosts || {}).reduce((sum, cost) => sum + (cost as number), 0).toFixed(2)}
+                        $
+                        {Object.values(orgUsage.overageCosts || {})
+                          .reduce((sum, cost) => sum + (cost as number), 0)
+                          .toFixed(2)}
                       </p>
                     </div>
                     <div className="p-4 bg-gray-700 rounded-lg">
                       <p className="text-gray-400 text-sm">Total Cost</p>
-                      <p className="text-2xl font-bold text-white">${orgUsage.totalCost?.toFixed(2) || '0.00'}</p>
+                      <p className="text-2xl font-bold text-white">
+                        ${orgUsage.totalCost?.toFixed(2) || "0.00"}
+                      </p>
                     </div>
                     <div className="p-4 bg-gray-700 rounded-lg">
                       <p className="text-gray-400 text-sm">Invoice Status</p>
-                      <Badge className={
-                        orgUsage.invoiceStatus === 'paid' ? 'bg-green-100 text-green-800' :
-                        orgUsage.invoiceStatus === 'sent' ? 'bg-yellow-100 text-yellow-800' :
-                        orgUsage.invoiceStatus === 'overdue' ? 'bg-red-100 text-red-800' :
-                        'bg-gray-100 text-gray-800'
-                      }>
-                        {orgUsage.invoiceStatus || 'pending'}
+                      <Badge
+                        className={
+                          orgUsage.invoiceStatus === "paid"
+                            ? "bg-green-100 text-green-800"
+                            : orgUsage.invoiceStatus === "sent"
+                              ? "bg-yellow-100 text-yellow-800"
+                              : orgUsage.invoiceStatus === "overdue"
+                                ? "bg-red-100 text-red-800"
+                                : "bg-gray-100 text-gray-800"
+                        }
+                      >
+                        {orgUsage.invoiceStatus || "pending"}
                       </Badge>
                     </div>
                   </div>
 
                   <div className="mt-6">
-                    <h4 className="text-white font-semibold mb-4">Usage Details</h4>
+                    <h4 className="text-white font-semibold mb-4">
+                      Usage Details
+                    </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="p-4 bg-gray-700 rounded-lg">
                         <p className="text-gray-400 text-sm">Users</p>
-                        <p className="text-xl font-bold text-white">{orgUsage.users?.current || 0}</p>
+                        <p className="text-xl font-bold text-white">
+                          {orgUsage.users?.current || 0}
+                        </p>
                       </div>
                       <div className="p-4 bg-gray-700 rounded-lg">
                         <p className="text-gray-400 text-sm">Properties</p>
-                        <p className="text-xl font-bold text-white">{orgUsage.properties.current}</p>
+                        <p className="text-xl font-bold text-white">
+                          {orgUsage.properties.current}
+                        </p>
                       </div>
                       <div className="p-4 bg-gray-700 rounded-lg">
                         <p className="text-gray-400 text-sm">Claims</p>
-                        <p className="text-xl font-bold text-white">{orgUsage.claims.current}</p>
+                        <p className="text-xl font-bold text-white">
+                          {orgUsage.claims.current}
+                        </p>
                       </div>
                       <div className="p-4 bg-gray-700 rounded-lg">
                         <p className="text-gray-400 text-sm">AI Requests</p>
-                        <p className="text-xl font-bold text-white">{orgUsage.aiRequests?.current?.toLocaleString() || '0'}</p>
+                        <p className="text-xl font-bold text-white">
+                          {orgUsage.aiRequests?.current?.toLocaleString() ||
+                            "0"}
+                        </p>
                       </div>
                       <div className="p-4 bg-gray-700 rounded-lg">
                         <p className="text-gray-400 text-sm">Storage (GB)</p>
-                        <p className="text-xl font-bold text-white">{orgUsage.storage?.current?.toFixed(2) || '0.00'}</p>
+                        <p className="text-xl font-bold text-white">
+                          {orgUsage.storage?.current?.toFixed(2) || "0.00"}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -537,15 +686,19 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
             </div>
           )}
 
-          {activeTab === 'settings' && (
+          {activeTab === "settings" && (
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader>
-                <CardTitle className="text-white">Organization Settings</CardTitle>
+                <CardTitle className="text-white">
+                  Organization Settings
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
                   <div>
-                    <h4 className="text-white font-semibold mb-4">Basic Information</h4>
+                    <h4 className="text-white font-semibold mb-4">
+                      Basic Information
+                    </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -586,7 +739,7 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
                         </label>
                         <input
                           type="email"
-                          value={selectedOrg.billingEmail || 'Not set'}
+                          value={selectedOrg.billingEmail || "Not set"}
                           className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
                           readOnly
                         />
@@ -595,22 +748,37 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
                   </div>
 
                   <div>
-                    <h4 className="text-white font-semibold mb-4">Feature Flags</h4>
+                    <h4 className="text-white font-semibold mb-4">
+                      Feature Flags
+                    </h4>
                     <div className="space-y-2">
-                      {Object.entries(selectedOrg.featureFlags).map(([feature, enabled]) => (
-                        <div key={feature} className="flex items-center justify-between p-3 bg-gray-700 rounded-md">
-                          <span className="text-white">{feature}</span>
-                          <Badge className={enabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
-                            {enabled ? 'Enabled' : 'Disabled'}
-                          </Badge>
-                        </div>
-                      ))}
+                      {Object.entries(selectedOrg.featureFlags).map(
+                        ([feature, enabled]) => (
+                          <div
+                            key={feature}
+                            className="flex items-center justify-between p-3 bg-gray-700 rounded-md"
+                          >
+                            <span className="text-white">{feature}</span>
+                            <Badge
+                              className={
+                                enabled
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-red-100 text-red-800"
+                              }
+                            >
+                              {enabled ? "Enabled" : "Disabled"}
+                            </Badge>
+                          </div>
+                        ),
+                      )}
                     </div>
                   </div>
 
                   <div className="flex justify-end space-x-4">
                     <Button variant="secondary">Cancel</Button>
-                    <Button className="bg-blue-600 hover:bg-blue-700">Save Changes</Button>
+                    <Button className="bg-blue-600 hover:bg-blue-700">
+                      Save Changes
+                    </Button>
                   </div>
                 </div>
               </CardContent>
@@ -619,5 +787,5 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
         </>
       )}
     </div>
-  )
+  );
 }

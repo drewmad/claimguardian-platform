@@ -5,6 +5,7 @@ This document outlines the complete implementation of Florida Geospatial Open Da
 ## Overview
 
 The integration provides:
+
 - **Automated Property Verification**: Link properties to official Florida parcel data
 - **Real-time Risk Assessment**: Calculate risk scores based on hazard zones and infrastructure
 - **Active Event Monitoring**: Track wildfires, floods, and other hazards near insured properties
@@ -122,14 +123,14 @@ crontab -e
 Main dashboard component displaying comprehensive risk assessment:
 
 ```tsx
-import { PropertyRiskDashboard } from '@/components/risk/PropertyRiskDashboard'
+import { PropertyRiskDashboard } from "@/components/risk/PropertyRiskDashboard";
 
 <PropertyRiskDashboard
   propertyId={property.id}
   propertyName={property.name}
   parcelId={property.parcelId}
   address={property.address}
-/>
+/>;
 ```
 
 ### ParcelSearch
@@ -137,13 +138,13 @@ import { PropertyRiskDashboard } from '@/components/risk/PropertyRiskDashboard'
 Component for finding and linking parcels to properties:
 
 ```tsx
-import { ParcelSearch } from '@/components/risk/ParcelSearch'
+import { ParcelSearch } from "@/components/risk/ParcelSearch";
 
 <ParcelSearch
   propertyId={property.id}
   currentParcelId={property.parcelId}
   onParcelLinked={(parcelId) => handleParcelLinked(parcelId)}
-/>
+/>;
 ```
 
 ### Risk Score Components
@@ -155,47 +156,53 @@ import { ParcelSearch } from '@/components/risk/ParcelSearch'
 ## Server Actions API
 
 ### Search Parcels
+
 ```typescript
 const { data, error } = await searchParcels({
   query: "123 Main St",
   county: "Miami-Dade",
-  limit: 10
-})
+  limit: 10,
+});
 ```
 
 ### Get Risk Assessment
+
 ```typescript
 const { data, error } = await getParcelRiskAssessment({
-  parcelId: "12345-67890"
-})
+  parcelId: "12345-67890",
+});
 ```
 
 ### Get Hazard Zones
+
 ```typescript
 const { data, error } = await getPropertyHazardZones({
-  propertyId: "uuid-here"
-})
+  propertyId: "uuid-here",
+});
 ```
 
 ### Get Active Events
+
 ```typescript
 const { data, error } = await getActiveEventsNearProperty({
   propertyId: "uuid-here",
-  radiusMiles: 10
-})
+  radiusMiles: 10,
+});
 ```
 
 ### Link Property to Parcel
+
 ```typescript
 const { data, error } = await linkPropertyToParcel({
   propertyId: "uuid-here",
-  parcelId: "12345-67890"
-})
+  parcelId: "12345-67890",
+});
 ```
 
 ### Get Portfolio Risk Summary
+
 ```typescript
-const { data, error } = await getPortfolioRiskSummary()
+const { data, error } = await getPortfolioRiskSummary();
 ```
 
 ## Risk Scoring Algorithm
@@ -208,6 +215,7 @@ The composite risk score is calculated as a weighted average:
 - **Wildfire Risk**: 20% weight
 
 Additional factors:
+
 - Distance to nearest fire station
 - Distance to nearest hospital
 - Number of overlapping hazard zones
@@ -278,6 +286,7 @@ WHERE status = 'active';
 ### Common Issues
 
 1. **Import Failures**
+
    ```bash
    # Check logs
    tail -f /var/log/claimguardian/geospatial-sync-*.log
@@ -287,6 +296,7 @@ WHERE status = 'active';
    ```
 
 2. **Missing Dependencies**
+
    ```bash
    # Install Python dependencies
    pip install geopandas sqlalchemy psycopg2-binary requests
@@ -301,6 +311,7 @@ WHERE status = 'active';
 ### Support
 
 For issues or questions:
+
 1. Check logs in `/var/log/claimguardian/`
 2. Review `system_logs` table for errors
 3. Verify all environment variables are set
@@ -309,6 +320,7 @@ For issues or questions:
 ## Conclusion
 
 This geospatial integration transforms ClaimGuardian into a data-driven platform capable of:
+
 - Instant risk assessment for any Florida property
 - Proactive hazard monitoring and alerts
 - Portfolio-level risk analytics

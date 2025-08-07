@@ -5,12 +5,18 @@
  * @owner property-team
  * @status stable
  */
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -18,7 +24,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
+} from "@/components/ui/dialog";
 import {
   Crown,
   Home,
@@ -28,41 +34,41 @@ import {
   AlertTriangle,
   Plus,
   CreditCard,
-  Check
-} from 'lucide-react'
-import { UserTier } from '@/lib/permissions/permission-checker'
+  Check,
+} from "lucide-react";
+import { UserTier } from "@/lib/permissions/permission-checker";
 import {
   getPropertyPricing,
   checkPropertyLimit,
-  createAdditionalPropertySubscription
-} from '@/actions/user-tiers'
+  createAdditionalPropertySubscription,
+} from "@/actions/user-tiers";
 
 interface PropertyLimitModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onUpgrade: () => void
-  onPayPerProperty: () => void
-  userId: string
+  isOpen: boolean;
+  onClose: () => void;
+  onUpgrade: () => void;
+  onPayPerProperty: () => void;
+  userId: string;
 }
 
 interface PropertyLimitInfo {
-  canAdd: boolean
-  currentCount: number
-  limit: number
-  remaining: number
-  tier: UserTier
-  requiresUpgrade: boolean
+  canAdd: boolean;
+  currentCount: number;
+  limit: number;
+  remaining: number;
+  tier: UserTier;
+  requiresUpgrade: boolean;
 }
 
 interface PropertyPricing {
-  currentTier: UserTier
-  pricePerProperty: number
-  freeLimit: number
-  currentCount: number
-  additionalPropertiesNeeded: number
-  monthlyAdditionalCost: number
-  nextPropertyCost: number
-  isUnlimited: boolean
+  currentTier: UserTier;
+  pricePerProperty: number;
+  freeLimit: number;
+  currentCount: number;
+  additionalPropertiesNeeded: number;
+  monthlyAdditionalCost: number;
+  nextPropertyCost: number;
+  isUnlimited: boolean;
 }
 
 export function PropertyLimitModal({
@@ -70,109 +76,122 @@ export function PropertyLimitModal({
   onClose,
   onUpgrade,
   onPayPerProperty,
-  userId
+  userId,
 }: PropertyLimitModalProps) {
-  const [limitInfo, setLimitInfo] = useState<PropertyLimitInfo | null>(null)
-  const [pricing, setPricing] = useState<PropertyPricing | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [processingPayment, setProcessingPayment] = useState(false)
+  const [limitInfo, setLimitInfo] = useState<PropertyLimitInfo | null>(null);
+  const [pricing, setPricing] = useState<PropertyPricing | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [processingPayment, setProcessingPayment] = useState(false);
 
   useEffect(() => {
     if (isOpen && userId) {
-      loadPropertyInfo()
+      loadPropertyInfo();
     }
-  }, [isOpen, userId])
+  }, [isOpen, userId]);
 
   const loadPropertyInfo = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
 
       const [limitResult, pricingResult] = await Promise.all([
         checkPropertyLimit(userId),
-        getPropertyPricing(userId)
-      ])
+        getPropertyPricing(userId),
+      ]);
 
       if (limitResult.data) {
-        setLimitInfo(limitResult.data)
+        setLimitInfo(limitResult.data);
       }
 
       if (pricingResult.data) {
-        setPricing(pricingResult.data)
+        setPricing(pricingResult.data);
       }
     } catch (error) {
-      console.error('Error loading property info:', error)
+      console.error("Error loading property info:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handlePayPerProperty = async () => {
-    if (!pricing) return
+    if (!pricing) return;
 
     try {
-      setProcessingPayment(true)
+      setProcessingPayment(true);
 
       const result = await createAdditionalPropertySubscription({
         userId,
-        additionalProperties: 1
-      })
+        additionalProperties: 1,
+      });
 
       if (result.error) {
-        throw new Error(result.error)
+        throw new Error(result.error);
       }
 
-      onPayPerProperty()
-      onClose()
+      onPayPerProperty();
+      onClose();
     } catch (error) {
-      console.error('Error processing payment:', error)
-      alert('Failed to process payment. Please try again.')
+      console.error("Error processing payment:", error);
+      alert("Failed to process payment. Please try again.");
     } finally {
-      setProcessingPayment(false)
+      setProcessingPayment(false);
     }
-  }
+  };
 
   const getTierIcon = (tier: UserTier) => {
     switch (tier) {
-      case 'free': return <Users className="h-5 w-5" />
-      case 'renter': return <Home className="h-5 w-5" />
-      case 'essential': return <Zap className="h-5 w-5" />
-      case 'plus': return <TrendingUp className="h-5 w-5" />
-      case 'pro': return <Crown className="h-5 w-5" />
-      default: return <Users className="h-5 w-5" />
+      case "free":
+        return <Users className="h-5 w-5" />;
+      case "renter":
+        return <Home className="h-5 w-5" />;
+      case "essential":
+        return <Zap className="h-5 w-5" />;
+      case "plus":
+        return <TrendingUp className="h-5 w-5" />;
+      case "pro":
+        return <Crown className="h-5 w-5" />;
+      default:
+        return <Users className="h-5 w-5" />;
     }
-  }
+  };
 
   const getTierColor = (tier: UserTier) => {
     switch (tier) {
-      case 'free': return 'border-gray-500 text-gray-500'
-      case 'renter': return 'border-blue-500 text-blue-500'
-      case 'essential': return 'border-green-500 text-green-500'
-      case 'plus': return 'border-purple-500 text-purple-500'
-      case 'pro': return 'border-yellow-500 text-yellow-500'
-      default: return 'border-gray-500 text-gray-500'
+      case "free":
+        return "border-gray-500 text-gray-500";
+      case "renter":
+        return "border-blue-500 text-blue-500";
+      case "essential":
+        return "border-green-500 text-green-500";
+      case "plus":
+        return "border-purple-500 text-purple-500";
+      case "pro":
+        return "border-yellow-500 text-yellow-500";
+      default:
+        return "border-gray-500 text-gray-500";
     }
-  }
+  };
 
-  const tierUpgradeOptions: Record<UserTier, { name: string; price: number; limit: number }[]> = {
+  const tierUpgradeOptions: Record<
+    UserTier,
+    { name: string; price: number; limit: number }[]
+  > = {
     free: [
-      { name: 'Essential', price: 19, limit: 5 },
-      { name: 'Plus', price: 49, limit: 15 },
-      { name: 'Pro', price: 199, limit: 999999 }
+      { name: "Essential", price: 19, limit: 5 },
+      { name: "Plus", price: 49, limit: 15 },
+      { name: "Pro", price: 199, limit: 999999 },
     ],
     renter: [
-      { name: 'Essential', price: 19, limit: 5 },
-      { name: 'Plus', price: 49, limit: 15 },
-      { name: 'Pro', price: 199, limit: 999999 }
+      { name: "Essential", price: 19, limit: 5 },
+      { name: "Plus", price: 49, limit: 15 },
+      { name: "Pro", price: 199, limit: 999999 },
     ],
     essential: [
-      { name: 'Plus', price: 49, limit: 15 },
-      { name: 'Pro', price: 199, limit: 999999 }
+      { name: "Plus", price: 49, limit: 15 },
+      { name: "Pro", price: 199, limit: 999999 },
     ],
-    plus: [
-      { name: 'Pro', price: 199, limit: 999999 }
-    ],
-    pro: []
-  }
+    plus: [{ name: "Pro", price: 199, limit: 999999 }],
+    pro: [],
+  };
 
   if (loading) {
     return (
@@ -183,7 +202,7 @@ export function PropertyLimitModal({
           </div>
         </DialogContent>
       </Dialog>
-    )
+    );
   }
 
   return (
@@ -206,18 +225,24 @@ export function PropertyLimitModal({
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <Badge variant="outline" className={getTierColor(limitInfo.tier)}>
+                    <Badge
+                      variant="outline"
+                      className={getTierColor(limitInfo.tier)}
+                    >
                       <div className="flex items-center gap-1">
                         {getTierIcon(limitInfo.tier)}
                         <span className="capitalize">{limitInfo.tier}</span>
                       </div>
                     </Badge>
                     <div className="text-sm text-gray-400">
-                      {limitInfo.currentCount} of {limitInfo.limit} properties used
+                      {limitInfo.currentCount} of {limitInfo.limit} properties
+                      used
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm text-gray-400">Additional properties</div>
+                    <div className="text-sm text-gray-400">
+                      Additional properties
+                    </div>
                     <div className="font-semibold text-white">
                       ${pricing.pricePerProperty}/month each
                     </div>
@@ -269,7 +294,9 @@ export function PropertyLimitModal({
                     disabled={processingPayment}
                   >
                     <CreditCard className="h-4 w-4 mr-2" />
-                    {processingPayment ? 'Processing...' : `Pay $${pricing.nextPropertyCost}/month`}
+                    {processingPayment
+                      ? "Processing..."
+                      : `Pay $${pricing.nextPropertyCost}/month`}
                   </Button>
                 </CardContent>
               </Card>
@@ -289,14 +316,23 @@ export function PropertyLimitModal({
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    {tierUpgradeOptions[limitInfo.tier].slice(0, 2).map((option) => (
-                      <div key={option.name} className="flex items-center gap-2">
-                        <Check className="h-4 w-4 text-green-500" />
-                        <span className="text-sm text-gray-300">
-                          {option.name}: {option.limit === 999999 ? 'Unlimited' : option.limit} properties for ${option.price}/month
-                        </span>
-                      </div>
-                    ))}
+                    {tierUpgradeOptions[limitInfo.tier]
+                      .slice(0, 2)
+                      .map((option) => (
+                        <div
+                          key={option.name}
+                          className="flex items-center gap-2"
+                        >
+                          <Check className="h-4 w-4 text-green-500" />
+                          <span className="text-sm text-gray-300">
+                            {option.name}:{" "}
+                            {option.limit === 999999
+                              ? "Unlimited"
+                              : option.limit}{" "}
+                            properties for ${option.price}/month
+                          </span>
+                        </div>
+                      ))}
                     <div className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-green-500" />
                       <span className="text-sm text-gray-300">
@@ -320,17 +356,24 @@ export function PropertyLimitModal({
           {/* Additional Info */}
           <div className="text-center text-sm text-gray-500">
             <p>
-              Questions about pricing? <a href="/contact" className="text-blue-400 hover:text-blue-300">Contact our team</a>
+              Questions about pricing?{" "}
+              <a href="/contact" className="text-blue-400 hover:text-blue-300">
+                Contact our team
+              </a>
             </p>
           </div>
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={onClose} className="border-gray-700">
+          <Button
+            variant="outline"
+            onClick={onClose}
+            className="border-gray-700"
+          >
             Cancel
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

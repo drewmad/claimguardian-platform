@@ -3,11 +3,11 @@ name: Update Database Types
 on:
   push:
     paths:
-      - 'supabase/migrations/*.sql'
-      - 'supabase/schema.sql'
+      - "supabase/migrations/*.sql"
+      - "supabase/schema.sql"
   workflow_dispatch:
   schedule:
-    - cron: '0 0 * * 1' # Weekly on Monday
+    - cron: "0 0 * * 1" # Weekly on Monday
 
 jobs:
   update-types:
@@ -25,8 +25,8 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'pnpm'
+          node-version: "22"
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -59,8 +59,8 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: 'chore: update database types'
-          title: 'chore: update database types'
+          commit-message: "chore: update database types"
+          title: "chore: update database types"
           body: |
             This PR updates the TypeScript types to match the current database schema.
 

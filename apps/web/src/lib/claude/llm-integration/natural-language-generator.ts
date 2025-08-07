@@ -12,26 +12,29 @@ import type {
   Learning,
   Pattern,
   BottleneckAnalysis,
-  LLMProvider
-} from './interfaces'
+  LLMProvider,
+} from "./interfaces";
 
 /**
  * Natural Language Generator Service
  * Creates human-readable descriptions of learnings and patterns
  */
 export class NaturalLanguageGenerator {
-  private provider: LLMProvider
-  private templateCache: Map<string, string> = new Map()
-  private generationHistory: Map<string, NaturalLanguageDescription> = new Map()
+  private provider: LLMProvider;
+  private templateCache: Map<string, string> = new Map();
+  private generationHistory: Map<string, NaturalLanguageDescription> =
+    new Map();
 
   constructor(provider: LLMProvider) {
-    this.provider = provider
+    this.provider = provider;
   }
 
   /**
    * Generate natural language description
    */
-  async generateDescription(request: NaturalLanguageRequest): Promise<NaturalLanguageDescription> {
+  async generateDescription(
+    request: NaturalLanguageRequest,
+  ): Promise<NaturalLanguageDescription> {
     // TODO: Implement with Opus
     // This will:
     // 1. Analyze the item type and content
@@ -40,7 +43,9 @@ export class NaturalLanguageGenerator {
     // 4. Include relevant examples if requested
     // 5. Tailor to audience level
 
-    throw new Error('Natural language generation requires Opus model. Implementation pending.')
+    throw new Error(
+      "Natural language generation requires Opus model. Implementation pending.",
+    );
   }
 
   /**
@@ -49,14 +54,16 @@ export class NaturalLanguageGenerator {
   async generateExecutiveSummary(
     items: Array<Learning | Pattern | BottleneckAnalysis>,
     options: {
-      maxLength?: number
-      focusAreas?: string[]
-      includeMetrics?: boolean
-      includeRecommendations?: boolean
-    }
+      maxLength?: number;
+      focusAreas?: string[];
+      includeMetrics?: boolean;
+      includeRecommendations?: boolean;
+    },
   ): Promise<ExecutiveSummary> {
     // TODO: Implement executive summary generation
-    throw new Error('Executive summary generation requires Opus model. Implementation pending.')
+    throw new Error(
+      "Executive summary generation requires Opus model. Implementation pending.",
+    );
   }
 
   /**
@@ -64,10 +71,12 @@ export class NaturalLanguageGenerator {
    */
   async generateDocumentation(
     patterns: Pattern[],
-    format: 'markdown' | 'html' | 'pdf'
+    format: "markdown" | "html" | "pdf",
   ): Promise<Documentation> {
     // TODO: Implement documentation generation
-    throw new Error('Documentation generation requires Opus model. Implementation pending.')
+    throw new Error(
+      "Documentation generation requires Opus model. Implementation pending.",
+    );
   }
 
   /**
@@ -75,10 +84,12 @@ export class NaturalLanguageGenerator {
    */
   async generateLearningStory(
     learning: Learning,
-    style: 'narrative' | 'case-study' | 'tutorial'
+    style: "narrative" | "case-study" | "tutorial",
   ): Promise<LearningStory> {
     // TODO: Implement learning story generation
-    throw new Error('Learning story generation requires Opus model. Implementation pending.')
+    throw new Error(
+      "Learning story generation requires Opus model. Implementation pending.",
+    );
   }
 
   /**
@@ -86,10 +97,12 @@ export class NaturalLanguageGenerator {
    */
   async generateChangeLog(
     learnings: Learning[],
-    timeframe: { from: Date; to: Date }
+    timeframe: { from: Date; to: Date },
   ): Promise<ChangeLog> {
     // TODO: Implement change log generation
-    throw new Error('Change log generation requires Opus model. Implementation pending.')
+    throw new Error(
+      "Change log generation requires Opus model. Implementation pending.",
+    );
   }
 
   /**
@@ -97,10 +110,12 @@ export class NaturalLanguageGenerator {
    */
   async generateOnboardingGuide(
     patterns: Pattern[],
-    role: 'developer' | 'analyst' | 'manager'
+    role: "developer" | "analyst" | "manager",
   ): Promise<OnboardingGuide> {
     // TODO: Implement onboarding guide generation
-    throw new Error('Onboarding guide generation requires Opus model. Implementation pending.')
+    throw new Error(
+      "Onboarding guide generation requires Opus model. Implementation pending.",
+    );
   }
 
   /**
@@ -108,14 +123,16 @@ export class NaturalLanguageGenerator {
    */
   async translateToNonTechnical(
     content: string,
-    targetAudience: 'business' | 'customer' | 'general'
+    targetAudience: "business" | "customer" | "general",
   ): Promise<{
-    original: string
-    translated: string
-    glossary: Array<{ term: string; definition: string }>
+    original: string;
+    translated: string;
+    glossary: Array<{ term: string; definition: string }>;
   }> {
     // TODO: Implement technical translation
-    throw new Error('Technical translation requires Opus model. Implementation pending.')
+    throw new Error(
+      "Technical translation requires Opus model. Implementation pending.",
+    );
   }
 
   /**
@@ -123,152 +140,155 @@ export class NaturalLanguageGenerator {
    */
   async generateFAQ(
     learnings: Learning[],
-    maxQuestions: number = 10
+    maxQuestions: number = 10,
   ): Promise<FAQ> {
     // TODO: Implement FAQ generation
-    throw new Error('FAQ generation requires Opus model. Implementation pending.')
+    throw new Error(
+      "FAQ generation requires Opus model. Implementation pending.",
+    );
   }
 
   /**
    * Get generation statistics
    */
   getGenerationStats(): {
-    totalGenerated: number
-    byType: Record<string, number>
-    averageReadingTime: number
-    popularTopics: string[]
+    totalGenerated: number;
+    byType: Record<string, number>;
+    averageReadingTime: number;
+    popularTopics: string[];
   } {
-    const descriptions = Array.from(this.generationHistory.values())
+    const descriptions = Array.from(this.generationHistory.values());
 
-    const byType: Record<string, number> = {}
-    let totalReadingTime = 0
+    const byType: Record<string, number> = {};
+    let totalReadingTime = 0;
 
-    descriptions.forEach(desc => {
-      const type = desc.metadata.technicalLevel
-      byType[type] = (byType[type] || 0) + 1
-      totalReadingTime += desc.metadata.readingTime
-    })
+    descriptions.forEach((desc) => {
+      const type = desc.metadata.technicalLevel;
+      byType[type] = (byType[type] || 0) + 1;
+      totalReadingTime += desc.metadata.readingTime;
+    });
 
     return {
       totalGenerated: descriptions.length,
       byType,
-      averageReadingTime: descriptions.length > 0 ? totalReadingTime / descriptions.length : 0,
-      popularTopics: [] // Simplified for now
-    }
+      averageReadingTime:
+        descriptions.length > 0 ? totalReadingTime / descriptions.length : 0,
+      popularTopics: [], // Simplified for now
+    };
   }
 }
 
 // Type definitions
 interface ExecutiveSummary {
-  title: string
-  overview: string
-  keyFindings: string[]
+  title: string;
+  overview: string;
+  keyFindings: string[];
   metrics: {
-    label: string
-    value: string
-    trend?: 'up' | 'down' | 'stable'
-  }[]
-  recommendations: string[]
-  nextSteps: string[]
-  generatedAt: Date
+    label: string;
+    value: string;
+    trend?: "up" | "down" | "stable";
+  }[];
+  recommendations: string[];
+  nextSteps: string[];
+  generatedAt: Date;
 }
 
 interface Documentation {
-  title: string
-  tableOfContents: TOCEntry[]
-  sections: DocumentSection[]
-  format: 'markdown' | 'html' | 'pdf'
+  title: string;
+  tableOfContents: TOCEntry[];
+  sections: DocumentSection[];
+  format: "markdown" | "html" | "pdf";
   metadata: {
-    version: string
-    lastUpdated: Date
-    authors: string[]
-  }
+    version: string;
+    lastUpdated: Date;
+    authors: string[];
+  };
 }
 
 interface TOCEntry {
-  title: string
-  level: number
-  anchor: string
-  children?: TOCEntry[]
+  title: string;
+  level: number;
+  anchor: string;
+  children?: TOCEntry[];
 }
 
 interface DocumentSection {
-  id: string
-  title: string
-  content: string
-  examples?: string[]
-  references?: string[]
+  id: string;
+  title: string;
+  content: string;
+  examples?: string[];
+  references?: string[];
 }
 
 interface LearningStory {
-  title: string
-  introduction: string
-  challenge: string
-  approach: string
-  mistakes: string
-  resolution: string
-  lessonsLearned: string[]
-  impact: string
-  conclusion: string
+  title: string;
+  introduction: string;
+  challenge: string;
+  approach: string;
+  mistakes: string;
+  resolution: string;
+  lessonsLearned: string[];
+  impact: string;
+  conclusion: string;
 }
 
 interface ChangeLog {
-  version: string
-  date: Date
-  summary: string
+  version: string;
+  date: Date;
+  summary: string;
   categories: {
-    added: string[]
-    changed: string[]
-    fixed: string[]
-    removed: string[]
-  }
-  contributors: string[]
+    added: string[];
+    changed: string[];
+    fixed: string[];
+    removed: string[];
+  };
+  contributors: string[];
 }
 
 interface OnboardingGuide {
-  role: string
-  welcome: string
-  objectives: string[]
-  sections: OnboardingSection[]
-  resources: Resource[]
-  timeline: string
+  role: string;
+  welcome: string;
+  objectives: string[];
+  sections: OnboardingSection[];
+  resources: Resource[];
+  timeline: string;
 }
 
 interface OnboardingSection {
-  day: number
-  title: string
-  goals: string[]
-  tasks: string[]
-  patterns: Pattern[]
-  checkpoints: string[]
+  day: number;
+  title: string;
+  goals: string[];
+  tasks: string[];
+  patterns: Pattern[];
+  checkpoints: string[];
 }
 
 interface Resource {
-  title: string
-  type: 'document' | 'video' | 'tutorial' | 'reference'
-  url: string
-  description: string
+  title: string;
+  type: "document" | "video" | "tutorial" | "reference";
+  url: string;
+  description: string;
 }
 
 interface FAQ {
-  questions: FAQItem[]
-  lastUpdated: Date
-  basedOnLearnings: number
+  questions: FAQItem[];
+  lastUpdated: Date;
+  basedOnLearnings: number;
 }
 
 interface FAQItem {
-  question: string
-  answer: string
-  category: string
-  relatedLearnings: string[]
-  helpful: number
-  notHelpful: number
+  question: string;
+  answer: string;
+  category: string;
+  relatedLearnings: string[];
+  helpful: number;
+  notHelpful: number;
 }
 
 // Singleton instance
 export const naturalLanguageGenerator = new NaturalLanguageGenerator({
-  name: 'anthropic',
-  model: 'claude-3-opus',
+  name: "anthropic",
+  model: "claude-3-opus",
   maxTokens: 4096,
-  temperature: 0.7
-})
+  temperature: 0.7,
+});

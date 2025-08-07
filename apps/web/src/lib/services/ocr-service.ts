@@ -8,282 +8,299 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-import { createBrowserSupabaseClient } from '@claimguardian/db'
-import { logger } from "@/lib/logger/production-logger"
-import { toError } from '@claimguardian/utils'
+import { createBrowserSupabaseClient } from "@claimguardian/db";
+import { logger } from "@/lib/logger/production-logger";
+import { toError } from "@claimguardian/utils";
 
-export type DocumentType = 'receipt' | 'invoice' | 'estimate' | 'report' | 'letter' | 'general'
+export type DocumentType =
+  | "receipt"
+  | "invoice"
+  | "estimate"
+  | "report"
+  | "letter"
+  | "general";
 
 export interface OCRResult {
-  success: boolean
-  text?: string
-  structuredData?: unknown
-  confidence?: number
-  language?: string
-  processingTime?: number
-  error?: string
+  success: boolean;
+  text?: string;
+  structuredData?: unknown;
+  confidence?: number;
+  language?: string;
+  processingTime?: number;
+  error?: string;
 }
 
 export interface OCRHistoryEntry {
-  id: string
-  created_at: string
-  user_id: string
-  document_type: DocumentType
-  result_text?: string
-  structured_data?: unknown
-  confidence?: number
-  processing_time?: number
-  file_name?: string
-  success?: boolean
+  id: string;
+  created_at: string;
+  user_id: string;
+  document_type: DocumentType;
+  result_text?: string;
+  structured_data?: unknown;
+  confidence?: number;
+  processing_time?: number;
+  file_name?: string;
+  success?: boolean;
 }
 
 export interface ReceiptData {
-  merchantName?: string
-  date?: string
-  total?: number
-  subtotal?: number
-  tax?: number
+  merchantName?: string;
+  date?: string;
+  total?: number;
+  subtotal?: number;
+  tax?: number;
   items?: Array<{
-    name: string
-    quantity?: number
-    price: number
-  }>
-  paymentMethod?: string
-  transactionId?: string
+    name: string;
+    quantity?: number;
+    price: number;
+  }>;
+  paymentMethod?: string;
+  transactionId?: string;
 }
 
 export interface InvoiceData {
-  invoiceNumber?: string
-  date?: string
-  dueDate?: string
-  vendor?: string
-  vendorAddress?: string
-  client?: string
-  clientAddress?: string
+  invoiceNumber?: string;
+  date?: string;
+  dueDate?: string;
+  vendor?: string;
+  vendorAddress?: string;
+  client?: string;
+  clientAddress?: string;
   items?: Array<{
-    description: string
-    quantity?: number
-    unitPrice?: number
-    total: number
-  }>
-  subtotal?: number
-  tax?: number
-  total?: number
-  terms?: string
+    description: string;
+    quantity?: number;
+    unitPrice?: number;
+    total: number;
+  }>;
+  subtotal?: number;
+  tax?: number;
+  total?: number;
+  terms?: string;
 }
 
 export interface EstimateData {
-  estimateNumber?: string
-  date?: string
-  contractor?: string
-  contractorLicense?: string
-  propertyAddress?: string
-  scopeOfWork?: string
+  estimateNumber?: string;
+  date?: string;
+  contractor?: string;
+  contractorLicense?: string;
+  propertyAddress?: string;
+  scopeOfWork?: string;
   items?: Array<{
-    description: string
-    quantity?: number
-    unit?: string
-    unitPrice?: number
-    total: number
-  }>
-  subtotal?: number
-  tax?: number
-  total?: number
-  validUntil?: string
-  notes?: string
+    description: string;
+    quantity?: number;
+    unit?: string;
+    unitPrice?: number;
+    total: number;
+  }>;
+  subtotal?: number;
+  tax?: number;
+  total?: number;
+  validUntil?: string;
+  notes?: string;
 }
 
 export interface OCROptions {
-  documentType?: DocumentType
-  language?: string
-  extractStructuredData?: boolean
+  documentType?: DocumentType;
+  language?: string;
+  extractStructuredData?: boolean;
 }
 
 class OCRService {
-  private supabase = createBrowserSupabaseClient()
+  private supabase = createBrowserSupabaseClient();
 
   async processDocument(
     file: File,
-    options: OCROptions = {}
+    options: OCROptions = {},
   ): Promise<OCRResult> {
     try {
       // Upload file to temporary storage
-      const fileName = `ocr-temp/${Date.now()}-${file.name}`
+      const fileName = `ocr-temp/${Date.now()}-${file.name}`;
       const { error: uploadError } = await this.supabase.storage
-        .from('temp-documents')
+        .from("temp-documents")
         .upload(fileName, file, {
-          cacheControl: '3600',
-          upsert: false
-        })
+          cacheControl: "3600",
+          upsert: false,
+        });
 
       if (uploadError) {
-        throw new Error(`Failed to upload file: ${uploadError.message}`)
+        throw new Error(`Failed to upload file: ${uploadError.message}`);
       }
 
       // Get public URL
-      const { data: { publicUrl } } = this.supabase.storage
-        .from('temp-documents')
-        .getPublicUrl(fileName)
+      const {
+        data: { publicUrl },
+      } = this.supabase.storage.from("temp-documents").getPublicUrl(fileName);
 
       // Call OCR Edge Function
-      const { data, error } = await this.supabase.functions.invoke('ocr-document', {
-        body: {
-          fileUrl: publicUrl,
-          fileName: file.name,
-          documentType: options.documentType || 'general',
-          extractStructuredData: options.extractStructuredData ?? true,
-          language: options.language || 'en'
-        }
-      })
+      const { data, error } = await this.supabase.functions.invoke(
+        "ocr-document",
+        {
+          body: {
+            fileUrl: publicUrl,
+            fileName: file.name,
+            documentType: options.documentType || "general",
+            extractStructuredData: options.extractStructuredData ?? true,
+            language: options.language || "en",
+          },
+        },
+      );
 
       // Clean up temp file
-      await this.supabase.storage
-        .from('temp-documents')
-        .remove([fileName])
+      await this.supabase.storage.from("temp-documents").remove([fileName]);
 
       if (error) {
-        throw error
+        throw error;
       }
 
-      return data as OCRResult
+      return data as OCRResult;
     } catch (error) {
-      logger.error('OCR processing error:', toError(error))
+      logger.error("OCR processing error:", toError(error));
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'OCR processing failed'
-      }
+        error: error instanceof Error ? error.message : "OCR processing failed",
+      };
     }
   }
 
   async processReceiptFromUrl(imageUrl: string): Promise<OCRResult> {
     try {
-      const { data, error } = await this.supabase.functions.invoke('ocr-document', {
-        body: {
-          fileUrl: imageUrl,
-          fileName: 'receipt.jpg',
-          documentType: 'receipt',
-          extractStructuredData: true,
-          language: 'en'
-        }
-      })
+      const { data, error } = await this.supabase.functions.invoke(
+        "ocr-document",
+        {
+          body: {
+            fileUrl: imageUrl,
+            fileName: "receipt.jpg",
+            documentType: "receipt",
+            extractStructuredData: true,
+            language: "en",
+          },
+        },
+      );
 
       if (error) {
-        throw error
+        throw error;
       }
 
-      return data as OCRResult
+      return data as OCRResult;
     } catch (error) {
-      logger.error('Receipt OCR error:', toError(error))
+      logger.error("Receipt OCR error:", toError(error));
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Receipt processing failed'
-      }
+        error:
+          error instanceof Error ? error.message : "Receipt processing failed",
+      };
     }
   }
 
   validateReceiptData(data: ReceiptData): { valid: boolean; errors: string[] } {
-    const errors: string[] = []
+    const errors: string[] = [];
 
     if (!data.merchantName) {
-      errors.push('Merchant name not found')
+      errors.push("Merchant name not found");
     }
 
     if (!data.date) {
-      errors.push('Date not found')
+      errors.push("Date not found");
     }
 
     if (!data.total && data.total !== 0) {
-      errors.push('Total amount not found')
+      errors.push("Total amount not found");
     }
 
     if (data.items && data.items.length === 0) {
-      errors.push('No items found')
+      errors.push("No items found");
     }
 
     // Validate totals if we have items
     if (data.items && data.items.length > 0 && data.subtotal) {
       const calculatedSubtotal = data.items.reduce((sum, item) => {
-        return sum + (item.price * (item.quantity || 1))
-      }, 0)
+        return sum + item.price * (item.quantity || 1);
+      }, 0);
 
       if (Math.abs(calculatedSubtotal - data.subtotal) > 0.01) {
-        errors.push('Item prices do not match subtotal')
+        errors.push("Item prices do not match subtotal");
       }
     }
 
     return {
       valid: errors.length === 0,
-      errors
-    }
+      errors,
+    };
   }
 
   formatCurrency(amount?: number): string {
-    if (amount === undefined) return 'N/A'
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(amount)
+    if (amount === undefined) return "N/A";
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(amount);
   }
 
   async getOCRHistory(limit = 10): Promise<OCRHistoryEntry[]> {
     const { data, error } = await this.supabase
-      .from('ocr_history')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(limit)
+      .from("ocr_history")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(limit);
 
     if (error) {
-      logger.error('Error fetching OCR history:', error)
-      return []
+      logger.error("Error fetching OCR history:", error);
+      return [];
     }
 
-    return data || []
+    return data || [];
   }
 
-  async getOCRUsage(): Promise<{ used: number; limit: number; remaining: number }> {
+  async getOCRUsage(): Promise<{
+    used: number;
+    limit: number;
+    remaining: number;
+  }> {
     try {
       // Get user profile
-      const { data: { user } } = await this.supabase.auth.getUser()
+      const {
+        data: { user },
+      } = await this.supabase.auth.getUser();
       if (!user) {
-        return { used: 0, limit: 0, remaining: 0 }
+        return { used: 0, limit: 0, remaining: 0 };
       }
 
       const { data: profile } = await this.supabase
-        .from('profiles')
-        .select('subscription_plan')
-        .eq('id', user.id)
-        .single()
+        .from("profiles")
+        .select("subscription_plan")
+        .eq("id", user.id)
+        .single();
 
       // Get usage count for current month
-      const startOfMonth = new Date()
-      startOfMonth.setDate(1)
-      startOfMonth.setHours(0, 0, 0, 0)
+      const startOfMonth = new Date();
+      startOfMonth.setDate(1);
+      startOfMonth.setHours(0, 0, 0, 0);
 
       const { count: ocrCount } = await this.supabase
-        .from('ocr_history')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-        .gte('created_at', startOfMonth.toISOString())
+        .from("ocr_history")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .gte("created_at", startOfMonth.toISOString());
 
       // Define limits by plan
       const ocrLimits: Record<string, number> = {
         free: 10,
         essential: 100,
         plus: 500,
-        pro: -1 // unlimited
-      }
+        pro: -1, // unlimited
+      };
 
-      const userPlan = profile?.subscription_plan || 'free'
-      const limit = ocrLimits[userPlan] || ocrLimits.free
-      const used = ocrCount || 0
-      const remaining = limit === -1 ? -1 : Math.max(0, limit - used)
+      const userPlan = profile?.subscription_plan || "free";
+      const limit = ocrLimits[userPlan] || ocrLimits.free;
+      const used = ocrCount || 0;
+      const remaining = limit === -1 ? -1 : Math.max(0, limit - used);
 
-      return { used, limit, remaining }
+      return { used, limit, remaining };
     } catch (error) {
-      logger.error('Error getting OCR usage:', toError(error))
-      return { used: 0, limit: 0, remaining: 0 }
+      logger.error("Error getting OCR usage:", toError(error));
+      return { used: 0, limit: 0, remaining: 0 };
     }
   }
 }
 
-export const ocrService = new OCRService()
+export const ocrService = new OCRService();

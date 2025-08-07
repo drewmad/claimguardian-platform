@@ -5,36 +5,36 @@
  * @owner frontend-team
  * @status stable
  */
-'use client'
+"use client";
 
-import { X } from 'lucide-react'
-import { useState } from 'react'
+import { X } from "lucide-react";
+import { useState } from "react";
 
-import { useAuth } from '@/components/auth/auth-provider'
-import { useModalStore } from '@/stores/modal-store'
+import { useAuth } from "@/components/auth/auth-provider";
+import { useModalStore } from "@/stores/modal-store";
 
 export function SimpleLoginModal() {
-  const { activeModal, closeModal, openModal } = useModalStore()
-  const { signIn } = useAuth()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
+  const { activeModal, closeModal, openModal } = useModalStore();
+  const { signIn } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  if (activeModal !== 'login') return null
+  if (activeModal !== "login") return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
 
     try {
-      await signIn(email, password)
+      await signIn(email, password);
       // Auth provider handles redirect on success
     } catch {
       // Error handled by auth provider
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -79,15 +79,15 @@ export function SimpleLoginModal() {
             disabled={loading}
             className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
 
         <div className="mt-4 text-center">
           <button
             onClick={() => {
-              closeModal()
-              openModal('signup')
+              closeModal();
+              openModal("signup");
             }}
             className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400"
           >
@@ -96,5 +96,5 @@ export function SimpleLoginModal() {
         </div>
       </div>
     </div>
-  )
+  );
 }

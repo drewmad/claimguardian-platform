@@ -8,15 +8,15 @@
  * @tags ["landing", "cta", "conversion"]
  * @status stable
  */
-'use client'
+"use client";
 
-import React from 'react'
-import Link from 'next/link'
+import React from "react";
+import Link from "next/link";
 
-import { useModalStore } from '@/stores/modal-store'
+import { useModalStore } from "@/stores/modal-store";
 
 export function GetStarted() {
-  const { openModal } = useModalStore()
+  const { openModal } = useModalStore();
 
   return (
     <section className="py-16 md:py-24 bg-gradient-to-b from-slate-900 to-blue-900/20">
@@ -26,8 +26,9 @@ export function GetStarted() {
             Ready to Fight for What's Yours?
           </h2>
           <p className="text-xl text-slate-300 mb-8">
-            Join thousands of property owners who've taken control of their insurance claims.
-            Start your free trial today and see why ClaimGuardian users recover 3x more on average.
+            Join thousands of property owners who've taken control of their
+            insurance claims. Start your free trial today and see why
+            ClaimGuardian users recover 3x more on average.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -38,12 +39,15 @@ export function GetStarted() {
               Start Your Free Trial
             </Link>
             <button
-              onClick={() => openModal('content', {
-                title: 'Schedule a Demo',
-                content: {
-                  description: 'See ClaimGuardian in action with a personalized demo from our team.'
-                }
-              })}
+              onClick={() =>
+                openModal("content", {
+                  title: "Schedule a Demo",
+                  content: {
+                    description:
+                      "See ClaimGuardian in action with a personalized demo from our team.",
+                  },
+                })
+              }
               className="btn-secondary text-white font-bold py-4 px-8 text-lg w-full sm:w-auto"
             >
               Schedule a Demo
@@ -56,5 +60,5 @@ export function GetStarted() {
         </div>
       </div>
     </section>
-  )
+  );
 }

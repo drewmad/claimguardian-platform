@@ -9,15 +9,15 @@
  * @security-level admin-only
  */
 
-'use client'
+"use client";
 
-import { AdminLayout } from '@/components/admin/admin-layout'
-import { ClaraAdminDashboard } from '@/components/admin/clara-admin-dashboard'
+import { AdminLayout } from "@/components/admin/admin-layout";
+import { ClaraAdminDashboard } from "@/components/admin/clara-admin-dashboard";
 
 export default function ClaraAdminPage() {
   return (
     <AdminLayout>
       <ClaraAdminDashboard />
     </AdminLayout>
-  )
+  );
 }

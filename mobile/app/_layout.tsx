@@ -6,34 +6,34 @@
  * @status stable
  */
 
-import { useEffect } from 'react'
-import { Stack } from 'expo-router'
-import { Provider } from 'react-redux'
-import { PersistGate } from 'redux-persist/integration/react'
-import { StatusBar } from 'expo-status-bar'
-import * as SQLite from 'expo-sqlite'
-import { GestureHandlerRootView } from 'react-native-gesture-handler'
-import { SafeAreaProvider } from 'react-native-safe-area-context'
+import { useEffect } from "react";
+import { Stack } from "expo-router";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+import { StatusBar } from "expo-status-bar";
+import * as SQLite from "expo-sqlite";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import { store, persistor } from '../shared/store'
-import { LoadingScreen } from '../shared/components/LoadingScreen'
-import { NetworkProvider } from '../shared/providers/NetworkProvider'
-import { LocationProvider } from '../shared/providers/LocationProvider'
-import { CameraProvider } from '../shared/providers/CameraProvider'
-import { DatabaseProvider } from '../shared/providers/DatabaseProvider'
+import { store, persistor } from "../shared/store";
+import { LoadingScreen } from "../shared/components/LoadingScreen";
+import { NetworkProvider } from "../shared/providers/NetworkProvider";
+import { LocationProvider } from "../shared/providers/LocationProvider";
+import { CameraProvider } from "../shared/providers/CameraProvider";
+import { DatabaseProvider } from "../shared/providers/DatabaseProvider";
 
 export default function RootLayout() {
   useEffect(() => {
     // Initialize SQLite database for offline storage
-    initializeDatabase()
-  }, [])
+    initializeDatabase();
+  }, []);
 
   const initializeDatabase = async () => {
     try {
-      const db = SQLite.openDatabase('claimguardian.db')
+      const db = SQLite.openDatabase("claimguardian.db");
 
       // Create tables for offline data storage
-      db.transaction(tx => {
+      db.transaction((tx) => {
         // Properties table
         tx.executeSql(`
           CREATE TABLE IF NOT EXISTS properties (
@@ -53,7 +53,7 @@ export default function RootLayout() {
             updated_at TEXT NOT NULL,
             synced INTEGER DEFAULT 0
           );
-        `)
+        `);
 
         // Damage assessments table
         tx.executeSql(`
@@ -72,7 +72,7 @@ export default function RootLayout() {
             synced INTEGER DEFAULT 0,
             FOREIGN KEY (property_id) REFERENCES properties (id)
           );
-        `)
+        `);
 
         // Damage items table
         tx.executeSql(`
@@ -92,7 +92,7 @@ export default function RootLayout() {
             synced INTEGER DEFAULT 0,
             FOREIGN KEY (assessment_id) REFERENCES damage_assessments (id)
           );
-        `)
+        `);
 
         // Photos table
         tx.executeSql(`
@@ -114,7 +114,7 @@ export default function RootLayout() {
             created_at TEXT NOT NULL,
             synced INTEGER DEFAULT 0
           );
-        `)
+        `);
 
         // Voice notes table
         tx.executeSql(`
@@ -132,7 +132,7 @@ export default function RootLayout() {
             created_at TEXT NOT NULL,
             synced INTEGER DEFAULT 0
           );
-        `)
+        `);
 
         // Sync queue table
         tx.executeSql(`
@@ -146,14 +146,14 @@ export default function RootLayout() {
             last_error TEXT,
             created_at TEXT NOT NULL
           );
-        `)
+        `);
 
-        console.log('Database initialized successfully')
-      })
+        console.log("Database initialized successfully");
+      });
     } catch (error) {
-      console.error('Failed to initialize database:', error)
+      console.error("Failed to initialize database:", error);
     }
-  }
+  };
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -168,14 +168,14 @@ export default function RootLayout() {
                     <Stack
                       screenOptions={{
                         headerStyle: {
-                          backgroundColor: '#111827',
+                          backgroundColor: "#111827",
                         },
-                        headerTintColor: '#fff',
+                        headerTintColor: "#fff",
                         headerTitleStyle: {
-                          fontWeight: 'bold',
+                          fontWeight: "bold",
                         },
                         contentStyle: {
-                          backgroundColor: '#111827',
+                          backgroundColor: "#111827",
                         },
                       }}
                     >
@@ -183,50 +183,50 @@ export default function RootLayout() {
                         name="(tabs)"
                         options={{
                           headerShown: false,
-                          title: 'ClaimGuardian'
+                          title: "ClaimGuardian",
                         }}
                       />
                       <Stack.Screen
                         name="property/[id]"
                         options={{
-                          title: 'Property Details',
-                          presentation: 'card'
+                          title: "Property Details",
+                          presentation: "card",
                         }}
                       />
                       <Stack.Screen
                         name="assessment/[id]"
                         options={{
-                          title: 'Damage Assessment',
-                          presentation: 'card'
+                          title: "Damage Assessment",
+                          presentation: "card",
                         }}
                       />
                       <Stack.Screen
                         name="camera"
                         options={{
-                          title: 'Capture Photo',
-                          presentation: 'modal',
-                          headerShown: false
+                          title: "Capture Photo",
+                          presentation: "modal",
+                          headerShown: false,
                         }}
                       />
                       <Stack.Screen
                         name="photo-review"
                         options={{
-                          title: 'Review Photo',
-                          presentation: 'modal'
+                          title: "Review Photo",
+                          presentation: "modal",
                         }}
                       />
                       <Stack.Screen
                         name="sync-status"
                         options={{
-                          title: 'Sync Status',
-                          presentation: 'modal'
+                          title: "Sync Status",
+                          presentation: "modal",
                         }}
                       />
                       <Stack.Screen
                         name="settings"
                         options={{
-                          title: 'Settings',
-                          presentation: 'modal'
+                          title: "Settings",
+                          presentation: "modal",
                         }}
                       />
                     </Stack>
@@ -238,5 +238,5 @@ export default function RootLayout() {
         </Provider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
-  )
+  );
 }

@@ -8,9 +8,9 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import React from 'react'
+import React from "react";
 
 export function AuthLoading() {
   return (
@@ -20,5 +20,5 @@ export function AuthLoading() {
         <p className="mt-4 text-gray-600">Loading...</p>
       </div>
     </div>
-  )
+  );
 }

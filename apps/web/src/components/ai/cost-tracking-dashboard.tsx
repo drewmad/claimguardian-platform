@@ -3,27 +3,37 @@
  * Shows user's AI usage, costs, and budget status
  */
 
-'use client'
+"use client";
 
-import React from 'react'
-import { useAICostTracking, useBudgetMonitor, costTrackingUtils } from '@/hooks/use-ai-cost-tracking'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { Button } from '@/components/ui/button'
-import { Alert, AlertDescription } from '@/components/ui/alert'
+import React from "react";
+import {
+  useAICostTracking,
+  useBudgetMonitor,
+  costTrackingUtils,
+} from "@/hooks/use-ai-cost-tracking";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   DollarSign,
   TrendingUp,
   Clock,
   AlertTriangle,
   CheckCircle2,
-  Zap
-} from 'lucide-react'
+  Zap,
+} from "lucide-react";
 
 export function CostTrackingDashboard() {
-  const { usage, loading, error, refreshUsage } = useAICostTracking()
-  const { budgetStatus, alerts, dismissAllAlerts } = useBudgetMonitor()
+  const { usage, loading, error, refreshUsage } = useAICostTracking();
+  const { budgetStatus, alerts, dismissAllAlerts } = useBudgetMonitor();
 
   if (loading) {
     return (
@@ -35,7 +45,7 @@ export function CostTrackingDashboard() {
           <div className="h-24 bg-gray-800/50 rounded-lg animate-pulse" />
         </div>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -54,7 +64,7 @@ export function CostTrackingDashboard() {
           </Button>
         </AlertDescription>
       </Alert>
-    )
+    );
   }
 
   if (!usage) {
@@ -62,11 +72,12 @@ export function CostTrackingDashboard() {
       <div className="text-center py-8 text-gray-400">
         No usage data available
       </div>
-    )
+    );
   }
 
-  const budgetColor = budgetStatus ?
-    costTrackingUtils.getBudgetColor(budgetStatus.percentageUsed) : 'green'
+  const budgetColor = budgetStatus
+    ? costTrackingUtils.getBudgetColor(budgetStatus.percentageUsed)
+    : "green";
 
   return (
     <div className="space-y-6">
@@ -79,11 +90,7 @@ export function CostTrackingDashboard() {
               <strong>Budget Alert:</strong> {alerts[0]}
               {alerts.length > 1 && ` (+${alerts.length - 1} more)`}
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={dismissAllAlerts}
-            >
+            <Button variant="outline" size="sm" onClick={dismissAllAlerts}>
               Dismiss
             </Button>
           </AlertDescription>
@@ -101,16 +108,18 @@ export function CostTrackingDashboard() {
                   Monthly Budget Status
                 </CardTitle>
                 <CardDescription>
-                  {costTrackingUtils.formatCost(budgetStatus.currentSpend)} of{' '}
+                  {costTrackingUtils.formatCost(budgetStatus.currentSpend)} of{" "}
                   {costTrackingUtils.formatCost(budgetStatus.budgetAmount)} used
                 </CardDescription>
               </div>
               <Badge
-                variant={budgetColor === 'green' ? 'default' : 'destructive'}
+                variant={budgetColor === "green" ? "default" : "destructive"}
                 className={
-                  budgetColor === 'green' ? 'bg-green-500' :
-                  budgetColor === 'yellow' ? 'bg-yellow-500' :
-                  'bg-red-500'
+                  budgetColor === "green"
+                    ? "bg-green-500"
+                    : budgetColor === "yellow"
+                      ? "bg-yellow-500"
+                      : "bg-red-500"
                 }
               >
                 {budgetStatus.percentageUsed.toFixed(1)}%
@@ -163,9 +172,10 @@ export function CostTrackingDashboard() {
           <CardContent>
             <div className="text-2xl font-bold text-white">
               {usage.totalRequests > 0
-                ? costTrackingUtils.formatCost(usage.totalCost / usage.totalRequests)
-                : '$0.000000'
-              }
+                ? costTrackingUtils.formatCost(
+                    usage.totalCost / usage.totalRequests,
+                  )
+                : "$0.000000"}
             </div>
           </CardContent>
         </Card>
@@ -185,12 +195,13 @@ export function CostTrackingDashboard() {
         <CardContent>
           <div className="space-y-4">
             {Object.entries(usage.costByTool).map(([tool, cost]) => {
-              const percentage = usage.totalCost > 0 ? (cost / usage.totalCost) * 100 : 0
+              const percentage =
+                usage.totalCost > 0 ? (cost / usage.totalCost) * 100 : 0;
               return (
                 <div key={tool} className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-300 capitalize">
-                      {tool.replace(/-/g, ' ')}
+                      {tool.replace(/-/g, " ")}
                     </span>
                     <div className="text-right">
                       <div className="text-white font-medium">
@@ -203,7 +214,7 @@ export function CostTrackingDashboard() {
                   </div>
                   <Progress value={percentage} className="h-1" />
                 </div>
-              )
+              );
             })}
 
             {Object.keys(usage.costByTool).length === 0 && (
@@ -232,7 +243,10 @@ export function CostTrackingDashboard() {
               .sort(([a], [b]) => new Date(a).getTime() - new Date(b).getTime())
               .slice(-7) // Show last 7 days
               .map(([date, data]) => (
-                <div key={date} className="flex items-center justify-between p-3 rounded bg-gray-700/50">
+                <div
+                  key={date}
+                  className="flex items-center justify-between p-3 rounded bg-gray-700/50"
+                >
                   <div className="flex items-center gap-3">
                     <div className="text-sm text-gray-300">
                       {new Date(date).toLocaleDateString()}
@@ -264,27 +278,27 @@ export function CostTrackingDashboard() {
               <CheckCircle2 className="h-5 w-5" />
               Subscription Status
             </CardTitle>
-            <CardDescription>
-              Current plan limits and usage
-            </CardDescription>
+            <CardDescription>Current plan limits and usage</CardDescription>
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <div className="text-sm text-gray-400">Plan</div>
-              <div className="text-white font-medium capitalize">
-                Free
-              </div>
+              <div className="text-white font-medium capitalize">Free</div>
             </div>
             <div className="space-y-2">
               <div className="text-sm text-gray-400">Monthly Budget</div>
               <div className="text-white font-medium">
-                {costTrackingUtils.formatCost(usage.budgetStatus?.budgetAmount || 0)}
+                {costTrackingUtils.formatCost(
+                  usage.budgetStatus?.budgetAmount || 0,
+                )}
               </div>
             </div>
             <div className="space-y-2">
               <div className="text-sm text-gray-400">Current Spend</div>
               <div className="text-white font-medium">
-                {costTrackingUtils.formatCost(usage.budgetStatus?.currentSpend || 0)}
+                {costTrackingUtils.formatCost(
+                  usage.budgetStatus?.currentSpend || 0,
+                )}
               </div>
             </div>
             <div className="space-y-2">
@@ -309,7 +323,7 @@ export function CostTrackingDashboard() {
         </Button>
       </div>
     </div>
-  )
+  );
 }
 
-export default CostTrackingDashboard
+export default CostTrackingDashboard;

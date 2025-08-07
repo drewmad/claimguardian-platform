@@ -80,6 +80,7 @@ python3 fetch_parcels.py  # Automatically resumes from .fdot_resume
 ```
 
 **Features:**
+
 - Async/await for high performance
 - Automatic resume on interruption
 - Configurable concurrency and batch sizes
@@ -87,6 +88,7 @@ python3 fetch_parcels.py  # Automatically resumes from .fdot_resume
 - Comprehensive logging
 
 **Output:**
+
 - `data/county_parcels_YYYYMMDD_HHMMSS.json` - Parcel data by county
 - `data/county_parcels_YYYYMMDD_HHMMSS.json.md5` - Checksums
 - `.fdot_resume` - Resume checkpoint
@@ -111,6 +113,7 @@ The `import_to_supabase.sh` script processes and imports the data:
 ```
 
 **Features:**
+
 - Automatic data merging from multiple counties
 - JSON to GeoJSON conversion
 - Spatial data import with PostGIS
@@ -122,24 +125,24 @@ The `import_to_supabase.sh` script processes and imports the data:
 
 ### Fetch Configuration
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `FDOT_BASE_URL` | `https://api.fdot.gov/parcels/v1` | FDOT API base URL |
-| `FDOT_API_KEY` | None | API key (if required) |
-| `FDOT_BATCH_SIZE` | 1000 | Parcels per API request |
-| `FDOT_MAX_WORKERS` | 10 | Concurrent API requests |
-| `FDOT_OUTPUT_DIR` | `./data` | Output directory |
-| `FDOT_RESUME_FILE` | `.fdot_resume` | Resume checkpoint file |
+| Variable           | Default                           | Description             |
+| ------------------ | --------------------------------- | ----------------------- |
+| `FDOT_BASE_URL`    | `https://api.fdot.gov/parcels/v1` | FDOT API base URL       |
+| `FDOT_API_KEY`     | None                              | API key (if required)   |
+| `FDOT_BATCH_SIZE`  | 1000                              | Parcels per API request |
+| `FDOT_MAX_WORKERS` | 10                                | Concurrent API requests |
+| `FDOT_OUTPUT_DIR`  | `./data`                          | Output directory        |
+| `FDOT_RESUME_FILE` | `.fdot_resume`                    | Resume checkpoint file  |
 
 ### Import Configuration
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `SUPABASE_URL` | Required | Supabase project URL |
-| `SUPABASE_SERVICE_KEY` | Required | Service role key |
-| `SUPABASE_DB_PASSWORD` | Required | Database password |
-| `BATCH_SIZE` | 10000 | Import batch size |
-| `PARALLEL_JOBS` | 4 | Parallel processing jobs |
+| Variable               | Default  | Description              |
+| ---------------------- | -------- | ------------------------ |
+| `SUPABASE_URL`         | Required | Supabase project URL     |
+| `SUPABASE_SERVICE_KEY` | Required | Service role key         |
+| `SUPABASE_DB_PASSWORD` | Required | Database password        |
+| `BATCH_SIZE`           | 10000    | Import batch size        |
+| `PARALLEL_JOBS`        | 4        | Parallel processing jobs |
 
 ## Data Schema
 
@@ -349,11 +352,13 @@ python3 fetch_parcels.py
 ### Common Solutions
 
 1. **ImportError: No module named 'aiohttp'**
+
    ```bash
    pip install aiohttp aiofiles
    ```
 
 2. **ogr2ogr: command not found**
+
    ```bash
    # Ubuntu/Debian
    sudo apt-get install gdal-bin

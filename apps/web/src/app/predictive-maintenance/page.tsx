@@ -1,10 +1,11 @@
-import { Metadata } from 'next';
-import { PredictiveMaintenanceAlerts } from '@/components/maintenance/PredictiveMaintenanceAlerts';
-import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
+import { Metadata } from "next";
+import { PredictiveMaintenanceAlerts } from "@/components/maintenance/PredictiveMaintenanceAlerts";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 
 export const metadata: Metadata = {
-  title: 'Predictive Maintenance | ClaimGuardian',
-  description: 'AI-powered predictive maintenance system to prevent costly repairs',
+  title: "Predictive Maintenance | ClaimGuardian",
+  description:
+    "AI-powered predictive maintenance system to prevent costly repairs",
 };
 
 export default function PredictiveMaintenancePage() {

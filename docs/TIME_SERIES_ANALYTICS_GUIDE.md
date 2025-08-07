@@ -17,6 +17,7 @@ The time-series analytics system provides:
 ### Core Components
 
 #### 1. Data Collection (`ai-performance-metrics` table)
+
 ```sql
 -- Partitioned by timestamp for optimal performance
 CREATE TABLE ai_performance_metrics (
@@ -31,23 +32,28 @@ CREATE TABLE ai_performance_metrics (
 ```
 
 #### 2. Aggregation Engine (`ai-metrics-aggregated` table)
+
 Pre-computed statistics for different time windows:
+
 - 1-minute, 5-minute, 15-minute, 1-hour, 1-day intervals
 - Statistical measures: mean, median, percentiles, standard deviation
 - Grouped by feature, model, and provider
 
 #### 3. Anomaly Detection (`ai-anomalies` table)
+
 - Z-score based statistical outlier detection
 - Pattern break detection using moving averages
 - Configurable sensitivity levels
 - Automatic severity classification (low/medium/high/critical)
 
 #### 4. Forecasting (`ai-forecasts` table)
+
 - Linear regression and exponential smoothing models
 - Multiple time horizons (1 hour, 1 day, 1 week)
 - Confidence intervals and accuracy metrics
 
 #### 5. Performance Insights (`ai-performance-insights` table)
+
 - Automated insight generation from trends and anomalies
 - Actionable recommendations
 - Status tracking for review workflows
@@ -55,26 +61,31 @@ Pre-computed statistics for different time windows:
 ## Key Metrics Tracked
 
 ### Response Time Metrics
+
 - `response_time`: End-to-end API response time in milliseconds
 - Percentiles: P50, P95, P99 for tail latency analysis
 - Trends and seasonality detection
 
 ### Cost Metrics
+
 - `cost`: Per-request cost in USD
 - Provider-specific cost tracking
 - Budget alerting and cost optimization insights
 
 ### Reliability Metrics
+
 - `success_rate`: Percentage of successful requests
 - `error_rate`: Error frequency and patterns
 - Error classification and root cause analysis
 
 ### Throughput Metrics
+
 - `request_count`: Requests per minute/hour
 - Capacity utilization and scaling insights
 - Load pattern analysis
 
 ### Accuracy Metrics
+
 - `accuracy`: Model prediction accuracy (0-1 scale)
 - Accuracy drift detection over time
 - Model performance comparisons
@@ -102,19 +113,19 @@ const response = await enhancedAIClient.enhancedChat({
 For custom metrics or external integrations:
 
 ```typescript
-import { trackAIMetric } from '@/actions/ai-analytics'
+import { trackAIMetric } from "@/actions/ai-analytics";
 
 await trackAIMetric({
-  metricName: 'custom_accuracy',
+  metricName: "custom_accuracy",
   metricValue: 0.94,
-  featureId: 'policy-chat',
-  modelName: 'gpt-4',
-  provider: 'openai',
+  featureId: "policy-chat",
+  modelName: "gpt-4",
+  provider: "openai",
   metadata: {
-    testSet: 'insurance_policies_v2',
-    evaluationMethod: 'human_review'
-  }
-})
+    testSet: "insurance_policies_v2",
+    evaluationMethod: "human_review",
+  },
+});
 ```
 
 ### 3. Analytics Dashboard
@@ -126,6 +137,7 @@ Access comprehensive analytics through the admin panel:
 ```
 
 Features:
+
 - **Interactive time-series charts** with zoom and filtering
 - **Anomaly visualization** with severity indicators
 - **Trend analysis** with statistical significance
@@ -137,23 +149,23 @@ Features:
 Use the time-series analyzer for custom analysis:
 
 ```typescript
-import { aiTimeSeriesAnalyzer } from '@/lib/analytics/time-series-analyzer'
+import { aiTimeSeriesAnalyzer } from "@/lib/analytics/time-series-analyzer";
 
 const analysis = await aiTimeSeriesAnalyzer.analyzeAIPerformance({
   startTime: new Date(Date.now() - 24 * 60 * 60 * 1000),
   endTime: new Date(),
-  resolution: '15m',
-  features: ['damage-analyzer', 'policy-chat'],
+  resolution: "15m",
+  features: ["damage-analyzer", "policy-chat"],
   includeForecasting: true,
-  includeAnomalyDetection: true
-})
+  includeAnomalyDetection: true,
+});
 
-console.log('Performance Analysis:', {
+console.log("Performance Analysis:", {
   metrics: analysis.metrics,
   trends: analysis.trends,
   anomalies: analysis.anomalies,
-  recommendations: analysis.recommendations
-})
+  recommendations: analysis.recommendations,
+});
 ```
 
 ## Background Processing
@@ -187,22 +199,24 @@ Compare performance between different time periods:
 
 ```typescript
 const comparison = await aiTimeSeriesAnalyzer.comparePerformance(
-  baselineStart,    // Previous week
+  baselineStart, // Previous week
   baselineEnd,
-  comparisonStart,  // Current week
+  comparisonStart, // Current week
   comparisonEnd,
   {
-    features: ['damage-analyzer'],
-    confidenceLevel: 0.95
-  }
-)
+    features: ["damage-analyzer"],
+    confidenceLevel: 0.95,
+  },
+);
 
 // Statistical significance testing with p-values
-comparison.significantChanges.forEach(change => {
+comparison.significantChanges.forEach((change) => {
   if (change.isSignificant) {
-    console.log(`${change.metric}: ${change.percentChange}% change (p=${change.pValue})`)
+    console.log(
+      `${change.metric}: ${change.percentChange}% change (p=${change.pValue})`,
+    );
   }
-})
+});
 ```
 
 ### 2. Custom Benchmarks
@@ -210,18 +224,18 @@ comparison.significantChanges.forEach(change => {
 Set performance targets and SLA thresholds:
 
 ```typescript
-import { createPerformanceBenchmark } from '@/actions/ai-analytics'
+import { createPerformanceBenchmark } from "@/actions/ai-analytics";
 
 await createPerformanceBenchmark({
-  benchmarkName: 'damage_analyzer_response_time',
-  metricName: 'response_time',
-  targetValue: 2000,        // 2 seconds target
-  warningThreshold: 3000,   // Warning at 3 seconds
-  criticalThreshold: 5000,  // Critical at 5 seconds
-  featureId: 'damage-analyzer',
-  benchmarkType: 'sla',
-  description: 'Response time SLA for damage analysis'
-})
+  benchmarkName: "damage_analyzer_response_time",
+  metricName: "response_time",
+  targetValue: 2000, // 2 seconds target
+  warningThreshold: 3000, // Warning at 3 seconds
+  criticalThreshold: 5000, // Critical at 5 seconds
+  featureId: "damage-analyzer",
+  benchmarkType: "sla",
+  description: "Response time SLA for damage analysis",
+});
 ```
 
 ### 3. Anomaly Configuration
@@ -232,14 +246,14 @@ Customize anomaly detection sensitivity:
 // Conservative detection (fewer false positives)
 await triggerAnomalyDetection({
   lookbackHours: 24,
-  sensitivity: 4.0  // 4-sigma threshold
-})
+  sensitivity: 4.0, // 4-sigma threshold
+});
 
 // Sensitive detection (catch smaller deviations)
 await triggerAnomalyDetection({
   lookbackHours: 12,
-  sensitivity: 2.5  // 2.5-sigma threshold
-})
+  sensitivity: 2.5, // 2.5-sigma threshold
+});
 ```
 
 ## Data Retention Policy
@@ -271,6 +285,7 @@ await triggerAnomalyDetection({
 ### Built-in Alerts
 
 The system generates alerts for:
+
 - **Critical anomalies**: Immediate attention required
 - **Cost spikes**: Budget overruns or unusual spend patterns
 - **Performance degradation**: Response time or accuracy issues
@@ -288,6 +303,7 @@ The system generates alerts for:
 ### Common Issues
 
 #### 1. Missing Metrics
+
 ```sql
 -- Check if metrics are being inserted
 SELECT COUNT(*), MAX(timestamp)
@@ -296,12 +312,14 @@ WHERE timestamp > NOW() - INTERVAL '1 hour';
 ```
 
 #### 2. Aggregation Problems
+
 ```sql
 -- Verify aggregation function is working
 SELECT aggregate_ai_metrics('15 minutes', '1 hour');
 ```
 
 #### 3. Anomaly Detection Issues
+
 ```sql
 -- Check anomaly detection results
 SELECT * FROM ai_anomalies
@@ -348,24 +366,28 @@ node scripts/analytics-worker.js status
 ## Best Practices
 
 ### 1. Metric Design
+
 - Use consistent naming conventions
 - Include relevant metadata
 - Set appropriate data types and precision
 - Consider cardinality impact on storage
 
 ### 2. Query Optimization
+
 - Always filter by time range
 - Use appropriate aggregation levels
 - Limit result sets for dashboards
 - Cache frequently accessed data
 
 ### 3. Anomaly Management
+
 - Set appropriate sensitivity levels
 - Review and classify anomalies regularly
 - Document resolution actions
 - Update detection parameters based on feedback
 
 ### 4. Capacity Planning
+
 - Monitor storage growth
 - Plan for partition management
 - Scale aggregation processing as needed
@@ -417,15 +439,15 @@ const MetricsWidget = () => {
 ```typescript
 // Weekly performance report
 const generateWeeklyReport = async () => {
-  const endTime = new Date()
-  const startTime = new Date(endTime.getTime() - 7 * 24 * 60 * 60 * 1000)
+  const endTime = new Date();
+  const startTime = new Date(endTime.getTime() - 7 * 24 * 60 * 60 * 1000);
 
   const analysis = await aiTimeSeriesAnalyzer.analyzeAIPerformance({
     startTime,
     endTime,
-    resolution: '1h',
-    includeForecasting: true
-  })
+    resolution: "1h",
+    includeForecasting: true,
+  });
 
   const report = {
     period: { start: startTime, end: endTime },
@@ -433,19 +455,19 @@ const generateWeeklyReport = async () => {
       totalRequests: analysis.metrics.throughput.sum,
       avgResponseTime: analysis.metrics.responseTime.mean,
       totalCost: analysis.metrics.cost.sum,
-      successRate: analysis.metrics.successRate.mean
+      successRate: analysis.metrics.successRate.mean,
     },
-    trends: analysis.trends.map(t => ({
+    trends: analysis.trends.map((t) => ({
       metric: t.metric,
       direction: t.direction,
-      rate: t.rate
+      rate: t.rate,
     })),
     anomalies: analysis.anomalies.length,
-    recommendations: analysis.recommendations
-  }
+    recommendations: analysis.recommendations,
+  };
 
-  return report
-}
+  return report;
+};
 ```
 
 This comprehensive time-series analytics system provides deep insights into AI performance, enabling data-driven optimization and proactive issue resolution.

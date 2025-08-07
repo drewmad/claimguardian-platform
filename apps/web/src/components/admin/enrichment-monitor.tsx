@@ -6,10 +6,10 @@
  * @status stable
  */
 
-'use client'
+"use client";
 
-import { Card } from '@claimguardian/ui'
-import { Button } from '@claimguardian/ui'
+import { Card } from "@claimguardian/ui";
+import { Button } from "@claimguardian/ui";
 import {
   BarChart3,
   CheckCircle2,
@@ -18,81 +18,85 @@ import {
   RefreshCw,
   Download,
   TrendingUp,
-  DollarSign
-} from 'lucide-react'
-import { useEffect, useState, useCallback } from 'react'
-import { toast } from 'sonner'
-import { logger } from "@/lib/logger/production-logger"
+  DollarSign,
+} from "lucide-react";
+import { useEffect, useState, useCallback } from "react";
+import { toast } from "sonner";
+import { logger } from "@/lib/logger/production-logger";
 
-import { getUserEnrichmentStats, checkEnrichmentHealth } from '@/actions/property-verification'
-import { Badge } from '@/components/ui/badge'
-import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { createClient } from '@/lib/supabase/client'
+import {
+  getUserEnrichmentStats,
+  checkEnrichmentHealth,
+} from "@/actions/property-verification";
+import { Badge } from "@/components/ui/badge";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { createClient } from "@/lib/supabase/client";
 
 interface EnrichmentStats {
-  totalProperties: number
-  enrichedProperties: number
-  enrichmentPercentage: number
-  totalApiCost: number
-  averageCompleteness: number
+  totalProperties: number;
+  enrichedProperties: number;
+  enrichmentPercentage: number;
+  totalApiCost: number;
+  averageCompleteness: number;
 }
 
 interface HealthCheckResult {
-  totalProperties: number
-  healthyProperties: number
+  totalProperties: number;
+  healthyProperties: number;
   issues: Array<{
-    propertyId: string
-    propertyName: string
-    issue: 'missing' | 'expired' | 'expiring_soon'
-    expiresAt?: string
-  }>
+    propertyId: string;
+    propertyName: string;
+    issue: "missing" | "expired" | "expiring_soon";
+    expiresAt?: string;
+  }>;
 }
 
 export function EnrichmentMonitor() {
-  const [stats, setStats] = useState<EnrichmentStats | null>(null)
-  const [healthData, setHealthData] = useState<HealthCheckResult | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [refreshing, setRefreshing] = useState(false)
-  const supabase = createClient()
+  const [stats, setStats] = useState<EnrichmentStats | null>(null);
+  const [healthData, setHealthData] = useState<HealthCheckResult | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const supabase = createClient();
 
   const fetchData = useCallback(async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
 
       // Fetch enrichment statistics
-      const statsResult = await getUserEnrichmentStats(user.id)
+      const statsResult = await getUserEnrichmentStats(user.id);
       if (statsResult.success && statsResult.data) {
-        setStats(statsResult.data)
+        setStats(statsResult.data);
       }
 
       // Check enrichment health
-      const healthResult = await checkEnrichmentHealth(user.id)
+      const healthResult = await checkEnrichmentHealth(user.id);
       if (healthResult.success && healthResult.data) {
-        setHealthData(healthResult.data)
+        setHealthData(healthResult.data);
       }
-
     } catch (error) {
-      logger.error('Error fetching enrichment data:', error)
-      toast.error('Failed to load enrichment data')
+      logger.error("Error fetching enrichment data:", error);
+      toast.error("Failed to load enrichment data");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [supabase])
+  }, [supabase]);
 
   useEffect(() => {
-    fetchData()
-  }, [fetchData])
+    fetchData();
+  }, [fetchData]);
 
   async function handleRefresh() {
-    setRefreshing(true)
-    await fetchData()
-    setRefreshing(false)
-    toast.success('Data refreshed')
+    setRefreshing(true);
+    await fetchData();
+    setRefreshing(false);
+    toast.success("Data refreshed");
   }
 
   async function exportData() {
-    if (!stats || !healthData) return
+    if (!stats || !healthData) return;
 
     const report = {
       generatedAt: new Date().toISOString(),
@@ -101,21 +105,29 @@ export function EnrichmentMonitor() {
       summary: {
         totalProperties: stats.totalProperties,
         enrichedProperties: stats.enrichedProperties,
-        missingEnrichments: healthData.issues.filter(i => i.issue === 'missing').length,
-        expiredEnrichments: healthData.issues.filter(i => i.issue === 'expired').length,
-        expiringEnrichments: healthData.issues.filter(i => i.issue === 'expiring_soon').length
-      }
-    }
+        missingEnrichments: healthData.issues.filter(
+          (i) => i.issue === "missing",
+        ).length,
+        expiredEnrichments: healthData.issues.filter(
+          (i) => i.issue === "expired",
+        ).length,
+        expiringEnrichments: healthData.issues.filter(
+          (i) => i.issue === "expiring_soon",
+        ).length,
+      },
+    };
 
-    const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' })
-    const url = window.URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `enrichment-report-${new Date().toISOString().split('T')[0]}.json`
-    a.click()
-    window.URL.revokeObjectURL(url)
+    const blob = new Blob([JSON.stringify(report, null, 2)], {
+      type: "application/json",
+    });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `enrichment-report-${new Date().toISOString().split("T")[0]}.json`;
+    a.click();
+    window.URL.revokeObjectURL(url);
 
-    toast.success('Report exported')
+    toast.success("Report exported");
   }
 
   if (loading) {
@@ -128,12 +140,15 @@ export function EnrichmentMonitor() {
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
-  const missingCount = healthData?.issues.filter(i => i.issue === 'missing').length || 0
-  const expiredCount = healthData?.issues.filter(i => i.issue === 'expired').length || 0
-  const expiringSoonCount = healthData?.issues.filter(i => i.issue === 'expiring_soon').length || 0
+  const missingCount =
+    healthData?.issues.filter((i) => i.issue === "missing").length || 0;
+  const expiredCount =
+    healthData?.issues.filter((i) => i.issue === "expired").length || 0;
+  const expiringSoonCount =
+    healthData?.issues.filter((i) => i.issue === "expiring_soon").length || 0;
 
   return (
     <div className="space-y-6">
@@ -147,14 +162,12 @@ export function EnrichmentMonitor() {
             onClick={handleRefresh}
             disabled={refreshing}
           >
-            <RefreshCw className={`mr-2 h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`mr-2 h-4 w-4 ${refreshing ? "animate-spin" : ""}`}
+            />
             Refresh
           </Button>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={exportData}
-          >
+          <Button variant="secondary" size="sm" onClick={exportData}>
             <Download className="mr-2 h-4 w-4" />
             Export Report
           </Button>
@@ -171,7 +184,9 @@ export function EnrichmentMonitor() {
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats?.totalProperties || 0}</div>
+            <div className="text-2xl font-bold">
+              {stats?.totalProperties || 0}
+            </div>
           </CardContent>
         </Card>
 
@@ -183,7 +198,9 @@ export function EnrichmentMonitor() {
             <CheckCircle2 className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats?.enrichedProperties || 0}</div>
+            <div className="text-2xl font-bold">
+              {stats?.enrichedProperties || 0}
+            </div>
             <p className="text-xs text-muted-foreground">
               {stats?.enrichmentPercentage || 0}% coverage
             </p>
@@ -202,7 +219,11 @@ export function EnrichmentMonitor() {
               ${(stats?.totalApiCost || 0).toFixed(2)}
             </div>
             <p className="text-xs text-muted-foreground">
-              ${((stats?.totalApiCost || 0) / (stats?.enrichedProperties || 1)).toFixed(3)} per property
+              $
+              {(
+                (stats?.totalApiCost || 0) / (stats?.enrichedProperties || 1)
+              ).toFixed(3)}{" "}
+              per property
             </p>
           </CardContent>
         </Card>
@@ -215,10 +236,10 @@ export function EnrichmentMonitor() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats?.averageCompleteness || 0}%</div>
-            <p className="text-xs text-muted-foreground">
-              Data quality score
-            </p>
+            <div className="text-2xl font-bold">
+              {stats?.averageCompleteness || 0}%
+            </div>
+            <p className="text-xs text-muted-foreground">Data quality score</p>
           </CardContent>
         </Card>
       </div>
@@ -234,8 +255,12 @@ export function EnrichmentMonitor() {
             <div className="grid gap-4 md:grid-cols-3">
               <div className="flex items-center justify-between p-4 bg-red-50 rounded-lg">
                 <div>
-                  <p className="text-sm font-medium text-red-900">Missing Enrichment</p>
-                  <p className="text-2xl font-bold text-red-700">{missingCount}</p>
+                  <p className="text-sm font-medium text-red-900">
+                    Missing Enrichment
+                  </p>
+                  <p className="text-2xl font-bold text-red-700">
+                    {missingCount}
+                  </p>
                 </div>
                 <XCircle className="h-8 w-8 text-red-500" />
               </div>
@@ -243,15 +268,21 @@ export function EnrichmentMonitor() {
               <div className="flex items-center justify-between p-4 bg-orange-50 rounded-lg">
                 <div>
                   <p className="text-sm font-medium text-orange-900">Expired</p>
-                  <p className="text-2xl font-bold text-orange-700">{expiredCount}</p>
+                  <p className="text-2xl font-bold text-orange-700">
+                    {expiredCount}
+                  </p>
                 </div>
                 <AlertCircle className="h-8 w-8 text-orange-500" />
               </div>
 
               <div className="flex items-center justify-between p-4 bg-yellow-50 rounded-lg">
                 <div>
-                  <p className="text-sm font-medium text-yellow-900">Expiring Soon</p>
-                  <p className="text-2xl font-bold text-yellow-700">{expiringSoonCount}</p>
+                  <p className="text-sm font-medium text-yellow-900">
+                    Expiring Soon
+                  </p>
+                  <p className="text-2xl font-bold text-yellow-700">
+                    {expiringSoonCount}
+                  </p>
                 </div>
                 <AlertCircle className="h-8 w-8 text-yellow-500" />
               </div>
@@ -260,7 +291,9 @@ export function EnrichmentMonitor() {
             {/* Issues List */}
             {healthData && healthData.issues.length > 0 && (
               <div className="border-t pt-4">
-                <h4 className="font-medium mb-3">Properties Requiring Attention</h4>
+                <h4 className="font-medium mb-3">
+                  Properties Requiring Attention
+                </h4>
                 <div className="space-y-2 max-h-64 overflow-y-auto">
                   {healthData.issues.map((issue, index) => (
                     <div
@@ -268,26 +301,36 @@ export function EnrichmentMonitor() {
                       className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
                     >
                       <div className="flex items-center gap-3">
-                        {issue.issue === 'missing' && <XCircle className="h-5 w-5 text-red-500" />}
-                        {issue.issue === 'expired' && <AlertCircle className="h-5 w-5 text-orange-500" />}
-                        {issue.issue === 'expiring_soon' && <AlertCircle className="h-5 w-5 text-yellow-500" />}
+                        {issue.issue === "missing" && (
+                          <XCircle className="h-5 w-5 text-red-500" />
+                        )}
+                        {issue.issue === "expired" && (
+                          <AlertCircle className="h-5 w-5 text-orange-500" />
+                        )}
+                        {issue.issue === "expiring_soon" && (
+                          <AlertCircle className="h-5 w-5 text-yellow-500" />
+                        )}
                         <div>
                           <p className="font-medium">{issue.propertyName}</p>
                           <p className="text-sm text-gray-600">
-                            {issue.issue === 'missing' && 'No enrichment data'}
-                            {issue.issue === 'expired' && `Expired on ${new Date(issue.expiresAt!).toLocaleDateString()}`}
-                            {issue.issue === 'expiring_soon' && `Expires on ${new Date(issue.expiresAt!).toLocaleDateString()}`}
+                            {issue.issue === "missing" && "No enrichment data"}
+                            {issue.issue === "expired" &&
+                              `Expired on ${new Date(issue.expiresAt!).toLocaleDateString()}`}
+                            {issue.issue === "expiring_soon" &&
+                              `Expires on ${new Date(issue.expiresAt!).toLocaleDateString()}`}
                           </p>
                         </div>
                       </div>
                       <Badge
                         variant={
-                          issue.issue === 'missing' ? 'destructive' :
-                          issue.issue === 'expired' ? 'outline' :
-                          'secondary'
+                          issue.issue === "missing"
+                            ? "destructive"
+                            : issue.issue === "expired"
+                              ? "outline"
+                              : "secondary"
                         }
                       >
-                        {issue.issue.replace('_', ' ')}
+                        {issue.issue.replace("_", " ")}
                       </Badge>
                     </div>
                   ))}
@@ -299,13 +342,17 @@ export function EnrichmentMonitor() {
             {healthData && healthData.issues.length === 0 && (
               <div className="text-center py-8">
                 <CheckCircle2 className="h-12 w-12 text-green-500 mx-auto mb-4" />
-                <p className="text-lg font-medium text-green-700">All Properties Healthy</p>
-                <p className="text-gray-600">All property enrichments are up to date</p>
+                <p className="text-lg font-medium text-green-700">
+                  All Properties Healthy
+                </p>
+                <p className="text-gray-600">
+                  All property enrichments are up to date
+                </p>
               </div>
             )}
           </div>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

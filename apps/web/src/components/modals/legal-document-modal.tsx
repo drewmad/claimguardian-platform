@@ -8,22 +8,27 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { X } from 'lucide-react'
-import ReactMarkdown from 'react-markdown'
+import { X } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
-import { Button } from '@/components/ui/button'
+import { Button } from "@/components/ui/button";
 
 interface LegalDocumentModalProps {
-  isOpen: boolean
-  onClose: () => void
-  title: string
-  content: string
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  content: string;
 }
 
-export function LegalDocumentModal({ isOpen, onClose, title, content }: LegalDocumentModalProps) {
-  if (!isOpen) return null
+export function LegalDocumentModal({
+  isOpen,
+  onClose,
+  title,
+  content,
+}: LegalDocumentModalProps) {
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
@@ -40,9 +45,9 @@ export function LegalDocumentModal({ isOpen, onClose, title, content }: LegalDoc
           </div>
         </div>
         <div className="p-6 border-t border-gray-700 text-right">
-            <Button onClick={onClose}>Close</Button>
+          <Button onClick={onClose}>Close</Button>
         </div>
       </div>
     </div>
-  )
+  );
 }

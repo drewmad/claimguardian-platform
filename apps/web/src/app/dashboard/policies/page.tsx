@@ -8,43 +8,66 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { Button } from '@claimguardian/ui'
-import { format } from 'date-fns'
+import { Button } from "@claimguardian/ui";
+import { format } from "date-fns";
 import {
-  FileText, Upload, Shield, DollarSign,
-  AlertCircle, Plus, Eye, Download,
-  Home, Droplets, Wind, AlertTriangle
-} from 'lucide-react'
-import dynamic from 'next/dynamic'
-import React, { useState } from 'react'
+  FileText,
+  Upload,
+  Shield,
+  DollarSign,
+  AlertCircle,
+  Plus,
+  Eye,
+  Download,
+  Home,
+  Droplets,
+  Wind,
+  AlertTriangle,
+} from "lucide-react";
+import dynamic from "next/dynamic";
+import React, { useState } from "react";
 
-import { ProtectedRoute } from '@/components/auth/protected-route'
-import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-
+import { ProtectedRoute } from "@/components/auth/protected-route";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const PolicyUpload = dynamic(
-  () => import('@/components/policy/policy-upload').then(mod => ({ default: mod.PolicyUpload })),
+  () =>
+    import("@/components/policy/policy-upload").then((mod) => ({
+      default: mod.PolicyUpload,
+    })),
   {
     ssr: false,
-    loading: () => <div className="text-gray-400">Loading upload component...</div>
-  }
-)
-import { usePolicyData, formatCoverage, formatDeductible } from '@/hooks/use-policy-data'
+    loading: () => (
+      <div className="text-gray-400">Loading upload component...</div>
+    ),
+  },
+);
+import {
+  usePolicyData,
+  formatCoverage,
+  formatDeductible,
+} from "@/hooks/use-policy-data";
 
 function PoliciesContent() {
-  const [showUpload, setShowUpload] = useState(false)
-  const { policies, activePolicy, refetch } = usePolicyData()
+  const [showUpload, setShowUpload] = useState(false);
+  const { policies, activePolicy, refetch } = usePolicyData();
 
   const getCoverageIcon = (type: string) => {
-    if (type.toLowerCase().includes('flood')) return <Droplets className="w-4 h-4" />
-    if (type.toLowerCase().includes('hurricane') || type.toLowerCase().includes('wind')) return <Wind className="w-4 h-4" />
-    if (type.toLowerCase().includes('sinkhole')) return <AlertTriangle className="w-4 h-4" />
-    return <Shield className="w-4 h-4" />
-  }
+    if (type.toLowerCase().includes("flood"))
+      return <Droplets className="w-4 h-4" />;
+    if (
+      type.toLowerCase().includes("hurricane") ||
+      type.toLowerCase().includes("wind")
+    )
+      return <Wind className="w-4 h-4" />;
+    if (type.toLowerCase().includes("sinkhole"))
+      return <AlertTriangle className="w-4 h-4" />;
+    return <Shield className="w-4 h-4" />;
+  };
 
   return (
     <DashboardLayout>
@@ -53,8 +76,12 @@ function PoliciesContent() {
           {/* Header */}
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-white mb-2">Insurance Policies</h1>
-              <p className="text-gray-400">Manage and review your property insurance coverage</p>
+              <h1 className="text-3xl font-bold text-white mb-2">
+                Insurance Policies
+              </h1>
+              <p className="text-gray-400">
+                Manage and review your property insurance coverage
+              </p>
             </div>
             <Button
               onClick={() => setShowUpload(true)}
@@ -85,28 +112,47 @@ function PoliciesContent() {
                 {/* Policy Details */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
-                    <p className="text-sm text-gray-400 mb-1">Insurance Carrier</p>
-                    <p className="text-xl font-semibold text-white">{activePolicy.carrier_name}</p>
-                    <p className="text-sm text-gray-400 mt-1">Policy #{activePolicy.policy_number}</p>
+                    <p className="text-sm text-gray-400 mb-1">
+                      Insurance Carrier
+                    </p>
+                    <p className="text-xl font-semibold text-white">
+                      {activePolicy.carrier_name}
+                    </p>
+                    <p className="text-sm text-gray-400 mt-1">
+                      Policy #{activePolicy.policy_number}
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-400 mb-1">Policy Period</p>
                     <p className="text-white">
-                      {activePolicy.effective_date && format(new Date(activePolicy.effective_date), 'MMM d, yyyy')}
+                      {activePolicy.effective_date &&
+                        format(
+                          new Date(activePolicy.effective_date),
+                          "MMM d, yyyy",
+                        )}
                     </p>
                     <p className="text-white">
-                      to {activePolicy.expiration_date && format(new Date(activePolicy.expiration_date), 'MMM d, yyyy')}
+                      to{" "}
+                      {activePolicy.expiration_date &&
+                        format(
+                          new Date(activePolicy.expiration_date),
+                          "MMM d, yyyy",
+                        )}
                     </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-400 mb-1">Policy Type</p>
-                    <p className="text-xl font-semibold text-white">{activePolicy.policy_type || 'HO3'}</p>
+                    <p className="text-xl font-semibold text-white">
+                      {activePolicy.policy_type || "HO3"}
+                    </p>
                   </div>
                 </div>
 
                 {/* Coverage Limits */}
                 <div>
-                  <h3 className="text-white font-medium mb-4">Coverage Limits</h3>
+                  <h3 className="text-white font-medium mb-4">
+                    Coverage Limits
+                  </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div className="bg-gray-700/50 rounded-lg p-4">
                       <div className="flex items-center gap-2 text-gray-400 mb-2">
@@ -123,7 +169,9 @@ function PoliciesContent() {
                         <span className="text-sm">Personal Property</span>
                       </div>
                       <p className="text-2xl font-bold text-white">
-                        {formatCoverage(activePolicy.personal_property_coverage)}
+                        {formatCoverage(
+                          activePolicy.personal_property_coverage,
+                        )}
                       </p>
                     </div>
                     <div className="bg-gray-700/50 rounded-lg p-4">
@@ -143,13 +191,17 @@ function PoliciesContent() {
                   <h3 className="text-white font-medium mb-4">Deductibles</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="bg-gray-700/50 rounded-lg p-4">
-                      <p className="text-sm text-gray-400 mb-1">All Other Perils</p>
+                      <p className="text-sm text-gray-400 mb-1">
+                        All Other Perils
+                      </p>
                       <p className="text-xl font-semibold text-white">
                         {formatDeductible(activePolicy.standard_deductible)}
                       </p>
                     </div>
                     <div className="bg-gray-700/50 rounded-lg p-4">
-                      <p className="text-sm text-gray-400 mb-1">Hurricane/Wind</p>
+                      <p className="text-sm text-gray-400 mb-1">
+                        Hurricane/Wind
+                      </p>
                       <p className="text-xl font-semibold text-white">
                         {formatDeductible(activePolicy.hurricane_deductible)}
                       </p>
@@ -159,40 +211,59 @@ function PoliciesContent() {
                       <p className="text-xl font-semibold text-white">
                         {activePolicy.flood_deductible
                           ? formatDeductible(activePolicy.flood_deductible)
-                          : 'Not Covered'
-                        }
+                          : "Not Covered"}
                       </p>
                     </div>
                   </div>
                 </div>
 
                 {/* Special Coverages */}
-                {activePolicy.special_coverages && activePolicy.special_coverages.length > 0 && (
-                  <div>
-                    <h3 className="text-white font-medium mb-4">Special Coverages</h3>
-                    <div className="space-y-2">
-                      {activePolicy.special_coverages.map((coverage: { type: string; limit?: number }, idx: number) => (
-                        <div key={idx} className="flex items-center justify-between bg-gray-700/50 rounded-lg p-3">
-                          <div className="flex items-center gap-2">
-                            {getCoverageIcon(coverage.type)}
-                            <span className="text-white">{coverage.type}</span>
-                          </div>
-                          <span className="text-gray-300">
-                            {coverage.limit && `$${coverage.limit.toLocaleString()}`}
-                          </span>
-                        </div>
-                      ))}
+                {activePolicy.special_coverages &&
+                  activePolicy.special_coverages.length > 0 && (
+                    <div>
+                      <h3 className="text-white font-medium mb-4">
+                        Special Coverages
+                      </h3>
+                      <div className="space-y-2">
+                        {activePolicy.special_coverages.map(
+                          (
+                            coverage: { type: string; limit?: number },
+                            idx: number,
+                          ) => (
+                            <div
+                              key={idx}
+                              className="flex items-center justify-between bg-gray-700/50 rounded-lg p-3"
+                            >
+                              <div className="flex items-center gap-2">
+                                {getCoverageIcon(coverage.type)}
+                                <span className="text-white">
+                                  {coverage.type}
+                                </span>
+                              </div>
+                              <span className="text-gray-300">
+                                {coverage.limit &&
+                                  `$${coverage.limit.toLocaleString()}`}
+                              </span>
+                            </div>
+                          ),
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {/* Action Buttons */}
                 <div className="flex gap-4 pt-4">
-                  <Button variant="secondary" className="border-gray-600 text-gray-300">
+                  <Button
+                    variant="secondary"
+                    className="border-gray-600 text-gray-300"
+                  >
                     <Eye className="w-4 h-4 mr-2" />
                     View Full Policy
                   </Button>
-                  <Button variant="secondary" className="border-gray-600 text-gray-300">
+                  <Button
+                    variant="secondary"
+                    className="border-gray-600 text-gray-300"
+                  >
                     <Download className="w-4 h-4 mr-2" />
                     Download PDF
                   </Button>
@@ -203,9 +274,12 @@ function PoliciesContent() {
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="py-12 text-center">
                 <AlertCircle className="w-12 h-12 text-orange-400 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-white mb-2">No Active Policy Found</h3>
+                <h3 className="text-xl font-semibold text-white mb-2">
+                  No Active Policy Found
+                </h3>
                 <p className="text-gray-400 mb-6">
-                  Upload your insurance policy to track coverage and analyze claims
+                  Upload your insurance policy to track coverage and analyze
+                  claims
                 </p>
                 <Button
                   onClick={() => setShowUpload(true)}
@@ -226,7 +300,7 @@ function PoliciesContent() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {policies.map(policy => (
+                  {policies.map((policy) => (
                     <div
                       key={policy.id}
                       className="bg-gray-700/50 rounded-lg p-4 flex items-center justify-between"
@@ -234,9 +308,12 @@ function PoliciesContent() {
                       <div className="flex items-center gap-4">
                         <FileText className="w-5 h-5 text-gray-400" />
                         <div>
-                          <p className="text-white font-medium">{policy.carrier_name}</p>
+                          <p className="text-white font-medium">
+                            {policy.carrier_name}
+                          </p>
                           <p className="text-sm text-gray-400">
-                            Policy #{policy.policy_number} • Uploaded {format(new Date(policy.created_at), 'MMM d, yyyy')}
+                            Policy #{policy.policy_number} • Uploaded{" "}
+                            {format(new Date(policy.created_at), "MMM d, yyyy")}
                           </p>
                         </div>
                       </div>
@@ -264,7 +341,9 @@ function PoliciesContent() {
               <div className="bg-gray-900 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl font-bold text-white">Upload Insurance Policy</h2>
+                    <h2 className="text-2xl font-bold text-white">
+                      Upload Insurance Policy
+                    </h2>
                     <button
                       onClick={() => setShowUpload(false)}
                       className="text-gray-400 hover:text-white"
@@ -275,8 +354,8 @@ function PoliciesContent() {
                   <PolicyUpload
                     propertyId=""
                     onUploadComplete={() => {
-                      setShowUpload(false)
-                      refetch()
+                      setShowUpload(false);
+                      refetch();
                     }}
                   />
                 </div>
@@ -286,7 +365,7 @@ function PoliciesContent() {
         </div>
       </div>
     </DashboardLayout>
-  )
+  );
 }
 
 export default function PoliciesPage() {
@@ -294,5 +373,5 @@ export default function PoliciesPage() {
     <ProtectedRoute>
       <PoliciesContent />
     </ProtectedRoute>
-  )
+  );
 }

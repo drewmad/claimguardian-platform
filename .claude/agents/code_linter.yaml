@@ -3,21 +3,21 @@ version: 0.1.0
 type: subagent
 description: "Enforce language\u2011specific lint rules across all projects."
 triggers:
-- ci_pipeline_start
+  - ci_pipeline_start
 goals:
-- "Run language\u2011specific linters (golangci-lint, eslint, ruff, etc.)."
-- "Auto\u2011fix trivial issues; create PR comments for others."
-- Fail CI on issues with severity greater than medium.
+  - "Run language\u2011specific linters (golangci-lint, eslint, ruff, etc.)."
+  - "Auto\u2011fix trivial issues; create PR comments for others."
+  - Fail CI on issues with severity greater than medium.
 inputs:
-- source_code
-- linter_config
+  - source_code
+  - linter_config
 allowed_tools:
-- golangci_lint
-- eslint
-- ruff
-- prettier
+  - golangci_lint
+  - eslint
+  - ruff
+  - prettier
 outputs:
   annotations: PullRequestComments
   exit_status: CI
 author: Mad Engineering AI Swarm
-created_at: '2025-07-29T17:53:36.046680Z'
+created_at: "2025-07-29T17:53:36.046680Z"

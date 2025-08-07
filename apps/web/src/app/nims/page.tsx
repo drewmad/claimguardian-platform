@@ -6,13 +6,13 @@
  * @status stable
  */
 
-import { NIMSComplianceDashboard } from '@/components/nims/NIMSComplianceDashboard'
+import { NIMSComplianceDashboard } from "@/components/nims/NIMSComplianceDashboard";
 
 export default function NIMSPage() {
-  return <NIMSComplianceDashboard />
+  return <NIMSComplianceDashboard />;
 }
 
 export const metadata = {
-  title: 'NIMS Compliance - ClaimGuardian',
-  description: 'Federal Emergency Management System Integration Dashboard'
-}
+  title: "NIMS Compliance - ClaimGuardian",
+  description: "Federal Emergency Management System Integration Dashboard",
+};

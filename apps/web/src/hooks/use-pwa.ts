@@ -8,48 +8,48 @@
  * @tags ["pwa", "service-worker", "offline", "installation"]
  * @status stable
  */
-'use client'
+"use client";
 
-import { useState, useEffect, useCallback, useRef } from 'react'
-import { logger } from '@/lib/logger'
+import { useState, useEffect, useCallback, useRef } from "react";
+import { logger } from "@/lib/logger";
 
 interface BeforeInstallPromptEvent extends Event {
-  readonly platforms: string[]
+  readonly platforms: string[];
   readonly userChoice: Promise<{
-    outcome: 'accepted' | 'dismissed'
-    platform: string
-  }>
-  prompt(): Promise<void>
+    outcome: "accepted" | "dismissed";
+    platform: string;
+  }>;
+  prompt(): Promise<void>;
 }
 
 interface PWAStatus {
-  isInstalled: boolean
-  isStandalone: boolean
-  canInstall: boolean
-  isSupported: boolean
-  platform: 'ios' | 'android' | 'desktop' | 'unknown'
-  installSource: 'browser' | 'homescreen' | 'unknown'
+  isInstalled: boolean;
+  isStandalone: boolean;
+  canInstall: boolean;
+  isSupported: boolean;
+  platform: "ios" | "android" | "desktop" | "unknown";
+  installSource: "browser" | "homescreen" | "unknown";
 }
 
 interface InstallPromptState {
-  isVisible: boolean
-  event: BeforeInstallPromptEvent | null
-  hasBeenDismissed: boolean
-  installStatus: 'idle' | 'installing' | 'installed' | 'failed'
+  isVisible: boolean;
+  event: BeforeInstallPromptEvent | null;
+  hasBeenDismissed: boolean;
+  installStatus: "idle" | "installing" | "installed" | "failed";
 }
 
 interface OfflineStatus {
-  isOnline: boolean
-  wasOffline: boolean
-  offlineAt: Date | null
-  onlineAt: Date | null
+  isOnline: boolean;
+  wasOffline: boolean;
+  offlineAt: Date | null;
+  onlineAt: Date | null;
 }
 
 interface ServiceWorkerState {
-  isRegistered: boolean
-  isUpdating: boolean
-  hasUpdate: boolean
-  registration: ServiceWorkerRegistration | null
+  isRegistered: boolean;
+  isUpdating: boolean;
+  hasUpdate: boolean;
+  registration: ServiceWorkerRegistration | null;
 }
 
 // Main PWA hook
@@ -59,22 +59,23 @@ export function usePWA() {
     isStandalone: false,
     canInstall: false,
     isSupported: false,
-    platform: 'unknown',
-    installSource: 'unknown'
-  })
+    platform: "unknown",
+    installSource: "unknown",
+  });
 
   useEffect(() => {
-    if (typeof window === 'undefined') return
+    if (typeof window === "undefined") return;
 
     const checkPWAStatus = () => {
       const isStandalone =
-        window.matchMedia('(display-mode: standalone)').matches ||
+        window.matchMedia("(display-mode: standalone)").matches ||
         (window.navigator as any).standalone ||
-        document.referrer.includes('android-app://')
+        document.referrer.includes("android-app://");
 
-      const platform = getPlatform()
-      const isSupported = 'serviceWorker' in navigator
-      const isInstalled = isStandalone || localStorage.getItem('pwa-installed') === 'true'
+      const platform = getPlatform();
+      const isSupported = "serviceWorker" in navigator;
+      const isInstalled =
+        isStandalone || localStorage.getItem("pwa-installed") === "true";
 
       setStatus({
         isInstalled,
@@ -82,29 +83,29 @@ export function usePWA() {
         canInstall: !isInstalled && isSupported,
         isSupported,
         platform,
-        installSource: getInstallSource()
-      })
-    }
+        installSource: getInstallSource(),
+      });
+    };
 
-    checkPWAStatus()
+    checkPWAStatus();
 
     // Listen for display mode changes
-    const mediaQuery = window.matchMedia('(display-mode: standalone)')
-    mediaQuery.addEventListener('change', checkPWAStatus)
+    const mediaQuery = window.matchMedia("(display-mode: standalone)");
+    mediaQuery.addEventListener("change", checkPWAStatus);
 
     // Listen for app installed event
-    window.addEventListener('appinstalled', () => {
-      localStorage.setItem('pwa-installed', 'true')
-      checkPWAStatus()
-      logger.track('pwa_installed')
-    })
+    window.addEventListener("appinstalled", () => {
+      localStorage.setItem("pwa-installed", "true");
+      checkPWAStatus();
+      logger.track("pwa_installed");
+    });
 
     return () => {
-      mediaQuery.removeEventListener('change', checkPWAStatus)
-    }
-  }, [])
+      mediaQuery.removeEventListener("change", checkPWAStatus);
+    };
+  }, []);
 
-  return status
+  return status;
 }
 
 // Install prompt hook
@@ -113,109 +114,116 @@ export function useInstallPrompt() {
     isVisible: false,
     event: null,
     hasBeenDismissed: false,
-    installStatus: 'idle'
-  })
+    installStatus: "idle",
+  });
 
-  const promptShown = useRef(false)
+  const promptShown = useRef(false);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return
+    if (typeof window === "undefined") return;
 
     // Check if user has previously dismissed the prompt
-    const dismissed = localStorage.getItem('install-prompt-dismissed')
+    const dismissed = localStorage.getItem("install-prompt-dismissed");
     if (dismissed) {
-      setState(prev => ({ ...prev, hasBeenDismissed: true }))
-      return
+      setState((prev) => ({ ...prev, hasBeenDismissed: true }));
+      return;
     }
 
     const handleBeforeInstallPrompt = (e: Event) => {
-      e.preventDefault()
-      const event = e as BeforeInstallPromptEvent
+      e.preventDefault();
+      const event = e as BeforeInstallPromptEvent;
 
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         event,
-        isVisible: !prev.hasBeenDismissed && !promptShown.current
-      }))
+        isVisible: !prev.hasBeenDismissed && !promptShown.current,
+      }));
 
-      logger.track('install_prompt_available')
-    }
+      logger.track("install_prompt_available");
+    };
 
     const handleAppInstalled = () => {
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         isVisible: false,
-        installStatus: 'installed'
-      }))
+        installStatus: "installed",
+      }));
 
-      localStorage.setItem('pwa-installed', 'true')
-      logger.track('pwa_installed_via_prompt')
-    }
+      localStorage.setItem("pwa-installed", "true");
+      logger.track("pwa_installed_via_prompt");
+    };
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
-    window.addEventListener('appinstalled', handleAppInstalled)
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("appinstalled", handleAppInstalled);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
-      window.removeEventListener('appinstalled', handleAppInstalled)
-    }
-  }, [])
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt,
+      );
+      window.removeEventListener("appinstalled", handleAppInstalled);
+    };
+  }, []);
 
   const showInstallPrompt = useCallback(async () => {
-    if (!state.event) return false
+    if (!state.event) return false;
 
     try {
-      setState(prev => ({ ...prev, installStatus: 'installing' }))
+      setState((prev) => ({ ...prev, installStatus: "installing" }));
 
-      await state.event.prompt()
-      const choiceResult = await state.event.userChoice
+      await state.event.prompt();
+      const choiceResult = await state.event.userChoice;
 
-      promptShown.current = true
+      promptShown.current = true;
 
-      if (choiceResult.outcome === 'accepted') {
-        logger.track('install_prompt_accepted', { platform: choiceResult.platform })
-        setState(prev => ({
+      if (choiceResult.outcome === "accepted") {
+        logger.track("install_prompt_accepted", {
+          platform: choiceResult.platform,
+        });
+        setState((prev) => ({
           ...prev,
           isVisible: false,
-          installStatus: 'installed'
-        }))
-        return true
+          installStatus: "installed",
+        }));
+        return true;
       } else {
-        logger.track('install_prompt_dismissed', { platform: choiceResult.platform })
-        setState(prev => ({
+        logger.track("install_prompt_dismissed", {
+          platform: choiceResult.platform,
+        });
+        setState((prev) => ({
           ...prev,
           isVisible: false,
           hasBeenDismissed: true,
-          installStatus: 'failed'
-        }))
-        localStorage.setItem('install-prompt-dismissed', Date.now().toString())
-        return false
+          installStatus: "failed",
+        }));
+        localStorage.setItem("install-prompt-dismissed", Date.now().toString());
+        return false;
       }
     } catch (error) {
-      logger.error('Install prompt failed', { error })
-      setState(prev => ({
+      logger.error("Install prompt failed", { error });
+      setState((prev) => ({
         ...prev,
-        installStatus: 'failed'
-      }))
-      return false
+        installStatus: "failed",
+      }));
+      return false;
     }
-  }, [state.event])
+  }, [state.event]);
 
   const hideInstallPrompt = useCallback(() => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       isVisible: false,
-      hasBeenDismissed: true
-    }))
-    localStorage.setItem('install-prompt-dismissed', Date.now().toString())
-    logger.track('install_prompt_manually_dismissed')
-  }, [])
+      hasBeenDismissed: true,
+    }));
+    localStorage.setItem("install-prompt-dismissed", Date.now().toString());
+    logger.track("install_prompt_manually_dismissed");
+  }, []);
 
   return {
     ...state,
     showInstallPrompt,
-    hideInstallPrompt
-  }
+    hideInstallPrompt,
+  };
 }
 
 // Offline status hook
@@ -224,43 +232,43 @@ export function useOfflineStatus() {
     isOnline: true,
     wasOffline: false,
     offlineAt: null,
-    onlineAt: null
-  })
+    onlineAt: null,
+  });
 
   useEffect(() => {
-    if (typeof window === 'undefined') return
+    if (typeof window === "undefined") return;
 
     const updateOnlineStatus = () => {
-      const isOnline = navigator.onLine
-      const now = new Date()
+      const isOnline = navigator.onLine;
+      const now = new Date();
 
-      setStatus(prev => ({
+      setStatus((prev) => ({
         isOnline,
         wasOffline: prev.wasOffline || (!isOnline && prev.isOnline),
         offlineAt: !isOnline && prev.isOnline ? now : prev.offlineAt,
-        onlineAt: isOnline && !prev.isOnline ? now : prev.onlineAt
-      }))
+        onlineAt: isOnline && !prev.isOnline ? now : prev.onlineAt,
+      }));
 
       if (isOnline) {
-        logger.track('network_online')
+        logger.track("network_online");
       } else {
-        logger.track('network_offline')
+        logger.track("network_offline");
       }
-    }
+    };
 
     // Set initial status
-    updateOnlineStatus()
+    updateOnlineStatus();
 
-    window.addEventListener('online', updateOnlineStatus)
-    window.addEventListener('offline', updateOnlineStatus)
+    window.addEventListener("online", updateOnlineStatus);
+    window.addEventListener("offline", updateOnlineStatus);
 
     return () => {
-      window.removeEventListener('online', updateOnlineStatus)
-      window.removeEventListener('offline', updateOnlineStatus)
-    }
-  }, [])
+      window.removeEventListener("online", updateOnlineStatus);
+      window.removeEventListener("offline", updateOnlineStatus);
+    };
+  }, []);
 
-  return status
+  return status;
 }
 
 // Service worker hook
@@ -269,118 +277,126 @@ export function useServiceWorker() {
     isRegistered: false,
     isUpdating: false,
     hasUpdate: false,
-    registration: null
-  })
+    registration: null,
+  });
 
   const updateServiceWorker = useCallback(() => {
     if (state.registration && state.registration.waiting) {
-      state.registration.waiting.postMessage({ type: 'SKIP_WAITING' })
-      window.location.reload()
+      state.registration.waiting.postMessage({ type: "SKIP_WAITING" });
+      window.location.reload();
     }
-  }, [state.registration])
+  }, [state.registration]);
 
   useEffect(() => {
-    if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return
+    if (typeof window === "undefined" || !("serviceWorker" in navigator))
+      return;
 
     const registerServiceWorker = async () => {
       try {
-        const registration = await navigator.serviceWorker.register('/sw.js', {
-          scope: '/'
-        })
+        const registration = await navigator.serviceWorker.register("/sw.js", {
+          scope: "/",
+        });
 
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           isRegistered: true,
-          registration
-        }))
+          registration,
+        }));
 
-        logger.track('service_worker_registered')
+        logger.track("service_worker_registered");
 
         // Check for updates
-        registration.addEventListener('updatefound', () => {
-          const newWorker = registration.installing
+        registration.addEventListener("updatefound", () => {
+          const newWorker = registration.installing;
 
-          setState(prev => ({ ...prev, isUpdating: true }))
+          setState((prev) => ({ ...prev, isUpdating: true }));
 
-          newWorker?.addEventListener('statechange', () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              setState(prev => ({
+          newWorker?.addEventListener("statechange", () => {
+            if (
+              newWorker.state === "installed" &&
+              navigator.serviceWorker.controller
+            ) {
+              setState((prev) => ({
                 ...prev,
                 isUpdating: false,
-                hasUpdate: true
-              }))
-              logger.track('service_worker_update_available')
+                hasUpdate: true,
+              }));
+              logger.track("service_worker_update_available");
             }
-          })
-        })
+          });
+        });
 
         // Listen for controlling service worker changes
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-          window.location.reload()
-        })
-
+        navigator.serviceWorker.addEventListener("controllerchange", () => {
+          window.location.reload();
+        });
       } catch (error) {
-        logger.error('Service worker registration failed', { error })
+        logger.error("Service worker registration failed", { error });
       }
-    }
+    };
 
-    registerServiceWorker()
+    registerServiceWorker();
 
     // Listen for messages from service worker
-    navigator.serviceWorker.addEventListener('message', (event) => {
-      if (event.data?.type === 'UPDATE_AVAILABLE') {
-        setState(prev => ({ ...prev, hasUpdate: true }))
+    navigator.serviceWorker.addEventListener("message", (event) => {
+      if (event.data?.type === "UPDATE_AVAILABLE") {
+        setState((prev) => ({ ...prev, hasUpdate: true }));
       }
-    })
-
-  }, [])
+    });
+  }, []);
 
   return {
     ...state,
-    updateServiceWorker
-  }
+    updateServiceWorker,
+  };
 }
 
 // Helper functions
-function getPlatform(): PWAStatus['platform'] {
-  if (typeof window === 'undefined') return 'unknown'
+function getPlatform(): PWAStatus["platform"] {
+  if (typeof window === "undefined") return "unknown";
 
-  const userAgent = navigator.userAgent.toLowerCase()
+  const userAgent = navigator.userAgent.toLowerCase();
 
-  if (/iphone|ipad|ipod/.test(userAgent)) return 'ios'
-  if (/android/.test(userAgent)) return 'android'
-  if (/win|mac|linux/.test(userAgent)) return 'desktop'
+  if (/iphone|ipad|ipod/.test(userAgent)) return "ios";
+  if (/android/.test(userAgent)) return "android";
+  if (/win|mac|linux/.test(userAgent)) return "desktop";
 
-  return 'unknown'
+  return "unknown";
 }
 
-function getInstallSource(): PWAStatus['installSource'] {
-  if (typeof window === 'undefined') return 'unknown'
+function getInstallSource(): PWAStatus["installSource"] {
+  if (typeof window === "undefined") return "unknown";
 
-  if (document.referrer.includes('android-app://')) return 'homescreen'
-  if (window.matchMedia('(display-mode: standalone)').matches) return 'homescreen'
+  if (document.referrer.includes("android-app://")) return "homescreen";
+  if (window.matchMedia("(display-mode: standalone)").matches)
+    return "homescreen";
 
-  return 'browser'
+  return "browser";
 }
 
 // Background sync utilities
 export function requestBackgroundSync(tag: string, data?: any) {
-  if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
-    navigator.serviceWorker.ready.then(registration => {
-      return registration.sync.register(tag)
-    }).catch(error => {
-      logger.error('Background sync registration failed', { error, tag })
-    })
+  if (
+    "serviceWorker" in navigator &&
+    "sync" in window.ServiceWorkerRegistration.prototype
+  ) {
+    navigator.serviceWorker.ready
+      .then((registration) => {
+        return registration.sync.register(tag);
+      })
+      .catch((error) => {
+        logger.error("Background sync registration failed", { error, tag });
+      });
   }
 }
 
 // Cache data for offline use
 export function cacheForOffline(key: string, data: any) {
-  if ('serviceWorker' in navigator) {
+  if ("serviceWorker" in navigator) {
     navigator.serviceWorker.controller?.postMessage({
-      type: 'CACHE_DATA',
+      type: "CACHE_DATA",
       key,
-      data
-    })
+      data,
+    });
   }
 }

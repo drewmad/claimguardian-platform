@@ -11,60 +11,66 @@
  * @lastModifiedDate 2025-08-06T00:00:00Z
  */
 
-'use server'
+"use server";
 
-import { createClient } from '@/lib/supabase/server'
-import type { ClaimInsert, ClaimUpdate } from '@claimguardian/db'
-import { toError } from '@claimguardian/utils'
-import { PooledDatabaseOperations } from '@/lib/database/connection-pool'
-import { logger } from '@/lib/logger/production-logger'
-import { asyncErrorHandler, withRetry } from '@/lib/error-handling/async-error-handler'
-import { cacheManager, CachePatterns } from '@/lib/cache/redis-cache-manager'
+import { createClient } from "@/lib/supabase/server";
+import type { ClaimInsert, ClaimUpdate } from "@claimguardian/db";
+import { toError } from "@claimguardian/utils";
+import { PooledDatabaseOperations } from "@/lib/database/connection-pool";
+import { logger } from "@/lib/logger/production-logger";
+import {
+  asyncErrorHandler,
+  withRetry,
+} from "@/lib/error-handling/async-error-handler";
+import { cacheManager, CachePatterns } from "@/lib/cache/redis-cache-manager";
 export interface ClaimResult {
-  success: boolean
-  error?: string
+  success: boolean;
+  error?: string;
   data?: {
-    id?: string
-    status?: string
-    [key: string]: unknown
-  }
+    id?: string;
+    status?: string;
+    [key: string]: unknown;
+  };
 }
 
 export async function createClaim({
   propertyId,
   claimType,
   description,
-  incidentDate
+  incidentDate,
 }: {
-  propertyId: string
-  claimType: string
-  description: string
-  incidentDate?: string
+  propertyId: string;
+  claimType: string;
+  description: string;
+  incidentDate?: string;
 }): Promise<ClaimResult> {
-  const operationStart = Date.now()
+  const operationStart = Date.now();
 
   const result = await asyncErrorHandler.executeWithFullResilience(
     async () => {
-      const supabase = await createClient()
+      const supabase = await createClient();
 
       // Get current user with retry logic
       const authResult = await withRetry(
         async () => {
-          const { data: { user }, error: authError } = await supabase.auth.getUser()
+          const {
+            data: { user },
+            error: authError,
+          } = await supabase.auth.getUser();
           if (authError || !user) {
-            throw new Error('Authentication required')
+            throw new Error("Authentication required");
           }
-          return user
+          return user;
         },
         3,
-        'create-claim-auth'
-      )
+        "create-claim-auth",
+      );
 
       if (!authResult.success) {
-        throw new Error(authResult.error.message)
+        throw new Error(authResult.error.message);
       }
 
-      const user = authResult.data
+      const user = authResult.data;
 
       const claimData: ClaimInsert = {
         user_id: user.id,
@@ -77,41 +83,41 @@ export async function createClaim({
         adjuster_name: null,
         adjuster_phone: null,
         adjuster_email: null,
-        status: 'draft'
-      }
+        status: "draft",
+      };
 
       // Use pooled database operations for better performance
       const insertResult = await PooledDatabaseOperations.executeQuery(
         async (client) => {
           const { data, error } = await client
-            .from('claims')
+            .from("claims")
             .insert(claimData)
             .select()
-            .single()
+            .single();
 
-          if (error) throw error
-          return data
+          if (error) throw error;
+          return data;
         },
-        'create-claim'
-      )
+        "create-claim",
+      );
 
       if (!insertResult.success) {
-        throw insertResult.error
+        throw insertResult.error;
       }
 
       // Invalidate user claims cache
-      await cacheManager.delete(CachePatterns.userKey(user.id, 'claims'))
+      await cacheManager.delete(CachePatterns.userKey(user.id, "claims"));
 
       // Log successful claim creation for analytics
-      logger.info('Claim created successfully', {
+      logger.info("Claim created successfully", {
         userId: user.id,
         claimId: insertResult.data.id,
         propertyId,
         claimType,
-        duration: Date.now() - operationStart
-      })
+        duration: Date.now() - operationStart,
+      });
 
-      return insertResult.data
+      return insertResult.data;
     },
     {
       retryConfig: {
@@ -119,264 +125,291 @@ export async function createClaim({
         baseDelay: 1000,
         maxDelay: 5000,
         exponential: true,
-        jitter: true
+        jitter: true,
       },
       timeoutConfig: {
         timeoutMs: 30000,
-        timeoutMessage: 'Claim creation timed out'
+        timeoutMessage: "Claim creation timed out",
       },
-      circuitBreakerKey: 'create-claim',
-      context: 'create-claim'
-    }
-  )
+      circuitBreakerKey: "create-claim",
+      context: "create-claim",
+    },
+  );
 
   if (!result.success) {
-    logger.error('Failed to create claim', {
+    logger.error("Failed to create claim", {
       propertyId,
       claimType,
       duration: Date.now() - operationStart,
-      error: result.error
-    })
+      error: result.error,
+    });
 
     return {
       success: false,
-      error: result.error.message
-    }
+      error: result.error.message,
+    };
   }
 
   return {
     success: true,
-    data: result.data
-  }
+    data: result.data,
+  };
 }
 
 export async function updateClaim({
   claimId,
-  updates
+  updates,
 }: {
-  claimId: string
-  updates: ClaimUpdate
+  claimId: string;
+  updates: ClaimUpdate;
 }): Promise<ClaimResult> {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     // Get current user
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
       return {
         success: false,
-        error: 'Authentication required'
-      }
+        error: "Authentication required",
+      };
     }
 
     const { data, error } = await supabase
-      .from('claims')
+      .from("claims")
       .update({
         ...updates,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
-      .eq('id', claimId)
-      .eq('user_id', user.id) // Ensure user owns the claim
+      .eq("id", claimId)
+      .eq("user_id", user.id) // Ensure user owns the claim
       .select()
-      .single()
+      .single();
 
     if (error) {
       return {
         success: false,
-        error: error.message
-      }
+        error: error.message,
+      };
     }
 
     return {
       success: true,
-      data
-    }
+      data,
+    };
   } catch (error) {
-    const err = toError(error)
+    const err = toError(error);
     return {
       success: false,
-      error: err.message
-    }
+      error: err.message,
+    };
   }
 }
 
-export async function deleteClaim({ claimId }: { claimId: string }): Promise<ClaimResult> {
+export async function deleteClaim({
+  claimId,
+}: {
+  claimId: string;
+}): Promise<ClaimResult> {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     // Get current user
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
       return {
         success: false,
-        error: 'Authentication required'
-      }
+        error: "Authentication required",
+      };
     }
 
     const { error } = await supabase
-      .from('claims')
+      .from("claims")
       .delete()
-      .eq('id', claimId)
-      .eq('user_id', user.id) // Ensure user owns the claim
+      .eq("id", claimId)
+      .eq("user_id", user.id); // Ensure user owns the claim
 
     if (error) {
       return {
         success: false,
-        error: error.message
-      }
+        error: error.message,
+      };
     }
 
     return {
       success: true,
-      data: { message: 'Claim deleted successfully' }
-    }
+      data: { message: "Claim deleted successfully" },
+    };
   } catch (error) {
-    const err = toError(error)
+    const err = toError(error);
     return {
       success: false,
-      error: err.message
-    }
+      error: err.message,
+    };
   }
 }
 
-export async function getClaim({ claimId }: { claimId: string }): Promise<ClaimResult> {
+export async function getClaim({
+  claimId,
+}: {
+  claimId: string;
+}): Promise<ClaimResult> {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     // Get current user
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
       return {
         success: false,
-        error: 'Authentication required'
-      }
+        error: "Authentication required",
+      };
     }
 
     const { data, error } = await supabase
-      .from('claims')
-      .select(`
+      .from("claims")
+      .select(
+        `
         *,
         properties (
           id,
           name,
           address
         )
-      `)
-      .eq('id', claimId)
-      .eq('user_id', user.id) // Ensure user owns the claim
-      .single()
+      `,
+      )
+      .eq("id", claimId)
+      .eq("user_id", user.id) // Ensure user owns the claim
+      .single();
 
     if (error) {
       return {
         success: false,
-        error: error.message
-      }
+        error: error.message,
+      };
     }
 
     return {
       success: true,
-      data
-    }
+      data,
+    };
   } catch (error) {
-    const err = toError(error)
+    const err = toError(error);
     return {
       success: false,
-      error: err.message
-    }
+      error: err.message,
+    };
   }
 }
 
 export async function getUserClaims(): Promise<ClaimResult> {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     // Get current user
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
       return {
         success: false,
-        error: 'Authentication required'
-      }
+        error: "Authentication required",
+      };
     }
 
     const { data, error } = await supabase
-      .from('claims')
-      .select(`
+      .from("claims")
+      .select(
+        `
         *,
         properties (
           id,
           name,
           address
         )
-      `)
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
+      `,
+      )
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false });
 
     if (error) {
       return {
         success: false,
-        error: error.message
-      }
+        error: error.message,
+      };
     }
 
     return {
       success: true,
-      data: { claims: data }
-    }
+      data: { claims: data },
+    };
   } catch (error) {
-    const err = toError(error)
+    const err = toError(error);
     return {
       success: false,
-      error: err.message
-    }
+      error: err.message,
+    };
   }
 }
 
 export async function uploadClaimDocument({
   claimId,
   file,
-  documentType
+  documentType,
 }: {
-  claimId: string
-  file: File
-  documentType: string
+  claimId: string;
+  file: File;
+  documentType: string;
 }): Promise<ClaimResult> {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     // Get current user
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
       return {
         success: false,
-        error: 'Authentication required'
-      }
+        error: "Authentication required",
+      };
     }
 
     // Generate unique filename
-    const timestamp = Date.now()
-    const fileName = `${claimId}/${documentType}/${timestamp}-${file.name}`
+    const timestamp = Date.now();
+    const fileName = `${claimId}/${documentType}/${timestamp}-${file.name}`;
 
     // Upload file to Supabase Storage
     const { error: uploadError } = await supabase.storage
-      .from('claim-documents')
-      .upload(fileName, file)
+      .from("claim-documents")
+      .upload(fileName, file);
 
     if (uploadError) {
       return {
         success: false,
-        error: uploadError.message
-      }
+        error: uploadError.message,
+      };
     }
 
     // Get public URL
-    const { data: { publicUrl } } = supabase.storage
-      .from('claim-documents')
-      .getPublicUrl(fileName)
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from("claim-documents").getPublicUrl(fileName);
 
     // Save document record to database
     const { data: docData, error: docError } = await supabase
-      .from('claim_documents')
+      .from("claim_documents")
       .insert({
         claim_id: claimId,
         user_id: user.id,
@@ -385,50 +418,58 @@ export async function uploadClaimDocument({
         file_path: fileName,
         file_url: publicUrl,
         file_size: file.size,
-        mime_type: file.type
+        mime_type: file.type,
       })
       .select()
-      .single()
+      .single();
 
     if (docError) {
       // Clean up uploaded file if database insert fails
-      await supabase.storage.from('claim-documents').remove([fileName])
+      await supabase.storage.from("claim-documents").remove([fileName]);
       return {
         success: false,
-        error: docError.message
-      }
+        error: docError.message,
+      };
     }
 
     return {
       success: true,
-      data: docData
-    }
+      data: docData,
+    };
   } catch (error) {
-    const err = toError(error)
+    const err = toError(error);
     return {
       success: false,
-      error: err.message
-    }
+      error: err.message,
+    };
   }
 }
 
-export async function generateClaimReport({ claimId }: { claimId: string }): Promise<ClaimResult> {
+export async function generateClaimReport({
+  claimId,
+}: {
+  claimId: string;
+}): Promise<ClaimResult> {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     // Get current user
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
       return {
         success: false,
-        error: 'Authentication required'
-      }
+        error: "Authentication required",
+      };
     }
 
     // Get claim data with related information
     const { data: claim, error: claimError } = await supabase
-      .from('claims')
-      .select(`
+      .from("claims")
+      .select(
+        `
         *,
         properties (
           id,
@@ -444,16 +485,17 @@ export async function generateClaimReport({ claimId }: { claimId: string }): Pro
           file_url,
           created_at
         )
-      `)
-      .eq('id', claimId)
-      .eq('user_id', user.id)
-      .single()
+      `,
+      )
+      .eq("id", claimId)
+      .eq("user_id", user.id)
+      .single();
 
     if (claimError) {
       return {
         success: false,
-        error: claimError.message
-      }
+        error: claimError.message,
+      };
     }
 
     // Generate report data (simplified version)
@@ -464,24 +506,24 @@ export async function generateClaimReport({ claimId }: { claimId: string }): Pro
         estimatedAmount: claim.estimated_amount,
         status: claim.status,
         createdAt: claim.created_at,
-        lastUpdated: claim.updated_at
+        lastUpdated: claim.updated_at,
       },
       recommendations: [
-        'Review all uploaded documentation for completeness',
-        'Ensure damage photos are clear and comprehensive',
-        'Verify estimated repair costs with contractor quotes'
-      ]
-    }
+        "Review all uploaded documentation for completeness",
+        "Ensure damage photos are clear and comprehensive",
+        "Verify estimated repair costs with contractor quotes",
+      ],
+    };
 
     return {
       success: true,
-      data: report
-    }
+      data: report,
+    };
   } catch (error) {
-    const err = toError(error)
+    const err = toError(error);
     return {
       success: false,
-      error: err.message
-    }
+      error: err.message,
+    };
   }
 }

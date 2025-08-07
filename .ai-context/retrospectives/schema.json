@@ -8,15 +8,15 @@
         "type": "object",
         "required": ["timestamp", "agent", "task", "duration", "outcome"],
         "properties": {
-          "timestamp": {"type": "string", "format": "date-time"},
-          "agent": {"type": "string"},
-          "task": {"type": "string"},
-          "duration": {"type": "number"},
-          "outcome": {"enum": ["success", "partial", "failure"]},
-          "errors": {"type": "array", "items": {"type": "string"}},
-          "warnings": {"type": "array", "items": {"type": "string"}},
-          "learnings": {"type": "array", "items": {"type": "string"}},
-          "suggestions": {"type": "array", "items": {"type": "string"}}
+          "timestamp": { "type": "string", "format": "date-time" },
+          "agent": { "type": "string" },
+          "task": { "type": "string" },
+          "duration": { "type": "number" },
+          "outcome": { "enum": ["success", "partial", "failure"] },
+          "errors": { "type": "array", "items": { "type": "string" } },
+          "warnings": { "type": "array", "items": { "type": "string" } },
+          "learnings": { "type": "array", "items": { "type": "string" } },
+          "suggestions": { "type": "array", "items": { "type": "string" } }
         }
       }
     },
@@ -26,8 +26,8 @@
         "type": "object",
         "required": ["timestamp", "agent", "miss_type", "context"],
         "properties": {
-          "timestamp": {"type": "string", "format": "date-time"},
-          "agent": {"type": "string"},
+          "timestamp": { "type": "string", "format": "date-time" },
+          "agent": { "type": "string" },
           "miss_type": {
             "type": "string",
             "description": "The type of information that was missing, e.g., 'metadata_tag', 'documentation', 'schema_definition'."
@@ -35,9 +35,9 @@
           "context": {
             "type": "object",
             "properties": {
-              "file": {"type": "string"},
-              "component": {"type": "string"},
-              "description": {"type": "string"}
+              "file": { "type": "string" },
+              "component": { "type": "string" },
+              "description": { "type": "string" }
             }
           },
           "proposed_solution": {

@@ -11,61 +11,61 @@
  * @lastModifiedDate 2025-08-04T21:05:00Z
  */
 
-import { vi, expect, afterEach } from 'vitest'
-import * as matchers from '@testing-library/jest-dom/matchers'
+import { vi, expect, afterEach } from "vitest";
+import * as matchers from "@testing-library/jest-dom/matchers";
 
-expect.extend(matchers)
+expect.extend(matchers);
 
 // Mock environment variables for tests
 // @ts-ignore - readonly property override for test environment
-process.env.NODE_ENV = 'test'
-process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test-project.supabase.co'
-process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key'
-process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-service-role-key'
-process.env.OPENAI_API_KEY = 'test-openai-key'
-process.env.GEMINI_API_KEY = 'test-gemini-key'
+process.env.NODE_ENV = "test";
+process.env.NEXT_PUBLIC_SUPABASE_URL = "https://test-project.supabase.co";
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "test-anon-key";
+process.env.SUPABASE_SERVICE_ROLE_KEY = "test-service-role-key";
+process.env.OPENAI_API_KEY = "test-openai-key";
+process.env.GEMINI_API_KEY = "test-gemini-key";
 
 // Mock Next.js router
-vi.mock('next/navigation', () => ({
+vi.mock("next/navigation", () => ({
   useRouter: () => ({
     push: vi.fn(),
     replace: vi.fn(),
     back: vi.fn(),
     forward: vi.fn(),
     refresh: vi.fn(),
-    prefetch: vi.fn()
+    prefetch: vi.fn(),
   }),
-  usePathname: () => '/test-path',
+  usePathname: () => "/test-path",
   useSearchParams: () => new URLSearchParams(),
-  redirect: vi.fn()
-}))
+  redirect: vi.fn(),
+}));
 
 // Mock Next.js headers
-vi.mock('next/headers', () => ({
+vi.mock("next/headers", () => ({
   cookies: () => ({
     get: vi.fn(),
     set: vi.fn(),
     delete: vi.fn(),
-    getAll: vi.fn(() => [])
+    getAll: vi.fn(() => []),
   }),
   headers: () => ({
     get: vi.fn(),
     has: vi.fn(),
-    entries: vi.fn(() => [])
-  })
-}))
+    entries: vi.fn(() => []),
+  }),
+}));
 
 // Mock Web APIs for Node.js environment (minimal - no DOM)
 
 // Mock crypto.randomUUID for tests
-Object.defineProperty(global, 'crypto', {
+Object.defineProperty(global, "crypto", {
   value: {
-    randomUUID: () => 'test-uuid-' + Math.random().toString(36).substr(2, 9)
-  }
-})
+    randomUUID: () => "test-uuid-" + Math.random().toString(36).substr(2, 9),
+  },
+});
 
 // Mock fetch globally
-global.fetch = vi.fn()
+global.fetch = vi.fn();
 
 // Mock console methods to reduce noise in tests (but allow console.error for debugging)
 global.console = {
@@ -73,30 +73,31 @@ global.console = {
   log: vi.fn(),
   info: vi.fn(),
   warn: vi.fn(),
-  debug: vi.fn()
-}
+  debug: vi.fn(),
+};
 
 // Clean up after each test
 afterEach(() => {
-  vi.clearAllMocks()
+  vi.clearAllMocks();
   // Reset fetch mock
-  if (global.fetch && typeof global.fetch === 'function') {
-    vi.mocked(global.fetch).mockClear()
+  if (global.fetch && typeof global.fetch === "function") {
+    vi.mocked(global.fetch).mockClear();
   }
-})
+});
 
 // Global test utilities
 export const createMockFile = (name: string, size: number, type: string) => {
-  const file = new File(['x'.repeat(size)], name, { type })
-  return file
-}
+  const file = new File(["x".repeat(size)], name, { type });
+  return file;
+};
 
 export const createMockFormData = (data: Record<string, any>) => {
-  const formData = new FormData()
+  const formData = new FormData();
   Object.entries(data).forEach(([key, value]) => {
-    formData.append(key, value)
-  })
-  return formData
-}
+    formData.append(key, value);
+  });
+  return formData;
+};
 
-export const waitForNextTick = () => new Promise(resolve => setTimeout(resolve, 0))
+export const waitForNextTick = () =>
+  new Promise((resolve) => setTimeout(resolve, 0));

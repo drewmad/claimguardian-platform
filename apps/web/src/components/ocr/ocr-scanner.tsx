@@ -9,143 +9,166 @@
  * @supabase-integration edge-functions
  */
 
-'use client'
+"use client";
 
-import { Camera, FileText, Loader2, Upload, X, AlertCircle } from 'lucide-react'
-import Image from 'next/image'
-import { useState } from 'react'
-import { toast } from 'sonner'
-import { logger } from "@/lib/logger/production-logger"
+import {
+  Camera,
+  FileText,
+  Loader2,
+  Upload,
+  X,
+  AlertCircle,
+} from "lucide-react";
+import Image from "next/image";
+import { useState } from "react";
+import { toast } from "sonner";
+import { logger } from "@/lib/logger/production-logger";
 
-import { CameraCapture } from '@/components/camera/camera-capture'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Progress } from '@/components/ui/progress'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ocrService, DocumentType, OCRResult, ReceiptData, OCRHistoryEntry } from '@/lib/services/ocr-service'
+import { CameraCapture } from "@/components/camera/camera-capture";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  ocrService,
+  DocumentType,
+  OCRResult,
+  ReceiptData,
+  OCRHistoryEntry,
+} from "@/lib/services/ocr-service";
 
 interface OCRScannerProps {
-  onScanComplete?: (result: OCRResult) => void
-  documentType?: DocumentType
-  showHistory?: boolean
+  onScanComplete?: (result: OCRResult) => void;
+  documentType?: DocumentType;
+  showHistory?: boolean;
 }
 
 export function OCRScanner({
   onScanComplete,
-  documentType = 'receipt',
-  showHistory = true
+  documentType = "receipt",
+  showHistory = true,
 }: OCRScannerProps) {
-  const [isProcessing, setIsProcessing] = useState(false)
-  const [result, setResult] = useState<OCRResult | null>(null)
-  const [usage, setUsage] = useState<{ used: number; limit: number; remaining: number }>({ used: 0, limit: 0, remaining: 0 })
-  const [history, setHistory] = useState<OCRHistoryEntry[]>([])
-  const [showCamera, setShowCamera] = useState(false)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [result, setResult] = useState<OCRResult | null>(null);
+  const [usage, setUsage] = useState<{
+    used: number;
+    limit: number;
+    remaining: number;
+  }>({ used: 0, limit: 0, remaining: 0 });
+  const [history, setHistory] = useState<OCRHistoryEntry[]>([]);
+  const [showCamera, setShowCamera] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   // Load usage info on mount
   useState(() => {
-    loadUsageInfo()
+    loadUsageInfo();
     if (showHistory) {
-      loadHistory()
+      loadHistory();
     }
-  })
+  });
 
   const loadUsageInfo = async () => {
-    const usageData = await ocrService.getOCRUsage()
-    setUsage(usageData)
-  }
+    const usageData = await ocrService.getOCRUsage();
+    setUsage(usageData);
+  };
 
   const loadHistory = async () => {
-    const historyData = await ocrService.getOCRHistory(5)
-    setHistory(historyData)
-  }
+    const historyData = await ocrService.getOCRHistory(5);
+    setHistory(historyData);
+  };
 
   const processFile = async (file: File) => {
-    if (!file) return
+    if (!file) return;
 
     // Check file type
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
+    const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
     if (!validTypes.includes(file.type)) {
-      toast.error('Please upload a valid image file (JPEG, PNG, or WebP)')
-      return
+      toast.error("Please upload a valid image file (JPEG, PNG, or WebP)");
+      return;
     }
 
     // Check file size (max 10MB)
     if (file.size > 10 * 1024 * 1024) {
-      toast.error('File size must be less than 10MB')
-      return
+      toast.error("File size must be less than 10MB");
+      return;
     }
 
     // Create preview
-    const url = URL.createObjectURL(file)
-    setPreviewUrl(url)
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
 
-    setIsProcessing(true)
+    setIsProcessing(true);
     try {
       const ocrResult = await ocrService.processDocument(file, {
         documentType,
         extractStructuredData: true,
-        language: 'en'
-      })
+        language: "en",
+      });
 
-      setResult(ocrResult)
+      setResult(ocrResult);
 
       if (ocrResult.success) {
-        toast.success('Document processed successfully!')
-        onScanComplete?.(ocrResult)
+        toast.success("Document processed successfully!");
+        onScanComplete?.(ocrResult);
 
         // Reload usage and history
-        await loadUsageInfo()
+        await loadUsageInfo();
         if (showHistory) {
-          await loadHistory()
+          await loadHistory();
         }
       } else {
-        toast.error(ocrResult.error || 'Failed to process document')
+        toast.error(ocrResult.error || "Failed to process document");
       }
     } catch (error) {
-      logger.error('OCR error:', error)
-      toast.error('Failed to process document')
+      logger.error("OCR error:", error);
+      toast.error("Failed to process document");
     } finally {
-      setIsProcessing(false)
+      setIsProcessing(false);
     }
-  }
+  };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
+    const file = event.target.files?.[0];
     if (file) {
-      processFile(file)
+      processFile(file);
     }
-  }
+  };
 
   const handleCameraCapture = async (file: File) => {
-    setShowCamera(false)
+    setShowCamera(false);
 
-    processFile(file)
-  }
+    processFile(file);
+  };
 
   const clearResult = () => {
-    setResult(null)
-    setPreviewUrl(null)
-  }
+    setResult(null);
+    setPreviewUrl(null);
+  };
 
   const renderStructuredData = (data: unknown) => {
-    if (!data) return null
+    if (!data) return null;
 
     switch (documentType) {
-      case 'receipt':
-        const receipt = data as ReceiptData
+      case "receipt":
+        const receipt = data as ReceiptData;
         return (
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-gray-500">Merchant</p>
-                <p className="font-medium">{receipt.merchantName || 'N/A'}</p>
+                <p className="font-medium">{receipt.merchantName || "N/A"}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-500">Date</p>
-                <p className="font-medium">{receipt.date || 'N/A'}</p>
+                <p className="font-medium">{receipt.date || "N/A"}</p>
               </div>
             </div>
 
@@ -155,7 +178,12 @@ export function OCRScanner({
                 <div className="space-y-1">
                   {receipt.items.map((item, i) => (
                     <div key={i} className="flex justify-between text-sm">
-                      <span>{item.name} {item.quantity && item.quantity > 1 ? `(${item.quantity})` : ''}</span>
+                      <span>
+                        {item.name}{" "}
+                        {item.quantity && item.quantity > 1
+                          ? `(${item.quantity})`
+                          : ""}
+                      </span>
                       <span>{ocrService.formatCurrency(item.price)}</span>
                     </div>
                   ))}
@@ -182,16 +210,16 @@ export function OCRScanner({
               </div>
             </div>
           </div>
-        )
+        );
 
       default:
         return (
           <pre className="text-xs bg-gray-50 p-3 rounded overflow-auto max-h-96">
             {JSON.stringify(data, null, 2)}
           </pre>
-        )
+        );
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
@@ -201,13 +229,16 @@ export function OCRScanner({
           <CardTitle>OCR Usage</CardTitle>
           <CardDescription>
             {usage.limit === -1
-              ? 'Unlimited OCR scans with your Pro plan'
+              ? "Unlimited OCR scans with your Pro plan"
               : `${usage.remaining} of ${usage.limit} scans remaining this month`}
           </CardDescription>
         </CardHeader>
         {usage.limit !== -1 && (
           <CardContent>
-            <Progress value={(usage.used / usage.limit) * 100} className="h-2" />
+            <Progress
+              value={(usage.used / usage.limit) * 100}
+              className="h-2"
+            />
           </CardContent>
         )}
       </Card>
@@ -257,7 +288,8 @@ export function OCRScanner({
                   <AlertCircle className="h-4 w-4" />
                   <AlertTitle>OCR Limit Reached</AlertTitle>
                   <AlertDescription>
-                    You've used all your OCR scans for this month. Upgrade your plan for more scans.
+                    You've used all your OCR scans for this month. Upgrade your
+                    plan for more scans.
                   </AlertDescription>
                 </Alert>
               )}
@@ -294,14 +326,10 @@ export function OCRScanner({
           {result && !isProcessing && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <Badge variant={result.success ? 'default' : 'destructive'}>
-                  {result.success ? 'Success' : 'Failed'}
+                <Badge variant={result.success ? "default" : "destructive"}>
+                  {result.success ? "Success" : "Failed"}
                 </Badge>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={clearResult}
-                >
+                <Button variant="ghost" size="sm" onClick={clearResult}>
                   <X className="w-4 h-4 mr-1" />
                   Clear
                 </Button>
@@ -322,7 +350,9 @@ export function OCRScanner({
               {result.success && (
                 <Tabs defaultValue="structured" className="mt-4">
                   <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="structured">Structured Data</TabsTrigger>
+                    <TabsTrigger value="structured">
+                      Structured Data
+                    </TabsTrigger>
                     <TabsTrigger value="text">Raw Text</TabsTrigger>
                   </TabsList>
 
@@ -330,13 +360,17 @@ export function OCRScanner({
                     {result.structuredData ? (
                       renderStructuredData(result.structuredData)
                     ) : (
-                      <p className="text-sm text-gray-500">No structured data extracted</p>
+                      <p className="text-sm text-gray-500">
+                        No structured data extracted
+                      </p>
                     )}
                   </TabsContent>
 
                   <TabsContent value="text" className="mt-4">
                     <div className="bg-gray-50 p-4 rounded">
-                      <pre className="text-sm whitespace-pre-wrap">{result.text || 'No text extracted'}</pre>
+                      <pre className="text-sm whitespace-pre-wrap">
+                        {result.text || "No text extracted"}
+                      </pre>
                     </div>
                   </TabsContent>
                 </Tabs>
@@ -347,7 +381,7 @@ export function OCRScanner({
                   <AlertCircle className="h-4 w-4" />
                   <AlertTitle>Processing Failed</AlertTitle>
                   <AlertDescription>
-                    {result.error || 'Failed to process document'}
+                    {result.error || "Failed to process document"}
                   </AlertDescription>
                 </Alert>
               )}
@@ -355,7 +389,9 @@ export function OCRScanner({
               <div className="flex items-center justify-between text-sm text-gray-500">
                 <span>Processing time: {result.processingTime}ms</span>
                 {result.confidence && (
-                  <span>Confidence: {(result.confidence * 100).toFixed(0)}%</span>
+                  <span>
+                    Confidence: {(result.confidence * 100).toFixed(0)}%
+                  </span>
                 )}
               </div>
             </div>
@@ -372,7 +408,10 @@ export function OCRScanner({
           <CardContent>
             <div className="space-y-2">
               {history.map((item) => (
-                <div key={item.id} className="flex items-center justify-between p-2 rounded hover:bg-gray-50">
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between p-2 rounded hover:bg-gray-50"
+                >
                   <div className="flex items-center gap-3">
                     <FileText className="w-4 h-4 text-gray-400" />
                     <div>
@@ -382,7 +421,10 @@ export function OCRScanner({
                       </p>
                     </div>
                   </div>
-                  <Badge variant={item.success ? 'default' : 'secondary'} className="text-xs">
+                  <Badge
+                    variant={item.success ? "default" : "secondary"}
+                    className="text-xs"
+                  >
                     {item.document_type}
                   </Badge>
                 </div>
@@ -392,5 +434,5 @@ export function OCRScanner({
         </Card>
       )}
     </div>
-  )
+  );
 }

@@ -5,6 +5,7 @@ This comprehensive guide implements an AI-first approach to create digital twins
 ## Overview
 
 ClaimGuardian's AI-first GIS system creates intelligent digital twins that:
+
 - Leverage multi-source Florida environmental data (geodata.floridagio.gov, FEMA, NOAA, USGS)
 - Process AR/drone imagery with AI-powered analysis
 - Generate vector embeddings for semantic property understanding
@@ -14,10 +15,12 @@ ClaimGuardian's AI-first GIS system creates intelligent digital twins that:
 ## Phase 1: AI-Optimized Database Schema ✅ COMPLETE
 
 **Files Created:**
+
 - `database-migrations/01-ai-spatial-schema.sql` - Complete AI-optimized spatial schema
 - `database-migrations/01-spatial-tables.sql` - Supporting spatial data structures
 
 **Key Features:**
+
 - Vector embeddings (pgvector) for AI similarity matching
 - Multi-dimensional property feature extraction
 - Real-time environmental data integration
@@ -27,10 +30,12 @@ ClaimGuardian's AI-first GIS system creates intelligent digital twins that:
 ## Phase 2: AI Services Layer ✅ COMPLETE
 
 **Files Created:**
+
 - `packages/ai-services/src/services/spatial-ai.service.ts` - Core AI spatial processing
 - `packages/ai-services/src/services/environmental-data.service.ts` - Multi-source data integration
 
 **Capabilities:**
+
 - Property embedding generation from multi-modal data
 - AI-powered imagery analysis for damage detection
 - Environmental risk assessment using GIS layers
@@ -45,107 +50,133 @@ Create comprehensive API endpoints for accessing AI-powered spatial services:
 
 ```typescript
 // File: supabase/functions/spatial-ai-api/index.ts
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
-import { SpatialAIService } from "../../../packages/ai-services/src/services/spatial-ai.service.ts"
-import { EnvironmentalDataService } from "../../../packages/ai-services/src/services/environmental-data.service.ts"
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { SpatialAIService } from "../../../packages/ai-services/src/services/spatial-ai.service.ts";
+import { EnvironmentalDataService } from "../../../packages/ai-services/src/services/environmental-data.service.ts";
 
 interface SpatialAPIRequest {
-  action: 'analyze_property' | 'generate_embeddings' | 'find_similar' | 'assess_risk' | 'environmental_data'
-  data: Record<string, unknown>
+  action:
+    | "analyze_property"
+    | "generate_embeddings"
+    | "find_similar"
+    | "assess_risk"
+    | "environmental_data";
+  data: Record<string, unknown>;
 }
 
 serve(async (req: Request) => {
-  if (req.method !== 'POST') {
-    return new Response('Method not allowed', { status: 405 })
+  if (req.method !== "POST") {
+    return new Response("Method not allowed", { status: 405 });
   }
 
   try {
-    const { action, data }: SpatialAPIRequest = await req.json()
-    const spatialAI = new SpatialAIService()
-    const environmentalData = new EnvironmentalDataService()
+    const { action, data }: SpatialAPIRequest = await req.json();
+    const spatialAI = new SpatialAIService();
+    const environmentalData = new EnvironmentalDataService();
 
     switch (action) {
-      case 'analyze_property': {
-        const { propertyId, imageUrls, gisData } = data
+      case "analyze_property": {
+        const { propertyId, imageUrls, gisData } = data;
 
         // Comprehensive property analysis
-        const [imageAnalysis, environmental3D, riskAssessment] = await Promise.all([
-          spatialAI.analyzePropertyImagery(imageUrls as string[], data),
-          spatialAI.analyzeEnvironmental3D(propertyId as string, gisData as any),
-          spatialAI.generateRiskAssessment({
-            digitalTwin: data.digitalTwin as Record<string, unknown>,
-            imagery: imageUrls as Array<Record<string, unknown>>,
-            environmental: data.environmental as Record<string, unknown>,
-            historical: data.historical as Record<string, unknown>
-          })
-        ])
+        const [imageAnalysis, environmental3D, riskAssessment] =
+          await Promise.all([
+            spatialAI.analyzePropertyImagery(imageUrls as string[], data),
+            spatialAI.analyzeEnvironmental3D(
+              propertyId as string,
+              gisData as any,
+            ),
+            spatialAI.generateRiskAssessment({
+              digitalTwin: data.digitalTwin as Record<string, unknown>,
+              imagery: imageUrls as Array<Record<string, unknown>>,
+              environmental: data.environmental as Record<string, unknown>,
+              historical: data.historical as Record<string, unknown>,
+            }),
+          ]);
 
-        return new Response(JSON.stringify({
-          success: true,
-          data: {
-            imageAnalysis,
-            environmental3D,
-            riskAssessment
-          }
-        }), {
-          headers: { 'Content-Type': 'application/json' }
-        })
+        return new Response(
+          JSON.stringify({
+            success: true,
+            data: {
+              imageAnalysis,
+              environmental3D,
+              riskAssessment,
+            },
+          }),
+          {
+            headers: { "Content-Type": "application/json" },
+          },
+        );
       }
 
-      case 'environmental_data': {
-        const { address } = data
-        const envData = await environmentalData.getComprehensiveEnvironmentalData(address as string)
+      case "environmental_data": {
+        const { address } = data;
+        const envData =
+          await environmentalData.getComprehensiveEnvironmentalData(
+            address as string,
+          );
 
-        return new Response(JSON.stringify({
-          success: true,
-          data: envData
-        }), {
-          headers: { 'Content-Type': 'application/json' }
-        })
+        return new Response(
+          JSON.stringify({
+            success: true,
+            data: envData,
+          }),
+          {
+            headers: { "Content-Type": "application/json" },
+          },
+        );
       }
 
-      case 'generate_embeddings': {
-        const embeddings = await spatialAI.generatePropertyEmbeddings(data)
+      case "generate_embeddings": {
+        const embeddings = await spatialAI.generatePropertyEmbeddings(data);
 
-        return new Response(JSON.stringify({
-          success: true,
-          data: { embeddings }
-        }), {
-          headers: { 'Content-Type': 'application/json' }
-        })
+        return new Response(
+          JSON.stringify({
+            success: true,
+            data: { embeddings },
+          }),
+          {
+            headers: { "Content-Type": "application/json" },
+          },
+        );
       }
 
-      case 'find_similar': {
-        const { embedding, threshold, maxResults } = data
+      case "find_similar": {
+        const { embedding, threshold, maxResults } = data;
         const similar = await spatialAI.findSimilarProperties(
           embedding as number[],
           threshold as number,
-          maxResults as number
-        )
+          maxResults as number,
+        );
 
-        return new Response(JSON.stringify({
-          success: true,
-          data: { similar }
-        }), {
-          headers: { 'Content-Type': 'application/json' }
-        })
+        return new Response(
+          JSON.stringify({
+            success: true,
+            data: { similar },
+          }),
+          {
+            headers: { "Content-Type": "application/json" },
+          },
+        );
       }
 
       default:
-        return new Response('Invalid action', { status: 400 })
+        return new Response("Invalid action", { status: 400 });
     }
-
   } catch (error) {
-    return new Response(JSON.stringify({
-      success: false,
-      error: error.message
-    }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    })
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: error.message,
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   }
-})
+});
 ```
 
 ### 3.2 AR/Drone Data Processing Pipeline
@@ -154,168 +185,173 @@ Create automated pipeline for processing AR and drone imagery:
 
 ```typescript
 // File: supabase/functions/ar-drone-processor/index.ts
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 interface DroneImageProcessingRequest {
-  propertyId: string
-  imageUrls: string[]
+  propertyId: string;
+  imageUrls: string[];
   droneMetadata: {
-    model: string
+    model: string;
     flightPath: Array<{
-      lat: number
-      lng: number
-      altitude: number
-      timestamp: string
-    }>
-    cameraSettings: Record<string, unknown>
-  }
+      lat: number;
+      lng: number;
+      altitude: number;
+      timestamp: string;
+    }>;
+    cameraSettings: Record<string, unknown>;
+  };
   processingOptions: {
-    generate3DModel: boolean
-    damageDetection: boolean
-    materialAnalysis: boolean
-    vegetationAnalysis: boolean
-  }
+    generate3DModel: boolean;
+    damageDetection: boolean;
+    materialAnalysis: boolean;
+    vegetationAnalysis: boolean;
+  };
 }
 
 serve(async (req: Request) => {
   const supabase = createClient(
-    Deno.env.get('SUPABASE_URL') ?? '',
-    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-  )
+    Deno.env.get("SUPABASE_URL") ?? "",
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+  );
 
   try {
-    const request: DroneImageProcessingRequest = await req.json()
-    const { propertyId, imageUrls, droneMetadata, processingOptions } = request
+    const request: DroneImageProcessingRequest = await req.json();
+    const { propertyId, imageUrls, droneMetadata, processingOptions } = request;
 
     // Process each image with AI analysis
-    const imageAnalysisResults = []
+    const imageAnalysisResults = [];
 
     for (const imageUrl of imageUrls) {
       // Extract EXIF data and spatial information
-      const imageAnalysis = await analyzeImage(imageUrl, droneMetadata)
+      const imageAnalysis = await analyzeImage(imageUrl, droneMetadata);
 
       // Store in ai_enhanced_imagery table
-      const { error } = await supabase
-        .from('ai_enhanced_imagery')
-        .insert({
-          property_id: propertyId,
-          image_url: imageUrl,
-          image_type: 'aerial',
-          capture_method: 'drone',
-          drone_model: droneMetadata.model,
-          camera_parameters: droneMetadata.cameraSettings,
-          flight_parameters: {
-            flightPath: droneMetadata.flightPath,
-            processingOptions
-          },
-          // AI analysis results
-          visual_embedding: imageAnalysis.embedding,
-          detected_objects: imageAnalysis.objects,
-          damage_assessment: imageAnalysis.damage,
-          material_detection: imageAnalysis.materials,
-          technical_quality: imageAnalysis.quality,
-          processing_confidence: imageAnalysis.confidence,
-          validation_status: 'ai_processed'
-        })
+      const { error } = await supabase.from("ai_enhanced_imagery").insert({
+        property_id: propertyId,
+        image_url: imageUrl,
+        image_type: "aerial",
+        capture_method: "drone",
+        drone_model: droneMetadata.model,
+        camera_parameters: droneMetadata.cameraSettings,
+        flight_parameters: {
+          flightPath: droneMetadata.flightPath,
+          processingOptions,
+        },
+        // AI analysis results
+        visual_embedding: imageAnalysis.embedding,
+        detected_objects: imageAnalysis.objects,
+        damage_assessment: imageAnalysis.damage,
+        material_detection: imageAnalysis.materials,
+        technical_quality: imageAnalysis.quality,
+        processing_confidence: imageAnalysis.confidence,
+        validation_status: "ai_processed",
+      });
 
-      if (error) throw error
-      imageAnalysisResults.push(imageAnalysis)
+      if (error) throw error;
+      imageAnalysisResults.push(imageAnalysis);
     }
 
     // Generate 3D model if requested
-    let model3D = null
+    let model3D = null;
     if (processingOptions.generate3DModel && imageUrls.length >= 10) {
-      model3D = await generate3DModel(imageUrls, droneMetadata)
+      model3D = await generate3DModel(imageUrls, droneMetadata);
 
       // Store 3D model data
-      await supabase
-        .from('ai_3d_reconstructions')
-        .insert({
-          property_id: propertyId,
-          model_url: model3D.modelUrl,
-          point_cloud_url: model3D.pointCloudUrl,
-          source_imagery_count: imageUrls.length,
-          processing_method: 'photogrammetry',
-          structural_embedding: model3D.embedding,
-          geometric_features: model3D.geometry,
-          building_dimensions: model3D.dimensions,
-          model_confidence: model3D.confidence
-        })
+      await supabase.from("ai_3d_reconstructions").insert({
+        property_id: propertyId,
+        model_url: model3D.modelUrl,
+        point_cloud_url: model3D.pointCloudUrl,
+        source_imagery_count: imageUrls.length,
+        processing_method: "photogrammetry",
+        structural_embedding: model3D.embedding,
+        geometric_features: model3D.geometry,
+        building_dimensions: model3D.dimensions,
+        model_confidence: model3D.confidence,
+      });
     }
 
     // Update property digital twin with new analysis
     await updatePropertyDigitalTwin(supabase, propertyId, {
       imageAnalysisResults,
       model3D,
-      processingTimestamp: new Date().toISOString()
-    })
+      processingTimestamp: new Date().toISOString(),
+    });
 
-    return new Response(JSON.stringify({
-      success: true,
-      data: {
-        processedImages: imageAnalysisResults.length,
-        model3DGenerated: !!model3D,
-        analysisResults: imageAnalysisResults,
-        model3D
-      }
-    }), {
-      headers: { 'Content-Type': 'application/json' }
-    })
-
+    return new Response(
+      JSON.stringify({
+        success: true,
+        data: {
+          processedImages: imageAnalysisResults.length,
+          model3DGenerated: !!model3D,
+          analysisResults: imageAnalysisResults,
+          model3D,
+        },
+      }),
+      {
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   } catch (error) {
-    return new Response(JSON.stringify({
-      success: false,
-      error: error.message
-    }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    })
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: error.message,
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   }
-})
+});
 
 async function analyzeImage(imageUrl: string, metadata: any) {
   // AI-powered image analysis implementation
   return {
     embedding: new Array(2048).fill(0).map(() => Math.random()),
     objects: [
-      { class: 'roof', confidence: 0.95, bbox: [100, 100, 200, 200] },
-      { class: 'damage', confidence: 0.87, bbox: [150, 120, 180, 160] }
+      { class: "roof", confidence: 0.95, bbox: [100, 100, 200, 200] },
+      { class: "damage", confidence: 0.87, bbox: [150, 120, 180, 160] },
     ],
     damage: {
-      overall_condition: 'moderate_damage',
+      overall_condition: "moderate_damage",
       damage_categories: { roof: 0.3, siding: 0.1 },
       estimated_repair_cost: 15000,
-      urgency_level: 'medium'
+      urgency_level: "medium",
     },
     materials: { shingle: 0.8, metal: 0.2 },
     quality: { technical_quality: 0.9, coverage_completeness: 0.85 },
-    confidence: 0.88
-  }
+    confidence: 0.88,
+  };
 }
 
 async function generate3DModel(imageUrls: string[], metadata: any) {
   // 3D reconstruction implementation
   return {
-    modelUrl: 's3://models/property_123_model.gltf',
-    pointCloudUrl: 's3://models/property_123_points.las',
+    modelUrl: "s3://models/property_123_model.gltf",
+    pointCloudUrl: "s3://models/property_123_points.las",
     embedding: new Array(512).fill(0).map(() => Math.random()),
     geometry: { volume: 2500, surface_area: 1800 },
     dimensions: { length: 45, width: 32, height: 28 },
-    confidence: 0.82
-  }
+    confidence: 0.82,
+  };
 }
 
-async function updatePropertyDigitalTwin(supabase: any, propertyId: string, analysisData: any) {
+async function updatePropertyDigitalTwin(
+  supabase: any,
+  propertyId: string,
+  analysisData: any,
+) {
   // Update digital twin with new analysis
   await supabase
-    .from('property_digital_twins')
+    .from("property_digital_twins")
     .update({
       last_ai_analysis: new Date().toISOString(),
       ai_confidence_score: analysisData.model3D ? 0.9 : 0.8,
-      ai_property_features: analysisData
+      ai_property_features: analysisData,
     })
-    .eq('property_id', propertyId)
+    .eq("property_id", propertyId);
 }
 ```
 
@@ -325,114 +361,116 @@ Set up automated data ingestion from Florida GIS sources:
 
 ```typescript
 // File: supabase/functions/environmental-data-sync/index.ts
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
-import { EnvironmentalDataService } from "../../../packages/ai-services/src/services/environmental-data.service.ts"
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { EnvironmentalDataService } from "../../../packages/ai-services/src/services/environmental-data.service.ts";
 
 serve(async (req: Request) => {
   const supabase = createClient(
-    Deno.env.get('SUPABASE_URL') ?? '',
-    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-  )
+    Deno.env.get("SUPABASE_URL") ?? "",
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+  );
 
-  const environmentalService = new EnvironmentalDataService()
+  const environmentalService = new EnvironmentalDataService();
 
   try {
     // Get all active Florida counties for data sync
     const { data: counties } = await supabase
-      .from('fl_parcels')
-      .select('county_fips, county_name')
-      .not('county_fips', 'is', null)
+      .from("fl_parcels")
+      .select("county_fips, county_name")
+      .not("county_fips", "is", null);
 
-    const uniqueCounties = [...new Set(counties?.map(c => c.county_fips))]
+    const uniqueCounties = [...new Set(counties?.map((c) => c.county_fips))];
 
-    console.log(`Starting environmental data sync for ${uniqueCounties.length} counties`)
+    console.log(
+      `Starting environmental data sync for ${uniqueCounties.length} counties`,
+    );
 
     const syncResults = {
       counties: uniqueCounties.length,
       hazardsUpdated: 0,
       sensorsUpdated: 0,
-      errors: []
-    }
+      errors: [],
+    };
 
     // Process each county
     for (const countyFips of uniqueCounties) {
       try {
         // Fetch latest hazard data
-        const hazardData = await fetchCountyHazardData(countyFips)
+        const hazardData = await fetchCountyHazardData(countyFips);
 
         // Update environmental hazards with AI analysis
         for (const hazard of hazardData) {
-          const aiAnalysis = await analyzeHazardWithAI(hazard)
+          const aiAnalysis = await analyzeHazardWithAI(hazard);
 
-          await supabase
-            .from('environmental_hazards_ai')
-            .upsert({
-              hazard_type: hazard.type,
-              area_geometry: hazard.geometry,
-              severity_level: aiAnalysis.severity,
-              risk_embedding: aiAnalysis.embedding,
-              probability_scores: aiAnalysis.probabilities,
-              fema_data: hazard.femaData,
-              noaa_data: hazard.noaaData,
-              ai_processing_version: 'v1.0',
-              last_ai_update: new Date().toISOString(),
-              model_confidence: aiAnalysis.confidence
-            })
+          await supabase.from("environmental_hazards_ai").upsert({
+            hazard_type: hazard.type,
+            area_geometry: hazard.geometry,
+            severity_level: aiAnalysis.severity,
+            risk_embedding: aiAnalysis.embedding,
+            probability_scores: aiAnalysis.probabilities,
+            fema_data: hazard.femaData,
+            noaa_data: hazard.noaaData,
+            ai_processing_version: "v1.0",
+            last_ai_update: new Date().toISOString(),
+            model_confidence: aiAnalysis.confidence,
+          });
         }
 
-        syncResults.hazardsUpdated += hazardData.length
+        syncResults.hazardsUpdated += hazardData.length;
 
         // Update sensor data
-        const sensorData = await fetchCountySensorData(countyFips)
+        const sensorData = await fetchCountySensorData(countyFips);
 
         for (const sensor of sensorData) {
-          const aiInsights = await analyzeSensorDataWithAI(sensor)
+          const aiInsights = await analyzeSensorDataWithAI(sensor);
 
-          await supabase
-            .from('environmental_sensors_ai')
-            .upsert({
-              sensor_id: sensor.id,
-              sensor_type: sensor.type,
-              location: sensor.location,
-              latest_reading: sensor.latestReading,
-              reading_timestamp: sensor.timestamp,
-              trend_analysis: aiInsights.trends,
-              anomaly_detection: aiInsights.anomalies,
-              predictive_modeling: aiInsights.predictions
-            })
+          await supabase.from("environmental_sensors_ai").upsert({
+            sensor_id: sensor.id,
+            sensor_type: sensor.type,
+            location: sensor.location,
+            latest_reading: sensor.latestReading,
+            reading_timestamp: sensor.timestamp,
+            trend_analysis: aiInsights.trends,
+            anomaly_detection: aiInsights.anomalies,
+            predictive_modeling: aiInsights.predictions,
+          });
         }
 
-        syncResults.sensorsUpdated += sensorData.length
-
+        syncResults.sensorsUpdated += sensorData.length;
       } catch (error) {
         syncResults.errors.push({
           county: countyFips,
-          error: error.message
-        })
+          error: error.message,
+        });
       }
     }
 
     // Trigger AI confidence score updates
-    await supabase.rpc('update_ai_confidence_scores')
+    await supabase.rpc("update_ai_confidence_scores");
 
-    return new Response(JSON.stringify({
-      success: true,
-      data: syncResults
-    }), {
-      headers: { 'Content-Type': 'application/json' }
-    })
-
+    return new Response(
+      JSON.stringify({
+        success: true,
+        data: syncResults,
+      }),
+      {
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   } catch (error) {
-    return new Response(JSON.stringify({
-      success: false,
-      error: error.message
-    }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    })
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: error.message,
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   }
-})
+});
 
 async function fetchCountyHazardData(countyFips: string) {
   // Fetch from multiple sources
@@ -440,13 +478,13 @@ async function fetchCountyHazardData(countyFips: string) {
     fetchFEMAData(countyFips),
     fetchNOAAData(countyFips),
     fetchUSGSData(countyFips),
-    fetchFloridaEmergencyData(countyFips)
-  ]
+    fetchFloridaEmergencyData(countyFips),
+  ];
 
-  const results = await Promise.allSettled(sources)
+  const results = await Promise.allSettled(sources);
   return results
-    .filter(r => r.status === 'fulfilled')
-    .flatMap(r => (r as PromiseFulfilledResult<any>).value)
+    .filter((r) => r.status === "fulfilled")
+    .flatMap((r) => (r as PromiseFulfilledResult<any>).value);
 }
 
 async function analyzeHazardWithAI(hazard: any) {
@@ -455,8 +493,8 @@ async function analyzeHazardWithAI(hazard: any) {
     severity: calculateSeverity(hazard),
     embedding: generateHazardEmbedding(hazard),
     probabilities: calculateProbabilities(hazard),
-    confidence: 0.85
-  }
+    confidence: 0.85,
+  };
 }
 ```
 
@@ -466,41 +504,51 @@ Create React components for AR data capture and visualization:
 
 ```tsx
 // File: apps/web/components/ar-drone/ARCaptureInterface.tsx
-'use client'
+"use client";
 
-import { useState, useRef, useCallback } from 'react'
-import { Button } from '@claimguardian/ui'
-import { Camera, MapPin, Settings, Upload } from 'lucide-react'
+import { useState, useRef, useCallback } from "react";
+import { Button } from "@claimguardian/ui";
+import { Camera, MapPin, Settings, Upload } from "lucide-react";
 
 interface ARCaptureProps {
-  propertyId: string
-  onImageCaptured: (image: File, metadata: CaptureMetadata) => void
-  onBatchComplete: (images: CapturedImage[]) => void
+  propertyId: string;
+  onImageCaptured: (image: File, metadata: CaptureMetadata) => void;
+  onBatchComplete: (images: CapturedImage[]) => void;
 }
 
 interface CaptureMetadata {
-  location: { lat: number; lng: number }
-  heading: number
-  pitch: number
-  altitude?: number
-  timestamp: string
-  deviceInfo: Record<string, unknown>
+  location: { lat: number; lng: number };
+  heading: number;
+  pitch: number;
+  altitude?: number;
+  timestamp: string;
+  deviceInfo: Record<string, unknown>;
 }
 
 interface CapturedImage {
-  file: File
-  metadata: CaptureMetadata
-  preview: string
+  file: File;
+  metadata: CaptureMetadata;
+  preview: string;
 }
 
-export function ARCaptureInterface({ propertyId, onImageCaptured, onBatchComplete }: ARCaptureProps) {
-  const [isCapturing, setIsCapturing] = useState(false)
-  const [capturedImages, setCapturedImages] = useState<CapturedImage[]>([])
-  const [deviceOrientation, setDeviceOrientation] = useState({ alpha: 0, beta: 0, gamma: 0 })
-  const [gpsLocation, setGPSLocation] = useState<GeolocationPosition | null>(null)
+export function ARCaptureInterface({
+  propertyId,
+  onImageCaptured,
+  onBatchComplete,
+}: ARCaptureProps) {
+  const [isCapturing, setIsCapturing] = useState(false);
+  const [capturedImages, setCapturedImages] = useState<CapturedImage[]>([]);
+  const [deviceOrientation, setDeviceOrientation] = useState({
+    alpha: 0,
+    beta: 0,
+    gamma: 0,
+  });
+  const [gpsLocation, setGPSLocation] = useState<GeolocationPosition | null>(
+    null,
+  );
 
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // Initialize camera and sensors
   const initializeCapture = useCallback(async () => {
@@ -508,126 +556,134 @@ export function ARCaptureInterface({ propertyId, onImageCaptured, onBatchComplet
       // Request camera permission
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
-          facingMode: 'environment',
+          facingMode: "environment",
           width: { ideal: 1920 },
-          height: { ideal: 1080 }
-        }
-      })
+          height: { ideal: 1080 },
+        },
+      });
 
       if (videoRef.current) {
-        videoRef.current.srcObject = stream
+        videoRef.current.srcObject = stream;
       }
 
       // Request location permission
       navigator.geolocation.getCurrentPosition(
         (position) => setGPSLocation(position),
-        (error) => console.error('GPS error:', error),
-        { enableHighAccuracy: true }
-      )
+        (error) => console.error("GPS error:", error),
+        { enableHighAccuracy: true },
+      );
 
       // Listen to device orientation
       if (window.DeviceOrientationEvent) {
-        window.addEventListener('deviceorientation', (event) => {
+        window.addEventListener("deviceorientation", (event) => {
           setDeviceOrientation({
             alpha: event.alpha || 0,
             beta: event.beta || 0,
-            gamma: event.gamma || 0
-          })
-        })
+            gamma: event.gamma || 0,
+          });
+        });
       }
 
-      setIsCapturing(true)
+      setIsCapturing(true);
     } catch (error) {
-      console.error('Failed to initialize capture:', error)
+      console.error("Failed to initialize capture:", error);
     }
-  }, [])
+  }, []);
 
   // Capture image with full metadata
   const captureImage = useCallback(async () => {
-    if (!videoRef.current || !canvasRef.current || !gpsLocation) return
+    if (!videoRef.current || !canvasRef.current || !gpsLocation) return;
 
-    const canvas = canvasRef.current
-    const video = videoRef.current
-    const ctx = canvas.getContext('2d')!
+    const canvas = canvasRef.current;
+    const video = videoRef.current;
+    const ctx = canvas.getContext("2d")!;
 
     // Set canvas size to match video
-    canvas.width = video.videoWidth
-    canvas.height = video.videoHeight
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
 
     // Draw current video frame
-    ctx.drawImage(video, 0, 0)
+    ctx.drawImage(video, 0, 0);
 
     // Convert to blob
-    canvas.toBlob(async (blob) => {
-      if (!blob) return
+    canvas.toBlob(
+      async (blob) => {
+        if (!blob) return;
 
-      const metadata: CaptureMetadata = {
-        location: {
-          lat: gpsLocation.coords.latitude,
-          lng: gpsLocation.coords.longitude
-        },
-        heading: deviceOrientation.alpha,
-        pitch: deviceOrientation.beta,
-        altitude: gpsLocation.coords.altitude || undefined,
-        timestamp: new Date().toISOString(),
-        deviceInfo: {
-          accuracy: gpsLocation.coords.accuracy,
-          orientation: deviceOrientation,
-          userAgent: navigator.userAgent
-        }
-      }
+        const metadata: CaptureMetadata = {
+          location: {
+            lat: gpsLocation.coords.latitude,
+            lng: gpsLocation.coords.longitude,
+          },
+          heading: deviceOrientation.alpha,
+          pitch: deviceOrientation.beta,
+          altitude: gpsLocation.coords.altitude || undefined,
+          timestamp: new Date().toISOString(),
+          deviceInfo: {
+            accuracy: gpsLocation.coords.accuracy,
+            orientation: deviceOrientation,
+            userAgent: navigator.userAgent,
+          },
+        };
 
-      const file = new File([blob], `capture_${Date.now()}.jpg`, { type: 'image/jpeg' })
-      const preview = URL.createObjectURL(blob)
+        const file = new File([blob], `capture_${Date.now()}.jpg`, {
+          type: "image/jpeg",
+        });
+        const preview = URL.createObjectURL(blob);
 
-      const capturedImage: CapturedImage = { file, metadata, preview }
+        const capturedImage: CapturedImage = { file, metadata, preview };
 
-      setCapturedImages(prev => [...prev, capturedImage])
-      onImageCaptured(file, metadata)
-    }, 'image/jpeg', 0.8)
-  }, [deviceOrientation, gpsLocation, onImageCaptured])
+        setCapturedImages((prev) => [...prev, capturedImage]);
+        onImageCaptured(file, metadata);
+      },
+      "image/jpeg",
+      0.8,
+    );
+  }, [deviceOrientation, gpsLocation, onImageCaptured]);
 
   // Process batch for 3D reconstruction
   const processBatch = useCallback(async () => {
     if (capturedImages.length < 5) {
-      alert('Need at least 5 images for 3D reconstruction')
-      return
+      alert("Need at least 5 images for 3D reconstruction");
+      return;
     }
 
     try {
       // Upload images and trigger AI processing
-      const formData = new FormData()
+      const formData = new FormData();
 
       capturedImages.forEach((img, index) => {
-        formData.append(`image_${index}`, img.file)
-        formData.append(`metadata_${index}`, JSON.stringify(img.metadata))
-      })
+        formData.append(`image_${index}`, img.file);
+        formData.append(`metadata_${index}`, JSON.stringify(img.metadata));
+      });
 
-      formData.append('propertyId', propertyId)
-      formData.append('processingOptions', JSON.stringify({
-        generate3DModel: true,
-        damageDetection: true,
-        materialAnalysis: true,
-        vegetationAnalysis: true
-      }))
+      formData.append("propertyId", propertyId);
+      formData.append(
+        "processingOptions",
+        JSON.stringify({
+          generate3DModel: true,
+          damageDetection: true,
+          materialAnalysis: true,
+          vegetationAnalysis: true,
+        }),
+      );
 
-      const response = await fetch('/api/ar-drone-processor', {
-        method: 'POST',
-        body: formData
-      })
+      const response = await fetch("/api/ar-drone-processor", {
+        method: "POST",
+        body: formData,
+      });
 
-      if (!response.ok) throw new Error('Processing failed')
+      if (!response.ok) throw new Error("Processing failed");
 
-      const result = await response.json()
-      onBatchComplete(capturedImages)
+      const result = await response.json();
+      onBatchComplete(capturedImages);
 
       // Reset for next batch
-      setCapturedImages([])
-
+      setCapturedImages([]);
     } catch (error) {
-      console.error('Batch processing failed:', error)
+      console.error("Batch processing failed:", error);
     }
-  }, [capturedImages, propertyId, onBatchComplete])
+  }, [capturedImages, propertyId, onBatchComplete]);
 
   return (
     <div className="space-y-4">
@@ -647,18 +703,15 @@ export function ARCaptureInterface({ propertyId, onImageCaptured, onBatchComplet
             <MapPin className="w-4 h-4" />
             {gpsLocation ? (
               <span>
-                {gpsLocation.coords.latitude.toFixed(6)}, {gpsLocation.coords.longitude.toFixed(6)}
+                {gpsLocation.coords.latitude.toFixed(6)},{" "}
+                {gpsLocation.coords.longitude.toFixed(6)}
               </span>
             ) : (
               <span>Getting location...</span>
             )}
           </div>
-          <div>
-            Heading: {deviceOrientation.alpha.toFixed(1)}°
-          </div>
-          <div>
-            Images: {capturedImages.length}
-          </div>
+          <div>Heading: {deviceOrientation.alpha.toFixed(1)}°</div>
+          <div>Images: {capturedImages.length}</div>
         </div>
       </div>
 
@@ -705,7 +758,7 @@ export function ARCaptureInterface({ propertyId, onImageCaptured, onBatchComplet
         </div>
       )}
     </div>
-  )
+  );
 }
 ```
 
@@ -713,38 +766,47 @@ export function ARCaptureInterface({ propertyId, onImageCaptured, onBatchComplet
 
 ```tsx
 // File: apps/web/components/3d-viewer/Model3DViewer.tsx
-'use client'
+"use client";
 
-import { useEffect, useRef, useState } from 'react'
-import { Button } from '@claimguardian/ui'
-import { RotateCcw, ZoomIn, ZoomOut, Maximize2 } from 'lucide-react'
+import { useEffect, useRef, useState } from "react";
+import { Button } from "@claimguardian/ui";
+import { RotateCcw, ZoomIn, ZoomOut, Maximize2 } from "lucide-react";
 
 interface Model3DViewerProps {
-  modelUrl: string
-  propertyId: string
+  modelUrl: string;
+  propertyId: string;
   analysisData?: {
-    dimensions: Record<string, number>
-    damageAreas: Array<{ location: [number, number, number]; severity: number }>
-    materialMap: Record<string, number>
-  }
+    dimensions: Record<string, number>;
+    damageAreas: Array<{
+      location: [number, number, number];
+      severity: number;
+    }>;
+    materialMap: Record<string, number>;
+  };
 }
 
-export function Model3DViewer({ modelUrl, propertyId, analysisData }: Model3DViewerProps) {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [selectedDamageArea, setSelectedDamageArea] = useState<number | null>(null)
+export function Model3DViewer({
+  modelUrl,
+  propertyId,
+  analysisData,
+}: Model3DViewerProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedDamageArea, setSelectedDamageArea] = useState<number | null>(
+    null,
+  );
 
   useEffect(() => {
     const loadModel = async () => {
       try {
-        setIsLoading(true)
+        setIsLoading(true);
 
         // Initialize Three.js scene (simplified for example)
         if (containerRef.current) {
           // This would typically use Three.js or similar 3D library
           // For now, showing the structure
-          const viewer = document.createElement('div')
+          const viewer = document.createElement("div");
           viewer.innerHTML = `
             <div class="w-full h-96 bg-gray-100 rounded-lg flex items-center justify-center">
               <div class="text-center">
@@ -753,19 +815,19 @@ export function Model3DViewer({ modelUrl, propertyId, analysisData }: Model3DVie
                 <p class="text-sm text-gray-600">Property: ${propertyId}</p>
               </div>
             </div>
-          `
-          containerRef.current.appendChild(viewer)
+          `;
+          containerRef.current.appendChild(viewer);
         }
 
-        setIsLoading(false)
+        setIsLoading(false);
       } catch (err) {
-        setError('Failed to load 3D model')
-        setIsLoading(false)
+        setError("Failed to load 3D model");
+        setIsLoading(false);
       }
-    }
+    };
 
-    loadModel()
-  }, [modelUrl, propertyId])
+    loadModel();
+  }, [modelUrl, propertyId]);
 
   if (isLoading) {
     return (
@@ -775,7 +837,7 @@ export function Model3DViewer({ modelUrl, propertyId, analysisData }: Model3DVie
           <p>Loading 3D model...</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -786,7 +848,7 @@ export function Model3DViewer({ modelUrl, propertyId, analysisData }: Model3DVie
           <p className="text-sm">{error}</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -822,7 +884,13 @@ export function Model3DViewer({ modelUrl, propertyId, analysisData }: Model3DVie
               <div>Length: {analysisData.dimensions.length}ft</div>
               <div>Width: {analysisData.dimensions.width}ft</div>
               <div>Height: {analysisData.dimensions.height}ft</div>
-              <div>Area: {(analysisData.dimensions.length * analysisData.dimensions.width).toFixed(0)} sq ft</div>
+              <div>
+                Area:{" "}
+                {(
+                  analysisData.dimensions.length * analysisData.dimensions.width
+                ).toFixed(0)}{" "}
+                sq ft
+              </div>
             </div>
           </div>
 
@@ -836,16 +904,21 @@ export function Model3DViewer({ modelUrl, propertyId, analysisData }: Model3DVie
                   onClick={() => setSelectedDamageArea(index)}
                   className={`w-full text-left p-2 rounded text-sm ${
                     selectedDamageArea === index
-                      ? 'bg-red-100 border-red-300'
-                      : 'bg-gray-50 hover:bg-gray-100'
+                      ? "bg-red-100 border-red-300"
+                      : "bg-gray-50 hover:bg-gray-100"
                   }`}
                 >
                   <div className="flex justify-between">
                     <span>Area {index + 1}</span>
-                    <span className={`px-1 rounded text-xs ${
-                      area.severity > 0.7 ? 'bg-red-200' :
-                      area.severity > 0.4 ? 'bg-yellow-200' : 'bg-green-200'
-                    }`}>
+                    <span
+                      className={`px-1 rounded text-xs ${
+                        area.severity > 0.7
+                          ? "bg-red-200"
+                          : area.severity > 0.4
+                            ? "bg-yellow-200"
+                            : "bg-green-200"
+                      }`}
+                    >
                       {(area.severity * 100).toFixed(0)}%
                     </span>
                   </div>
@@ -858,18 +931,20 @@ export function Model3DViewer({ modelUrl, propertyId, analysisData }: Model3DVie
           <div className="bg-white p-4 rounded-lg border">
             <h4 className="font-semibold mb-2">Materials Detected</h4>
             <div className="space-y-1 text-sm">
-              {Object.entries(analysisData.materialMap).map(([material, confidence]) => (
-                <div key={material} className="flex justify-between">
-                  <span className="capitalize">{material}</span>
-                  <span>{(confidence * 100).toFixed(0)}%</span>
-                </div>
-              ))}
+              {Object.entries(analysisData.materialMap).map(
+                ([material, confidence]) => (
+                  <div key={material} className="flex justify-between">
+                    <span className="capitalize">{material}</span>
+                    <span>{(confidence * 100).toFixed(0)}%</span>
+                  </div>
+                ),
+              )}
             </div>
           </div>
         </div>
       )}
     </div>
-  )
+  );
 }
 ```
 
@@ -914,100 +989,103 @@ echo "Data sync completed at $(date)"
 
 ```typescript
 // File: supabase/functions/processing-queue/index.ts
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 interface ProcessingJob {
-  id: string
-  type: 'image_analysis' | '3d_reconstruction' | 'risk_assessment'
-  priority: number
-  data: Record<string, unknown>
-  status: 'pending' | 'processing' | 'completed' | 'failed'
+  id: string;
+  type: "image_analysis" | "3d_reconstruction" | "risk_assessment";
+  priority: number;
+  data: Record<string, unknown>;
+  status: "pending" | "processing" | "completed" | "failed";
 }
 
 serve(async (req: Request) => {
   const supabase = createClient(
-    Deno.env.get('SUPABASE_URL') ?? '',
-    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-  )
+    Deno.env.get("SUPABASE_URL") ?? "",
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+  );
 
   try {
     // Get pending jobs from queue
     const { data: jobs } = await supabase
-      .from('processing_queue')
-      .select('*')
-      .eq('status', 'pending')
-      .order('priority', { ascending: false })
-      .order('created_at')
-      .limit(5)
+      .from("processing_queue")
+      .select("*")
+      .eq("status", "pending")
+      .order("priority", { ascending: false })
+      .order("created_at")
+      .limit(5);
 
     if (!jobs || jobs.length === 0) {
-      return new Response(JSON.stringify({ message: 'No pending jobs' }))
+      return new Response(JSON.stringify({ message: "No pending jobs" }));
     }
 
-    const results = []
+    const results = [];
 
     for (const job of jobs) {
       try {
         // Mark as processing
         await supabase
-          .from('processing_queue')
-          .update({ status: 'processing' })
-          .eq('id', job.id)
+          .from("processing_queue")
+          .update({ status: "processing" })
+          .eq("id", job.id);
 
-        let result
+        let result;
         switch (job.type) {
-          case 'image_analysis':
-            result = await processImageAnalysis(job.data)
-            break
-          case '3d_reconstruction':
-            result = await process3DReconstruction(job.data)
-            break
-          case 'risk_assessment':
-            result = await processRiskAssessment(job.data)
-            break
+          case "image_analysis":
+            result = await processImageAnalysis(job.data);
+            break;
+          case "3d_reconstruction":
+            result = await process3DReconstruction(job.data);
+            break;
+          case "risk_assessment":
+            result = await processRiskAssessment(job.data);
+            break;
         }
 
         // Mark as completed
         await supabase
-          .from('processing_queue')
+          .from("processing_queue")
           .update({
-            status: 'completed',
+            status: "completed",
             result: result,
-            completed_at: new Date().toISOString()
+            completed_at: new Date().toISOString(),
           })
-          .eq('id', job.id)
+          .eq("id", job.id);
 
-        results.push({ jobId: job.id, status: 'completed' })
-
+        results.push({ jobId: job.id, status: "completed" });
       } catch (error) {
         // Mark as failed
         await supabase
-          .from('processing_queue')
+          .from("processing_queue")
           .update({
-            status: 'failed',
+            status: "failed",
             error: error.message,
-            failed_at: new Date().toISOString()
+            failed_at: new Date().toISOString(),
           })
-          .eq('id', job.id)
+          .eq("id", job.id);
 
-        results.push({ jobId: job.id, status: 'failed', error: error.message })
+        results.push({ jobId: job.id, status: "failed", error: error.message });
       }
     }
 
-    return new Response(JSON.stringify({
-      success: true,
-      processed: results.length,
-      results
-    }))
-
+    return new Response(
+      JSON.stringify({
+        success: true,
+        processed: results.length,
+        results,
+      }),
+    );
   } catch (error) {
-    return new Response(JSON.stringify({
-      success: false,
-      error: error.message
-    }), { status: 500 })
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: error.message,
+      }),
+      { status: 500 },
+    );
   }
-})
+});
 ```
 
 ## Phase 5: Integration Testing and Deployment
@@ -1102,6 +1180,7 @@ This AI-first GIS implementation provides:
 8. **Performance monitoring** and alert systems
 
 **Key AI Advantages:**
+
 - Vector embeddings enable semantic property matching
 - Multi-modal AI analysis combines imagery, spatial, and environmental data
 - Real-time risk assessment using composite AI models
@@ -1109,6 +1188,7 @@ This AI-first GIS implementation provides:
 - Scalable processing with queue-based architecture
 
 **Next Steps:**
+
 1. Deploy Edge Functions to Supabase
 2. Apply database migrations
 3. Configure automated data sync schedules

@@ -3,13 +3,14 @@
 <div align="center">
   <img src="https://claimguardianai.com/logo.png" alt="ClaimGuardian Logo" width="200"/>
 
-  **AI-Powered Property Intelligence Platform for Florida Homeowners**
+**AI-Powered Property Intelligence Platform for Florida Homeowners**
 
-  [![Next.js](https://img.shields.io/badge/Next.js-15.3.5-black)](https://nextjs.org/)
-  [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue)](https://www.typescriptlang.org/)
-  [![Supabase](https://img.shields.io/badge/Supabase-Latest-green)](https://supabase.com/)
-  [![pnpm](https://img.shields.io/badge/pnpm-10.13.1-orange)](https://pnpm.io/)
-  [![License](https://img.shields.io/badge/License-Proprietary-red)](./LICENSE)
+[![Next.js](https://img.shields.io/badge/Next.js-15.3.5-black)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue)](https://www.typescriptlang.org/)
+[![Supabase](https://img.shields.io/badge/Supabase-Latest-green)](https://supabase.com/)
+[![pnpm](https://img.shields.io/badge/pnpm-10.13.1-orange)](https://pnpm.io/)
+[![License](https://img.shields.io/badge/License-Proprietary-red)](./LICENSE)
+
 </div>
 
 > **📋 Mission & Vision**: See our [mission statement and core philosophy](./GOVERNANCE/MISSION.md) in the [`GOVERNANCE/`](./GOVERNANCE) directory.
@@ -97,6 +98,7 @@ pnpm start
 ## 🧩 Key Features
 
 ### AI-Powered Tools
+
 - **Damage Analyzer** - Computer vision for instant damage assessment
 - **Policy Chat** - Natural language policy understanding
 - **Claim Assistant** - Step-by-step claim guidance
@@ -105,12 +107,14 @@ pnpm start
 - **Evidence Organizer** - Smart document categorization
 
 ### Florida Data Platform
+
 - **FLOIR Integration** - Real-time insurance regulation data
 - **Property Data** - 10M+ Florida property records with AI enrichment
 - **Spatial Analysis** - PostGIS-powered risk assessment
 - **Semantic Search** - Vector-based intelligent search
 
 ### Security & Compliance
+
 - **Multi-layer Authentication** - Supabase Auth with 2FA
 - **Row-Level Security** - Database-level access control
 - **Legal Compliance** - GDPR/CCPA compliant consent tracking
@@ -147,6 +151,7 @@ NEXT_PUBLIC_SENTRY_DSN=your-sentry-dsn
 ## 🤝 Contributing
 
 We welcome contributions! Please see our [Contributing Guide](./CONTRIBUTING.md) for details on:
+
 - Code style and standards
 - Development workflow
 - Testing requirements
@@ -155,13 +160,16 @@ We welcome contributions! Please see our [Contributing Guide](./CONTRIBUTING.md)
 ## 🛠️ Development Tools
 
 ### Pre-commit Hooks
+
 Automated checks run before each commit:
+
 - Dependency validation
 - Lint auto-fixing
 - Type checking
 - Test execution
 
 ### Common Commands
+
 ```bash
 pnpm validate      # Run all checks
 pnpm lint:fix      # Auto-fix lint issues
@@ -173,6 +181,7 @@ pnpm cz            # Commit with conventional format
 ## 📱 Deployment
 
 The project is optimized for deployment on:
+
 - **Vercel** - Frontend hosting (automatic deployments)
 - **Supabase** - Backend services (database, auth, storage)
 - **GitHub Actions** - CI/CD pipeline
@@ -193,6 +202,7 @@ ClaimGuardian is proprietary software. All rights reserved.
 ## 🙏 Acknowledgments
 
 Built with amazing open-source technologies:
+
 - [Next.js](https://nextjs.org/) - React framework
 - [Supabase](https://supabase.com/) - Backend platform
 - [Tailwind CSS](https://tailwindcss.com/) - Styling

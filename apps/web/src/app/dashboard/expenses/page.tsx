@@ -8,99 +8,138 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
 import {
-  DollarSign, Receipt, TrendingUp,
-  Calendar, Filter, Download, Upload, Search,
-  Home, Wrench, ShoppingCart, Zap, Package,
-  Plus, Camera, FileText, PieChart
-} from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+  DollarSign,
+  Receipt,
+  TrendingUp,
+  Calendar,
+  Filter,
+  Download,
+  Upload,
+  Search,
+  Home,
+  Wrench,
+  ShoppingCart,
+  Zap,
+  Package,
+  Plus,
+  Camera,
+  FileText,
+  PieChart,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 
 export default function ExpensesPage() {
-  const router = useRouter()
-  const [selectedCategory, setSelectedCategory] = useState('all')
-  const [, setSelectedMonth] = useState('current')
+  const router = useRouter();
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [, setSelectedMonth] = useState("current");
 
   const categories = [
-    { id: 'maintenance', label: 'Maintenance', icon: Wrench, color: 'text-blue-400' },
-    { id: 'utilities', label: 'Utilities', icon: Zap, color: 'text-yellow-400' },
-    { id: 'insurance', label: 'Insurance', icon: Home, color: 'text-green-400' },
-    { id: 'repairs', label: 'Repairs', icon: Wrench, color: 'text-orange-400' },
-    { id: 'supplies', label: 'Supplies', icon: ShoppingCart, color: 'text-purple-400' },
-    { id: 'other', label: 'Other', icon: Package, color: 'text-gray-400' }
-  ]
+    {
+      id: "maintenance",
+      label: "Maintenance",
+      icon: Wrench,
+      color: "text-blue-400",
+    },
+    {
+      id: "utilities",
+      label: "Utilities",
+      icon: Zap,
+      color: "text-yellow-400",
+    },
+    {
+      id: "insurance",
+      label: "Insurance",
+      icon: Home,
+      color: "text-green-400",
+    },
+    { id: "repairs", label: "Repairs", icon: Wrench, color: "text-orange-400" },
+    {
+      id: "supplies",
+      label: "Supplies",
+      icon: ShoppingCart,
+      color: "text-purple-400",
+    },
+    { id: "other", label: "Other", icon: Package, color: "text-gray-400" },
+  ];
 
   const recentExpenses = [
     {
       id: 1,
-      description: 'HVAC Annual Service',
-      category: 'maintenance',
-      amount: 285.00,
-      date: '2024-01-15',
-      vendor: 'Cool Air Services',
+      description: "HVAC Annual Service",
+      category: "maintenance",
+      amount: 285.0,
+      date: "2024-01-15",
+      vendor: "Cool Air Services",
       hasReceipt: true,
-      status: 'deductible'
+      status: "deductible",
     },
     {
       id: 2,
-      description: 'Electric Bill - January',
-      category: 'utilities',
+      description: "Electric Bill - January",
+      category: "utilities",
       amount: 187.43,
-      date: '2024-01-10',
-      vendor: 'Florida Power & Light',
+      date: "2024-01-10",
+      vendor: "Florida Power & Light",
       hasReceipt: true,
-      status: 'recurring'
+      status: "recurring",
     },
     {
       id: 3,
-      description: 'Roof Repair - Storm Damage',
-      category: 'repairs',
-      amount: 1250.00,
-      date: '2024-01-08',
-      vendor: 'Premier Roofing',
+      description: "Roof Repair - Storm Damage",
+      category: "repairs",
+      amount: 1250.0,
+      date: "2024-01-08",
+      vendor: "Premier Roofing",
       hasReceipt: true,
-      status: 'claimable'
+      status: "claimable",
     },
     {
       id: 4,
-      description: 'Home Insurance Premium',
-      category: 'insurance',
-      amount: 425.00,
-      date: '2024-01-01',
-      vendor: 'State Farm',
+      description: "Home Insurance Premium",
+      category: "insurance",
+      amount: 425.0,
+      date: "2024-01-01",
+      vendor: "State Farm",
       hasReceipt: true,
-      status: 'recurring'
+      status: "recurring",
     },
     {
       id: 5,
-      description: 'Cleaning Supplies',
-      category: 'supplies',
+      description: "Cleaning Supplies",
+      category: "supplies",
       amount: 67.89,
-      date: '2023-12-28',
-      vendor: 'Home Depot',
+      date: "2023-12-28",
+      vendor: "Home Depot",
       hasReceipt: true,
-      status: 'standard'
-    }
-  ]
+      status: "standard",
+    },
+  ];
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'deductible': return 'bg-green-500/20 text-green-300'
-      case 'claimable': return 'bg-blue-500/20 text-blue-300'
-      case 'recurring': return 'bg-purple-500/20 text-purple-300'
-      default: return 'bg-gray-500/20 text-gray-300'
+      case "deductible":
+        return "bg-green-500/20 text-green-300";
+      case "claimable":
+        return "bg-blue-500/20 text-blue-300";
+      case "recurring":
+        return "bg-purple-500/20 text-purple-300";
+      default:
+        return "bg-gray-500/20 text-gray-300";
     }
-  }
+  };
 
   const getCategoryIcon = (categoryId: string) => {
-    const category = categories.find(c => c.id === categoryId)
-    return category ? { Icon: category.icon, color: category.color } : { Icon: Package, color: 'text-gray-400' }
-  }
+    const category = categories.find((c) => c.id === categoryId);
+    return category
+      ? { Icon: category.icon, color: category.color }
+      : { Icon: Package, color: "text-gray-400" };
+  };
 
   return (
     <DashboardLayout>
@@ -113,11 +152,13 @@ export default function ExpensesPage() {
                 <DollarSign className="w-8 h-8 text-green-400" />
                 Expense Tracker
               </h1>
-              <p className="text-gray-400">Track and categorize all property-related expenses</p>
+              <p className="text-gray-400">
+                Track and categorize all property-related expenses
+              </p>
             </div>
             <div className="flex gap-3 mt-4 md:mt-0">
               <button
-                onClick={() => router.push('/ai-tools/receipt-scanner')}
+                onClick={() => router.push("/ai-tools/receipt-scanner")}
                 className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors flex items-center gap-2"
               >
                 <Camera className="w-5 h-5" />
@@ -201,25 +242,27 @@ export default function ExpensesPage() {
 
           {/* Category Breakdown */}
           <div className="bg-gray-800 rounded-lg p-6 border border-gray-700 mb-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Spending by Category</h3>
+            <h3 className="text-lg font-semibold text-white mb-4">
+              Spending by Category
+            </h3>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              {categories.map(category => {
-                const Icon = category.icon
+              {categories.map((category) => {
+                const Icon = category.icon;
                 return (
                   <button
                     key={category.id}
                     onClick={() => setSelectedCategory(category.id)}
                     className={`p-4 rounded-lg border transition-all ${
                       selectedCategory === category.id
-                        ? 'bg-gray-700 border-cyan-500'
-                        : 'bg-gray-700/50 border-gray-600 hover:bg-gray-700'
+                        ? "bg-gray-700 border-cyan-500"
+                        : "bg-gray-700/50 border-gray-600 hover:bg-gray-700"
                     }`}
                   >
                     <Icon className={`w-6 h-6 ${category.color} mb-2`} />
                     <p className="text-sm text-white">{category.label}</p>
                     <p className="text-xs text-gray-400 mt-1">$1,234</p>
                   </button>
-                )
+                );
               })}
             </div>
           </div>
@@ -227,26 +270,37 @@ export default function ExpensesPage() {
           {/* Recent Expenses */}
           <div className="bg-gray-800 rounded-lg border border-gray-700">
             <div className="p-6 border-b border-gray-700">
-              <h3 className="text-lg font-semibold text-white">Recent Expenses</h3>
+              <h3 className="text-lg font-semibold text-white">
+                Recent Expenses
+              </h3>
             </div>
             <div className="divide-y divide-gray-700">
-              {recentExpenses.map(expense => {
-                const { Icon, color } = getCategoryIcon(expense.category)
+              {recentExpenses.map((expense) => {
+                const { Icon, color } = getCategoryIcon(expense.category);
                 return (
-                  <div key={expense.id} className="p-6 hover:bg-gray-700/50 transition-colors cursor-pointer">
+                  <div
+                    key={expense.id}
+                    className="p-6 hover:bg-gray-700/50 transition-colors cursor-pointer"
+                  >
                     <div className="flex items-start justify-between">
                       <div className="flex items-start gap-4">
                         <div className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center">
                           <Icon className={`w-5 h-5 ${color}`} />
                         </div>
                         <div>
-                          <h4 className="font-medium text-white">{expense.description}</h4>
-                          <p className="text-sm text-gray-400">{expense.vendor}</p>
+                          <h4 className="font-medium text-white">
+                            {expense.description}
+                          </h4>
+                          <p className="text-sm text-gray-400">
+                            {expense.vendor}
+                          </p>
                           <div className="flex items-center gap-4 mt-2">
                             <span className="text-xs text-gray-500">
                               {new Date(expense.date).toLocaleDateString()}
                             </span>
-                            <span className={`px-2 py-1 rounded-full text-xs ${getStatusBadge(expense.status)}`}>
+                            <span
+                              className={`px-2 py-1 rounded-full text-xs ${getStatusBadge(expense.status)}`}
+                            >
                               {expense.status}
                             </span>
                             {expense.hasReceipt && (
@@ -268,7 +322,7 @@ export default function ExpensesPage() {
                       </div>
                     </div>
                   </div>
-                )
+                );
               })}
             </div>
           </div>
@@ -279,7 +333,9 @@ export default function ExpensesPage() {
               <Upload className="w-5 h-5 text-cyan-400" />
               <div className="text-left">
                 <p className="font-medium text-white">Bulk Import</p>
-                <p className="text-sm text-gray-400">Upload CSV or connect bank</p>
+                <p className="text-sm text-gray-400">
+                  Upload CSV or connect bank
+                </p>
               </div>
             </button>
 
@@ -295,12 +351,14 @@ export default function ExpensesPage() {
               <FileText className="w-5 h-5 text-blue-400" />
               <div className="text-left">
                 <p className="font-medium text-white">Tax Report</p>
-                <p className="text-sm text-gray-400">Generate deduction summary</p>
+                <p className="text-sm text-gray-400">
+                  Generate deduction summary
+                </p>
               </div>
             </button>
           </div>
         </div>
       </div>
     </DashboardLayout>
-  )
+  );
 }

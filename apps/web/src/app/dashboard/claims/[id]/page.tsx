@@ -8,7 +8,7 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
 import {
   ArrowLeft,
@@ -18,197 +18,209 @@ import {
   MessageSquare,
   Phone,
   Shield,
-  User
-} from 'lucide-react'
-import { useParams, useRouter } from 'next/navigation'
-import { useState } from 'react'
-import { toast } from 'sonner'
+  User,
+} from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 
-import { ProtectedRoute } from '@/components/auth/protected-route'
-import { ClaimTimeline, TimelineEvent } from '@/components/claims/claim-timeline'
-import { EvidenceManager } from '@/components/claims/evidence-manager'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Progress } from '@/components/ui/progress'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { useNavigateToParent } from '@/lib/utils/navigation'
+import { ProtectedRoute } from "@/components/auth/protected-route";
+import {
+  ClaimTimeline,
+  TimelineEvent,
+} from "@/components/claims/claim-timeline";
+import { EvidenceManager } from "@/components/claims/evidence-manager";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useNavigateToParent } from "@/lib/utils/navigation";
 
 interface ClaimDetails {
-  id: string
-  claimNumber: string
-  status: string
-  damageType: string
-  dateOfLoss: string
-  dateSubmitted: string
-  description: string
-  causeOfLoss: string
-  estimatedAmount: number
-  approvedAmount?: number
-  paidAmount?: number
-  deductible: number
-  propertyAddress: string
-  damageLocations: string[]
-  policyNumber: string
-  insuranceCompany: string
+  id: string;
+  claimNumber: string;
+  status: string;
+  damageType: string;
+  dateOfLoss: string;
+  dateSubmitted: string;
+  description: string;
+  causeOfLoss: string;
+  estimatedAmount: number;
+  approvedAmount?: number;
+  paidAmount?: number;
+  deductible: number;
+  propertyAddress: string;
+  damageLocations: string[];
+  policyNumber: string;
+  insuranceCompany: string;
   adjuster?: {
-    name: string
-    phone: string
-    email: string
-  }
-  progress: number
+    name: string;
+    phone: string;
+    email: string;
+  };
+  progress: number;
   timeline: Array<{
-    date: string
-    event: string
-    description: string
-    type: 'status' | 'document' | 'communication' | 'payment'
-  }>
+    date: string;
+    event: string;
+    description: string;
+    type: "status" | "document" | "communication" | "payment";
+  }>;
 }
 
 // Mock claims data based on ID
 const mockClaims: Record<string, ClaimDetails> = {
-  '1': {
-    id: '1',
-    claimNumber: 'CLM-2024-0892',
-    status: 'investigating',
-    damageType: 'Water Damage',
-    dateOfLoss: '2024-10-15',
-    dateSubmitted: '2024-10-18',
-    description: 'Water damage from burst pipe in master bathroom. Significant damage to ceiling, walls, and flooring.',
-    causeOfLoss: 'Burst pipe due to freezing temperatures',
+  "1": {
+    id: "1",
+    claimNumber: "CLM-2024-0892",
+    status: "investigating",
+    damageType: "Water Damage",
+    dateOfLoss: "2024-10-15",
+    dateSubmitted: "2024-10-18",
+    description:
+      "Water damage from burst pipe in master bathroom. Significant damage to ceiling, walls, and flooring.",
+    causeOfLoss: "Burst pipe due to freezing temperatures",
     estimatedAmount: 15000,
     deductible: 2500,
-    propertyAddress: '123 Main Street, Orlando, FL 32801',
-    damageLocations: ['Master Bathroom', 'Master Bedroom', 'Hallway'],
-    policyNumber: 'HO-123456789',
-    insuranceCompany: 'State Farm',
+    propertyAddress: "123 Main Street, Orlando, FL 32801",
+    damageLocations: ["Master Bathroom", "Master Bedroom", "Hallway"],
+    policyNumber: "HO-123456789",
+    insuranceCompany: "State Farm",
     adjuster: {
-      name: 'Sarah Johnson',
-      phone: '(555) 123-4567',
-      email: 'sjohnson@statefarm.com'
+      name: "Sarah Johnson",
+      phone: "(555) 123-4567",
+      email: "sjohnson@statefarm.com",
     },
     progress: 60,
     timeline: [
       {
-        date: '2024-10-18',
-        event: 'Claim Submitted',
-        description: 'Initial claim filed with all required documentation',
-        type: 'status'
+        date: "2024-10-18",
+        event: "Claim Submitted",
+        description: "Initial claim filed with all required documentation",
+        type: "status",
       },
       {
-        date: '2024-10-20',
-        event: 'Adjuster Assigned',
-        description: 'Sarah Johnson assigned as claim adjuster',
-        type: 'communication'
+        date: "2024-10-20",
+        event: "Adjuster Assigned",
+        description: "Sarah Johnson assigned as claim adjuster",
+        type: "communication",
       },
       {
-        date: '2024-10-22',
-        event: 'Inspection Scheduled',
-        description: 'Property inspection scheduled for October 25th',
-        type: 'communication'
+        date: "2024-10-22",
+        event: "Inspection Scheduled",
+        description: "Property inspection scheduled for October 25th",
+        type: "communication",
       },
       {
-        date: '2024-10-25',
-        event: 'Property Inspected',
-        description: 'Adjuster completed on-site inspection',
-        type: 'status'
+        date: "2024-10-25",
+        event: "Property Inspected",
+        description: "Adjuster completed on-site inspection",
+        type: "status",
       },
       {
-        date: '2024-11-01',
-        event: 'Additional Documents Requested',
-        description: 'Insurance company requested contractor estimates',
-        type: 'document'
+        date: "2024-11-01",
+        event: "Additional Documents Requested",
+        description: "Insurance company requested contractor estimates",
+        type: "document",
       },
       {
-        date: '2024-11-05',
-        event: 'Documents Submitted',
-        description: 'Submitted 3 contractor estimates',
-        type: 'document'
-      }
-    ]
+        date: "2024-11-05",
+        event: "Documents Submitted",
+        description: "Submitted 3 contractor estimates",
+        type: "document",
+      },
+    ],
   },
-  '2': {
-    id: '2',
-    claimNumber: 'CLM-2024-0456',
-    status: 'settled',
-    damageType: 'Wind Damage',
-    dateOfLoss: '2024-03-10',
-    dateSubmitted: '2024-03-12',
-    description: 'Roof damage from severe thunderstorm. Multiple shingles blown off, water intrusion in attic.',
-    causeOfLoss: 'High winds during thunderstorm',
+  "2": {
+    id: "2",
+    claimNumber: "CLM-2024-0456",
+    status: "settled",
+    damageType: "Wind Damage",
+    dateOfLoss: "2024-03-10",
+    dateSubmitted: "2024-03-12",
+    description:
+      "Roof damage from severe thunderstorm. Multiple shingles blown off, water intrusion in attic.",
+    causeOfLoss: "High winds during thunderstorm",
     estimatedAmount: 8500,
     approvedAmount: 7800,
     paidAmount: 5300,
     deductible: 2500,
-    propertyAddress: '456 Oak Avenue, Miami, FL 33101',
-    damageLocations: ['Roof', 'Attic', 'Ceiling - Bedroom 2'],
-    policyNumber: 'HO-987654321',
-    insuranceCompany: 'State Farm',
+    propertyAddress: "456 Oak Avenue, Miami, FL 33101",
+    damageLocations: ["Roof", "Attic", "Ceiling - Bedroom 2"],
+    policyNumber: "HO-987654321",
+    insuranceCompany: "State Farm",
     adjuster: {
-      name: 'Mike Chen',
-      phone: '(555) 987-6543',
-      email: 'mchen@statefarm.com'
+      name: "Mike Chen",
+      phone: "(555) 987-6543",
+      email: "mchen@statefarm.com",
     },
     progress: 100,
     timeline: [
       {
-        date: '2024-03-12',
-        event: 'Claim Submitted',
-        description: 'Initial claim filed',
-        type: 'status'
+        date: "2024-03-12",
+        event: "Claim Submitted",
+        description: "Initial claim filed",
+        type: "status",
       },
       {
-        date: '2024-03-15',
-        event: 'Emergency Repairs Approved',
-        description: 'Approved $2,000 for emergency tarping',
-        type: 'payment'
+        date: "2024-03-15",
+        event: "Emergency Repairs Approved",
+        description: "Approved $2,000 for emergency tarping",
+        type: "payment",
       },
       {
-        date: '2024-03-20',
-        event: 'Final Settlement',
-        description: 'Claim settled for $7,800',
-        type: 'payment'
-      }
-    ]
+        date: "2024-03-20",
+        event: "Final Settlement",
+        description: "Claim settled for $7,800",
+        type: "payment",
+      },
+    ],
   },
-  '3': {
-    id: '3',
-    claimNumber: 'CLM-2024-1025',
-    status: 'draft',
-    damageType: 'Auto Collision',
-    dateOfLoss: '2024-11-20',
-    dateSubmitted: '',
-    description: 'Rear-ended at traffic light, bumper and trunk damage',
-    causeOfLoss: 'Other driver ran red light',
+  "3": {
+    id: "3",
+    claimNumber: "CLM-2024-1025",
+    status: "draft",
+    damageType: "Auto Collision",
+    dateOfLoss: "2024-11-20",
+    dateSubmitted: "",
+    description: "Rear-ended at traffic light, bumper and trunk damage",
+    causeOfLoss: "Other driver ran red light",
     estimatedAmount: 3200,
     deductible: 1000,
-    propertyAddress: 'N/A - Vehicle Claim',
-    damageLocations: ['Rear Bumper', 'Trunk', 'Tail Lights'],
-    policyNumber: 'AUTO-123456',
-    insuranceCompany: 'Progressive',
+    propertyAddress: "N/A - Vehicle Claim",
+    damageLocations: ["Rear Bumper", "Trunk", "Tail Lights"],
+    policyNumber: "AUTO-123456",
+    insuranceCompany: "Progressive",
     progress: 10,
     timeline: [
       {
-        date: '2024-11-20',
-        event: 'Accident Occurred',
-        description: 'Police report filed at scene',
-        type: 'status'
-      }
-    ]
-  }
-}
+        date: "2024-11-20",
+        event: "Accident Occurred",
+        description: "Police report filed at scene",
+        type: "status",
+      },
+    ],
+  },
+};
 
 export default function ClaimDetailPage() {
-  const params = useParams()
-  const router = useRouter()
-  const claimId = params.id as string
-  const { navigateToParent, getParentInfo } = useNavigateToParent('claimDetail')
-  const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>([])
+  const params = useParams();
+  const router = useRouter();
+  const claimId = params.id as string;
+  const { navigateToParent, getParentInfo } =
+    useNavigateToParent("claimDetail");
+  const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>([]);
 
   // Get the correct claim based on ID
   const [claim] = useState<ClaimDetails>(() => {
-    return mockClaims[claimId] || mockClaims['1'] // Default to claim 1 if not found
-  })
+    return mockClaims[claimId] || mockClaims["1"]; // Default to claim 1 if not found
+  });
 
   // Convert claim timeline to TimelineEvent format
   useState(() => {
@@ -216,29 +228,41 @@ export default function ClaimDetailPage() {
       id: `timeline-${index}`,
       claimId: claimId,
       date: item.date,
-      type: item.type === 'status' ? 'status_change' :
-            item.type === 'document' ? 'document_upload' :
-            item.type === 'communication' ? 'communication' :
-            item.type === 'payment' ? 'payment' : 'other',
-      category: 'insurance',
+      type:
+        item.type === "status"
+          ? "status_change"
+          : item.type === "document"
+            ? "document_upload"
+            : item.type === "communication"
+              ? "communication"
+              : item.type === "payment"
+                ? "payment"
+                : "other",
+      category: "insurance",
       title: item.event,
-      description: item.description
-    }))
-    setTimelineEvents(events)
-  })
+      description: item.description,
+    }));
+    setTimelineEvents(events);
+  });
 
   const getStatusColor = (status: string) => {
-    switch(status) {
-      case 'draft': return 'bg-gray-600'
-      case 'submitted': return 'bg-blue-600'
-      case 'investigating': return 'bg-yellow-600'
-      case 'approved': return 'bg-green-600'
-      case 'denied': return 'bg-red-600'
-      case 'paid': return 'bg-emerald-600'
-      default: return 'bg-gray-600'
+    switch (status) {
+      case "draft":
+        return "bg-gray-600";
+      case "submitted":
+        return "bg-blue-600";
+      case "investigating":
+        return "bg-yellow-600";
+      case "approved":
+        return "bg-green-600";
+      case "denied":
+        return "bg-red-600";
+      case "paid":
+        return "bg-emerald-600";
+      default:
+        return "bg-gray-600";
     }
-  }
-
+  };
 
   return (
     <ProtectedRoute>
@@ -246,11 +270,7 @@ export default function ClaimDetailPage() {
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-8">
-            <Button
-              variant="ghost"
-              onClick={navigateToParent}
-              className="mb-4"
-            >
+            <Button variant="ghost" onClick={navigateToParent} className="mb-4">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to {getParentInfo().parentLabel}
             </Button>
@@ -263,7 +283,7 @@ export default function ClaimDetailPage() {
                 <div className="flex items-center gap-4 text-gray-400">
                   <span>{claim.claimNumber}</span>
                   <Badge className={getStatusColor(claim.status)}>
-                    {claim.status.replace('_', ' ').toUpperCase()}
+                    {claim.status.replace("_", " ").toUpperCase()}
                   </Badge>
                 </div>
               </div>
@@ -272,7 +292,11 @@ export default function ClaimDetailPage() {
                 <Button
                   variant="outline"
                   className="border-gray-700"
-                  onClick={() => toast.info('Export feature coming soon! You\'ll be able to download claim details as PDF.')}
+                  onClick={() =>
+                    toast.info(
+                      "Export feature coming soon! You'll be able to download claim details as PDF.",
+                    )
+                  }
                 >
                   <Download className="w-4 h-4 mr-2" />
                   Export
@@ -281,9 +305,11 @@ export default function ClaimDetailPage() {
                   className="bg-blue-600 hover:bg-blue-700"
                   onClick={() => {
                     if (claim.adjuster?.email) {
-                      window.location.href = `mailto:${claim.adjuster.email}?subject=Regarding Claim ${claim.claimNumber}`
+                      window.location.href = `mailto:${claim.adjuster.email}?subject=Regarding Claim ${claim.claimNumber}`;
                     } else {
-                      toast.info('Contact feature will be available once an adjuster is assigned to your claim.')
+                      toast.info(
+                        "Contact feature will be available once an adjuster is assigned to your claim.",
+                      );
                     }
                   }}
                 >
@@ -330,13 +356,17 @@ export default function ClaimDetailPage() {
                   <CardContent className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <span className="text-sm text-gray-400">Date of Loss</span>
+                        <span className="text-sm text-gray-400">
+                          Date of Loss
+                        </span>
                         <p className="font-medium text-white">
                           {new Date(claim.dateOfLoss).toLocaleDateString()}
                         </p>
                       </div>
                       <div>
-                        <span className="text-sm text-gray-400">Date Submitted</span>
+                        <span className="text-sm text-gray-400">
+                          Date Submitted
+                        </span>
                         <p className="font-medium text-white">
                           {new Date(claim.dateSubmitted).toLocaleDateString()}
                         </p>
@@ -344,14 +374,20 @@ export default function ClaimDetailPage() {
                     </div>
 
                     <div>
-                      <span className="text-sm text-gray-400">Property Address</span>
-                      <p className="font-medium text-white">{claim.propertyAddress}</p>
+                      <span className="text-sm text-gray-400">
+                        Property Address
+                      </span>
+                      <p className="font-medium text-white">
+                        {claim.propertyAddress}
+                      </p>
                     </div>
 
                     <div>
-                      <span className="text-sm text-gray-400">Affected Areas</span>
+                      <span className="text-sm text-gray-400">
+                        Affected Areas
+                      </span>
                       <div className="flex flex-wrap gap-2 mt-1">
-                        {claim.damageLocations.map(location => (
+                        {claim.damageLocations.map((location) => (
                           <Badge key={location} variant="secondary">
                             {location}
                           </Badge>
@@ -365,7 +401,9 @@ export default function ClaimDetailPage() {
                     </div>
 
                     <div>
-                      <span className="text-sm text-gray-400">Cause of Loss</span>
+                      <span className="text-sm text-gray-400">
+                        Cause of Loss
+                      </span>
                       <p className="text-white mt-1">{claim.causeOfLoss}</p>
                     </div>
                   </CardContent>
@@ -382,22 +420,31 @@ export default function ClaimDetailPage() {
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <div className="flex justify-between">
-                        <span className="text-sm text-gray-400">Estimated Amount</span>
+                        <span className="text-sm text-gray-400">
+                          Estimated Amount
+                        </span>
                         <span className="font-medium text-white">
                           ${claim.estimatedAmount.toLocaleString()}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-sm text-gray-400">Deductible</span>
+                        <span className="text-sm text-gray-400">
+                          Deductible
+                        </span>
                         <span className="font-medium text-white">
                           ${claim.deductible.toLocaleString()}
                         </span>
                       </div>
                       <div className="border-t border-gray-700 pt-3">
                         <div className="flex justify-between">
-                          <span className="text-sm text-gray-400">Expected Payout</span>
+                          <span className="text-sm text-gray-400">
+                            Expected Payout
+                          </span>
                           <span className="font-medium text-white">
-                            ${(claim.estimatedAmount - claim.deductible).toLocaleString()}
+                            $
+                            {(
+                              claim.estimatedAmount - claim.deductible
+                            ).toLocaleString()}
                           </span>
                         </div>
                       </div>
@@ -415,11 +462,17 @@ export default function ClaimDetailPage() {
                     <CardContent className="space-y-3">
                       <div>
                         <span className="text-sm text-gray-400">Company</span>
-                        <p className="font-medium text-white">{claim.insuranceCompany}</p>
+                        <p className="font-medium text-white">
+                          {claim.insuranceCompany}
+                        </p>
                       </div>
                       <div>
-                        <span className="text-sm text-gray-400">Policy Number</span>
-                        <p className="font-medium text-white">{claim.policyNumber}</p>
+                        <span className="text-sm text-gray-400">
+                          Policy Number
+                        </span>
+                        <p className="font-medium text-white">
+                          {claim.policyNumber}
+                        </p>
                       </div>
                     </CardContent>
                   </Card>
@@ -436,7 +489,9 @@ export default function ClaimDetailPage() {
                       <CardContent className="space-y-3">
                         <div>
                           <span className="text-sm text-gray-400">Name</span>
-                          <p className="font-medium text-white">{claim.adjuster.name}</p>
+                          <p className="font-medium text-white">
+                            {claim.adjuster.name}
+                          </p>
                         </div>
                         <div>
                           <a
@@ -473,7 +528,7 @@ export default function ClaimDetailPage() {
                 events={timelineEvents}
                 allowAddEvent={true}
                 onEventAdd={(event) => {
-                  setTimelineEvents(prev => [event, ...prev])
+                  setTimelineEvents((prev) => [event, ...prev]);
                 }}
               />
             </TabsContent>
@@ -482,7 +537,9 @@ export default function ClaimDetailPage() {
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader>
                   <CardTitle>Communications</CardTitle>
-                  <CardDescription>Messages and correspondence with your insurance company</CardDescription>
+                  <CardDescription>
+                    Messages and correspondence with your insurance company
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="text-center py-12">
@@ -490,7 +547,11 @@ export default function ClaimDetailPage() {
                     <p className="text-gray-400">No messages yet</p>
                     <Button
                       className="mt-4"
-                      onClick={() => toast.info('Messaging feature coming soon! You\'ll be able to chat directly with your adjuster.')}
+                      onClick={() =>
+                        toast.info(
+                          "Messaging feature coming soon! You'll be able to chat directly with your adjuster.",
+                        )
+                      }
                     >
                       Start Conversation
                     </Button>
@@ -502,5 +563,5 @@ export default function ClaimDetailPage() {
         </div>
       </div>
     </ProtectedRoute>
-  )
+  );
 }

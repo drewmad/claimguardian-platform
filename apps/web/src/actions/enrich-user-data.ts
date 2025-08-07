@@ -9,19 +9,19 @@
  * @status stable
  */
 
-'use server'
+"use server";
 
-import { logger } from '@/lib/logger/production-logger'
-import { createClient } from '@/lib/supabase/server'
+import { logger } from "@/lib/logger/production-logger";
+import { createClient } from "@/lib/supabase/server";
 
 interface EnrichmentData {
-  userId: string
-  sessionId?: string
-  userAgent?: string
-  ipAddress?: string
-  deviceFingerprint?: string
-  referrer?: string
-  landingPage?: string
+  userId: string;
+  sessionId?: string;
+  userAgent?: string;
+  ipAddress?: string;
+  deviceFingerprint?: string;
+  referrer?: string;
+  landingPage?: string;
 }
 
 /**
@@ -29,31 +29,38 @@ interface EnrichmentData {
  */
 export async function enrichDeviceData(data: EnrichmentData) {
   try {
-    const supabase = await await createClient()
+    const supabase = await await createClient();
 
-    if (!data.deviceFingerprint || !data.userAgent) return { success: true }
+    if (!data.deviceFingerprint || !data.userAgent) return { success: true };
 
     // Parse user agent for device details
-    const deviceInfo = parseUserAgent(data.userAgent)
+    const deviceInfo = parseUserAgent(data.userAgent);
 
     // Use security definer function to track device
-    const { error } = await supabase.rpc('track_user_device', {
+    const { error } = await supabase.rpc("track_user_device", {
       p_user_id: data.userId,
       p_device_fingerprint: data.deviceFingerprint,
       p_device_type: deviceInfo.deviceType,
       p_browser: deviceInfo.browser,
       p_os: deviceInfo.os,
-      p_ip_address: data.ipAddress
-    })
+      p_ip_address: data.ipAddress,
+    });
 
-    if (error && error.code !== '23505') { // Ignore duplicate errors
-      logger.warn('Device enrichment failed', { error: error.message, code: error.code })
+    if (error && error.code !== "23505") {
+      // Ignore duplicate errors
+      logger.warn("Device enrichment failed", {
+        error: error.message,
+        code: error.code,
+      });
     }
 
-    return { success: true }
+    return { success: true };
   } catch (error) {
-    logger.error('Device enrichment error', error instanceof Error ? error : new Error(String(error)))
-    return { success: false, error }
+    logger.error(
+      "Device enrichment error",
+      error instanceof Error ? error : new Error(String(error)),
+    );
+    return { success: false, error };
   }
 }
 
@@ -62,35 +69,42 @@ export async function enrichDeviceData(data: EnrichmentData) {
  */
 export async function enrichLocationData(data: EnrichmentData) {
   try {
-    if (!data.ipAddress || data.ipAddress === '127.0.0.1') return { success: true }
+    if (!data.ipAddress || data.ipAddress === "127.0.0.1")
+      return { success: true };
 
-    const supabase = await await createClient()
+    const supabase = await await createClient();
 
     // Get location data from IP (using ipapi.co or similar)
-    const locationData = await getLocationFromIP(data.ipAddress)
+    const locationData = await getLocationFromIP(data.ipAddress);
 
     if (locationData) {
       // Update user_tracking with location data
       const { error } = await supabase
-        .from('user_tracking')
+        .from("user_tracking")
         .update({
           ip_country: locationData.country,
           ip_region: locationData.region,
           ip_city: locationData.city,
-          ip_timezone: locationData.timezone
+          ip_timezone: locationData.timezone,
         })
-        .eq('user_id', data.userId)
-        .eq('session_id', data.sessionId)
+        .eq("user_id", data.userId)
+        .eq("session_id", data.sessionId);
 
       if (error) {
-        logger.warn('Location enrichment failed', { error: error.message, code: error.code })
+        logger.warn("Location enrichment failed", {
+          error: error.message,
+          code: error.code,
+        });
       }
     }
 
-    return { success: true }
+    return { success: true };
   } catch (error) {
-    logger.error('Location enrichment error', error instanceof Error ? error : new Error(String(error)))
-    return { success: false, error }
+    logger.error(
+      "Location enrichment error",
+      error instanceof Error ? error : new Error(String(error)),
+    );
+    return { success: false, error };
   }
 }
 
@@ -99,32 +113,34 @@ export async function enrichLocationData(data: EnrichmentData) {
  */
 export async function enrichUserData(data: EnrichmentData) {
   try {
-    logger.info('Starting user data enrichment', { userId: data.userId })
+    logger.info("Starting user data enrichment", { userId: data.userId });
 
     // Run enrichment processes in parallel (all non-blocking)
     const enrichmentPromises = [
       enrichDeviceData(data),
-      enrichLocationData(data)
-    ]
+      enrichLocationData(data),
+    ];
 
     // Use allSettled to ensure no failures break the process
-    const results = await Promise.allSettled(enrichmentPromises)
+    const results = await Promise.allSettled(enrichmentPromises);
 
-    const successCount = results.filter(r => r.status === 'fulfilled').length
+    const successCount = results.filter((r) => r.status === "fulfilled").length;
 
-    logger.info('User data enrichment completed', {
+    logger.info("User data enrichment completed", {
       userId: data.userId,
       successCount,
-      totalProcesses: enrichmentPromises.length
-    })
+      totalProcesses: enrichmentPromises.length,
+    });
 
     return {
       success: true,
-      results: results.map(r => r.status === 'fulfilled' ? r.value : { success: false })
-    }
+      results: results.map((r) =>
+        r.status === "fulfilled" ? r.value : { success: false },
+      ),
+    };
   } catch (error) {
-    logger.error('User data enrichment failed', error as Error)
-    return { success: false, error }
+    logger.error("User data enrichment failed", error as Error);
+    return { success: false, error };
   }
 }
 
@@ -133,23 +149,26 @@ export async function enrichUserData(data: EnrichmentData) {
  */
 function parseUserAgent(userAgent: string) {
   const deviceType = /Mobile|Android|iPhone|iPad/.test(userAgent)
-    ? (/iPad/.test(userAgent) ? 'tablet' : 'mobile')
-    : 'desktop'
+    ? /iPad/.test(userAgent)
+      ? "tablet"
+      : "mobile"
+    : "desktop";
 
-  let browser = 'Unknown'
-  if (/Chrome/.test(userAgent)) browser = 'Chrome'
-  else if (/Firefox/.test(userAgent)) browser = 'Firefox'
-  else if (/Safari/.test(userAgent) && !/Chrome/.test(userAgent)) browser = 'Safari'
-  else if (/Edge/.test(userAgent)) browser = 'Edge'
+  let browser = "Unknown";
+  if (/Chrome/.test(userAgent)) browser = "Chrome";
+  else if (/Firefox/.test(userAgent)) browser = "Firefox";
+  else if (/Safari/.test(userAgent) && !/Chrome/.test(userAgent))
+    browser = "Safari";
+  else if (/Edge/.test(userAgent)) browser = "Edge";
 
-  let os = 'Unknown'
-  if (/Windows/.test(userAgent)) os = 'Windows'
-  else if (/Mac OS/.test(userAgent)) os = 'macOS'
-  else if (/Linux/.test(userAgent)) os = 'Linux'
-  else if (/Android/.test(userAgent)) os = 'Android'
-  else if (/iOS/.test(userAgent)) os = 'iOS'
+  let os = "Unknown";
+  if (/Windows/.test(userAgent)) os = "Windows";
+  else if (/Mac OS/.test(userAgent)) os = "macOS";
+  else if (/Linux/.test(userAgent)) os = "Linux";
+  else if (/Android/.test(userAgent)) os = "Android";
+  else if (/iOS/.test(userAgent)) os = "iOS";
 
-  return { deviceType, browser, os }
+  return { deviceType, browser, os };
 }
 
 /**
@@ -158,20 +177,23 @@ function parseUserAgent(userAgent: string) {
 async function getLocationFromIP(ipAddress: string) {
   try {
     // Use a reliable, free IP geolocation service
-    const response = await fetch(`https://ipapi.co/${ipAddress}/json/`)
+    const response = await fetch(`https://ipapi.co/${ipAddress}/json/`);
 
-    if (!response.ok) return null
+    if (!response.ok) return null;
 
-    const data = await response.json()
+    const data = await response.json();
 
     return {
       country: data.country_name,
       region: data.region,
       city: data.city,
-      timezone: data.timezone
-    }
+      timezone: data.timezone,
+    };
   } catch (error) {
-    logger.error('IP geolocation failed', error instanceof Error ? error : new Error(String(error)))
-    return null
+    logger.error(
+      "IP geolocation failed",
+      error instanceof Error ? error : new Error(String(error)),
+    );
+    return null;
   }
 }

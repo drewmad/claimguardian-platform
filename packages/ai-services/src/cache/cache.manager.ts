@@ -8,17 +8,17 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-import { createHash } from 'crypto';
+import { createHash } from "crypto";
 
-import Redis from 'ioredis';
+import Redis from "ioredis";
 
 import {
   AIRequest,
   AIResponse,
   ChatRequest,
   CacheStats,
-  CachedResponse
-} from '../types/index';
+  CachedResponse,
+} from "../types/index";
 
 export class CacheManager {
   protected redis: Redis | null = null;
@@ -35,19 +35,19 @@ export class CacheManager {
           retryStrategy: (times) => {
             const delay = Math.min(times * 50, 2000);
             return delay;
-          }
+          },
         });
 
-        this.redis.on('error', (err) => {
-          console.error('[CacheManager] Redis error:', err);
+        this.redis.on("error", (err) => {
+          console.error("[CacheManager] Redis error:", err);
           // Don't disable cache on errors, just log them
         });
 
-        this.redis.on('connect', () => {
-          console.log('[CacheManager] Connected to Redis');
+        this.redis.on("connect", () => {
+          console.log("[CacheManager] Connected to Redis");
         });
       } catch (error) {
-        console.error('[CacheManager] Failed to initialize Redis:', error);
+        console.error("[CacheManager] Failed to initialize Redis:", error);
         this.enabled = false;
       }
     } else {
@@ -64,7 +64,7 @@ export class CacheManager {
 
       if (cached) {
         // Track cache hit
-        await this.incrementStat('hits');
+        await this.incrementStat("hits");
 
         const response = JSON.parse(cached) as CachedResponse;
 
@@ -72,7 +72,7 @@ export class CacheManager {
         if (new Date(response.expiresAt) > new Date()) {
           return {
             ...response,
-            cached: true
+            cached: true,
           };
         } else {
           // Cache expired, delete it
@@ -81,10 +81,10 @@ export class CacheManager {
       }
 
       // Track cache miss
-      await this.incrementStat('misses');
+      await this.incrementStat("misses");
       return null;
     } catch (error) {
-      console.error('[CacheManager] Error getting cache:', error);
+      console.error("[CacheManager] Error getting cache:", error);
       return null;
     }
   }
@@ -92,7 +92,7 @@ export class CacheManager {
   async set(
     request: AIRequest | ChatRequest,
     response: AIResponse,
-    ttlOverride?: number
+    ttlOverride?: number,
   ): Promise<void> {
     if (!this.enabled || !this.redis) return;
 
@@ -104,20 +104,15 @@ export class CacheManager {
         ...response,
         cachedAt: new Date(),
         expiresAt: new Date(Date.now() + ttl * 1000),
-        cacheKey: key
+        cacheKey: key,
       };
 
-      await this.redis.set(
-        key,
-        JSON.stringify(cachedResponse),
-        'EX',
-        ttl
-      );
+      await this.redis.set(key, JSON.stringify(cachedResponse), "EX", ttl);
 
       // Track cache set
-      await this.incrementStat('sets');
+      await this.incrementStat("sets");
     } catch (error) {
-      console.error('[CacheManager] Error setting cache:', error);
+      console.error("[CacheManager] Error setting cache:", error);
     }
   }
 
@@ -131,7 +126,7 @@ export class CacheManager {
       }
       return 0;
     } catch (error) {
-      console.error('[CacheManager] Error invalidating cache:', error);
+      console.error("[CacheManager] Error invalidating cache:", error);
       return 0;
     }
   }
@@ -142,17 +137,17 @@ export class CacheManager {
     }
 
     try {
-      const stats = await this.redis.hgetall('cache:stats');
-      const hits = parseInt(stats.hits || '0');
-      const misses = parseInt(stats.misses || '0');
-      const sets = parseInt(stats.sets || '0');
+      const stats = await this.redis.hgetall("cache:stats");
+      const hits = parseInt(stats.hits || "0");
+      const misses = parseInt(stats.misses || "0");
+      const sets = parseInt(stats.sets || "0");
 
       const total = hits + misses;
       const hitRate = total > 0 ? hits / total : 0;
 
       return { hits, misses, sets, hitRate };
     } catch (error) {
-      console.error('[CacheManager] Error getting stats:', error);
+      console.error("[CacheManager] Error getting stats:", error);
       return { hits: 0, misses: 0, sets: 0, hitRate: 0 };
     }
   }
@@ -161,13 +156,13 @@ export class CacheManager {
     if (!this.enabled || !this.redis) return;
 
     try {
-      const keys = await this.redis.keys('ai:cache:*');
+      const keys = await this.redis.keys("ai:cache:*");
       if (keys.length > 0) {
         await this.redis.del(...keys);
       }
-      await this.redis.del('cache:stats');
+      await this.redis.del("cache:stats");
     } catch (error) {
-      console.error('[CacheManager] Error clearing cache:', error);
+      console.error("[CacheManager] Error clearing cache:", error);
     }
   }
 
@@ -176,27 +171,27 @@ export class CacheManager {
     const normalized: Record<string, unknown> = {
       feature: request.feature,
       temperature: Math.round((request.temperature || 0.7) * 10) / 10,
-      maxTokens: request.maxTokens || 2048
+      maxTokens: request.maxTokens || 2048,
     };
 
     // Handle different request types
-    if ('prompt' in request) {
+    if ("prompt" in request) {
       normalized.prompt = request.prompt.trim().toLowerCase();
       normalized.systemPrompt = request.systemPrompt?.trim().toLowerCase();
-    } else if ('messages' in request) {
+    } else if ("messages" in request) {
       // For chat requests, include recent message history
       normalized.messages = request.messages
         .slice(-3) // Only last 3 messages for cache key
-        .map(m => ({
+        .map((m) => ({
           role: m.role,
-          content: m.content.trim().toLowerCase().substring(0, 100) // First 100 chars
+          content: m.content.trim().toLowerCase().substring(0, 100), // First 100 chars
         }));
     }
 
     // Create deterministic hash
-    const hash = createHash('sha256')
+    const hash = createHash("sha256")
       .update(JSON.stringify(normalized))
-      .digest('hex')
+      .digest("hex")
       .substring(0, 16); // Use first 16 chars of hash
 
     return `ai:cache:${request.feature}:${hash}`;
@@ -205,23 +200,23 @@ export class CacheManager {
   protected calculateTTL(request: AIRequest | ChatRequest): number {
     // Dynamic TTL based on feature and content type
     const ttlMap: Record<string, number> = {
-      'clarity': 7 * 24 * 60 * 60,     // 7 days - calculations rarely change
-      'clara': 60 * 60,                // 1 hour - emotional responses need freshness
-      'max': 24 * 60 * 60,             // 24 hours - market data changes daily
-      'sentinel': 60 * 60,             // 1 hour - deadlines are time-sensitive
-      'generic': 3 * 60 * 60,          // 3 hours default
-      'document-extractor': 7 * 24 * 60 * 60, // 7 days - documents don't change
-      'damage-analyzer': 24 * 60 * 60  // 24 hours - analysis can be reused
+      clarity: 7 * 24 * 60 * 60, // 7 days - calculations rarely change
+      clara: 60 * 60, // 1 hour - emotional responses need freshness
+      max: 24 * 60 * 60, // 24 hours - market data changes daily
+      sentinel: 60 * 60, // 1 hour - deadlines are time-sensitive
+      generic: 3 * 60 * 60, // 3 hours default
+      "document-extractor": 7 * 24 * 60 * 60, // 7 days - documents don't change
+      "damage-analyzer": 24 * 60 * 60, // 24 hours - analysis can be reused
     };
 
     return ttlMap[request.feature] || ttlMap.generic;
   }
 
-  private async incrementStat(stat: 'hits' | 'misses' | 'sets'): Promise<void> {
+  private async incrementStat(stat: "hits" | "misses" | "sets"): Promise<void> {
     if (!this.redis) return;
 
     try {
-      await this.redis.hincrby('cache:stats', stat, 1);
+      await this.redis.hincrby("cache:stats", stat, 1);
     } catch {
       // Ignore stat tracking errors
     }

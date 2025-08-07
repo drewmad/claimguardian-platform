@@ -1,4 +1,3 @@
-
 # AI Disclaimer for ClaimGuardian
 
 **Effective Date:** July 31, 2025

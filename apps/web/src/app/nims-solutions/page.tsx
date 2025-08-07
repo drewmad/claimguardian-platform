@@ -3,13 +3,19 @@
  * Showcases FEMA NIMS compliance capabilities for government and enterprise
  */
 
-'use client'
+"use client";
 
-import React from 'react'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import React from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   Shield,
   Users,
@@ -22,73 +28,75 @@ import {
   Building,
   TrendingUp,
   Award,
-  Clock
-} from 'lucide-react'
+  Clock,
+} from "lucide-react";
 
 export default function NIMSSolutionsPage() {
   const features = [
     {
       icon: Shield,
-      title: 'ICS Command Structure',
-      description: 'Full Incident Command System with Type 1-5 complexity management'
+      title: "ICS Command Structure",
+      description:
+        "Full Incident Command System with Type 1-5 complexity management",
     },
     {
       icon: Users,
-      title: 'Resource Management',
-      description: 'NIMS-typed resource tracking and deployment optimization'
+      title: "Resource Management",
+      description: "NIMS-typed resource tracking and deployment optimization",
     },
     {
       icon: Radio,
-      title: 'Emergency Communications',
-      description: 'CAP 1.2 and EDXL protocol implementation for multi-agency coordination'
+      title: "Emergency Communications",
+      description:
+        "CAP 1.2 and EDXL protocol implementation for multi-agency coordination",
     },
     {
       icon: FileText,
-      title: 'Automated ICS Forms',
-      description: 'Generate ICS-201, 202, 203, and 205 forms automatically'
+      title: "Automated ICS Forms",
+      description: "Generate ICS-201, 202, 203, and 205 forms automatically",
     },
     {
       icon: Activity,
-      title: 'Disaster Workflows',
-      description: 'Pre-configured response workflows for all disaster types'
+      title: "Disaster Workflows",
+      description: "Pre-configured response workflows for all disaster types",
     },
     {
       icon: Globe,
-      title: 'External Integration',
-      description: 'Connect with NWS, FEMA, Red Cross, and local agencies'
-    }
-  ]
+      title: "External Integration",
+      description: "Connect with NWS, FEMA, Red Cross, and local agencies",
+    },
+  ];
 
   const benefits = [
     {
-      metric: '75%',
-      label: 'Faster Response Time',
-      description: 'Automated workflows reduce coordination delays'
+      metric: "75%",
+      label: "Faster Response Time",
+      description: "Automated workflows reduce coordination delays",
     },
     {
-      metric: '100%',
-      label: 'NIMS Compliant',
-      description: 'Meets all federal requirements for emergency management'
+      metric: "100%",
+      label: "NIMS Compliant",
+      description: "Meets all federal requirements for emergency management",
     },
     {
-      metric: '60%',
-      label: 'Cost Reduction',
-      description: 'Streamlined operations reduce emergency response costs'
+      metric: "60%",
+      label: "Cost Reduction",
+      description: "Streamlined operations reduce emergency response costs",
     },
     {
-      metric: '24/7',
-      label: 'Always Ready',
-      description: 'Cloud-based system available anytime, anywhere'
-    }
-  ]
+      metric: "24/7",
+      label: "Always Ready",
+      description: "Cloud-based system available anytime, anywhere",
+    },
+  ];
 
   const customers = [
-    'Monroe County Emergency Management',
-    'Florida Division of Emergency Management',
-    'Miami-Dade Fire Rescue',
-    'Florida Power & Light',
-    'University of Florida Health'
-  ]
+    "Monroe County Emergency Management",
+    "Florida Division of Emergency Management",
+    "Miami-Dade Fire Rescue",
+    "Florida Power & Light",
+    "University of Florida Health",
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
@@ -96,13 +104,16 @@ export default function NIMSSolutionsPage() {
       <section className="relative px-6 py-24 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="text-center">
-            <Badge className="mb-4 bg-red-600 text-white">FEMA NIMS CERTIFIED</Badge>
+            <Badge className="mb-4 bg-red-600 text-white">
+              FEMA NIMS CERTIFIED
+            </Badge>
             <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
               Enterprise Emergency Management
             </h1>
             <p className="mt-6 text-lg leading-8 text-gray-300 max-w-3xl mx-auto">
               The first commercial platform achieving full FEMA NIMS compliance.
-              Coordinate multi-agency disaster response with AI-powered efficiency.
+              Coordinate multi-agency disaster response with AI-powered
+              efficiency.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Link href="/nims">
@@ -110,7 +121,11 @@ export default function NIMSSolutionsPage() {
                   View Live Dashboard
                 </Button>
               </Link>
-              <Button size="lg" variant="outline" className="text-white border-white hover:bg-white hover:text-gray-900">
+              <Button
+                size="lg"
+                variant="outline"
+                className="text-white border-white hover:bg-white hover:text-gray-900"
+              >
                 Schedule Demo
               </Button>
             </div>
@@ -168,9 +183,7 @@ export default function NIMSSolutionsPage() {
       <section className="py-24 px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-white">
-              Proven Results
-            </h2>
+            <h2 className="text-3xl font-bold text-white">Proven Results</h2>
             <p className="mt-4 text-lg text-gray-400">
               Measurable improvements in emergency response operations
             </p>
@@ -322,10 +335,17 @@ export default function NIMSSolutionsPage() {
             for NIMS-compliant emergency management.
           </p>
           <div className="flex items-center justify-center gap-4">
-            <Button size="lg" className="bg-white text-red-900 hover:bg-gray-100">
+            <Button
+              size="lg"
+              className="bg-white text-red-900 hover:bg-gray-100"
+            >
               Request Federal Demo
             </Button>
-            <Button size="lg" variant="outline" className="text-white border-white hover:bg-white hover:text-red-900">
+            <Button
+              size="lg"
+              variant="outline"
+              className="text-white border-white hover:bg-white hover:text-red-900"
+            >
               Download Compliance Guide
             </Button>
           </div>
@@ -339,16 +359,20 @@ export default function NIMSSolutionsPage() {
             <div className="text-center">
               <Shield className="h-8 w-8 text-white mx-auto mb-2" />
               <p className="text-white font-semibold">FedRAMP Ready</p>
-              <p className="text-gray-200 text-sm">Federal security standards</p>
+              <p className="text-gray-200 text-sm">
+                Federal security standards
+              </p>
             </div>
             <div className="text-center">
               <TrendingUp className="h-8 w-8 text-white mx-auto mb-2" />
               <p className="text-white font-semibold">99.99% Uptime</p>
-              <p className="text-gray-200 text-sm">Always available when needed</p>
+              <p className="text-gray-200 text-sm">
+                Always available when needed
+              </p>
             </div>
           </div>
         </div>
       </section>
     </div>
-  )
+  );
 }

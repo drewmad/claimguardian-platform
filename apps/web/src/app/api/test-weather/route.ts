@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
@@ -7,12 +7,15 @@ export async function GET(req: NextRequest) {
     const lon = -81.8723;
 
     // Get current weather
-    const pointsResponse = await fetch(`https://api.weather.gov/points/${lat},${lon}`, {
-      headers: {
-        'User-Agent': 'ClaimGuardian/1.0 (claimguardianai.com)',
-        'Accept': 'application/geo+json'
-      }
-    });
+    const pointsResponse = await fetch(
+      `https://api.weather.gov/points/${lat},${lon}`,
+      {
+        headers: {
+          "User-Agent": "ClaimGuardian/1.0 (claimguardianai.com)",
+          Accept: "application/geo+json",
+        },
+      },
+    );
 
     if (!pointsResponse.ok) {
       throw new Error(`NWS API error: ${pointsResponse.statusText}`);
@@ -28,36 +31,38 @@ export async function GET(req: NextRequest) {
       `https://api.weather.gov/gridpoints/${gridId}/${gridX},${gridY}/forecast`,
       {
         headers: {
-          'User-Agent': 'ClaimGuardian/1.0',
-          'Accept': 'application/geo+json'
-        }
-      }
+          "User-Agent": "ClaimGuardian/1.0",
+          Accept: "application/geo+json",
+        },
+      },
     );
 
-    const forecastData = forecastResponse.ok ? await forecastResponse.json() : null;
+    const forecastData = forecastResponse.ok
+      ? await forecastResponse.json()
+      : null;
 
     // Get active alerts for Florida
     const alertsResponse = await fetch(
-      'https://api.weather.gov/alerts/active?area=FL',
+      "https://api.weather.gov/alerts/active?area=FL",
       {
         headers: {
-          'User-Agent': 'ClaimGuardian/1.0',
-          'Accept': 'application/geo+json'
-        }
-      }
+          "User-Agent": "ClaimGuardian/1.0",
+          Accept: "application/geo+json",
+        },
+      },
     );
 
     const alertsData = alertsResponse.ok ? await alertsResponse.json() : null;
 
     // Test FEMA API
     const femaResponse = await fetch(
-      'https://www.fema.gov/api/open/v2/DisasterDeclarationsSummaries?$filter=state%20eq%20%27FL%27&$top=5&$orderby=declarationDate%20desc',
+      "https://www.fema.gov/api/open/v2/DisasterDeclarationsSummaries?$filter=state%20eq%20%27FL%27&$top=5&$orderby=declarationDate%20desc",
       {
         headers: {
-          'Accept': 'application/json',
-          'User-Agent': 'ClaimGuardian/1.0'
-        }
-      }
+          Accept: "application/json",
+          "User-Agent": "ClaimGuardian/1.0",
+        },
+      },
     );
 
     const femaData = femaResponse.ok ? await femaResponse.json() : null;
@@ -69,24 +74,24 @@ export async function GET(req: NextRequest) {
       weather: {
         grid: { gridId, gridX, gridY },
         forecast: forecastData?.properties?.periods?.[0] || null,
-        activeAlerts: alertsData?.features?.length || 0
+        activeAlerts: alertsData?.features?.length || 0,
       },
       fema: {
         recentDisasters: femaData?.DisasterDeclarationsSummaries?.length || 0,
-        latestDisaster: femaData?.DisasterDeclarationsSummaries?.[0] || null
+        latestDisaster: femaData?.DisasterDeclarationsSummaries?.[0] || null,
       },
-      message: 'API connections working! Visit /emergency-center to see the full dashboard.'
+      message:
+        "API connections working! Visit /emergency-center to see the full dashboard.",
     });
-
   } catch (error: any) {
-    console.error('Test weather API error:', error);
+    console.error("Test weather API error:", error);
     return NextResponse.json(
       {
         success: false,
         error: error.message,
-        message: 'Check console for details'
+        message: "Check console for details",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

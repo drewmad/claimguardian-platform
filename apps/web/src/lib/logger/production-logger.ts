@@ -8,105 +8,115 @@
  * @status stable
  */
 
-type LogLevel = 'debug' | 'info' | 'warn' | 'error'
+type LogLevel = "debug" | "info" | "warn" | "error";
 
 interface LogEntry {
-  level: LogLevel
-  message: string
-  timestamp: string
-  context?: Record<string, any>
-  userId?: string
-  sessionId?: string
-  component?: string
-  error?: Error
+  level: LogLevel;
+  message: string;
+  timestamp: string;
+  context?: Record<string, any>;
+  userId?: string;
+  sessionId?: string;
+  component?: string;
+  error?: Error;
 }
 
 class ProductionLogger {
-  private isDevelopment = process.env.NODE_ENV === 'development'
-  private logLevel: LogLevel = (process.env.LOG_LEVEL as LogLevel) || 'info'
+  private isDevelopment = process.env.NODE_ENV === "development";
+  private logLevel: LogLevel = (process.env.LOG_LEVEL as LogLevel) || "info";
 
   private shouldLog(level: LogLevel): boolean {
-    const levels = ['debug', 'info', 'warn', 'error']
-    return levels.indexOf(level) >= levels.indexOf(this.logLevel)
+    const levels = ["debug", "info", "warn", "error"];
+    return levels.indexOf(level) >= levels.indexOf(this.logLevel);
   }
 
   private formatLogEntry(entry: LogEntry): string {
-    const { timestamp, level, message, component, context, error } = entry
+    const { timestamp, level, message, component, context, error } = entry;
 
-    let logMessage = `[${timestamp}] [${level.toUpperCase()}]`
+    let logMessage = `[${timestamp}] [${level.toUpperCase()}]`;
 
     if (component) {
-      logMessage += ` [${component}]`
+      logMessage += ` [${component}]`;
     }
 
-    logMessage += ` ${message}`
+    logMessage += ` ${message}`;
 
     if (context && Object.keys(context).length > 0) {
-      logMessage += ` ${JSON.stringify(this.sanitizeContext(context))}`
+      logMessage += ` ${JSON.stringify(this.sanitizeContext(context))}`;
     }
 
     if (error) {
-      logMessage += ` Error: ${error.message}`
+      logMessage += ` Error: ${error.message}`;
       if (error.stack && this.isDevelopment) {
-        logMessage += `\nStack: ${error.stack}`
+        logMessage += `\nStack: ${error.stack}`;
       }
     }
 
-    return logMessage
+    return logMessage;
   }
 
   private sanitizeContext(context: Record<string, any>): Record<string, any> {
-    const sanitized = { ...context }
+    const sanitized = { ...context };
 
     // Remove sensitive fields
-    const sensitiveFields = ['password', 'token', 'key', 'secret', 'auth', 'session']
+    const sensitiveFields = [
+      "password",
+      "token",
+      "key",
+      "secret",
+      "auth",
+      "session",
+    ];
 
     for (const [key, value] of Object.entries(sanitized)) {
-      if (sensitiveFields.some(field => key.toLowerCase().includes(field))) {
-        sanitized[key] = '***REDACTED***'
-      } else if (typeof value === 'string' && value.length > 1000) {
-        sanitized[key] = value.substring(0, 997) + '...'
+      if (sensitiveFields.some((field) => key.toLowerCase().includes(field))) {
+        sanitized[key] = "***REDACTED***";
+      } else if (typeof value === "string" && value.length > 1000) {
+        sanitized[key] = value.substring(0, 997) + "...";
       }
     }
 
-    return sanitized
+    return sanitized;
   }
 
   private writeLog(entry: LogEntry): void {
-    if (!this.shouldLog(entry.level)) return
+    if (!this.shouldLog(entry.level)) return;
 
-    const formattedMessage = this.formatLogEntry(entry)
+    const formattedMessage = this.formatLogEntry(entry);
 
     if (this.isDevelopment) {
       // Development: use console with colors
       switch (entry.level) {
-        case 'debug':
-          console.debug('\x1b[36m%s\x1b[0m', formattedMessage) // Cyan
-          break
-        case 'info':
-          console.info('\x1b[32m%s\x1b[0m', formattedMessage) // Green
-          break
-        case 'warn':
-          console.warn('\x1b[33m%s\x1b[0m', formattedMessage) // Yellow
-          break
-        case 'error':
-          console.error('\x1b[31m%s\x1b[0m', formattedMessage) // Red
-          break
+        case "debug":
+          console.debug("\x1b[36m%s\x1b[0m", formattedMessage); // Cyan
+          break;
+        case "info":
+          console.info("\x1b[32m%s\x1b[0m", formattedMessage); // Green
+          break;
+        case "warn":
+          console.warn("\x1b[33m%s\x1b[0m", formattedMessage); // Yellow
+          break;
+        case "error":
+          console.error("\x1b[31m%s\x1b[0m", formattedMessage); // Red
+          break;
       }
     } else {
       // Production: structured logging
       const structuredLog = {
         ...entry,
-        environment: 'production',
-        userAgent: typeof window !== 'undefined' ? window.navigator?.userAgent : undefined,
-        url: typeof window !== 'undefined' ? window.location?.href : undefined
-      }
+        environment: "production",
+        userAgent:
+          typeof window !== "undefined"
+            ? window.navigator?.userAgent
+            : undefined,
+        url: typeof window !== "undefined" ? window.location?.href : undefined,
+      };
 
       // In production, send to external logging service
-      this.sendToLoggingService(structuredLog)
+      this.sendToLoggingService(structuredLog);
 
       // Also write to console for server-side logs
-      console.log(JSON.stringify(structuredLog))
+      console.log(JSON.stringify(structuredLog));
     }
   }
 
@@ -117,104 +127,136 @@ class ProductionLogger {
     // - DataDog for monitoring
     // - Custom logging endpoint
 
-    if (entry.level === 'error') {
+    if (entry.level === "error") {
       // Send errors to Sentry in production
       try {
         // Only import Sentry in production to avoid dev bundle bloat
-        if (typeof window !== 'undefined' && window.Sentry) {
-          window.Sentry.captureException(entry.error || new Error(entry.message), {
-            level: 'error',
-            contexts: {
-              logger: {
-                component: entry.component,
-                context: entry.context
-              }
-            }
-          })
+        if (typeof window !== "undefined" && window.Sentry) {
+          window.Sentry.captureException(
+            entry.error || new Error(entry.message),
+            {
+              level: "error",
+              contexts: {
+                logger: {
+                  component: entry.component,
+                  context: entry.context,
+                },
+              },
+            },
+          );
         }
       } catch (error) {
         // Fallback if Sentry fails
-        console.error('Failed to send error to Sentry:', error)
+        console.error("Failed to send error to Sentry:", error);
       }
     }
   }
 
   debug(message: string, context?: unknown, component?: string): void {
     this.writeLog({
-      level: 'debug',
+      level: "debug",
       message,
       timestamp: new Date().toISOString(),
-      context: typeof context === 'object' && context !== null ? context : undefined,
-      component
-    })
+      context:
+        typeof context === "object" && context !== null ? context : undefined,
+      component,
+    });
   }
 
   info(message: string, context?: unknown, component?: string): void {
     this.writeLog({
-      level: 'info',
+      level: "info",
       message,
       timestamp: new Date().toISOString(),
-      context: typeof context === 'object' && context !== null ? context : undefined,
-      component
-    })
+      context:
+        typeof context === "object" && context !== null ? context : undefined,
+      component,
+    });
   }
 
   warn(message: string, context?: unknown, component?: string): void {
     this.writeLog({
-      level: 'warn',
+      level: "warn",
       message,
       timestamp: new Date().toISOString(),
-      context: typeof context === 'object' && context !== null ? context : undefined,
-      component
-    })
+      context:
+        typeof context === "object" && context !== null ? context : undefined,
+      component,
+    });
   }
 
   error(message: string, error?: unknown, component?: string): void {
     // Handle backwards compatibility - error can be Error object or any value
-    const actualError = error instanceof Error ? error : (error ? new Error(String(error)) : undefined)
+    const actualError =
+      error instanceof Error
+        ? error
+        : error
+          ? new Error(String(error))
+          : undefined;
 
     this.writeLog({
-      level: 'error',
+      level: "error",
       message,
       timestamp: new Date().toISOString(),
       error: actualError,
-      component
-    })
+      component,
+    });
   }
 
   // Utility methods for common logging patterns
-  logUserAction(action: string, userId: string, context?: Record<string, any>): void {
-    this.info(`User action: ${action}`, { ...context, userId }, 'USER_ACTION')
+  logUserAction(
+    action: string,
+    userId: string,
+    context?: Record<string, any>,
+  ): void {
+    this.info(`User action: ${action}`, { ...context, userId }, "USER_ACTION");
   }
 
-  logPerformance(operation: string, duration: number, context?: Record<string, any>): void {
-    this.info(`Performance: ${operation} took ${duration}ms`, context, 'PERFORMANCE')
+  logPerformance(
+    operation: string,
+    duration: number,
+    context?: Record<string, any>,
+  ): void {
+    this.info(
+      `Performance: ${operation} took ${duration}ms`,
+      context,
+      "PERFORMANCE",
+    );
   }
 
-  logAPICall(method: string, url: string, status: number, duration: number): void {
-    const level = status >= 400 ? 'error' : status >= 300 ? 'warn' : 'info'
+  logAPICall(
+    method: string,
+    url: string,
+    status: number,
+    duration: number,
+  ): void {
+    const level = status >= 400 ? "error" : status >= 300 ? "warn" : "info";
     this.writeLog({
       level,
       message: `API ${method} ${url} responded ${status} in ${duration}ms`,
       timestamp: new Date().toISOString(),
       context: { method, url, status, duration },
-      component: 'API'
-    })
+      component: "API",
+    });
   }
 
-  logSecurityEvent(event: string, severity: 'low' | 'medium' | 'high', context?: Record<string, any>): void {
-    this.warn(`Security event: ${event}`, { ...context, severity }, 'SECURITY')
+  logSecurityEvent(
+    event: string,
+    severity: "low" | "medium" | "high",
+    context?: Record<string, any>,
+  ): void {
+    this.warn(`Security event: ${event}`, { ...context, severity }, "SECURITY");
   }
 }
 
 // Singleton instance
-export const logger = new ProductionLogger()
+export const logger = new ProductionLogger();
 
 // Declare global interface for Sentry if it exists
 declare global {
   interface Window {
     Sentry?: {
-      captureException: (error: Error, context?: unknown) => void
-    }
+      captureException: (error: Error, context?: unknown) => void;
+    };
   }
 }

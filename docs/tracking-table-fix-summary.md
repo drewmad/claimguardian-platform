@@ -1,6 +1,7 @@
 # User Tracking Table Fix Summary
 
 ## Problem
+
 The error "column event_type does not exist" occurred when trying to run the `create-missing-tracking-table.sql` script. This happened because:
 
 1. The `user_tracking` table already exists in the database
@@ -10,6 +11,7 @@ The error "column event_type does not exist" occurred when trying to run the `cr
 ## Current Table Structure Analysis
 
 ### Existing `user_tracking` table (from schema.sql):
+
 ```sql
 CREATE TABLE "user_tracking" (
     "id" uuid DEFAULT gen_random_uuid() NOT NULL,
@@ -43,6 +45,7 @@ CREATE TABLE "user_tracking" (
 ```
 
 ### Missing Columns (needed by functions):
+
 - `event_type` - Primary missing column causing the error
 - `event_data` - JSONB field for storing event metadata
 - `device_fingerprint` - Device identification
@@ -53,6 +56,7 @@ CREATE TABLE "user_tracking" (
 ## Solution Files Created
 
 ### 1. `/scripts/fix-user-tracking-table.sql`
+
 - **Purpose**: Standalone SQL script to fix the table structure
 - **Usage**: Run directly in Supabase SQL Editor
 - **Features**:
@@ -62,6 +66,7 @@ CREATE TABLE "user_tracking" (
   - Includes error handling to prevent authentication failures
 
 ### 2. `/supabase/migrations/20250131000003_fix_user_tracking_columns.sql`
+
 - **Purpose**: Migration file for version control
 - **Usage**: Applied via Supabase migration system
 - **Benefits**:
@@ -69,6 +74,7 @@ CREATE TABLE "user_tracking" (
   - Can be applied to different environments consistently
 
 ### 3. `/scripts/run-tracking-fix.sh`
+
 - **Purpose**: Helper script to display instructions
 - **Usage**: `./scripts/run-tracking-fix.sh`
 - **Features**:
@@ -78,19 +84,24 @@ CREATE TABLE "user_tracking" (
 ## How to Apply the Fix
 
 ### Option 1: Direct SQL Application (Recommended)
+
 1. Go to your Supabase Dashboard SQL Editor
 2. Navigate to: https://supabase.com/dashboard/project/tmlrvecuwgppbaynesji/sql/new
 3. Copy and paste the contents of `/scripts/fix-user-tracking-table.sql`
 4. Click "Run"
 
 ### Option 2: Using the Helper Script
+
 ```bash
 ./scripts/run-tracking-fix.sh
 ```
+
 This will display the SQL and provide instructions for manual application.
 
 ### Option 3: Migration System
+
 If you're using Supabase migrations:
+
 ```bash
 supabase db push
 ```
@@ -129,6 +140,7 @@ ORDER BY column_name;
 ## Related Tables
 
 The fix also ensures compatibility with existing related tables:
+
 - `login_activity` - Separate login tracking table
 - `user_sessions` - Session management
 - `user_profiles` - User profile data with signup tracking

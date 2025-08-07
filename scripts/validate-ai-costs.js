@@ -5,36 +5,31 @@
  * Command-line tool for validating AI cost tracking with real API usage
  */
 
-const { spawn, exec } = require('child_process');
-const fs = require('fs');
-const path = require('path');
-const { promisify } = require('util');
+const { spawn, exec } = require("child_process");
+const fs = require("fs");
+const path = require("path");
+const { promisify } = require("util");
 
 const execAsync = promisify(exec);
 
 // Configuration
 const config = {
-  features: [
-    'damage-analyzer',
-    'policy-advisor',
-    'inventory-scanner',
-    'all'
-  ],
-  providers: ['openai', 'gemini', 'both'],
-  environments: ['development', 'staging', 'production'],
-  formats: ['console', 'json', 'html', 'csv']
+  features: ["damage-analyzer", "policy-advisor", "inventory-scanner", "all"],
+  providers: ["openai", "gemini", "both"],
+  environments: ["development", "staging", "production"],
+  formats: ["console", "json", "html", "csv"],
 };
 
 // Color codes for output
 const colors = {
-  reset: '\x1b[0m',
-  bright: '\x1b[1m',
-  red: '\x1b[31m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  blue: '\x1b[34m',
-  magenta: '\x1b[35m',
-  cyan: '\x1b[36m'
+  reset: "\x1b[0m",
+  bright: "\x1b[1m",
+  red: "\x1b[31m",
+  green: "\x1b[32m",
+  yellow: "\x1b[33m",
+  blue: "\x1b[34m",
+  magenta: "\x1b[35m",
+  cyan: "\x1b[36m",
 };
 
 // Utility functions
@@ -43,72 +38,73 @@ const log = {
   success: (msg) => console.log(`${colors.green}✅ ${msg}${colors.reset}`),
   warning: (msg) => console.log(`${colors.yellow}⚠️  ${msg}${colors.reset}`),
   error: (msg) => console.log(`${colors.red}❌ ${msg}${colors.reset}`),
-  header: (msg) => console.log(`${colors.cyan}${colors.bright}🔍 ${msg}${colors.reset}\n`)
+  header: (msg) =>
+    console.log(`${colors.cyan}${colors.bright}🔍 ${msg}${colors.reset}\n`),
 };
 
 // Parse command line arguments
 function parseArgs() {
   const args = process.argv.slice(2);
   const options = {
-    feature: 'all',
-    provider: 'both',
-    environment: 'development',
-    format: 'console',
+    feature: "all",
+    provider: "both",
+    environment: "development",
+    format: "console",
     output: null,
-    maxCost: 2.00, // $2.00 maximum cost
+    maxCost: 2.0, // $2.00 maximum cost
     record: true,
     verbose: false,
     help: false,
     dryRun: false,
-    concurrent: false
+    concurrent: false,
   };
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
 
     switch (arg) {
-      case '--feature':
-      case '-f':
+      case "--feature":
+      case "-f":
         options.feature = args[++i];
         break;
-      case '--provider':
-      case '-p':
+      case "--provider":
+      case "-p":
         options.provider = args[++i];
         break;
-      case '--environment':
-      case '-e':
+      case "--environment":
+      case "-e":
         options.environment = args[++i];
         break;
-      case '--format':
+      case "--format":
         options.format = args[++i];
         break;
-      case '--output':
-      case '-o':
+      case "--output":
+      case "-o":
         options.output = args[++i];
         break;
-      case '--max-cost':
-      case '-c':
+      case "--max-cost":
+      case "-c":
         options.maxCost = parseFloat(args[++i]);
         break;
-      case '--no-record':
+      case "--no-record":
         options.record = false;
         break;
-      case '--dry-run':
+      case "--dry-run":
         options.dryRun = true;
         break;
-      case '--concurrent':
+      case "--concurrent":
         options.concurrent = true;
         break;
-      case '--verbose':
-      case '-v':
+      case "--verbose":
+      case "-v":
         options.verbose = true;
         break;
-      case '--help':
-      case '-h':
+      case "--help":
+      case "-h":
         options.help = true;
         break;
       default:
-        if (arg.startsWith('--')) {
+        if (arg.startsWith("--")) {
           log.warning(`Unknown option: ${arg}`);
         }
     }
@@ -127,16 +123,16 @@ ${colors.bright}USAGE:${colors.reset}
 
 ${colors.bright}OPTIONS:${colors.reset}
   -f, --feature <feature>    AI feature to validate (default: all)
-                            Options: ${config.features.join(', ')}
+                            Options: ${config.features.join(", ")}
 
   -p, --provider <provider>  AI provider to test (default: both)
-                            Options: ${config.providers.join(', ')}
+                            Options: ${config.providers.join(", ")}
 
   -e, --environment <env>    Target environment (default: development)
-                            Options: ${config.environments.join(', ')}
+                            Options: ${config.environments.join(", ")}
 
   --format <format>         Output format (default: console)
-                            Options: ${config.formats.join(', ')}
+                            Options: ${config.formats.join(", ")}
 
   -o, --output <file>       Output file path (optional)
 
@@ -202,23 +198,31 @@ function validateOptions(options) {
   const errors = [];
 
   if (!config.features.includes(options.feature)) {
-    errors.push(`Invalid feature: ${options.feature}. Valid options: ${config.features.join(', ')}`);
+    errors.push(
+      `Invalid feature: ${options.feature}. Valid options: ${config.features.join(", ")}`,
+    );
   }
 
   if (!config.providers.includes(options.provider)) {
-    errors.push(`Invalid provider: ${options.provider}. Valid options: ${config.providers.join(', ')}`);
+    errors.push(
+      `Invalid provider: ${options.provider}. Valid options: ${config.providers.join(", ")}`,
+    );
   }
 
   if (!config.environments.includes(options.environment)) {
-    errors.push(`Invalid environment: ${options.environment}. Valid options: ${config.environments.join(', ')}`);
+    errors.push(
+      `Invalid environment: ${options.environment}. Valid options: ${config.environments.join(", ")}`,
+    );
   }
 
   if (!config.formats.includes(options.format)) {
-    errors.push(`Invalid format: ${options.format}. Valid options: ${config.formats.join(', ')}`);
+    errors.push(
+      `Invalid format: ${options.format}. Valid options: ${config.formats.join(", ")}`,
+    );
   }
 
   if (options.maxCost < 0.01 || options.maxCost > 100) {
-    errors.push('Max cost must be between $0.01 and $100.00');
+    errors.push("Max cost must be between $0.01 and $100.00");
   }
 
   return errors;
@@ -229,37 +233,42 @@ async function checkPrerequisites(options) {
   const issues = [];
 
   // Check if we're in the correct directory
-  const packageJsonPath = path.join(process.cwd(), 'apps/web/package.json');
+  const packageJsonPath = path.join(process.cwd(), "apps/web/package.json");
   if (!fs.existsSync(packageJsonPath)) {
-    issues.push('Must be run from ClaimGuardian root directory');
+    issues.push("Must be run from ClaimGuardian root directory");
   }
 
   // Check for required environment variables based on provider
-  if (options.provider === 'openai' || options.provider === 'both') {
+  if (options.provider === "openai" || options.provider === "both") {
     if (!process.env.OPENAI_API_KEY) {
-      issues.push('OPENAI_API_KEY environment variable is required');
+      issues.push("OPENAI_API_KEY environment variable is required");
     }
   }
 
-  if (options.provider === 'gemini' || options.provider === 'both') {
+  if (options.provider === "gemini" || options.provider === "both") {
     if (!process.env.GEMINI_API_KEY) {
-      issues.push('GEMINI_API_KEY environment variable is required');
+      issues.push("GEMINI_API_KEY environment variable is required");
     }
   }
 
   // Check Supabase configuration if recording results
   if (options.record) {
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-      issues.push('Supabase configuration required for recording results');
+    if (
+      !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+      !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    ) {
+      issues.push("Supabase configuration required for recording results");
     }
   }
 
   // Test API connectivity
   if (!options.dryRun) {
     try {
-      await execAsync('curl -s --connect-timeout 5 https://api.openai.com > /dev/null');
+      await execAsync(
+        "curl -s --connect-timeout 5 https://api.openai.com > /dev/null",
+      );
     } catch (error) {
-      issues.push('Cannot connect to OpenAI API - check internet connection');
+      issues.push("Cannot connect to OpenAI API - check internet connection");
     }
   }
 
@@ -269,23 +278,21 @@ async function checkPrerequisites(options) {
 // Estimate validation costs
 function estimateValidationCost(options) {
   const baseCosts = {
-    'damage-analyzer': { openai: 0.15, gemini: 0.08 },
-    'policy-advisor': { openai: 0.12, gemini: 0.06 },
-    'inventory-scanner': { openai: 0.10, gemini: 0.05 }
+    "damage-analyzer": { openai: 0.15, gemini: 0.08 },
+    "policy-advisor": { openai: 0.12, gemini: 0.06 },
+    "inventory-scanner": { openai: 0.1, gemini: 0.05 },
   };
 
   let totalCost = 0;
 
-  const features = options.feature === 'all'
-    ? Object.keys(baseCosts)
-    : [options.feature];
+  const features =
+    options.feature === "all" ? Object.keys(baseCosts) : [options.feature];
 
-  const providers = options.provider === 'both'
-    ? ['openai', 'gemini']
-    : [options.provider];
+  const providers =
+    options.provider === "both" ? ["openai", "gemini"] : [options.provider];
 
-  features.forEach(feature => {
-    providers.forEach(provider => {
+  features.forEach((feature) => {
+    providers.forEach((provider) => {
       if (baseCosts[feature] && baseCosts[feature][provider]) {
         totalCost += baseCosts[feature][provider];
       }
@@ -297,20 +304,20 @@ function estimateValidationCost(options) {
 
 // Run validation using the TypeScript validation service
 async function runValidation(options) {
-  log.info('Compiling TypeScript validation service...');
+  log.info("Compiling TypeScript validation service...");
 
   // Build the validation service
   try {
-    await execAsync('npx tsc --build', {
-      cwd: path.join(process.cwd(), 'apps/web')
+    await execAsync("npx tsc --build", {
+      cwd: path.join(process.cwd(), "apps/web"),
     });
   } catch (error) {
     if (options.verbose) {
-      log.warning('TypeScript compilation had warnings, continuing...');
+      log.warning("TypeScript compilation had warnings, continuing...");
     }
   }
 
-  log.info('Starting AI cost validation...');
+  log.info("Starting AI cost validation...");
 
   return new Promise((resolve, reject) => {
     const validationScript = `
@@ -365,39 +372,42 @@ async function runValidation() {
 runValidation();
 `;
 
-    const testProcess = spawn('node', ['-e', validationScript], {
-      cwd: path.join(process.cwd(), 'apps/web'),
-      stdio: 'pipe',
+    const testProcess = spawn("node", ["-e", validationScript], {
+      cwd: path.join(process.cwd(), "apps/web"),
+      stdio: "pipe",
       env: {
         ...process.env,
-        NODE_ENV: options.environment
-      }
+        NODE_ENV: options.environment,
+      },
     });
 
-    let output = '';
-    let errorOutput = '';
+    let output = "";
+    let errorOutput = "";
 
-    testProcess.stdout.on('data', (data) => {
+    testProcess.stdout.on("data", (data) => {
       const text = data.toString();
       output += text;
 
       if (options.verbose) {
         // Filter out JSON result and show progress
-        const lines = text.split('\n').filter(line =>
-          line.trim() && !line.startsWith('{') && !line.startsWith('}')
-        );
-        lines.forEach(line => log.info(line));
+        const lines = text
+          .split("\n")
+          .filter(
+            (line) =>
+              line.trim() && !line.startsWith("{") && !line.startsWith("}"),
+          );
+        lines.forEach((line) => log.info(line));
       }
     });
 
-    testProcess.stderr.on('data', (data) => {
+    testProcess.stderr.on("data", (data) => {
       errorOutput += data.toString();
       if (options.verbose) {
         log.warning(data.toString().trim());
       }
     });
 
-    testProcess.on('close', (code) => {
+    testProcess.on("close", (code) => {
       try {
         // Extract JSON result from output
         const jsonMatch = output.match(/\{[\s\S]*\}/);
@@ -405,14 +415,18 @@ runValidation();
           const result = JSON.parse(jsonMatch[0]);
           resolve(result);
         } else {
-          reject(new Error('No JSON result found in output'));
+          reject(new Error("No JSON result found in output"));
         }
       } catch (error) {
-        reject(new Error(`Failed to parse validation result: ${error.message}\nOutput: ${output}`));
+        reject(
+          new Error(
+            `Failed to parse validation result: ${error.message}\nOutput: ${output}`,
+          ),
+        );
       }
     });
 
-    testProcess.on('error', (error) => {
+    testProcess.on("error", (error) => {
       reject(new Error(`Validation process failed: ${error.message}`));
     });
   });
@@ -430,25 +444,29 @@ function generateReport(validationResult, options) {
       provider: options.provider,
       environment: options.environment,
       maxCost: options.maxCost,
-      concurrent: options.concurrent
+      concurrent: options.concurrent,
     },
     costs: {
       totalCost,
       maxAllowed: options.maxCost,
-      withinBudget: totalCost <= options.maxCost
+      withinBudget: totalCost <= options.maxCost,
     },
     summary,
     results,
     analysis: analyzeResults(results),
-    recommendations: generateRecommendations(results, totalCost, options.maxCost)
+    recommendations: generateRecommendations(
+      results,
+      totalCost,
+      options.maxCost,
+    ),
   };
 
   switch (options.format) {
-    case 'json':
+    case "json":
       return JSON.stringify(report, null, 2);
-    case 'html':
+    case "html":
       return generateHTMLReport(report);
-    case 'csv':
+    case "csv":
       return generateCSVReport(report);
     default:
       return formatConsoleReport(report);
@@ -457,31 +475,46 @@ function generateReport(validationResult, options) {
 
 // Analyze validation results
 function analyzeResults(results) {
-  const allResults = results.flatMap(r => r.results);
-  const successfulResults = allResults.filter(r => r.success);
+  const allResults = results.flatMap((r) => r.results);
+  const successfulResults = allResults.filter((r) => r.success);
 
   const analysis = {
     overallSuccessRate: (successfulResults.length / allResults.length) * 100,
-    averageLatency: successfulResults.reduce((sum, r) => sum + r.latency, 0) / successfulResults.length || 0,
+    averageLatency:
+      successfulResults.reduce((sum, r) => sum + r.latency, 0) /
+        successfulResults.length || 0,
     costAccuracyDistribution: {
-      excellent: successfulResults.filter(r => r.costAccuracy >= 95).length,
-      good: successfulResults.filter(r => r.costAccuracy >= 90 && r.costAccuracy < 95).length,
-      acceptable: successfulResults.filter(r => r.costAccuracy >= 80 && r.costAccuracy < 90).length,
-      poor: successfulResults.filter(r => r.costAccuracy < 80).length
+      excellent: successfulResults.filter((r) => r.costAccuracy >= 95).length,
+      good: successfulResults.filter(
+        (r) => r.costAccuracy >= 90 && r.costAccuracy < 95,
+      ).length,
+      acceptable: successfulResults.filter(
+        (r) => r.costAccuracy >= 80 && r.costAccuracy < 90,
+      ).length,
+      poor: successfulResults.filter((r) => r.costAccuracy < 80).length,
     },
     providerComparison: {},
-    modelPerformance: {}
+    modelPerformance: {},
   };
 
   // Provider comparison
-  ['openai', 'gemini'].forEach(provider => {
-    const providerResults = successfulResults.filter(r => r.provider === provider);
+  ["openai", "gemini"].forEach((provider) => {
+    const providerResults = successfulResults.filter(
+      (r) => r.provider === provider,
+    );
     if (providerResults.length > 0) {
       analysis.providerComparison[provider] = {
-        averageAccuracy: providerResults.reduce((sum, r) => sum + r.costAccuracy, 0) / providerResults.length,
-        averageLatency: providerResults.reduce((sum, r) => sum + r.latency, 0) / providerResults.length,
+        averageAccuracy:
+          providerResults.reduce((sum, r) => sum + r.costAccuracy, 0) /
+          providerResults.length,
+        averageLatency:
+          providerResults.reduce((sum, r) => sum + r.latency, 0) /
+          providerResults.length,
         totalCost: providerResults.reduce((sum, r) => sum + r.actualCost, 0),
-        reliability: (providerResults.length / allResults.filter(r => r.provider === provider).length) * 100
+        reliability:
+          (providerResults.length /
+            allResults.filter((r) => r.provider === provider).length) *
+          100,
       };
     }
   });
@@ -492,44 +525,49 @@ function analyzeResults(results) {
 // Generate recommendations based on results
 function generateRecommendations(results, totalCost, maxCost) {
   const recommendations = [];
-  const allResults = results.flatMap(r => r.results);
-  const successRate = (allResults.filter(r => r.success).length / allResults.length) * 100;
+  const allResults = results.flatMap((r) => r.results);
+  const successRate =
+    (allResults.filter((r) => r.success).length / allResults.length) * 100;
 
   // Cost recommendations
   if (totalCost > maxCost * 0.8) {
     recommendations.push({
-      type: 'cost',
-      priority: 'high',
-      message: `Validation cost ($${totalCost.toFixed(4)}) is approaching limit ($${maxCost}). Consider reducing test scope for regular validation.`
+      type: "cost",
+      priority: "high",
+      message: `Validation cost ($${totalCost.toFixed(4)}) is approaching limit ($${maxCost}). Consider reducing test scope for regular validation.`,
     });
   }
 
   // Accuracy recommendations
-  const avgAccuracy = results.reduce((sum, r) => sum + r.summary.averageCostAccuracy, 0) / results.length;
+  const avgAccuracy =
+    results.reduce((sum, r) => sum + r.summary.averageCostAccuracy, 0) /
+    results.length;
   if (avgAccuracy < 90) {
     recommendations.push({
-      type: 'accuracy',
-      priority: 'medium',
-      message: `Cost estimation accuracy (${avgAccuracy.toFixed(1)}%) could be improved. Review token counting algorithms.`
+      type: "accuracy",
+      priority: "medium",
+      message: `Cost estimation accuracy (${avgAccuracy.toFixed(1)}%) could be improved. Review token counting algorithms.`,
     });
   }
 
   // Reliability recommendations
   if (successRate < 95) {
     recommendations.push({
-      type: 'reliability',
-      priority: 'high',
-      message: `API success rate (${successRate.toFixed(1)}%) indicates reliability issues. Check API keys and rate limits.`
+      type: "reliability",
+      priority: "high",
+      message: `API success rate (${successRate.toFixed(1)}%) indicates reliability issues. Check API keys and rate limits.`,
     });
   }
 
   // Performance recommendations
-  const avgLatency = allResults.filter(r => r.success).reduce((sum, r) => sum + r.latency, 0) / allResults.filter(r => r.success).length;
+  const avgLatency =
+    allResults.filter((r) => r.success).reduce((sum, r) => sum + r.latency, 0) /
+    allResults.filter((r) => r.success).length;
   if (avgLatency > 3000) {
     recommendations.push({
-      type: 'performance',
-      priority: 'medium',
-      message: `High average latency (${avgLatency.toFixed(0)}ms) detected. Consider implementing caching or optimization.`
+      type: "performance",
+      priority: "medium",
+      message: `High average latency (${avgLatency.toFixed(0)}ms) detected. Consider implementing caching or optimization.`,
     });
   }
 
@@ -552,7 +590,7 @@ ${colors.bright}Configuration:${colors.reset}
 
 ${colors.bright}Cost Summary:${colors.reset}
   Total Cost: ${costs.withinBudget ? colors.green : colors.red}$${costs.totalCost.toFixed(6)}${colors.reset}
-  Budget Status: ${costs.withinBudget ? '✅ Within Budget' : '⚠️ Over Budget'}
+  Budget Status: ${costs.withinBudget ? "✅ Within Budget" : "⚠️ Over Budget"}
 
 ${colors.bright}Test Results:${colors.reset}
   Total Tests: ${summary.totalTests}
@@ -585,8 +623,13 @@ ${colors.bright}Performance Analysis:${colors.reset}
   // Recommendations
   if (recommendations.length > 0) {
     output += `\n${colors.bright}Recommendations:${colors.reset}\n`;
-    recommendations.forEach(rec => {
-      const priority = rec.priority === 'high' ? colors.red : rec.priority === 'medium' ? colors.yellow : colors.blue;
+    recommendations.forEach((rec) => {
+      const priority =
+        rec.priority === "high"
+          ? colors.red
+          : rec.priority === "medium"
+            ? colors.yellow
+            : colors.blue;
       output += `  ${priority}${rec.priority.toUpperCase()}${colors.reset}: ${rec.message}\n`;
     });
   }
@@ -631,27 +674,29 @@ function generateHTMLReport(report) {
     <div class="summary">
         <div class="metric">
             <h3>Total Cost</h3>
-            <div class="value ${report.costs.withinBudget ? 'success' : 'danger'}">$${report.costs.totalCost.toFixed(6)}</div>
-            <small>${report.costs.withinBudget ? 'Within Budget' : 'Over Budget'} (${report.costs.maxAllowed})</small>
+            <div class="value ${report.costs.withinBudget ? "success" : "danger"}">$${report.costs.totalCost.toFixed(6)}</div>
+            <small>${report.costs.withinBudget ? "Within Budget" : "Over Budget"} (${report.costs.maxAllowed})</small>
         </div>
         <div class="metric">
             <h3>Success Rate</h3>
-            <div class="value ${report.analysis.overallSuccessRate >= 95 ? 'success' : 'warning'}">${report.analysis.overallSuccessRate.toFixed(1)}%</div>
+            <div class="value ${report.analysis.overallSuccessRate >= 95 ? "success" : "warning"}">${report.analysis.overallSuccessRate.toFixed(1)}%</div>
             <small>${report.summary.successfulTests}/${report.summary.totalTests} tests</small>
         </div>
         <div class="metric">
             <h3>Cost Accuracy</h3>
-            <div class="value ${report.summary.averageAccuracy >= 90 ? 'success' : 'warning'}">${report.summary.averageAccuracy.toFixed(1)}%</div>
+            <div class="value ${report.summary.averageAccuracy >= 90 ? "success" : "warning"}">${report.summary.averageAccuracy.toFixed(1)}%</div>
             <small>Average across all tests</small>
         </div>
         <div class="metric">
             <h3>Average Latency</h3>
-            <div class="value ${report.analysis.averageLatency < 2000 ? 'success' : 'warning'}">${report.analysis.averageLatency.toFixed(0)}ms</div>
+            <div class="value ${report.analysis.averageLatency < 2000 ? "success" : "warning"}">${report.analysis.averageLatency.toFixed(0)}ms</div>
             <small>Response time</small>
         </div>
     </div>
 
-    ${Object.keys(report.analysis.providerComparison).length > 1 ? `
+    ${
+      Object.keys(report.analysis.providerComparison).length > 1
+        ? `
     <h2>Provider Comparison</h2>
     <table>
         <thead>
@@ -664,7 +709,9 @@ function generateHTMLReport(report) {
             </tr>
         </thead>
         <tbody>
-            ${Object.entries(report.analysis.providerComparison).map(([provider, stats]) => `
+            ${Object.entries(report.analysis.providerComparison)
+              .map(
+                ([provider, stats]) => `
                 <tr>
                     <td>${provider.toUpperCase()}</td>
                     <td>${stats.averageAccuracy.toFixed(1)}%</td>
@@ -672,54 +719,70 @@ function generateHTMLReport(report) {
                     <td>$${stats.totalCost.toFixed(6)}</td>
                     <td>${stats.reliability.toFixed(1)}%</td>
                 </tr>
-            `).join('')}
+            `,
+              )
+              .join("")}
         </tbody>
     </table>
-    ` : ''}
+    `
+        : ""
+    }
 
-    ${report.recommendations.length > 0 ? `
+    ${
+      report.recommendations.length > 0
+        ? `
     <div class="recommendations">
         <h2>Recommendations</h2>
-        ${report.recommendations.map(rec => `
+        ${report.recommendations
+          .map(
+            (rec) => `
             <div class="recommendation ${rec.priority}">
                 <strong>${rec.type.toUpperCase()} (${rec.priority})</strong>: ${rec.message}
             </div>
-        `).join('')}
+        `,
+          )
+          .join("")}
     </div>
-    ` : ''}
+    `
+        : ""
+    }
 </body>
 </html>`;
 }
 
 // Generate CSV report
 function generateCSVReport(report) {
-  const allResults = report.results.flatMap(r => r.results);
+  const allResults = report.results.flatMap((r) => r.results);
 
   const headers = [
-    'Provider',
-    'Model',
-    'Success',
-    'Actual Cost',
-    'Estimated Cost',
-    'Cost Accuracy (%)',
-    'Latency (ms)',
-    'Input Tokens',
-    'Output Tokens',
-    'Total Tokens'
-  ].join(',');
+    "Provider",
+    "Model",
+    "Success",
+    "Actual Cost",
+    "Estimated Cost",
+    "Cost Accuracy (%)",
+    "Latency (ms)",
+    "Input Tokens",
+    "Output Tokens",
+    "Total Tokens",
+  ].join(",");
 
-  const rows = allResults.map(result => [
-    result.provider,
-    result.model,
-    result.success,
-    result.actualCost.toFixed(6),
-    result.estimatedCost.toFixed(6),
-    result.costAccuracy.toFixed(2),
-    result.latency,
-    result.tokens.input,
-    result.tokens.output,
-    result.tokens.total
-  ].join(',')).join('\n');
+  const rows = allResults
+    .map((result) =>
+      [
+        result.provider,
+        result.model,
+        result.success,
+        result.actualCost.toFixed(6),
+        result.estimatedCost.toFixed(6),
+        result.costAccuracy.toFixed(2),
+        result.latency,
+        result.tokens.input,
+        result.tokens.output,
+        result.tokens.total,
+      ].join(","),
+    )
+    .join("\n");
 
   return `${headers}\n${rows}`;
 }
@@ -733,21 +796,21 @@ async function main() {
     process.exit(0);
   }
 
-  log.header('ClaimGuardian AI Cost Validation');
+  log.header("ClaimGuardian AI Cost Validation");
 
   // Validate options
   const optionErrors = validateOptions(options);
   if (optionErrors.length > 0) {
-    log.error('Invalid options:');
-    optionErrors.forEach(error => log.error(`  ${error}`));
+    log.error("Invalid options:");
+    optionErrors.forEach((error) => log.error(`  ${error}`));
     process.exit(1);
   }
 
   // Check prerequisites
   const prerequisiteIssues = await checkPrerequisites(options);
   if (prerequisiteIssues.length > 0) {
-    log.error('Prerequisites not met:');
-    prerequisiteIssues.forEach(issue => log.error(`  ${issue}`));
+    log.error("Prerequisites not met:");
+    prerequisiteIssues.forEach((issue) => log.error(`  ${issue}`));
     process.exit(1);
   }
 
@@ -757,30 +820,37 @@ async function main() {
   log.info(`Maximum allowed cost: $${options.maxCost.toFixed(2)}`);
 
   if (estimatedCost > options.maxCost) {
-    log.warning(`Estimated cost exceeds maximum allowed. Consider reducing scope or increasing limit.`);
+    log.warning(
+      `Estimated cost exceeds maximum allowed. Consider reducing scope or increasing limit.`,
+    );
   }
 
   if (options.dryRun) {
-    log.info('Dry run mode - no API calls will be made');
-    log.info(`Would test: ${options.feature} feature with ${options.provider} provider(s)`);
+    log.info("Dry run mode - no API calls will be made");
+    log.info(
+      `Would test: ${options.feature} feature with ${options.provider} provider(s)`,
+    );
     process.exit(0);
   }
 
   // Confirm before proceeding with real API calls
   if (process.stdin.isTTY) {
-    const readline = require('readline').createInterface({
+    const readline = require("readline").createInterface({
       input: process.stdin,
-      output: process.stdout
+      output: process.stdout,
     });
 
-    const confirm = await new Promise(resolve => {
-      readline.question(`Proceed with real API validation? This will cost approximately $${estimatedCost.toFixed(4)} (y/N): `, resolve);
+    const confirm = await new Promise((resolve) => {
+      readline.question(
+        `Proceed with real API validation? This will cost approximately $${estimatedCost.toFixed(4)} (y/N): `,
+        resolve,
+      );
     });
 
     readline.close();
 
-    if (confirm.toLowerCase() !== 'y' && confirm.toLowerCase() !== 'yes') {
-      log.info('Validation cancelled by user');
+    if (confirm.toLowerCase() !== "y" && confirm.toLowerCase() !== "yes") {
+      log.info("Validation cancelled by user");
       process.exit(0);
     }
   }
@@ -788,7 +858,7 @@ async function main() {
   const startTime = Date.now();
 
   try {
-    log.info('Starting AI cost validation...');
+    log.info("Starting AI cost validation...");
 
     const validationResult = await runValidation(options);
 
@@ -813,9 +883,10 @@ async function main() {
     }
 
     // Exit with success/failure based on results
-    const success = validationResult.totalCost <= options.maxCost && validationResult.summary.successfulTests > 0;
+    const success =
+      validationResult.totalCost <= options.maxCost &&
+      validationResult.summary.successfulTests > 0;
     process.exit(success ? 0 : 1);
-
   } catch (error) {
     const endTime = Date.now();
     const duration = endTime - startTime;
@@ -831,12 +902,12 @@ async function main() {
 }
 
 // Handle uncaught errors
-process.on('uncaughtException', (error) => {
+process.on("uncaughtException", (error) => {
   log.error(`Uncaught exception: ${error.message}`);
   process.exit(1);
 });
 
-process.on('unhandledRejection', (reason, promise) => {
+process.on("unhandledRejection", (reason, promise) => {
   log.error(`Unhandled rejection at ${promise}: ${reason}`);
   process.exit(1);
 });
@@ -850,5 +921,5 @@ module.exports = {
   parseArgs,
   validateOptions,
   checkPrerequisites,
-  main
+  main,
 };

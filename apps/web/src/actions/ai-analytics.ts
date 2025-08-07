@@ -8,58 +8,58 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use server'
+"use server";
 
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from "@/lib/supabase/server";
 
 export interface TrackAIMetricParams {
-  metricName: string
-  metricValue: number
-  featureId?: string
-  modelName?: string
-  provider?: string
-  operationType?: string
-  success?: boolean
-  requestId?: string
-  errorMessage?: string
-  metadata?: Record<string, unknown>
+  metricName: string;
+  metricValue: number;
+  featureId?: string;
+  modelName?: string;
+  provider?: string;
+  operationType?: string;
+  success?: boolean;
+  requestId?: string;
+  errorMessage?: string;
+  metadata?: Record<string, unknown>;
 }
 
 export interface AIMetricData {
-  id: string
-  timestamp: string
-  metricName: string
-  metricValue: number
-  featureId?: string
-  modelName?: string
-  provider?: string
-  operationType?: string
-  success: boolean
-  metadata: Record<string, unknown>
+  id: string;
+  timestamp: string;
+  metricName: string;
+  metricValue: number;
+  featureId?: string;
+  modelName?: string;
+  provider?: string;
+  operationType?: string;
+  success: boolean;
+  metadata: Record<string, unknown>;
 }
 
 export interface MetricsQuery {
-  startTime?: Date
-  endTime?: Date
-  metricNames?: string[]
-  featureIds?: string[]
-  models?: string[]
-  providers?: string[]
-  limit?: number
-  aggregateBy?: 'minute' | '5minutes' | '15minutes' | 'hour' | 'day'
+  startTime?: Date;
+  endTime?: Date;
+  metricNames?: string[];
+  featureIds?: string[];
+  models?: string[];
+  providers?: string[];
+  limit?: number;
+  aggregateBy?: "minute" | "5minutes" | "15minutes" | "hour" | "day";
 }
 
 export interface AggregatedMetric {
-  timeBucket: string
-  metricName: string
-  count: number
-  avgValue: number
-  minValue: number
-  maxValue: number
-  sumValue: number
-  featureId?: string
-  modelName?: string
-  provider?: string
+  timeBucket: string;
+  metricName: string;
+  count: number;
+  avgValue: number;
+  minValue: number;
+  maxValue: number;
+  sumValue: number;
+  featureId?: string;
+  modelName?: string;
+  provider?: string;
 }
 
 /**
@@ -75,16 +75,18 @@ export async function trackAIMetric({
   success = true,
   requestId,
   errorMessage,
-  metadata = {}
+  metadata = {},
 }: TrackAIMetricParams) {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     // Get current user
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     const { data, error } = await supabase
-      .from('ai_performance_metrics')
+      .from("ai_performance_metrics")
       .insert({
         metric_name: metricName,
         metric_value: metricValue,
@@ -99,24 +101,24 @@ export async function trackAIMetric({
         metadata: {
           ...metadata,
           tracked_at: new Date().toISOString(),
-          user_agent: metadata.userAgent || 'unknown'
-        }
+          user_agent: metadata.userAgent || "unknown",
+        },
       })
       .select()
-      .single()
+      .single();
 
     if (error) {
-      console.error('Failed to track AI metric:', error)
-      return { data: null, error: error.message }
+      console.error("Failed to track AI metric:", error);
+      return { data: null, error: error.message };
     }
 
-    return { data, error: null }
+    return { data, error: null };
   } catch (error) {
-    console.error('Error tracking AI metric:', error)
+    console.error("Error tracking AI metric:", error);
     return {
       data: null,
-      error: error instanceof Error ? error.message : 'Unknown error'
-    }
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
   }
 }
 
@@ -131,53 +133,53 @@ export async function getAIMetrics({
   models,
   providers,
   limit = 1000,
-  aggregateBy
+  aggregateBy,
 }: MetricsQuery = {}) {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     let query = supabase
-      .from('ai_performance_metrics')
-      .select('*')
-      .gte('timestamp', startTime.toISOString())
-      .lte('timestamp', endTime.toISOString())
-      .order('timestamp', { ascending: false })
+      .from("ai_performance_metrics")
+      .select("*")
+      .gte("timestamp", startTime.toISOString())
+      .lte("timestamp", endTime.toISOString())
+      .order("timestamp", { ascending: false });
 
     // Apply filters
     if (metricNames?.length) {
-      query = query.in('metric_name', metricNames)
+      query = query.in("metric_name", metricNames);
     }
 
     if (featureIds?.length) {
-      query = query.in('feature_id', featureIds)
+      query = query.in("feature_id", featureIds);
     }
 
     if (models?.length) {
-      query = query.in('model_name', models)
+      query = query.in("model_name", models);
     }
 
     if (providers?.length) {
-      query = query.in('provider', providers)
+      query = query.in("provider", providers);
     }
 
     if (limit) {
-      query = query.limit(limit)
+      query = query.limit(limit);
     }
 
-    const { data, error } = await query
+    const { data, error } = await query;
 
     if (error) {
-      console.error('Failed to get AI metrics:', error)
-      return { data: null, error: error.message }
+      console.error("Failed to get AI metrics:", error);
+      return { data: null, error: error.message };
     }
 
-    return { data: data as AIMetricData[], error: null }
+    return { data: data as AIMetricData[], error: null };
   } catch (error) {
-    console.error('Error getting AI metrics:', error)
+    console.error("Error getting AI metrics:", error);
     return {
       data: null,
-      error: error instanceof Error ? error.message : 'Unknown error'
-    }
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
   }
 }
 
@@ -191,28 +193,35 @@ export async function getAggregatedAIMetrics({
   featureIds,
   models,
   providers,
-  aggregateBy = '15minutes'
+  aggregateBy = "15minutes",
 }: MetricsQuery = {}) {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     // Map aggregation intervals
     const intervalMap = {
-      'minute': '1 minute',
-      '5minutes': '5 minutes',
-      '15minutes': '15 minutes',
-      'hour': '1 hour',
-      'day': '1 day'
-    }
+      minute: "1 minute",
+      "5minutes": "5 minutes",
+      "15minutes": "15 minutes",
+      hour: "1 hour",
+      day: "1 day",
+    };
 
-    const interval = intervalMap[aggregateBy]
+    const interval = intervalMap[aggregateBy];
 
     let baseQuery = `
       SELECT
-        date_trunc('${aggregateBy === 'minute' ? 'minute' :
-                    aggregateBy === '5minutes' ? 'minute' :
-                    aggregateBy === '15minutes' ? 'minute' :
-                    aggregateBy === 'hour' ? 'hour' : 'day'}', timestamp) as time_bucket,
+        date_trunc('${
+          aggregateBy === "minute"
+            ? "minute"
+            : aggregateBy === "5minutes"
+              ? "minute"
+              : aggregateBy === "15minutes"
+                ? "minute"
+                : aggregateBy === "hour"
+                  ? "hour"
+                  : "day"
+        }', timestamp) as time_bucket,
         metric_name,
         COUNT(*) as count,
         AVG(metric_value) as avg_value,
@@ -224,57 +233,60 @@ export async function getAggregatedAIMetrics({
         provider
       FROM ai_performance_metrics
       WHERE timestamp >= $1 AND timestamp <= $2
-    `
+    `;
 
-    const params: (string | number | string[])[] = [startTime.toISOString(), endTime.toISOString()]
-    let paramIndex = 3
+    const params: (string | number | string[])[] = [
+      startTime.toISOString(),
+      endTime.toISOString(),
+    ];
+    let paramIndex = 3;
 
     if (metricNames?.length) {
-      baseQuery += ` AND metric_name = ANY(${paramIndex})`
-      params.push(metricNames)
-      paramIndex++
+      baseQuery += ` AND metric_name = ANY(${paramIndex})`;
+      params.push(metricNames);
+      paramIndex++;
     }
 
     if (featureIds?.length) {
-      baseQuery += ` AND feature_id = ANY(${paramIndex})`
-      params.push(featureIds)
-      paramIndex++
+      baseQuery += ` AND feature_id = ANY(${paramIndex})`;
+      params.push(featureIds);
+      paramIndex++;
     }
 
     if (models?.length) {
-      baseQuery += ` AND model_name = ANY(${paramIndex})`
-      params.push(models)
-      paramIndex++
+      baseQuery += ` AND model_name = ANY(${paramIndex})`;
+      params.push(models);
+      paramIndex++;
     }
 
     if (providers?.length) {
-      baseQuery += ` AND provider = ANY(${paramIndex})`
-      params.push(providers)
-      paramIndex++
+      baseQuery += ` AND provider = ANY(${paramIndex})`;
+      params.push(providers);
+      paramIndex++;
     }
 
     baseQuery += `
       GROUP BY time_bucket, metric_name, feature_id, model_name, provider
       ORDER BY time_bucket DESC, metric_name
-    `
+    `;
 
-    const { data, error } = await supabase.rpc('execute_raw_sql', {
+    const { data, error } = await supabase.rpc("execute_raw_sql", {
       query: baseQuery,
-      params
-    })
+      params,
+    });
 
     if (error) {
-      console.error('Failed to get aggregated metrics:', error)
-      return { data: null, error: error.message }
+      console.error("Failed to get aggregated metrics:", error);
+      return { data: null, error: error.message };
     }
 
-    return { data: data as AggregatedMetric[], error: null }
+    return { data: data as AggregatedMetric[], error: null };
   } catch (error) {
-    console.error('Error getting aggregated metrics:', error)
+    console.error("Error getting aggregated metrics:", error);
     return {
       data: null,
-      error: error instanceof Error ? error.message : 'Unknown error'
-    }
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
   }
 }
 
@@ -285,45 +297,45 @@ export async function getAIAnomalies({
   startTime = new Date(Date.now() - 24 * 60 * 60 * 1000),
   endTime = new Date(),
   severityFilter,
-  limit = 100
+  limit = 100,
 }: {
-  startTime?: Date
-  endTime?: Date
-  severityFilter?: 'low' | 'medium' | 'high' | 'critical'
-  limit?: number
+  startTime?: Date;
+  endTime?: Date;
+  severityFilter?: "low" | "medium" | "high" | "critical";
+  limit?: number;
 } = {}) {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     let query = supabase
-      .from('ai_anomalies')
-      .select('*')
-      .gte('detected_at', startTime.toISOString())
-      .lte('detected_at', endTime.toISOString())
-      .order('detected_at', { ascending: false })
+      .from("ai_anomalies")
+      .select("*")
+      .gte("detected_at", startTime.toISOString())
+      .lte("detected_at", endTime.toISOString())
+      .order("detected_at", { ascending: false });
 
     if (severityFilter) {
-      query = query.eq('severity', severityFilter)
+      query = query.eq("severity", severityFilter);
     }
 
     if (limit) {
-      query = query.limit(limit)
+      query = query.limit(limit);
     }
 
-    const { data, error } = await query
+    const { data, error } = await query;
 
     if (error) {
-      console.error('Failed to get AI anomalies:', error)
-      return { data: null, error: error.message }
+      console.error("Failed to get AI anomalies:", error);
+      return { data: null, error: error.message };
     }
 
-    return { data, error: null }
+    return { data, error: null };
   } catch (error) {
-    console.error('Error getting AI anomalies:', error)
+    console.error("Error getting AI anomalies:", error);
     return {
       data: null,
-      error: error instanceof Error ? error.message : 'Unknown error'
-    }
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
   }
 }
 
@@ -333,46 +345,51 @@ export async function getAIAnomalies({
 export async function getAIInsights({
   limit = 50,
   statusFilter,
-  typeFilter
+  typeFilter,
 }: {
-  limit?: number
-  statusFilter?: 'new' | 'reviewed' | 'acted_upon' | 'dismissed'
-  typeFilter?: 'trend' | 'anomaly' | 'optimization' | 'cost_analysis' | 'accuracy_drift'
+  limit?: number;
+  statusFilter?: "new" | "reviewed" | "acted_upon" | "dismissed";
+  typeFilter?:
+    | "trend"
+    | "anomaly"
+    | "optimization"
+    | "cost_analysis"
+    | "accuracy_drift";
 } = {}) {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     let query = supabase
-      .from('ai_performance_insights')
-      .select('*')
-      .order('created_at', { ascending: false })
+      .from("ai_performance_insights")
+      .select("*")
+      .order("created_at", { ascending: false });
 
     if (statusFilter) {
-      query = query.eq('status', statusFilter)
+      query = query.eq("status", statusFilter);
     }
 
     if (typeFilter) {
-      query = query.eq('insight_type', typeFilter)
+      query = query.eq("insight_type", typeFilter);
     }
 
     if (limit) {
-      query = query.limit(limit)
+      query = query.limit(limit);
     }
 
-    const { data, error } = await query
+    const { data, error } = await query;
 
     if (error) {
-      console.error('Failed to get AI insights:', error)
-      return { data: null, error: error.message }
+      console.error("Failed to get AI insights:", error);
+      return { data: null, error: error.message };
     }
 
-    return { data, error: null }
+    return { data, error: null };
   } catch (error) {
-    console.error('Error getting AI insights:', error)
+    console.error("Error getting AI insights:", error);
     return {
       data: null,
-      error: error instanceof Error ? error.message : 'Unknown error'
-    }
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
   }
 }
 
@@ -382,45 +399,47 @@ export async function getAIInsights({
 export async function updateInsightStatus({
   insightId,
   status,
-  notes
+  notes,
 }: {
-  insightId: string
-  status: 'new' | 'reviewed' | 'acted_upon' | 'dismissed'
-  notes?: string
+  insightId: string;
+  status: "new" | "reviewed" | "acted_upon" | "dismissed";
+  notes?: string;
 }) {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     // Get current user
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     const { data, error } = await supabase
-      .from('ai_performance_insights')
+      .from("ai_performance_insights")
       .update({
         status,
         reviewed_by: user?.id,
         reviewed_at: new Date().toISOString(),
         metadata: {
           notes,
-          updated_by: user?.email || 'unknown'
-        }
+          updated_by: user?.email || "unknown",
+        },
       })
-      .eq('id', insightId)
+      .eq("id", insightId)
       .select()
-      .single()
+      .single();
 
     if (error) {
-      console.error('Failed to update insight status:', error)
-      return { data: null, error: error.message }
+      console.error("Failed to update insight status:", error);
+      return { data: null, error: error.message };
     }
 
-    return { data, error: null }
+    return { data, error: null };
   } catch (error) {
-    console.error('Error updating insight status:', error)
+    console.error("Error updating insight status:", error);
     return {
       data: null,
-      error: error instanceof Error ? error.message : 'Unknown error'
-    }
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
   }
 }
 
@@ -428,32 +447,32 @@ export async function updateInsightStatus({
  * Trigger metric aggregation manually
  */
 export async function triggerMetricAggregation({
-  windowInterval = '15 minutes',
-  lookbackPeriod = '1 hour'
+  windowInterval = "15 minutes",
+  lookbackPeriod = "1 hour",
 }: {
-  windowInterval?: '1 minute' | '5 minutes' | '15 minutes' | '1 hour' | '1 day'
-  lookbackPeriod?: '1 hour' | '6 hours' | '24 hours' | '7 days'
+  windowInterval?: "1 minute" | "5 minutes" | "15 minutes" | "1 hour" | "1 day";
+  lookbackPeriod?: "1 hour" | "6 hours" | "24 hours" | "7 days";
 } = {}) {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
-    const { data, error } = await supabase.rpc('aggregate_ai_metrics', {
+    const { data, error } = await supabase.rpc("aggregate_ai_metrics", {
       window_interval: windowInterval,
-      lookback_period: lookbackPeriod
-    })
+      lookback_period: lookbackPeriod,
+    });
 
     if (error) {
-      console.error('Failed to trigger metric aggregation:', error)
-      return { data: null, error: error.message }
+      console.error("Failed to trigger metric aggregation:", error);
+      return { data: null, error: error.message };
     }
 
-    return { data: 'Aggregation completed', error: null }
+    return { data: "Aggregation completed", error: null };
   } catch (error) {
-    console.error('Error triggering metric aggregation:', error)
+    console.error("Error triggering metric aggregation:", error);
     return {
       data: null,
-      error: error instanceof Error ? error.message : 'Unknown error'
-    }
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
   }
 }
 
@@ -462,31 +481,31 @@ export async function triggerMetricAggregation({
  */
 export async function triggerAnomalyDetection({
   lookbackHours = 24,
-  sensitivity = 3.0
+  sensitivity = 3.0,
 }: {
-  lookbackHours?: number
-  sensitivity?: number
+  lookbackHours?: number;
+  sensitivity?: number;
 } = {}) {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
-    const { data, error } = await supabase.rpc('detect_ai_anomalies', {
+    const { data, error } = await supabase.rpc("detect_ai_anomalies", {
       lookback_hours: lookbackHours,
-      sensitivity
-    })
+      sensitivity,
+    });
 
     if (error) {
-      console.error('Failed to trigger anomaly detection:', error)
-      return { data: null, error: error.message }
+      console.error("Failed to trigger anomaly detection:", error);
+      return { data: null, error: error.message };
     }
 
-    return { data: `Detected ${data} anomalies`, error: null }
+    return { data: `Detected ${data} anomalies`, error: null };
   } catch (error) {
-    console.error('Error triggering anomaly detection:', error)
+    console.error("Error triggering anomaly detection:", error);
     return {
       data: null,
-      error: error instanceof Error ? error.message : 'Unknown error'
-    }
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
   }
 }
 
@@ -496,47 +515,47 @@ export async function triggerAnomalyDetection({
 export async function getPerformanceBenchmarks({
   metricName,
   featureId,
-  modelName
+  modelName,
 }: {
-  metricName?: string
-  featureId?: string
-  modelName?: string
+  metricName?: string;
+  featureId?: string;
+  modelName?: string;
 } = {}) {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     let query = supabase
-      .from('ai_performance_benchmarks')
-      .select('*')
-      .eq('active', true)
-      .order('created_at', { ascending: false })
+      .from("ai_performance_benchmarks")
+      .select("*")
+      .eq("active", true)
+      .order("created_at", { ascending: false });
 
     if (metricName) {
-      query = query.eq('metric_name', metricName)
+      query = query.eq("metric_name", metricName);
     }
 
     if (featureId) {
-      query = query.eq('feature_id', featureId)
+      query = query.eq("feature_id", featureId);
     }
 
     if (modelName) {
-      query = query.eq('model_name', modelName)
+      query = query.eq("model_name", modelName);
     }
 
-    const { data, error } = await query
+    const { data, error } = await query;
 
     if (error) {
-      console.error('Failed to get performance benchmarks:', error)
-      return { data: null, error: error.message }
+      console.error("Failed to get performance benchmarks:", error);
+      return { data: null, error: error.message };
     }
 
-    return { data, error: null }
+    return { data, error: null };
   } catch (error) {
-    console.error('Error getting performance benchmarks:', error)
+    console.error("Error getting performance benchmarks:", error);
     return {
       data: null,
-      error: error instanceof Error ? error.message : 'Unknown error'
-    }
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
   }
 }
 
@@ -553,27 +572,29 @@ export async function createPerformanceBenchmark({
   modelName,
   provider,
   benchmarkType,
-  description
+  description,
 }: {
-  benchmarkName: string
-  metricName: string
-  targetValue: number
-  warningThreshold?: number
-  criticalThreshold?: number
-  featureId?: string
-  modelName?: string
-  provider?: string
-  benchmarkType: 'target' | 'sla' | 'budget' | 'quality'
-  description?: string
+  benchmarkName: string;
+  metricName: string;
+  targetValue: number;
+  warningThreshold?: number;
+  criticalThreshold?: number;
+  featureId?: string;
+  modelName?: string;
+  provider?: string;
+  benchmarkType: "target" | "sla" | "budget" | "quality";
+  description?: string;
 }) {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     // Get current user
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     const { data, error } = await supabase
-      .from('ai_performance_benchmarks')
+      .from("ai_performance_benchmarks")
       .upsert({
         benchmark_name: benchmarkName,
         metric_name: metricName,
@@ -586,22 +607,22 @@ export async function createPerformanceBenchmark({
         benchmark_type: benchmarkType,
         description,
         created_by: user?.id,
-        active: true
+        active: true,
       })
       .select()
-      .single()
+      .single();
 
     if (error) {
-      console.error('Failed to create performance benchmark:', error)
-      return { data: null, error: error.message }
+      console.error("Failed to create performance benchmark:", error);
+      return { data: null, error: error.message };
     }
 
-    return { data, error: null }
+    return { data, error: null };
   } catch (error) {
-    console.error('Error creating performance benchmark:', error)
+    console.error("Error creating performance benchmark:", error);
     return {
       data: null,
-      error: error instanceof Error ? error.message : 'Unknown error'
-    }
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
   }
 }

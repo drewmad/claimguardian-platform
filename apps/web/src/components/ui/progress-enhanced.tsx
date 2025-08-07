@@ -8,10 +8,10 @@
  * @tags ["ui", "progress", "ai", "indicators", "enhanced"]
  * @status stable
  */
-'use client'
+"use client";
 
-import { useState, useEffect, useMemo } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useEffect, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   CheckCircle,
   XCircle,
@@ -36,55 +36,71 @@ import {
   Image,
   Calendar,
   Timer,
-  BarChart3
-} from 'lucide-react'
+  BarChart3,
+} from "lucide-react";
 
-import { Progress } from '@/components/ui/progress'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { cn } from '@/lib/utils'
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { cn } from "@/lib/utils";
 
-export type ProgressStatus = 'pending' | 'running' | 'completed' | 'error' | 'paused' | 'cancelled'
-export type ProgressStage = 'upload' | 'processing' | 'analyzing' | 'reviewing' | 'finalizing'
-export type ProcessingType = 'damage-analysis' | 'document-extraction' | 'inventory-scan' | 'claim-processing' | 'general'
+export type ProgressStatus =
+  | "pending"
+  | "running"
+  | "completed"
+  | "error"
+  | "paused"
+  | "cancelled";
+export type ProgressStage =
+  | "upload"
+  | "processing"
+  | "analyzing"
+  | "reviewing"
+  | "finalizing";
+export type ProcessingType =
+  | "damage-analysis"
+  | "document-extraction"
+  | "inventory-scan"
+  | "claim-processing"
+  | "general";
 
 export interface ProgressStep {
-  id: string
-  name: string
-  description: string
-  status: ProgressStatus
-  progress: number
-  duration?: number
-  startTime?: Date
-  endTime?: Date
-  error?: string
-  metadata?: Record<string, any>
+  id: string;
+  name: string;
+  description: string;
+  status: ProgressStatus;
+  progress: number;
+  duration?: number;
+  startTime?: Date;
+  endTime?: Date;
+  error?: string;
+  metadata?: Record<string, any>;
 }
 
 export interface ProgressConfig {
-  showTimeEstimates?: boolean
-  showPercentages?: boolean
-  showStepDetails?: boolean
-  allowPauseResume?: boolean
-  showErrorDetails?: boolean
-  animated?: boolean
-  compact?: boolean
-  showThroughput?: boolean
+  showTimeEstimates?: boolean;
+  showPercentages?: boolean;
+  showStepDetails?: boolean;
+  allowPauseResume?: boolean;
+  showErrorDetails?: boolean;
+  animated?: boolean;
+  compact?: boolean;
+  showThroughput?: boolean;
 }
 
 interface ProgressEnhancedProps {
-  steps: ProgressStep[]
-  currentStepIndex: number
-  overallProgress: number
-  status: ProgressStatus
-  config?: ProgressConfig
-  onPause?: () => void
-  onResume?: () => void
-  onCancel?: () => void
-  onRetry?: (stepId: string) => void
-  className?: string
+  steps: ProgressStep[];
+  currentStepIndex: number;
+  overallProgress: number;
+  status: ProgressStatus;
+  config?: ProgressConfig;
+  onPause?: () => void;
+  onResume?: () => void;
+  onCancel?: () => void;
+  onRetry?: (stepId: string) => void;
+  className?: string;
 }
 
 export function ProgressEnhanced({
@@ -97,7 +113,7 @@ export function ProgressEnhanced({
   onResume,
   onCancel,
   onRetry,
-  className
+  className,
 }: ProgressEnhancedProps) {
   const {
     showTimeEstimates = true,
@@ -107,51 +123,68 @@ export function ProgressEnhanced({
     showErrorDetails = true,
     animated = true,
     compact = false,
-    showThroughput = false
-  } = config
+    showThroughput = false,
+  } = config;
 
-  const currentStep = steps[currentStepIndex]
+  const currentStep = steps[currentStepIndex];
 
   // Calculate time estimates
   const timeEstimates = useMemo(() => {
-    if (!showTimeEstimates) return null
+    if (!showTimeEstimates) return null;
 
-    const completedSteps = steps.filter(step => step.status === 'completed')
-    const averageDuration = completedSteps.length > 0
-      ? completedSteps.reduce((acc, step) => acc + (step.duration || 0), 0) / completedSteps.length
-      : 30 // Default 30 seconds per step
+    const completedSteps = steps.filter((step) => step.status === "completed");
+    const averageDuration =
+      completedSteps.length > 0
+        ? completedSteps.reduce((acc, step) => acc + (step.duration || 0), 0) /
+          completedSteps.length
+        : 30; // Default 30 seconds per step
 
-    const remainingSteps = steps.length - currentStepIndex
-    const estimatedTimeRemaining = Math.round(remainingSteps * averageDuration)
+    const remainingSteps = steps.length - currentStepIndex;
+    const estimatedTimeRemaining = Math.round(remainingSteps * averageDuration);
 
     return {
       averageDuration,
       estimatedTimeRemaining,
-      totalElapsed: completedSteps.reduce((acc, step) => acc + (step.duration || 0), 0)
-    }
-  }, [steps, currentStepIndex, showTimeEstimates])
+      totalElapsed: completedSteps.reduce(
+        (acc, step) => acc + (step.duration || 0),
+        0,
+      ),
+    };
+  }, [steps, currentStepIndex, showTimeEstimates]);
 
   const getStatusIcon = (stepStatus: ProgressStatus) => {
     switch (stepStatus) {
-      case 'completed': return CheckCircle
-      case 'error': return XCircle
-      case 'running': return Loader2
-      case 'paused': return Pause
-      case 'cancelled': return XCircle
-      default: return Clock
+      case "completed":
+        return CheckCircle;
+      case "error":
+        return XCircle;
+      case "running":
+        return Loader2;
+      case "paused":
+        return Pause;
+      case "cancelled":
+        return XCircle;
+      default:
+        return Clock;
     }
-  }
+  };
 
   const getStatusColor = (stepStatus: ProgressStatus) => {
     switch (stepStatus) {
-      case 'completed': return 'text-green-600'
-      case 'error': return 'text-red-600'
-      case 'running': return 'text-blue-600'
-      case 'paused': return 'text-yellow-600'
-      case 'cancelled': return 'text-gray-600'
-      default: return 'text-gray-400'
+      case "completed":
+        return "text-green-600";
+      case "error":
+        return "text-red-600";
+      case "running":
+        return "text-blue-600";
+      case "paused":
+        return "text-yellow-600";
+      case "cancelled":
+        return "text-gray-600";
+      default:
+        return "text-gray-400";
     }
-  }
+  };
 
   if (compact) {
     return (
@@ -163,17 +196,24 @@ export function ProgressEnhanced({
               <div className="flex items-center gap-2">
                 <div className={cn("w-4 h-4", getStatusColor(status))}>
                   {(() => {
-                    const Icon = getStatusIcon(status)
-                    return <Icon className={cn("w-4 h-4", status === 'running' && "animate-spin")} />
+                    const Icon = getStatusIcon(status);
+                    return (
+                      <Icon
+                        className={cn(
+                          "w-4 h-4",
+                          status === "running" && "animate-spin",
+                        )}
+                      />
+                    );
                   })()}
                 </div>
-                <span className="font-medium">{currentStep?.name || 'Processing'}</span>
+                <span className="font-medium">
+                  {currentStep?.name || "Processing"}
+                </span>
               </div>
 
               {showPercentages && (
-                <Badge variant="outline">
-                  {Math.round(overallProgress)}%
-                </Badge>
+                <Badge variant="outline">{Math.round(overallProgress)}%</Badge>
               )}
             </div>
 
@@ -181,16 +221,22 @@ export function ProgressEnhanced({
 
             {showTimeEstimates && timeEstimates && (
               <div className="flex justify-between text-xs text-gray-500">
-                <span>{steps.filter(s => s.status === 'completed').length} of {steps.length} steps</span>
+                <span>
+                  {steps.filter((s) => s.status === "completed").length} of{" "}
+                  {steps.length} steps
+                </span>
                 {timeEstimates.estimatedTimeRemaining > 0 && (
-                  <span>~{Math.ceil(timeEstimates.estimatedTimeRemaining / 60)} min remaining</span>
+                  <span>
+                    ~{Math.ceil(timeEstimates.estimatedTimeRemaining / 60)} min
+                    remaining
+                  </span>
                 )}
               </div>
             )}
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -209,21 +255,21 @@ export function ProgressEnhanced({
             {/* Controls */}
             {allowPauseResume && (
               <div className="flex items-center gap-2">
-                {status === 'running' && onPause && (
+                {status === "running" && onPause && (
                   <Button variant="outline" size="sm" onClick={onPause}>
                     <Pause className="w-4 h-4 mr-1" />
                     Pause
                   </Button>
                 )}
 
-                {status === 'paused' && onResume && (
+                {status === "paused" && onResume && (
                   <Button variant="outline" size="sm" onClick={onResume}>
                     <Play className="w-4 h-4 mr-1" />
                     Resume
                   </Button>
                 )}
 
-                {onCancel && status !== 'completed' && (
+                {onCancel && status !== "completed" && (
                   <Button variant="outline" size="sm" onClick={onCancel}>
                     Cancel
                   </Button>
@@ -253,7 +299,9 @@ export function ProgressEnhanced({
                 <Timer className="w-4 h-4 text-gray-400" />
                 <div>
                   <p className="text-gray-600">Elapsed</p>
-                  <p className="font-medium">{Math.ceil(timeEstimates.totalElapsed / 60)} min</p>
+                  <p className="font-medium">
+                    {Math.ceil(timeEstimates.totalElapsed / 60)} min
+                  </p>
                 </div>
               </div>
 
@@ -288,8 +336,8 @@ export function ProgressEnhanced({
 
               <div className="space-y-2">
                 {steps.map((step, index) => {
-                  const Icon = getStatusIcon(step.status)
-                  const isActive = index === currentStepIndex
+                  const Icon = getStatusIcon(step.status);
+                  const isActive = index === currentStepIndex;
 
                   return (
                     <motion.div
@@ -301,21 +349,30 @@ export function ProgressEnhanced({
                         "flex items-center gap-3 p-3 rounded-lg border",
                         isActive
                           ? "bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800"
-                          : "bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700"
+                          : "bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700",
                       )}
                     >
-                      <div className={cn("flex-shrink-0", getStatusColor(step.status))}>
-                        <Icon className={cn(
-                          "w-4 h-4",
-                          step.status === 'running' && "animate-spin"
-                        )} />
+                      <div
+                        className={cn(
+                          "flex-shrink-0",
+                          getStatusColor(step.status),
+                        )}
+                      >
+                        <Icon
+                          className={cn(
+                            "w-4 h-4",
+                            step.status === "running" && "animate-spin",
+                          )}
+                        />
                       </div>
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
-                          <p className="font-medium text-sm truncate">{step.name}</p>
+                          <p className="font-medium text-sm truncate">
+                            {step.name}
+                          </p>
 
-                          {showPercentages && step.status === 'running' && (
+                          {showPercentages && step.status === "running" && (
                             <Badge variant="outline" className="ml-2">
                               {Math.round(step.progress)}%
                             </Badge>
@@ -326,37 +383,42 @@ export function ProgressEnhanced({
                           {step.description}
                         </p>
 
-                        {step.status === 'running' && (
-                          <Progress value={step.progress} className="h-1 mt-2" />
+                        {step.status === "running" && (
+                          <Progress
+                            value={step.progress}
+                            className="h-1 mt-2"
+                          />
                         )}
 
-                        {step.status === 'error' && showErrorDetails && step.error && (
-                          <Alert variant="destructive" className="mt-2">
-                            <AlertTriangle className="w-4 h-4" />
-                            <AlertDescription className="text-xs">
-                              {step.error}
-                              {onRetry && (
-                                <Button
-                                  variant="link"
-                                  size="sm"
-                                  onClick={() => onRetry(step.id)}
-                                  className="h-auto p-0 ml-2 text-xs"
-                                >
-                                  Retry
-                                </Button>
-                              )}
-                            </AlertDescription>
-                          </Alert>
-                        )}
+                        {step.status === "error" &&
+                          showErrorDetails &&
+                          step.error && (
+                            <Alert variant="destructive" className="mt-2">
+                              <AlertTriangle className="w-4 h-4" />
+                              <AlertDescription className="text-xs">
+                                {step.error}
+                                {onRetry && (
+                                  <Button
+                                    variant="link"
+                                    size="sm"
+                                    onClick={() => onRetry(step.id)}
+                                    className="h-auto p-0 ml-2 text-xs"
+                                  >
+                                    Retry
+                                  </Button>
+                                )}
+                              </AlertDescription>
+                            </Alert>
+                          )}
 
-                        {step.duration && step.status === 'completed' && (
+                        {step.duration && step.status === "completed" && (
                           <p className="text-xs text-gray-500 mt-1">
                             Completed in {Math.ceil(step.duration)} seconds
                           </p>
                         )}
                       </div>
                     </motion.div>
-                  )
+                  );
                 })}
               </div>
             </div>
@@ -364,17 +426,21 @@ export function ProgressEnhanced({
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 // Multi-Stage Progress Component
 interface MultiStageProgressProps {
-  stages: { name: string; description: string; icon: React.ComponentType<React.SVGProps<SVGSVGElement>> }[]
-  currentStage: number
-  stageProgress: number
-  overallProgress: number
-  status: ProgressStatus
-  className?: string
+  stages: {
+    name: string;
+    description: string;
+    icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  }[];
+  currentStage: number;
+  stageProgress: number;
+  overallProgress: number;
+  status: ProgressStatus;
+  className?: string;
 }
 
 export function MultiStageProgress({
@@ -383,7 +449,7 @@ export function MultiStageProgress({
   stageProgress,
   overallProgress,
   status,
-  className
+  className,
 }: MultiStageProgressProps) {
   return (
     <Card className={cn("w-full", className)}>
@@ -392,10 +458,10 @@ export function MultiStageProgress({
           {/* Stage Indicators */}
           <div className="flex items-center justify-between">
             {stages.map((stage, index) => {
-              const Icon = stage.icon
-              const isActive = index === currentStage
-              const isCompleted = index < currentStage
-              const isCurrent = index === currentStage
+              const Icon = stage.icon;
+              const isActive = index === currentStage;
+              const isCompleted = index < currentStage;
+              const isCurrent = index === currentStage;
 
               return (
                 <div key={index} className="flex items-center">
@@ -405,27 +471,34 @@ export function MultiStageProgress({
                       isCompleted
                         ? "bg-green-500 border-green-500 text-white"
                         : isCurrent
-                        ? "bg-blue-500 border-blue-500 text-white"
-                        : "bg-gray-200 border-gray-300 text-gray-500"
+                          ? "bg-blue-500 border-blue-500 text-white"
+                          : "bg-gray-200 border-gray-300 text-gray-500",
                     )}
                   >
                     {isCompleted ? (
                       <CheckCircle className="w-5 h-5" />
                     ) : (
-                      <Icon className={cn("w-5 h-5", isCurrent && status === 'running' && "animate-pulse")} />
+                      <Icon
+                        className={cn(
+                          "w-5 h-5",
+                          isCurrent && status === "running" && "animate-pulse",
+                        )}
+                      />
                     )}
                   </div>
 
                   {index < stages.length - 1 && (
-                    <div className={cn(
-                      "w-8 sm:w-16 h-px mx-2",
-                      isCompleted || (isCurrent && stageProgress > 50)
-                        ? "bg-green-500"
-                        : "bg-gray-300"
-                    )} />
+                    <div
+                      className={cn(
+                        "w-8 sm:w-16 h-px mx-2",
+                        isCompleted || (isCurrent && stageProgress > 50)
+                          ? "bg-green-500"
+                          : "bg-gray-300",
+                      )}
+                    />
                   )}
                 </div>
-              )
+              );
             })}
           </div>
 
@@ -433,14 +506,16 @@ export function MultiStageProgress({
           <div className="flex justify-between">
             {stages.map((stage, index) => (
               <div key={index} className="text-center max-w-[100px]">
-                <p className={cn(
-                  "text-xs font-medium",
-                  index === currentStage
-                    ? "text-blue-600"
-                    : index < currentStage
-                    ? "text-green-600"
-                    : "text-gray-500"
-                )}>
+                <p
+                  className={cn(
+                    "text-xs font-medium",
+                    index === currentStage
+                      ? "text-blue-600"
+                      : index < currentStage
+                        ? "text-green-600"
+                        : "text-gray-500",
+                  )}
+                >
                   {stage.name}
                 </p>
               </div>
@@ -458,7 +533,8 @@ export function MultiStageProgress({
               <div className="space-y-2">
                 <Progress value={stageProgress} className="h-2" />
                 <p className="text-xs text-gray-500">
-                  Stage {currentStage + 1} of {stages.length} • {Math.round(stageProgress)}% complete
+                  Stage {currentStage + 1} of {stages.length} •{" "}
+                  {Math.round(stageProgress)}% complete
                 </p>
               </div>
             </div>
@@ -477,21 +553,21 @@ export function MultiStageProgress({
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 // AI Processing Progress Component
 interface AIProcessingProgressProps {
-  type: ProcessingType
-  progress: number
-  stage: string
-  status: ProgressStatus
-  confidence?: number
-  throughput?: { processed: number; total: number; rate: number }
-  insights?: string[]
-  onPause?: () => void
-  onCancel?: () => void
-  className?: string
+  type: ProcessingType;
+  progress: number;
+  stage: string;
+  status: ProgressStatus;
+  confidence?: number;
+  throughput?: { processed: number; total: number; rate: number };
+  insights?: string[];
+  onPause?: () => void;
+  onCancel?: () => void;
+  className?: string;
 }
 
 export function AIProcessingProgress({
@@ -504,29 +580,39 @@ export function AIProcessingProgress({
   insights = [],
   onPause,
   onCancel,
-  className
+  className,
 }: AIProcessingProgressProps) {
   const getProcessingIcon = () => {
     switch (type) {
-      case 'damage-analysis': return Scan
-      case 'document-extraction': return FileText
-      case 'inventory-scan': return Image
-      case 'claim-processing': return BarChart3
-      default: return Brain
+      case "damage-analysis":
+        return Scan;
+      case "document-extraction":
+        return FileText;
+      case "inventory-scan":
+        return Image;
+      case "claim-processing":
+        return BarChart3;
+      default:
+        return Brain;
     }
-  }
+  };
 
   const getProcessingName = () => {
     switch (type) {
-      case 'damage-analysis': return 'Damage Analysis'
-      case 'document-extraction': return 'Document Extraction'
-      case 'inventory-scan': return 'Inventory Scanning'
-      case 'claim-processing': return 'Claim Processing'
-      default: return 'AI Processing'
+      case "damage-analysis":
+        return "Damage Analysis";
+      case "document-extraction":
+        return "Document Extraction";
+      case "inventory-scan":
+        return "Inventory Scanning";
+      case "claim-processing":
+        return "Claim Processing";
+      default:
+        return "AI Processing";
     }
-  }
+  };
 
-  const ProcessingIcon = getProcessingIcon()
+  const ProcessingIcon = getProcessingIcon();
 
   return (
     <Card className={cn("w-full", className)}>
@@ -541,12 +627,14 @@ export function AIProcessingProgress({
 
               <div>
                 <h3 className="font-semibold">{getProcessingName()}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">{stage}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {stage}
+                </p>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
-              {status === 'running' && onPause && (
+              {status === "running" && onPause && (
                 <Button variant="outline" size="sm" onClick={onPause}>
                   <Pause className="w-4 h-4" />
                 </Button>
@@ -635,20 +723,24 @@ export function AIProcessingProgress({
 
           {/* Status Indicator */}
           <div className="flex items-center justify-center">
-            <div className={cn(
-              "flex items-center gap-2 px-3 py-2 rounded-full text-sm",
-              status === 'running'
-                ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
-                : status === 'completed'
-                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"
-                : status === 'error'
-                ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300"
-                : "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
-            )}>
-              {status === 'running' && <Loader2 className="w-4 h-4 animate-spin" />}
-              {status === 'completed' && <CheckCircle className="w-4 h-4" />}
-              {status === 'error' && <XCircle className="w-4 h-4" />}
-              {status === 'paused' && <Pause className="w-4 h-4" />}
+            <div
+              className={cn(
+                "flex items-center gap-2 px-3 py-2 rounded-full text-sm",
+                status === "running"
+                  ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+                  : status === "completed"
+                    ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"
+                    : status === "error"
+                      ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300"
+                      : "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
+              )}
+            >
+              {status === "running" && (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              )}
+              {status === "completed" && <CheckCircle className="w-4 h-4" />}
+              {status === "error" && <XCircle className="w-4 h-4" />}
+              {status === "paused" && <Pause className="w-4 h-4" />}
 
               <span className="capitalize">{status}</span>
             </div>
@@ -656,16 +748,16 @@ export function AIProcessingProgress({
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 // Progress Ring Component
 interface ProgressRingProps {
-  progress: number
-  size?: number
-  strokeWidth?: number
-  className?: string
-  children?: React.ReactNode
+  progress: number;
+  size?: number;
+  strokeWidth?: number;
+  className?: string;
+  children?: React.ReactNode;
 }
 
 export function ProgressRing({
@@ -673,19 +765,20 @@ export function ProgressRing({
   size = 120,
   strokeWidth = 8,
   className,
-  children
+  children,
 }: ProgressRingProps) {
-  const radius = (size - strokeWidth) / 2
-  const circumference = radius * 2 * Math.PI
-  const strokeDashoffset = circumference - (progress / 100) * circumference
+  const radius = (size - strokeWidth) / 2;
+  const circumference = radius * 2 * Math.PI;
+  const strokeDashoffset = circumference - (progress / 100) * circumference;
 
   return (
-    <div className={cn("relative inline-flex items-center justify-center", className)}>
-      <svg
-        width={size}
-        height={size}
-        className="transform -rotate-90"
-      >
+    <div
+      className={cn(
+        "relative inline-flex items-center justify-center",
+        className,
+      )}
+    >
+      <svg width={size} height={size} className="transform -rotate-90">
         {/* Background circle */}
         <circle
           cx={size / 2}
@@ -715,11 +808,9 @@ export function ProgressRing({
       {/* Center content */}
       <div className="absolute inset-0 flex items-center justify-center">
         {children || (
-          <span className="text-sm font-medium">
-            {Math.round(progress)}%
-          </span>
+          <span className="text-sm font-medium">{Math.round(progress)}%</span>
         )}
       </div>
     </div>
-  )
+  );
 }

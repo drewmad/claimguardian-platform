@@ -9,7 +9,11 @@
  * @status stable
  */
 
-import { claudeErrorLogger, claudeErrorHelpers, ClaudeErrorContext } from './claude-error-logger'
+import {
+  claudeErrorLogger,
+  claudeErrorHelpers,
+  ClaudeErrorContext,
+} from "./claude-error-logger";
 
 /**
  * Example: How to integrate Claude error logging into development workflow
@@ -28,24 +32,24 @@ import { claudeErrorLogger, claudeErrorHelpers, ClaudeErrorContext } from './cla
 export async function exampleCodeGenerationError() {
   try {
     // Simulate a code generation task that fails
-    throw new Error("TypeError: Cannot read property 'map' of undefined")
+    throw new Error("TypeError: Cannot read property 'map' of undefined");
   } catch (error) {
     // Log the error with full context
     const errorId = await claudeErrorHelpers.codeGeneration.syntaxError(
       error as Error,
-      'src/components/ClaimsList.tsx',
-      'typescript',
-      'Generate claims list component with filtering'
-    )
+      "src/components/ClaimsList.tsx",
+      "typescript",
+      "Generate claims list component with filtering",
+    );
 
-    console.log('Claude error logged:', errorId)
+    console.log("Claude error logged:", errorId);
 
     // Later, when we fix the error, mark it as resolved
     await claudeErrorLogger.resolveError(
       errorId!,
-      'Added proper null check: claims?.map() instead of claims.map()',
-      'Always check for null/undefined before calling array methods'
-    )
+      "Added proper null check: claims?.map() instead of claims.map()",
+      "Always check for null/undefined before calling array methods",
+    );
   }
 }
 
@@ -55,21 +59,21 @@ export async function exampleCodeGenerationError() {
 export async function exampleFileModificationError() {
   try {
     // Simulate editing a file incorrectly
-    throw new Error("Edit failed: old_string not found in file")
+    throw new Error("Edit failed: old_string not found in file");
   } catch (error) {
     const errorId = await claudeErrorHelpers.fileModification.editError(
       error as Error,
-      'src/actions/claims.ts',
-      'Fix createClaim function signature',
-      ['Edit', 'Read']
-    )
+      "src/actions/claims.ts",
+      "Fix createClaim function signature",
+      ["Edit", "Read"],
+    );
 
     // Mark as resolved with the correct approach
     await claudeErrorLogger.resolveError(
       errorId!,
-      'Read the file first to see exact whitespace and formatting before editing',
-      'Always use Read tool before Edit to understand file structure'
-    )
+      "Read the file first to see exact whitespace and formatting before editing",
+      "Always use Read tool before Edit to understand file structure",
+    );
   }
 }
 
@@ -78,16 +82,16 @@ export async function exampleFileModificationError() {
  */
 export async function exampleAnalysisError() {
   const errorId = await claudeErrorHelpers.analysis.misunderstanding(
-    'Analyze user requirements for claim processing',
-    'Build automated claim approval system',
-    'assumed-automation-needed'
-  )
+    "Analyze user requirements for claim processing",
+    "Build automated claim approval system",
+    "assumed-automation-needed",
+  );
 
   await claudeErrorLogger.resolveError(
     errorId!,
-    'Ask clarifying questions about automation scope and human oversight requirements',
-    'Never assume automation level - always clarify with user first'
-  )
+    "Ask clarifying questions about automation scope and human oversight requirements",
+    "Never assume automation level - always clarify with user first",
+  );
 }
 
 /**
@@ -96,20 +100,20 @@ export async function exampleAnalysisError() {
 export async function exampleLearningRetrieval() {
   // Before starting a React component generation task
   const learnings = await claudeErrorLogger.getRelevantLearnings({
-    taskType: 'code-generation',
-    errorType: 'syntax',
-    codeLanguage: 'typescript',
-    framework: 'react'
-  })
+    taskType: "code-generation",
+    errorType: "syntax",
+    codeLanguage: "typescript",
+    framework: "react",
+  });
 
-  console.log('Relevant learnings for React TypeScript component generation:')
-  learnings.forEach(learning => {
-    console.log(`- ${learning.pattern_name}: ${learning.solution_pattern}`)
-  })
+  console.log("Relevant learnings for React TypeScript component generation:");
+  learnings.forEach((learning) => {
+    console.log(`- ${learning.pattern_name}: ${learning.solution_pattern}`);
+  });
 
   // Use these learnings to avoid previous mistakes
   if (learnings.length > 0) {
-    console.log('Applying previous learnings to avoid common mistakes...')
+    console.log("Applying previous learnings to avoid common mistakes...");
   }
 }
 
@@ -119,38 +123,40 @@ export async function exampleLearningRetrieval() {
 export async function exampleComprehensiveError() {
   try {
     // Simulate a complex task failure
-    throw new Error("Build failed: Type 'unknown' is not assignable to type 'string'")
+    throw new Error(
+      "Build failed: Type 'unknown' is not assignable to type 'string'",
+    );
   } catch (error) {
     const errorId = await claudeErrorLogger.logError(
       error as Error,
       {
-        taskType: 'code-generation',
-        taskDescription: 'Create TypeScript interface for Claims API response',
-        userIntent: 'Type-safe API integration',
-        filePath: 'src/types/claims.ts',
-        fileType: 'typescript',
-        codeLanguage: 'typescript',
-        framework: 'next.js',
-        errorType: 'type',
-        toolsUsed: ['Write', 'Edit', 'Read'],
-        mistakeCategory: 'type-assumption',
+        taskType: "code-generation",
+        taskDescription: "Create TypeScript interface for Claims API response",
+        userIntent: "Type-safe API integration",
+        filePath: "src/types/claims.ts",
+        fileType: "typescript",
+        codeLanguage: "typescript",
+        framework: "next.js",
+        errorType: "type",
+        toolsUsed: ["Write", "Edit", "Read"],
+        mistakeCategory: "type-assumption",
         previousAttempts: 2,
         codebaseContext: {
-          framework: 'next.js',
-          languages: ['typescript', 'javascript'],
-          packages: ['@supabase/supabase-js', 'zod'],
-          patterns: ['server-actions', 'type-safe-apis']
-        }
+          framework: "next.js",
+          languages: ["typescript", "javascript"],
+          packages: ["@supabase/supabase-js", "zod"],
+          patterns: ["server-actions", "type-safe-apis"],
+        },
       },
-      'high'
-    )
+      "high",
+    );
 
     // Record the learning when resolved
     await claudeErrorLogger.resolveError(
       errorId!,
-      'Use proper type assertions and check API response structure with Read tool first',
-      'Always validate API response types before creating interfaces'
-    )
+      "Use proper type assertions and check API response structure with Read tool first",
+      "Always validate API response types before creating interfaces",
+    );
   }
 }
 
@@ -159,17 +165,17 @@ export async function exampleComprehensiveError() {
  */
 export async function examplePatternAnalysis() {
   // Get error patterns for the last week
-  const patterns = await claudeErrorLogger.getErrorPatterns('week')
+  const patterns = await claudeErrorLogger.getErrorPatterns("week");
 
-  console.log('Most common Claude error patterns:')
-  patterns.forEach(pattern => {
+  console.log("Most common Claude error patterns:");
+  patterns.forEach((pattern) => {
     console.log(`
       Pattern: ${pattern.pattern}
       Occurrences: ${pattern.count}
       Resolution Rate: ${pattern.resolved}/${pattern.count}
       Severity Distribution: ${JSON.stringify(pattern.severity)}
-    `)
-  })
+    `);
+  });
 }
 
 /**
@@ -178,12 +184,12 @@ export async function examplePatternAnalysis() {
 export async function exampleSuccessfulLearningApplication() {
   // When we successfully apply a learning, record it
   await claudeErrorLogger.recordLearning(
-    'react-component-props-validation',
-    'Creating React components without proper prop type validation',
-    'Always define interfaces for props and use TypeScript for validation',
-    ['task:code-generation', 'lang:typescript', 'framework:react'],
-    0.9 // High confidence
-  )
+    "react-component-props-validation",
+    "Creating React components without proper prop type validation",
+    "Always define interfaces for props and use TypeScript for validation",
+    ["task:code-generation", "lang:typescript", "framework:react"],
+    0.9, // High confidence
+  );
 }
 
 // ================================================================
@@ -193,54 +199,55 @@ export async function exampleSuccessfulLearningApplication() {
 /**
  * Wrapper function to catch and log Claude errors automatically
  */
-export function withClaudeErrorLogging<T extends (...args: unknown[]) => Promise<any>>(
-  taskType: string,
-  taskDescription: string,
-  fn: T
-): T {
+export function withClaudeErrorLogging<
+  T extends (...args: unknown[]) => Promise<any>,
+>(taskType: string, taskDescription: string, fn: T): T {
   return (async (...args: unknown[]) => {
     try {
-      return await fn(...args)
+      return await fn(...args);
     } catch (error) {
       // Auto-log the error
       await claudeErrorLogger.logError(
         error as Error,
         {
-          taskType: (taskType as any) || 'other',
+          taskType: (taskType as any) || "other",
           taskDescription,
-          userIntent: 'Complete task successfully',
-          errorType: 'runtime',
-          toolsUsed: ['unknown'],
-          mistakeCategory: 'uncaught-error'
+          userIntent: "Complete task successfully",
+          errorType: "runtime",
+          toolsUsed: ["unknown"],
+          mistakeCategory: "uncaught-error",
         },
-        'medium'
-      )
-      throw error // Re-throw to maintain original behavior
+        "medium",
+      );
+      throw error; // Re-throw to maintain original behavior
     }
-  }) as T
+  }) as T;
 }
 
 /**
  * Hook for React components to track Claude-generated code issues
  */
-export function useClaudeErrorTracking(componentName: string, codeContext?: ClaudeErrorContext['codebaseContext']) {
+export function useClaudeErrorTracking(
+  componentName: string,
+  codeContext?: ClaudeErrorContext["codebaseContext"],
+) {
   const logComponentError = async (error: Error, action: string) => {
     await claudeErrorLogger.logError(error, {
-      taskType: 'code-generation',
+      taskType: "code-generation",
       taskDescription: `${componentName} component ${action}`,
-      userIntent: 'Create working React component',
+      userIntent: "Create working React component",
       filePath: `src/components/${componentName}.tsx`,
-      fileType: 'typescript',
-      codeLanguage: 'typescript',
-      framework: 'react',
-      errorType: 'runtime',
-      toolsUsed: ['Write', 'Edit'],
-      mistakeCategory: 'component-error',
-      codebaseContext: codeContext
-    })
-  }
+      fileType: "typescript",
+      codeLanguage: "typescript",
+      framework: "react",
+      errorType: "runtime",
+      toolsUsed: ["Write", "Edit"],
+      mistakeCategory: "component-error",
+      codebaseContext: codeContext,
+    });
+  };
 
-  return { logComponentError }
+  return { logComponentError };
 }
 
 // ================================================================
@@ -253,36 +260,38 @@ export function useClaudeErrorTracking(componentName: string, codeContext?: Clau
 export async function checkClaudeLearningsBeforeTask(
   taskType: string,
   context: {
-    language?: string
-    framework?: string
-    errorType?: string
-  }
+    language?: string;
+    framework?: string;
+    errorType?: string;
+  },
 ) {
   const learnings = await claudeErrorLogger.getRelevantLearnings({
-    taskType: taskType as ClaudeErrorContext['taskType'],
-    errorType: context.errorType as ClaudeErrorContext['errorType'],
+    taskType: taskType as ClaudeErrorContext["taskType"],
+    errorType: context.errorType as ClaudeErrorContext["errorType"],
     framework: context.framework,
-    codeLanguage: context.language
-  })
+    codeLanguage: context.language,
+  });
 
   if (learnings.length > 0) {
-    console.log(`🧠 Found ${learnings.length} relevant Claude learnings for this task:`)
-    learnings.forEach(learning => {
-      console.log(`  • ${learning.pattern_name}: ${learning.solution_pattern}`)
-    })
-    return learnings
+    console.log(
+      `🧠 Found ${learnings.length} relevant Claude learnings for this task:`,
+    );
+    learnings.forEach((learning) => {
+      console.log(`  • ${learning.pattern_name}: ${learning.solution_pattern}`);
+    });
+    return learnings;
   }
 
-  return []
+  return [];
 }
 
 /**
  * Development helper to show Claude's learning progress
  */
 export async function showClaudeLearningStats() {
-  const patterns = await claudeErrorLogger.getErrorPatterns('month')
-  const totalErrors = patterns.reduce((sum, p) => sum + p.count, 0)
-  const totalResolved = patterns.reduce((sum, p) => sum + p.resolved, 0)
+  const patterns = await claudeErrorLogger.getErrorPatterns("month");
+  const totalErrors = patterns.reduce((sum, p) => sum + p.count, 0);
+  const totalResolved = patterns.reduce((sum, p) => sum + p.resolved, 0);
 
   console.log(`
 🤖 Claude Learning Statistics (Last 30 days):
@@ -292,9 +301,12 @@ Resolved: ${totalResolved}
 Resolution Rate: ${((totalResolved / totalErrors) * 100).toFixed(1)}%
 
 Top Error Patterns:
-${patterns.slice(0, 5).map(p =>
-  `  • ${p.pattern}: ${p.count} occurrences (${p.resolved} resolved)`
-).join('\n')}
+${patterns
+  .slice(0, 5)
+  .map(
+    (p) => `  • ${p.pattern}: ${p.count} occurrences (${p.resolved} resolved)`,
+  )
+  .join("\n")}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  `)
+  `);
 }

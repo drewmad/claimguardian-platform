@@ -9,15 +9,21 @@
  * @security-level admin-only
  */
 
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Heart,
   AlertTriangle,
@@ -37,170 +43,195 @@ import {
   Send,
   Bot,
   User,
-  Calendar
-} from 'lucide-react'
-import { format, differenceInMinutes } from 'date-fns'
+  Calendar,
+} from "lucide-react";
+import { format, differenceInMinutes } from "date-fns";
 import {
   claraAICompanionService,
   type ClaraSession,
   type ClaraMessage,
-  type CrisisAlert
-} from '@/lib/services/clara-ai-companion'
-import { toast } from 'sonner'
+  type CrisisAlert,
+} from "@/lib/services/clara-ai-companion";
+import { toast } from "sonner";
 
 export function ClaraAdminDashboard() {
-  const [sessions, setSessions] = useState<ClaraSession[]>([])
-  const [selectedSession, setSelectedSession] = useState<ClaraSession | null>(null)
-  const [messages, setMessages] = useState<ClaraMessage[]>([])
-  const [crisisAlerts, setCrisisAlerts] = useState<CrisisAlert[]>([])
-  const [loading, setLoading] = useState(true)
-  const [newMessage, setNewMessage] = useState('')
-  const [testUserId, setTestUserId] = useState('')
-  const [testMessage, setTestMessage] = useState('')
+  const [sessions, setSessions] = useState<ClaraSession[]>([]);
+  const [selectedSession, setSelectedSession] = useState<ClaraSession | null>(
+    null,
+  );
+  const [messages, setMessages] = useState<ClaraMessage[]>([]);
+  const [crisisAlerts, setCrisisAlerts] = useState<CrisisAlert[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [newMessage, setNewMessage] = useState("");
+  const [testUserId, setTestUserId] = useState("");
+  const [testMessage, setTestMessage] = useState("");
 
   // Mock admin ID - replace with actual auth
-  const adminId = 'current-admin-id'
+  const adminId = "current-admin-id";
 
   useEffect(() => {
-    loadSessions()
-    loadCrisisAlerts()
-  }, [])
+    loadSessions();
+    loadCrisisAlerts();
+  }, []);
 
   useEffect(() => {
     if (selectedSession) {
-      loadSessionMessages(selectedSession.id)
+      loadSessionMessages(selectedSession.id);
     }
-  }, [selectedSession])
+  }, [selectedSession]);
 
   const loadSessions = async () => {
     try {
-      const allSessions = await claraAICompanionService.getAdminSessions(adminId, { limit: 50 })
-      setSessions(allSessions)
+      const allSessions = await claraAICompanionService.getAdminSessions(
+        adminId,
+        { limit: 50 },
+      );
+      setSessions(allSessions);
     } catch (error) {
-      console.error('Error loading Clara sessions:', error)
-      toast.error('Failed to load Clara sessions')
+      console.error("Error loading Clara sessions:", error);
+      toast.error("Failed to load Clara sessions");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const loadSessionMessages = async (sessionId: string) => {
     try {
-      const sessionMessages = await claraAICompanionService.getSessionMessages(sessionId, adminId)
-      setMessages(sessionMessages)
+      const sessionMessages = await claraAICompanionService.getSessionMessages(
+        sessionId,
+        adminId,
+      );
+      setMessages(sessionMessages);
     } catch (error) {
-      console.error('Error loading session messages:', error)
-      toast.error('Failed to load session messages')
+      console.error("Error loading session messages:", error);
+      toast.error("Failed to load session messages");
     }
-  }
+  };
 
   const loadCrisisAlerts = async () => {
     try {
       // Mock crisis alerts - implement based on your database structure
-      setCrisisAlerts([])
+      setCrisisAlerts([]);
     } catch (error) {
-      console.error('Error loading crisis alerts:', error)
+      console.error("Error loading crisis alerts:", error);
     }
-  }
+  };
 
   const startTestSession = async () => {
     if (!testUserId || !testMessage) {
-      toast.error('Please provide both user ID and initial message')
-      return
+      toast.error("Please provide both user ID and initial message");
+      return;
     }
 
     try {
       const session = await claraAICompanionService.startAdminSession(
         testUserId,
         adminId,
-        testMessage
-      )
+        testMessage,
+      );
 
       if (session) {
-        toast.success('Clara session started')
-        setSelectedSession(session)
-        await loadSessions()
-        setTestUserId('')
-        setTestMessage('')
+        toast.success("Clara session started");
+        setSelectedSession(session);
+        await loadSessions();
+        setTestUserId("");
+        setTestMessage("");
       } else {
-        toast.error('Failed to start Clara session')
+        toast.error("Failed to start Clara session");
       }
     } catch (error) {
-      console.error('Error starting test session:', error)
-      toast.error('Error starting session')
+      console.error("Error starting test session:", error);
+      toast.error("Error starting session");
     }
-  }
+  };
 
   const continueConversation = async () => {
-    if (!selectedSession || !newMessage) return
+    if (!selectedSession || !newMessage) return;
 
     try {
       const response = await claraAICompanionService.continueConversation(
         selectedSession.id,
         adminId,
-        newMessage
-      )
+        newMessage,
+      );
 
       if (response) {
-        toast.success('Message sent')
-        setNewMessage('')
-        await loadSessionMessages(selectedSession.id)
+        toast.success("Message sent");
+        setNewMessage("");
+        await loadSessionMessages(selectedSession.id);
       } else {
-        toast.error('Failed to send message')
+        toast.error("Failed to send message");
       }
     } catch (error) {
-      console.error('Error continuing conversation:', error)
-      toast.error('Error sending message')
+      console.error("Error continuing conversation:", error);
+      toast.error("Error sending message");
     }
-  }
+  };
 
   const endSession = async (sessionId: string) => {
     try {
-      const success = await claraAICompanionService.endSession(sessionId, adminId, 'Session ended by admin')
+      const success = await claraAICompanionService.endSession(
+        sessionId,
+        adminId,
+        "Session ended by admin",
+      );
 
       if (success) {
-        toast.success('Session ended')
-        await loadSessions()
+        toast.success("Session ended");
+        await loadSessions();
         if (selectedSession?.id === sessionId) {
-          setSelectedSession(null)
+          setSelectedSession(null);
         }
       } else {
-        toast.error('Failed to end session')
+        toast.error("Failed to end session");
       }
     } catch (error) {
-      console.error('Error ending session:', error)
-      toast.error('Error ending session')
+      console.error("Error ending session:", error);
+      toast.error("Error ending session");
     }
-  }
+  };
 
-  const getCrisisLevelColor = (level: ClaraSession['crisis_level']) => {
+  const getCrisisLevelColor = (level: ClaraSession["crisis_level"]) => {
     switch (level) {
-      case 5: return 'bg-red-600 text-white'
-      case 4: return 'bg-red-500 text-white'
-      case 3: return 'bg-orange-500 text-white'
-      case 2: return 'bg-yellow-500 text-black'
-      case 1: return 'bg-blue-500 text-white'
-      default: return 'bg-gray-500 text-white'
+      case 5:
+        return "bg-red-600 text-white";
+      case 4:
+        return "bg-red-500 text-white";
+      case 3:
+        return "bg-orange-500 text-white";
+      case 2:
+        return "bg-yellow-500 text-black";
+      case 1:
+        return "bg-blue-500 text-white";
+      default:
+        return "bg-gray-500 text-white";
     }
-  }
+  };
 
-  const getEmotionalStateColor = (state: ClaraSession['emotional_state']) => {
+  const getEmotionalStateColor = (state: ClaraSession["emotional_state"]) => {
     switch (state) {
-      case 'distressed': return 'text-red-400 bg-red-900/20'
-      case 'anxious': return 'text-orange-400 bg-orange-900/20'
-      case 'frustrated': return 'text-yellow-400 bg-yellow-900/20'
-      case 'overwhelmed': return 'text-purple-400 bg-purple-900/20'
-      case 'hopeful': return 'text-green-400 bg-green-900/20'
-      case 'positive': return 'text-emerald-400 bg-emerald-900/20'
-      default: return 'text-gray-400 bg-gray-900/20'
+      case "distressed":
+        return "text-red-400 bg-red-900/20";
+      case "anxious":
+        return "text-orange-400 bg-orange-900/20";
+      case "frustrated":
+        return "text-yellow-400 bg-yellow-900/20";
+      case "overwhelmed":
+        return "text-purple-400 bg-purple-900/20";
+      case "hopeful":
+        return "text-green-400 bg-green-900/20";
+      case "positive":
+        return "text-emerald-400 bg-emerald-900/20";
+      default:
+        return "text-gray-400 bg-gray-900/20";
     }
-  }
+  };
 
-  const activeSessions = sessions.filter(s => !s.ended_at)
-  const crisisSessions = sessions.filter(s => s.crisis_level >= 3)
-  const todaySessions = sessions.filter(s =>
-    new Date(s.created_at).toDateString() === new Date().toDateString()
-  )
+  const activeSessions = sessions.filter((s) => !s.ended_at);
+  const crisisSessions = sessions.filter((s) => s.crisis_level >= 3);
+  const todaySessions = sessions.filter(
+    (s) => new Date(s.created_at).toDateString() === new Date().toDateString(),
+  );
 
   if (loading) {
     return (
@@ -208,7 +239,7 @@ export function ClaraAdminDashboard() {
         <div className="h-32 bg-gray-800 rounded-lg"></div>
         <div className="h-64 bg-gray-800 rounded-lg"></div>
       </div>
-    )
+    );
   }
 
   return (
@@ -220,8 +251,12 @@ export function ClaraAdminDashboard() {
             <Heart className="h-6 w-6 text-pink-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white">Clara AI Companion</h1>
-            <p className="text-gray-400">24/7 Emotional Support & Crisis Intervention (Admin Only)</p>
+            <h1 className="text-2xl font-bold text-white">
+              Clara AI Companion
+            </h1>
+            <p className="text-gray-400">
+              24/7 Emotional Support & Crisis Intervention (Admin Only)
+            </p>
           </div>
         </div>
 
@@ -244,7 +279,9 @@ export function ClaraAdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-400">Active Sessions</p>
-                <p className="text-2xl font-bold text-white">{activeSessions.length}</p>
+                <p className="text-2xl font-bold text-white">
+                  {activeSessions.length}
+                </p>
               </div>
               <Activity className="h-8 w-8 text-green-400" />
             </div>
@@ -256,7 +293,9 @@ export function ClaraAdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-400">Crisis Alerts</p>
-                <p className="text-2xl font-bold text-red-400">{crisisSessions.length}</p>
+                <p className="text-2xl font-bold text-red-400">
+                  {crisisSessions.length}
+                </p>
               </div>
               <AlertTriangle className="h-8 w-8 text-red-400" />
             </div>
@@ -268,7 +307,9 @@ export function ClaraAdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-400">Today's Sessions</p>
-                <p className="text-2xl font-bold text-blue-400">{todaySessions.length}</p>
+                <p className="text-2xl font-bold text-blue-400">
+                  {todaySessions.length}
+                </p>
               </div>
               <Calendar className="h-8 w-8 text-blue-400" />
             </div>
@@ -280,7 +321,9 @@ export function ClaraAdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-400">Total Sessions</p>
-                <p className="text-2xl font-bold text-white">{sessions.length}</p>
+                <p className="text-2xl font-bold text-white">
+                  {sessions.length}
+                </p>
               </div>
               <BarChart3 className="h-8 w-8 text-purple-400" />
             </div>
@@ -311,22 +354,40 @@ export function ClaraAdminDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {crisisSessions.map(session => (
-                    <div key={session.id} className="flex items-center justify-between p-4 bg-red-900/20 rounded-lg border border-red-800/30">
+                  {crisisSessions.map((session) => (
+                    <div
+                      key={session.id}
+                      className="flex items-center justify-between p-4 bg-red-900/20 rounded-lg border border-red-800/30"
+                    >
                       <div className="flex items-center gap-3">
                         <div className="flex items-center gap-2">
-                          <Badge className={getCrisisLevelColor(session.crisis_level)}>
+                          <Badge
+                            className={getCrisisLevelColor(
+                              session.crisis_level,
+                            )}
+                          >
                             Level {session.crisis_level}
                           </Badge>
-                          <Badge className={getEmotionalStateColor(session.emotional_state)}>
+                          <Badge
+                            className={getEmotionalStateColor(
+                              session.emotional_state,
+                            )}
+                          >
                             {session.emotional_state}
                           </Badge>
                         </div>
                         <div>
-                          <h4 className="font-medium text-white">User: {session.user_id}</h4>
+                          <h4 className="font-medium text-white">
+                            User: {session.user_id}
+                          </h4>
                           <p className="text-sm text-red-300">
-                            Started {format(new Date(session.created_at), 'MMM d, HH:mm')}
-                            {session.intervention_triggered && ' • Crisis intervention active'}
+                            Started{" "}
+                            {format(
+                              new Date(session.created_at),
+                              "MMM d, HH:mm",
+                            )}
+                            {session.intervention_triggered &&
+                              " • Crisis intervention active"}
                           </p>
                         </div>
                       </div>
@@ -360,40 +421,74 @@ export function ClaraAdminDashboard() {
             <CardHeader>
               <CardTitle className="text-white">All Clara Sessions</CardTitle>
               <CardDescription>
-                {sessions.length} total session{sessions.length !== 1 ? 's' : ''}
+                {sessions.length} total session
+                {sessions.length !== 1 ? "s" : ""}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {sessions.map(session => {
+                {sessions.map((session) => {
                   const duration = session.ended_at
-                    ? differenceInMinutes(new Date(session.ended_at), new Date(session.created_at))
-                    : differenceInMinutes(new Date(), new Date(session.created_at))
+                    ? differenceInMinutes(
+                        new Date(session.ended_at),
+                        new Date(session.created_at),
+                      )
+                    : differenceInMinutes(
+                        new Date(),
+                        new Date(session.created_at),
+                      );
 
                   return (
-                    <div key={session.id} className="flex items-center justify-between p-4 bg-gray-700/30 rounded-lg border border-gray-700/50 hover:bg-gray-700/50 transition-colors">
+                    <div
+                      key={session.id}
+                      className="flex items-center justify-between p-4 bg-gray-700/30 rounded-lg border border-gray-700/50 hover:bg-gray-700/50 transition-colors"
+                    >
                       <div className="flex items-center gap-3">
                         <div className="flex flex-col gap-1">
-                          <Badge className={getCrisisLevelColor(session.crisis_level)} variant="outline">
+                          <Badge
+                            className={getCrisisLevelColor(
+                              session.crisis_level,
+                            )}
+                            variant="outline"
+                          >
                             Crisis: {session.crisis_level}
                           </Badge>
-                          <Badge className={getEmotionalStateColor(session.emotional_state)} variant="outline">
+                          <Badge
+                            className={getEmotionalStateColor(
+                              session.emotional_state,
+                            )}
+                            variant="outline"
+                          >
                             {session.emotional_state}
                           </Badge>
                         </div>
                         <div>
                           <div className="flex items-center gap-2 mb-1">
-                            <h4 className="font-medium text-white">User: {session.user_id}</h4>
-                            <Badge variant="outline" className={session.ended_at ? 'text-gray-400' : 'text-green-400'}>
-                              {session.ended_at ? 'Ended' : 'Active'}
+                            <h4 className="font-medium text-white">
+                              User: {session.user_id}
+                            </h4>
+                            <Badge
+                              variant="outline"
+                              className={
+                                session.ended_at
+                                  ? "text-gray-400"
+                                  : "text-green-400"
+                              }
+                            >
+                              {session.ended_at ? "Ended" : "Active"}
                             </Badge>
                           </div>
                           <p className="text-sm text-gray-300 mb-1">
                             Type: {session.session_type} • Duration: {duration}m
                           </p>
                           <p className="text-xs text-gray-400">
-                            Started: {format(new Date(session.created_at), 'MMM d, yyyy HH:mm')}
-                            {session.ended_at && ` • Ended: ${format(new Date(session.ended_at), 'HH:mm')}`}
+                            Started:{" "}
+                            {format(
+                              new Date(session.created_at),
+                              "MMM d, yyyy HH:mm",
+                            )}
+                            {session.ended_at &&
+                              ` • Ended: ${format(new Date(session.ended_at), "HH:mm")}`}
                           </p>
                         </div>
                       </div>
@@ -419,14 +514,16 @@ export function ClaraAdminDashboard() {
                         )}
                       </div>
                     </div>
-                  )
+                  );
                 })}
 
                 {sessions.length === 0 && (
                   <div className="text-center py-8">
                     <MessageCircle className="h-12 w-12 text-gray-500 mx-auto mb-3" />
                     <p className="text-gray-400">No Clara sessions found</p>
-                    <p className="text-sm text-gray-500">Start a test session to see Clara in action</p>
+                    <p className="text-sm text-gray-500">
+                      Start a test session to see Clara in action
+                    </p>
                   </div>
                 )}
               </div>
@@ -440,34 +537,55 @@ export function ClaraAdminDashboard() {
               {/* Session Info */}
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader>
-                  <CardTitle className="text-white text-sm">Session Details</CardTitle>
+                  <CardTitle className="text-white text-sm">
+                    Session Details
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div>
                     <p className="text-xs text-gray-400">User ID</p>
-                    <p className="text-sm text-white">{selectedSession.user_id}</p>
+                    <p className="text-sm text-white">
+                      {selectedSession.user_id}
+                    </p>
                   </div>
                   <div>
                     <p className="text-xs text-gray-400">Crisis Level</p>
-                    <Badge className={getCrisisLevelColor(selectedSession.crisis_level)}>
+                    <Badge
+                      className={getCrisisLevelColor(
+                        selectedSession.crisis_level,
+                      )}
+                    >
                       Level {selectedSession.crisis_level}
                     </Badge>
                   </div>
                   <div>
                     <p className="text-xs text-gray-400">Emotional State</p>
-                    <Badge className={getEmotionalStateColor(selectedSession.emotional_state)}>
+                    <Badge
+                      className={getEmotionalStateColor(
+                        selectedSession.emotional_state,
+                      )}
+                    >
                       {selectedSession.emotional_state}
                     </Badge>
                   </div>
                   <div>
                     <p className="text-xs text-gray-400">Status</p>
-                    <Badge variant="outline" className={selectedSession.ended_at ? 'text-gray-400' : 'text-green-400'}>
-                      {selectedSession.ended_at ? 'Ended' : 'Active'}
+                    <Badge
+                      variant="outline"
+                      className={
+                        selectedSession.ended_at
+                          ? "text-gray-400"
+                          : "text-green-400"
+                      }
+                    >
+                      {selectedSession.ended_at ? "Ended" : "Active"}
                     </Badge>
                   </div>
                   {selectedSession.intervention_triggered && (
                     <div className="p-2 bg-red-900/20 rounded border border-red-800/30">
-                      <p className="text-xs text-red-400 font-medium">Crisis Intervention Active</p>
+                      <p className="text-xs text-red-400 font-medium">
+                        Crisis Intervention Active
+                      </p>
                     </div>
                   )}
                 </CardContent>
@@ -483,22 +601,35 @@ export function ClaraAdminDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4 h-96 overflow-y-auto mb-4">
-                    {messages.map(message => (
-                      <div key={message.id} className={`flex gap-3 ${message.role === 'clara' ? 'justify-start' : 'justify-end'}`}>
-                        <div className={`flex items-start gap-2 max-w-[80%] ${message.role === 'clara' ? 'flex-row' : 'flex-row-reverse'}`}>
-                          <div className={`p-2 rounded-full ${message.role === 'clara' ? 'bg-pink-600' : 'bg-blue-600'}`}>
-                            {message.role === 'clara' ? (
+                    {messages.map((message) => (
+                      <div
+                        key={message.id}
+                        className={`flex gap-3 ${message.role === "clara" ? "justify-start" : "justify-end"}`}
+                      >
+                        <div
+                          className={`flex items-start gap-2 max-w-[80%] ${message.role === "clara" ? "flex-row" : "flex-row-reverse"}`}
+                        >
+                          <div
+                            className={`p-2 rounded-full ${message.role === "clara" ? "bg-pink-600" : "bg-blue-600"}`}
+                          >
+                            {message.role === "clara" ? (
                               <Bot className="h-4 w-4 text-white" />
                             ) : (
                               <User className="h-4 w-4 text-white" />
                             )}
                           </div>
-                          <div className={`p-3 rounded-lg ${message.role === 'clara' ? 'bg-gray-700' : 'bg-blue-600'}`}>
-                            <p className="text-sm text-white">{message.content}</p>
+                          <div
+                            className={`p-3 rounded-lg ${message.role === "clara" ? "bg-gray-700" : "bg-blue-600"}`}
+                          >
+                            <p className="text-sm text-white">
+                              {message.content}
+                            </p>
                             <p className="text-xs text-gray-400 mt-1">
-                              {format(new Date(message.timestamp), 'HH:mm')}
+                              {format(new Date(message.timestamp), "HH:mm")}
                               {message.intervention_flag && (
-                                <span className="ml-2 text-red-400">⚠️ Crisis Flag</span>
+                                <span className="ml-2 text-red-400">
+                                  ⚠️ Crisis Flag
+                                </span>
                               )}
                             </p>
                           </div>
@@ -514,7 +645,9 @@ export function ClaraAdminDashboard() {
                         placeholder="Continue conversation as user..."
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && continueConversation()}
+                        onKeyPress={(e) =>
+                          e.key === "Enter" && continueConversation()
+                        }
                         className="bg-gray-700 border-gray-600 text-white"
                       />
                       <Button
@@ -533,8 +666,13 @@ export function ClaraAdminDashboard() {
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="text-center py-12">
                 <MessageCircle className="h-16 w-16 text-gray-500 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-white mb-2">No Session Selected</h3>
-                <p className="text-gray-400">Select a session from the Active Sessions tab to view the conversation</p>
+                <h3 className="text-lg font-medium text-white mb-2">
+                  No Session Selected
+                </h3>
+                <p className="text-gray-400">
+                  Select a session from the Active Sessions tab to view the
+                  conversation
+                </p>
               </CardContent>
             </Card>
           )}
@@ -543,7 +681,9 @@ export function ClaraAdminDashboard() {
         <TabsContent value="testing" className="space-y-4">
           <Card className="bg-gray-800 border-gray-700">
             <CardHeader>
-              <CardTitle className="text-white">Test Clara AI Companion</CardTitle>
+              <CardTitle className="text-white">
+                Test Clara AI Companion
+              </CardTitle>
               <CardDescription>
                 Start a test session to evaluate Clara's responses (Admin Only)
               </CardDescription>
@@ -551,7 +691,9 @@ export function ClaraAdminDashboard() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm text-gray-400 mb-2 block">Test User ID</label>
+                  <label className="text-sm text-gray-400 mb-2 block">
+                    Test User ID
+                  </label>
                   <Input
                     placeholder="test-user-123"
                     value={testUserId}
@@ -560,7 +702,9 @@ export function ClaraAdminDashboard() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-gray-400 mb-2 block">Initial Message</label>
+                  <label className="text-sm text-gray-400 mb-2 block">
+                    Initial Message
+                  </label>
                   <Textarea
                     placeholder="I'm feeling overwhelmed with my insurance claim..."
                     value={testMessage}
@@ -585,7 +729,9 @@ export function ClaraAdminDashboard() {
           {/* Test Scenarios */}
           <Card className="bg-gray-800 border-gray-700">
             <CardHeader>
-              <CardTitle className="text-white">Common Test Scenarios</CardTitle>
+              <CardTitle className="text-white">
+                Common Test Scenarios
+              </CardTitle>
               <CardDescription>
                 Click to auto-fill test scenarios for different emotional states
               </CardDescription>
@@ -595,49 +741,73 @@ export function ClaraAdminDashboard() {
                 <Button
                   variant="outline"
                   onClick={() => {
-                    setTestUserId('test-user-stressed')
-                    setTestMessage("I'm so overwhelmed with this insurance claim. I don't know what to do and I'm feeling really anxious about everything.")
+                    setTestUserId("test-user-stressed");
+                    setTestMessage(
+                      "I'm so overwhelmed with this insurance claim. I don't know what to do and I'm feeling really anxious about everything.",
+                    );
                   }}
                   className="h-auto p-4 text-left flex-col items-start border-orange-600/30 hover:bg-orange-600/10"
                 >
-                  <span className="font-medium text-orange-400">High Stress Scenario</span>
-                  <span className="text-sm text-gray-400">Overwhelmed with claim process</span>
+                  <span className="font-medium text-orange-400">
+                    High Stress Scenario
+                  </span>
+                  <span className="text-sm text-gray-400">
+                    Overwhelmed with claim process
+                  </span>
                 </Button>
 
                 <Button
                   variant="outline"
                   onClick={() => {
-                    setTestUserId('test-user-crisis')
-                    setTestMessage("I can't handle this anymore. Everything is falling apart and I feel like giving up. What's the point?")
+                    setTestUserId("test-user-crisis");
+                    setTestMessage(
+                      "I can't handle this anymore. Everything is falling apart and I feel like giving up. What's the point?",
+                    );
                   }}
                   className="h-auto p-4 text-left flex-col items-start border-red-600/30 hover:bg-red-600/10"
                 >
-                  <span className="font-medium text-red-400">Crisis Scenario</span>
-                  <span className="text-sm text-gray-400">Potential crisis intervention needed</span>
+                  <span className="font-medium text-red-400">
+                    Crisis Scenario
+                  </span>
+                  <span className="text-sm text-gray-400">
+                    Potential crisis intervention needed
+                  </span>
                 </Button>
 
                 <Button
                   variant="outline"
                   onClick={() => {
-                    setTestUserId('test-user-progress')
-                    setTestMessage("I wanted to share some good news - I got approval on my claim! Thank you for the support, Clara.")
+                    setTestUserId("test-user-progress");
+                    setTestMessage(
+                      "I wanted to share some good news - I got approval on my claim! Thank you for the support, Clara.",
+                    );
                   }}
                   className="h-auto p-4 text-left flex-col items-start border-green-600/30 hover:bg-green-600/10"
                 >
-                  <span className="font-medium text-green-400">Positive Progress</span>
-                  <span className="text-sm text-gray-400">Celebrating progress</span>
+                  <span className="font-medium text-green-400">
+                    Positive Progress
+                  </span>
+                  <span className="text-sm text-gray-400">
+                    Celebrating progress
+                  </span>
                 </Button>
 
                 <Button
                   variant="outline"
                   onClick={() => {
-                    setTestUserId('test-user-normal')
-                    setTestMessage("Hi Clara, I just have some questions about my claim timeline. Can you help me understand what to expect?")
+                    setTestUserId("test-user-normal");
+                    setTestMessage(
+                      "Hi Clara, I just have some questions about my claim timeline. Can you help me understand what to expect?",
+                    );
                   }}
                   className="h-auto p-4 text-left flex-col items-start border-blue-600/30 hover:bg-blue-600/10"
                 >
-                  <span className="font-medium text-blue-400">Normal Support</span>
-                  <span className="text-sm text-gray-400">Standard information request</span>
+                  <span className="font-medium text-blue-400">
+                    Normal Support
+                  </span>
+                  <span className="text-sm text-gray-400">
+                    Standard information request
+                  </span>
                 </Button>
               </div>
             </CardContent>
@@ -645,5 +815,5 @@ export function ClaraAdminDashboard() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }

@@ -8,9 +8,9 @@
  * @insurance-context evidence-collection
  */
 
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from "react";
 import {
   CheckCircle2,
   Circle,
@@ -24,46 +24,52 @@ import {
   ChevronRight,
   Play,
   Pause,
-  RotateCw
-} from 'lucide-react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Progress } from '@/components/ui/progress'
-import { cn } from '@/lib/utils'
+  RotateCw,
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
 
 interface WorkflowStep {
-  id: string
-  name: string
-  type: 'collect' | 'validate' | 'remind' | 'escalate' | 'approve'
-  status: 'pending' | 'in_progress' | 'completed' | 'failed' | 'skipped'
-  description?: string
-  startedAt?: string
-  completedAt?: string
-  error?: string
-  retryCount?: number
+  id: string;
+  name: string;
+  type: "collect" | "validate" | "remind" | "escalate" | "approve";
+  status: "pending" | "in_progress" | "completed" | "failed" | "skipped";
+  description?: string;
+  startedAt?: string;
+  completedAt?: string;
+  error?: string;
+  retryCount?: number;
 }
 
 interface Workflow {
-  id: string
-  name: string
-  type: string
-  status: 'active' | 'paused' | 'completed' | 'failed'
-  currentStepIndex: number
-  steps: WorkflowStep[]
-  progress: number
-  estimatedCompletion?: string
-  createdAt: string
-  completedAt?: string
+  id: string;
+  name: string;
+  type: string;
+  status: "active" | "paused" | "completed" | "failed";
+  currentStepIndex: number;
+  steps: WorkflowStep[];
+  progress: number;
+  estimatedCompletion?: string;
+  createdAt: string;
+  completedAt?: string;
 }
 
 interface WorkflowStatusProps {
-  workflow: Workflow
-  onPause?: () => void
-  onResume?: () => void
-  onRetry?: (stepId: string) => void
-  onSkip?: (stepId: string) => void
-  compact?: boolean
+  workflow: Workflow;
+  onPause?: () => void;
+  onResume?: () => void;
+  onRetry?: (stepId: string) => void;
+  onSkip?: (stepId: string) => void;
+  compact?: boolean;
 }
 
 const stepIcons = {
@@ -71,23 +77,23 @@ const stepIcons = {
   validate: FileCheck,
   remind: Clock,
   escalate: AlertCircle,
-  approve: CheckCircle2
-}
+  approve: CheckCircle2,
+};
 
 const statusColors = {
-  pending: 'text-gray-500',
-  in_progress: 'text-blue-400',
-  completed: 'text-green-400',
-  failed: 'text-red-400',
-  skipped: 'text-yellow-400'
-}
+  pending: "text-gray-500",
+  in_progress: "text-blue-400",
+  completed: "text-green-400",
+  failed: "text-red-400",
+  skipped: "text-yellow-400",
+};
 
 const statusBadgeStyles = {
-  active: 'bg-blue-600/20 text-blue-400 border-blue-600/30',
-  paused: 'bg-yellow-600/20 text-yellow-400 border-yellow-600/30',
-  completed: 'bg-green-600/20 text-green-400 border-green-600/30',
-  failed: 'bg-red-600/20 text-red-400 border-red-600/30'
-}
+  active: "bg-blue-600/20 text-blue-400 border-blue-600/30",
+  paused: "bg-yellow-600/20 text-yellow-400 border-yellow-600/30",
+  completed: "bg-green-600/20 text-green-400 border-green-600/30",
+  failed: "bg-red-600/20 text-red-400 border-red-600/30",
+};
 
 export function WorkflowStatus({
   workflow,
@@ -95,49 +101,49 @@ export function WorkflowStatus({
   onResume,
   onRetry,
   onSkip,
-  compact = false
+  compact = false,
 }: WorkflowStatusProps) {
-  const [expandedStep, setExpandedStep] = useState<string | null>(null)
-  const [timeRemaining, setTimeRemaining] = useState<string>('')
+  const [expandedStep, setExpandedStep] = useState<string | null>(null);
+  const [timeRemaining, setTimeRemaining] = useState<string>("");
 
   useEffect(() => {
     if (workflow.estimatedCompletion) {
       const timer = setInterval(() => {
-        const now = new Date().getTime()
-        const target = new Date(workflow.estimatedCompletion!).getTime()
-        const diff = target - now
+        const now = new Date().getTime();
+        const target = new Date(workflow.estimatedCompletion!).getTime();
+        const diff = target - now;
 
         if (diff > 0) {
-          const hours = Math.floor(diff / (1000 * 60 * 60))
-          const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-          setTimeRemaining(`${hours}h ${minutes}m remaining`)
+          const hours = Math.floor(diff / (1000 * 60 * 60));
+          const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+          setTimeRemaining(`${hours}h ${minutes}m remaining`);
         } else {
-          setTimeRemaining('Overdue')
+          setTimeRemaining("Overdue");
         }
-      }, 60000)
+      }, 60000);
 
-      return () => clearInterval(timer)
+      return () => clearInterval(timer);
     }
-    return undefined
-  }, [workflow.estimatedCompletion])
+    return undefined;
+  }, [workflow.estimatedCompletion]);
 
   const getStepIcon = (step: WorkflowStep) => {
-    const Icon = stepIcons[step.type]
+    const Icon = stepIcons[step.type];
 
     switch (step.status) {
-      case 'completed':
-        return <CheckCircle2 className="h-5 w-5 text-green-400" />
-      case 'in_progress':
-        return <Icon className="h-5 w-5 text-blue-400 animate-pulse" />
-      case 'failed':
-        return <XCircle className="h-5 w-5 text-red-400" />
-      case 'skipped':
-        return <Icon className="h-5 w-5 text-yellow-400 opacity-50" />
-      case 'pending':
+      case "completed":
+        return <CheckCircle2 className="h-5 w-5 text-green-400" />;
+      case "in_progress":
+        return <Icon className="h-5 w-5 text-blue-400 animate-pulse" />;
+      case "failed":
+        return <XCircle className="h-5 w-5 text-red-400" />;
+      case "skipped":
+        return <Icon className="h-5 w-5 text-yellow-400 opacity-50" />;
+      case "pending":
       default:
-        return <Circle className="h-5 w-5 text-gray-500" />
+        return <Circle className="h-5 w-5 text-gray-500" />;
     }
-  }
+  };
 
   if (compact) {
     return (
@@ -151,7 +157,8 @@ export function WorkflowStatus({
                   {workflow.name}
                 </CardTitle>
                 <CardDescription className="text-xs text-gray-400">
-                  Step {workflow.currentStepIndex + 1} of {workflow.steps.length}
+                  Step {workflow.currentStepIndex + 1} of{" "}
+                  {workflow.steps.length}
                 </CardDescription>
               </div>
             </div>
@@ -167,7 +174,7 @@ export function WorkflowStatus({
           </p>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -189,7 +196,7 @@ export function WorkflowStatus({
               {workflow.status}
             </Badge>
 
-            {workflow.status === 'active' && onPause && (
+            {workflow.status === "active" && onPause && (
               <Button
                 variant="outline"
                 size="sm"
@@ -201,7 +208,7 @@ export function WorkflowStatus({
               </Button>
             )}
 
-            {workflow.status === 'paused' && onResume && (
+            {workflow.status === "paused" && onResume && (
               <Button
                 variant="outline"
                 size="sm"
@@ -225,10 +232,7 @@ export function WorkflowStatus({
               {workflow.progress}% • {timeRemaining}
             </span>
           </div>
-          <Progress
-            value={workflow.progress}
-            className="h-3 bg-gray-700"
-          />
+          <Progress value={workflow.progress} className="h-3 bg-gray-700" />
         </div>
 
         {/* Workflow Steps */}
@@ -245,16 +249,21 @@ export function WorkflowStatus({
                   "group relative flex items-start gap-3 p-3 rounded-lg transition-all",
                   "hover:bg-gray-700/50 cursor-pointer",
                   expandedStep === step.id && "bg-gray-700/50",
-                  step.status === 'in_progress' && "bg-blue-900/20 border border-blue-600/30"
+                  step.status === "in_progress" &&
+                    "bg-blue-900/20 border border-blue-600/30",
                 )}
-                onClick={() => setExpandedStep(expandedStep === step.id ? null : step.id)}
+                onClick={() =>
+                  setExpandedStep(expandedStep === step.id ? null : step.id)
+                }
               >
                 {/* Step Number & Icon */}
                 <div className="flex items-center gap-2">
-                  <span className={cn(
-                    "text-xs font-medium",
-                    statusColors[step.status]
-                  )}>
+                  <span
+                    className={cn(
+                      "text-xs font-medium",
+                      statusColors[step.status],
+                    )}
+                  >
                     {index + 1}
                   </span>
                   {getStepIcon(step)}
@@ -264,10 +273,14 @@ export function WorkflowStatus({
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className={cn(
-                        "font-medium",
-                        step.status === 'completed' ? 'text-gray-300' : 'text-white'
-                      )}>
+                      <p
+                        className={cn(
+                          "font-medium",
+                          step.status === "completed"
+                            ? "text-gray-300"
+                            : "text-white",
+                        )}
+                      >
                         {step.name}
                       </p>
                       {step.description && (
@@ -278,13 +291,13 @@ export function WorkflowStatus({
                     </div>
 
                     {/* Step Actions */}
-                    {step.status === 'failed' && onRetry && (
+                    {step.status === "failed" && onRetry && (
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={(e) => {
-                          e.stopPropagation()
-                          onRetry(step.id)
+                          e.stopPropagation();
+                          onRetry(step.id);
                         }}
                         className="bg-red-600/20 hover:bg-red-600/30 text-red-400 border-red-600/30"
                       >
@@ -293,19 +306,21 @@ export function WorkflowStatus({
                       </Button>
                     )}
 
-                    {step.status === 'pending' && index === workflow.currentStepIndex && onSkip && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          onSkip(step.id)
-                        }}
-                        className="bg-gray-700 hover:bg-gray-600 text-gray-400 border-gray-600"
-                      >
-                        Skip
-                      </Button>
-                    )}
+                    {step.status === "pending" &&
+                      index === workflow.currentStepIndex &&
+                      onSkip && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onSkip(step.id);
+                          }}
+                          className="bg-gray-700 hover:bg-gray-600 text-gray-400 border-gray-600"
+                        >
+                          Skip
+                        </Button>
+                      )}
                   </div>
 
                   {/* Expanded Details */}
@@ -320,7 +335,8 @@ export function WorkflowStatus({
                       {step.completedAt && (
                         <div className="flex items-center gap-2 text-gray-400">
                           <CheckCircle2 className="h-3 w-3" />
-                          Completed: {new Date(step.completedAt).toLocaleString()}
+                          Completed:{" "}
+                          {new Date(step.completedAt).toLocaleString()}
                         </div>
                       )}
                       {step.error && (
@@ -332,7 +348,8 @@ export function WorkflowStatus({
                       {step.retryCount && step.retryCount > 0 && (
                         <div className="flex items-center gap-2 text-yellow-400">
                           <RotateCw className="h-3 w-3" />
-                          Retried {step.retryCount} time{step.retryCount > 1 ? 's' : ''}
+                          Retried {step.retryCount} time
+                          {step.retryCount > 1 ? "s" : ""}
                         </div>
                       )}
                     </div>
@@ -340,17 +357,23 @@ export function WorkflowStatus({
                 </div>
 
                 {/* Expand Indicator */}
-                <ChevronRight className={cn(
-                  "h-4 w-4 text-gray-500 transition-transform",
-                  expandedStep === step.id && "rotate-90"
-                )} />
+                <ChevronRight
+                  className={cn(
+                    "h-4 w-4 text-gray-500 transition-transform",
+                    expandedStep === step.id && "rotate-90",
+                  )}
+                />
 
                 {/* Connection Line */}
                 {index < workflow.steps.length - 1 && (
-                  <div className={cn(
-                    "absolute left-[30px] top-[44px] w-0.5 h-[calc(100%+4px)]",
-                    step.status === 'completed' ? 'bg-green-600/30' : 'bg-gray-700'
-                  )} />
+                  <div
+                    className={cn(
+                      "absolute left-[30px] top-[44px] w-0.5 h-[calc(100%+4px)]",
+                      step.status === "completed"
+                        ? "bg-green-600/30"
+                        : "bg-gray-700",
+                    )}
+                  />
                 )}
               </div>
             ))}
@@ -376,5 +399,5 @@ export function WorkflowStatus({
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

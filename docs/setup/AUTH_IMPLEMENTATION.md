@@ -7,6 +7,7 @@ We've implemented a comprehensive authentication system with advanced security f
 ## Key Components
 
 ### 1. **Authentication Service** (`/lib/auth/auth-service.ts`)
+
 - Centralized authentication logic
 - Comprehensive error handling
 - Supabase integration
@@ -16,22 +17,26 @@ We've implemented a comprehensive authentication system with advanced security f
 ### 2. **Error Handling Infrastructure**
 
 #### App Error Base Class (`/lib/errors/app-error.ts`)
+
 - Standardized error codes
 - Error context tracking
 - JSON serialization for logging
 
 #### Logger Service (`/lib/logger.ts`)
+
 - Centralized logging with Sentry integration
 - Different log levels: debug, info, warn, error, fatal
 - User context tracking
 - Event tracking for analytics
 
 #### Error Boundary (`/components/error-boundary.tsx`)
+
 - React error boundary for catching UI errors
 - User-friendly error display
 - Error ID for support reference
 
 ### 3. **Enhanced Auth Provider** (`/components/auth/auth-provider.tsx`)
+
 - Global auth state management
 - Error handling for all auth operations
 - Automatic session restoration
@@ -41,6 +46,7 @@ We've implemented a comprehensive authentication system with advanced security f
 - Session warning state management
 
 ### 4. **Session Management** (`/lib/auth/session-manager.ts`)
+
 - Automatic token refresh before expiry
 - Configurable refresh thresholds
 - Session expiry warnings
@@ -50,6 +56,7 @@ We've implemented a comprehensive authentication system with advanced security f
 ### 5. **Authentication Modals**
 
 #### Login Modal
+
 - Email/password authentication
 - Remember me checkbox
 - Unverified email detection
@@ -58,6 +65,7 @@ We've implemented a comprehensive authentication system with advanced security f
 - Forgot password link
 
 #### Signup Modal
+
 - Full registration form with validation
 - Password strength indicator
 - Phone number formatting
@@ -66,11 +74,13 @@ We've implemented a comprehensive authentication system with advanced security f
 - Resend confirmation with rate limiting
 
 #### Forgot Password Modal
+
 - Email-based password reset
 - Clear instructions
 - Success messaging
 
 #### Session Warning Modal
+
 - Countdown timer
 - Manual refresh option
 - Auto-dismiss on refresh
@@ -78,18 +88,21 @@ We've implemented a comprehensive authentication system with advanced security f
 ### 6. **Security Features**
 
 #### Rate Limiting (`/hooks/use-rate-limit.ts`)
+
 - Client-side rate limiting
 - Configurable cooldown periods
 - Persistent across page refreshes
 - Visual countdown timers
 
 #### Security Questions (`/lib/auth/security-questions-service.ts`)
+
 - Database-backed security questions
 - Answer hashing with bcrypt
 - Multi-question verification
 - Account recovery flow
 
 #### Login Activity Monitoring (`/lib/auth/login-activity-service.ts`)
+
 - Device detection (UA parser)
 - Success/failure tracking
 - IP address logging
@@ -99,6 +112,7 @@ We've implemented a comprehensive authentication system with advanced security f
 ### 7. **User Management**
 
 #### Profile Service (`/lib/auth/profile-service.ts`)
+
 - Profile CRUD operations
 - Email change with verification
 - Password updates with current password verification
@@ -106,6 +120,7 @@ We've implemented a comprehensive authentication system with advanced security f
 - Account deletion
 
 #### Profile Management Page (`/app/account/profile/page.tsx`)
+
 - Tabbed interface (Profile, Security, Email, Danger Zone)
 - Profile information updates
 - Password changes
@@ -116,6 +131,7 @@ We've implemented a comprehensive authentication system with advanced security f
 ### 8. **Legal Compliance System** (`/lib/legal/` & `/components/legal/`)
 
 #### Legal Document Management (`/lib/legal/legal-service.ts`)
+
 - Document versioning with SHA-256 hashing
 - Tamper-evident document storage
 - Consent tracking with audit trail
@@ -124,20 +140,24 @@ We've implemented a comprehensive authentication system with advanced security f
 - Force re-consent on document updates
 
 #### Legal Document Tables
+
 - `legal_documents` - Versioned legal documents with SHA-256 hashes
 - `user_legal_acceptance` - Immutable consent records with audit trail
 - Document storage integration with Supabase Storage
 
 #### Legal Consent Components
+
 - `LegalConsentForm` - Document display with checkbox consent
 - `LegalGuard` - Route protection requiring document acceptance
 - `useLegalGuard` - Hook for consent checking
 
 #### API Endpoints
+
 - `/api/legal/documents` - Fetch active legal documents
 - `/api/legal/accept` - Record document acceptance
 
 #### GitHub Actions Integration (`/.github/workflows/legal-docs.yml`)
+
 - Automated legal document processing
 - Markdown to HTML conversion with minification
 - SHA-256 hash generation for document integrity
@@ -147,29 +167,34 @@ We've implemented a comprehensive authentication system with advanced security f
 ### 9. **Authentication Pages**
 
 #### Email Verification (`/app/auth/verify/page.tsx`)
+
 - Token-based email verification
 - Auto-redirect on success
 - Error handling with recovery options
 - Invalid/expired link handling
 
 #### Account Recovery (`/app/auth/recover/page.tsx`)
+
 - Multi-step recovery flow
 - Email verification
 - Security questions verification
 - Password reset
 
 #### Password Reset (`/app/auth/reset-password/page.tsx`)
+
 - Token-based password reset
 - Password validation
 - Success confirmation
 
 #### Login Activity (`/app/account/login-activity/page.tsx`)
+
 - Activity timeline
 - Device information
 - Statistics dashboard
 - Security recommendations
 
 ### 10. **Protected Routes**
+
 - Enhanced with loading component
 - Session checking
 - Automatic redirects
@@ -207,27 +232,29 @@ RESOURCE_NOT_FOUND - Resource doesn't exist
 ## Usage Examples
 
 ### Sign In
-```typescript
-const { signIn, loading, error } = useAuth()
 
-await signIn(email, password)
+```typescript
+const { signIn, loading, error } = useAuth();
+
+await signIn(email, password);
 if (error) {
   // Error is automatically displayed in UI
-  console.error(error.code) // e.g., 'AUTH_INVALID_CREDENTIALS'
+  console.error(error.code); // e.g., 'AUTH_INVALID_CREDENTIALS'
 }
 ```
 
 ### Sign Up
+
 ```typescript
-const { signUp, loading, error } = useAuth()
+const { signUp, loading, error } = useAuth();
 
 const success = await signUp({
   email,
   password,
   firstName,
   lastName,
-  phone
-})
+  phone,
+});
 
 if (success) {
   // User is shown email confirmation message
@@ -236,122 +263,131 @@ if (success) {
 ```
 
 ### Resend Confirmation Email
+
 ```typescript
-import { authService } from '@/lib/auth/auth-service'
-import { useRateLimit } from '@/hooks/use-rate-limit'
+import { authService } from "@/lib/auth/auth-service";
+import { useRateLimit } from "@/hooks/use-rate-limit";
 
 const { isLimited, secondsRemaining, checkLimit } = useRateLimit({
   cooldownMs: 60000,
-  key: 'email-resend'
-})
+  key: "email-resend",
+});
 
 const handleResend = async () => {
-  if (!checkLimit()) return
+  if (!checkLimit()) return;
 
-  const { error } = await authService.resendConfirmationEmail(email)
+  const { error } = await authService.resendConfirmationEmail(email);
   if (!error) {
     // Email sent successfully
   }
-}
+};
 ```
 
 ### Session Management
-```typescript
-import { sessionManager } from '@/lib/auth/session-manager'
-import { useAuth } from '@/components/auth/auth-provider'
 
-const { sessionWarning, clearSessionWarning } = useAuth()
+```typescript
+import { sessionManager } from "@/lib/auth/session-manager";
+import { useAuth } from "@/components/auth/auth-provider";
+
+const { sessionWarning, clearSessionWarning } = useAuth();
 
 // Configure session callbacks
 sessionManager.config = {
   onSessionExpiring: () => setShowWarning(true),
   onSessionExpired: () => signOut(),
-  onSessionRefreshed: () => setShowWarning(false)
-}
+  onSessionRefreshed: () => setShowWarning(false),
+};
 ```
 
 ### Security Questions
+
 ```typescript
-import { securityQuestionsService } from '@/lib/auth/security-questions-service'
+import { securityQuestionsService } from "@/lib/auth/security-questions-service";
 
 // Get available questions
-const questions = await securityQuestionsService.getQuestions()
+const questions = await securityQuestionsService.getQuestions();
 
 // Save user answers
 await securityQuestionsService.saveAnswers(userId, [
-  { questionId: 'q1', answer: 'answer1' },
-  { questionId: 'q2', answer: 'answer2' },
-  { questionId: 'q3', answer: 'answer3' }
-])
+  { questionId: "q1", answer: "answer1" },
+  { questionId: "q2", answer: "answer2" },
+  { questionId: "q3", answer: "answer3" },
+]);
 
 // Verify answers during recovery
-const isValid = await securityQuestionsService.verifyAnswers(userId, answers)
+const isValid = await securityQuestionsService.verifyAnswers(userId, answers);
 ```
 
 ### Login Activity
+
 ```typescript
-import { loginActivityService } from '@/lib/auth/login-activity-service'
+import { loginActivityService } from "@/lib/auth/login-activity-service";
 
 // Log login attempt (automatic in auth service)
-await loginActivityService.logLoginAttempt(userId, true)
+await loginActivityService.logLoginAttempt(userId, true);
 
 // Get user activity
-const activities = await loginActivityService.getUserLoginActivity(userId)
+const activities = await loginActivityService.getUserLoginActivity(userId);
 
 // Get statistics
-const stats = await loginActivityService.getLoginStats(userId)
+const stats = await loginActivityService.getLoginStats(userId);
 
 // Check for suspicious activity
-const { suspicious, reasons } = await loginActivityService.checkSuspiciousActivity(userId)
+const { suspicious, reasons } =
+  await loginActivityService.checkSuspiciousActivity(userId);
 ```
 
 ### Profile Management
+
 ```typescript
-import { profileService } from '@/lib/auth/profile-service'
+import { profileService } from "@/lib/auth/profile-service";
 
 // Get profile
-const profile = await profileService.getProfile(userId)
+const profile = await profileService.getProfile(userId);
 
 // Update profile
 const success = await profileService.updateProfile(userId, {
-  firstName: 'John',
-  lastName: 'Doe',
-  phone: '+1234567890'
-})
+  firstName: "John",
+  lastName: "Doe",
+  phone: "+1234567890",
+});
 
 // Change email
 const result = await profileService.requestEmailChange(userId, {
-  newEmail: 'new@email.com',
-  password: 'currentPassword'
-})
+  newEmail: "new@email.com",
+  password: "currentPassword",
+});
 
 // Update password
-const result = await profileService.updatePassword('oldPass', 'newPass')
+const result = await profileService.updatePassword("oldPass", "newPass");
 ```
 
 ### Password Reset
-```typescript
-const { resetPassword } = useAuth()
 
-await resetPassword(email)
+```typescript
+const { resetPassword } = useAuth();
+
+await resetPassword(email);
 // User receives email with reset link
 ```
 
 ### Error Logging
+
 ```typescript
-import { logger } from '@/lib/logger'
+import { logger } from "@/lib/logger";
 
 // Info logging
-logger.info('User action', { userId, action: 'clicked_button' })
+logger.info("User action", { userId, action: "clicked_button" });
 
 // Error logging
-logger.error('Failed to load data', error, { userId, endpoint })
+logger.error("Failed to load data", error, { userId, endpoint });
 
 // Track events
-logger.track('feature_used', { feature: 'document_upload' })
+logger.track("feature_used", { feature: "document_upload" });
 ```
 
 ### Legal Compliance
+
 ```typescript
 import { legalService } from '@/lib/legal/legal-service'
 import { LegalGuard, useLegalGuard } from '@/lib/auth/legal-guard'
@@ -390,12 +426,14 @@ const { hasConsent, checking } = useLegalGuard({
 ## Sentry Configuration
 
 Production error tracking is configured with:
+
 - Automatic error capture
 - Session replay on errors
 - Sensitive data filtering
 - Environment-specific settings
 
 Add to `.env.local`:
+
 ```env
 NEXT_PUBLIC_SENTRY_DSN=your_sentry_dsn_here
 ```
@@ -483,6 +521,7 @@ NEXT_PUBLIC_SENTRY_DSN=your_sentry_dsn_here
 ## Next Steps
 
 ### Immediate Production Readiness
+
 1. ✅ Email verification flow (completed)
 2. ✅ Session timeout warnings (completed)
 3. ✅ Account recovery with security questions (completed)
@@ -491,6 +530,7 @@ NEXT_PUBLIC_SENTRY_DSN=your_sentry_dsn_here
 6. ✅ Legal compliance system with immutable consent tracking (completed)
 
 ### Future Enhancements
+
 1. **Two-Factor Authentication (2FA)**
    - TOTP support (Google Authenticator, Authy)
    - SMS backup codes
@@ -523,6 +563,7 @@ NEXT_PUBLIC_SENTRY_DSN=your_sentry_dsn_here
 ## Database Schema
 
 ### Required Migrations
+
 ```sql
 -- Security Questions (already created)
 supabase/migrations/20240108_security_questions.sql
@@ -535,6 +576,7 @@ supabase/migrations/20240109_legal_documents.sql
 ```
 
 ### Tables Created
+
 - `security_questions` - Available security questions
 - `user_security_answers` - User's hashed answers
 - `login_activity` - Login attempts and device info
@@ -542,11 +584,13 @@ supabase/migrations/20240109_legal_documents.sql
 - `user_legal_acceptance` - Immutable consent records with audit trail
 
 ## Dependencies Added
+
 - `bcryptjs` - Password hashing for security answers
 - `ua-parser-js` - Device and browser detection
 - `date-fns` - Date formatting and manipulation
 
 ## File Structure
+
 ```
 apps/web/src/
 ├── components/

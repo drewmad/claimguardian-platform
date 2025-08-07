@@ -5,104 +5,125 @@
  * @dependencies ["react", "lucide-react"]
  * @status stable
  */
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { Shield, FileText, DollarSign, Clock, AlertTriangle, Phone, Building, TrendingUp, Download, Edit, Calendar } from 'lucide-react'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card-variants'
-import { Badge } from '@/components/ui/badge'
-import { InsuranceBadge } from '@/components/ui/insurance-badges'
-import { Button } from '@/components/ui/button'
-import { Progress } from '@/components/ui/progress'
-import { cn } from '@/lib/utils'
+import { useState } from "react";
+import {
+  Shield,
+  FileText,
+  DollarSign,
+  Clock,
+  AlertTriangle,
+  Phone,
+  Building,
+  TrendingUp,
+  Download,
+  Edit,
+  Calendar,
+} from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card-variants";
+import { Badge } from "@/components/ui/badge";
+import { InsuranceBadge } from "@/components/ui/insurance-badges";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
 
 interface PolicyDetails {
-  id: string
-  carrier: string
-  policyNumber: string
-  policyType: string
-  effectiveDate: string
-  expirationDate: string
-  propertyAddress: string
+  id: string;
+  carrier: string;
+  policyNumber: string;
+  policyType: string;
+  effectiveDate: string;
+  expirationDate: string;
+  propertyAddress: string;
   coverages: {
-    dwelling: number
-    otherStructures: number
-    personalProperty: number
-    lossOfUse: number
-    personalLiability: number
-    medicalPayments: number
-  }
+    dwelling: number;
+    otherStructures: number;
+    personalProperty: number;
+    lossOfUse: number;
+    personalLiability: number;
+    medicalPayments: number;
+  };
   deductibles: {
-    standard: number
-    windHurricane?: number
-    windHurricanePercent?: number
-  }
+    standard: number;
+    windHurricane?: number;
+    windHurricanePercent?: number;
+  };
   premium: {
-    annual: number
-    monthly?: number
-    paymentMethod: string
-    nextPaymentDate?: string
-  }
+    annual: number;
+    monthly?: number;
+    paymentMethod: string;
+    nextPaymentDate?: string;
+  };
   contacts: {
-    agentName?: string
-    agentPhone?: string
-    agentEmail?: string
-    claimsPhone?: string
-    customerServicePhone?: string
-  }
+    agentName?: string;
+    agentPhone?: string;
+    agentEmail?: string;
+    claimsPhone?: string;
+    customerServicePhone?: string;
+  };
   mortgage: {
-    lenderName?: string
-    loanNumber?: string
-    escrowAccount?: boolean
-  }
-  riders: string[]
+    lenderName?: string;
+    loanNumber?: string;
+    escrowAccount?: boolean;
+  };
+  riders: string[];
   documents: Array<{
-    id: string
-    name: string
-    type: string
-    size: number
-    uploadedAt: string
-  }>
+    id: string;
+    name: string;
+    type: string;
+    size: number;
+    uploadedAt: string;
+  }>;
   claims: Array<{
-    id: string
-    claimNumber: string
-    date: string
-    type: string
-    amount: number
-    status: 'open' | 'closed' | 'approved' | 'denied'
-  }>
+    id: string;
+    claimNumber: string;
+    date: string;
+    type: string;
+    amount: number;
+    status: "open" | "closed" | "approved" | "denied";
+  }>;
   paymentHistory: Array<{
-    id: string
-    date: string
-    amount: number
-    method: string
-    status: 'paid' | 'pending' | 'failed'
-  }>
+    id: string;
+    date: string;
+    amount: number;
+    method: string;
+    status: "paid" | "pending" | "failed";
+  }>;
 }
 
 interface PolicyTabsProps {
-  policy: PolicyDetails
-  onEdit?: () => void
-  className?: string
+  policy: PolicyDetails;
+  onEdit?: () => void;
+  className?: string;
 }
 
 export function PolicyTabs({ policy, onEdit, className }: PolicyTabsProps) {
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTab, setActiveTab] = useState("overview");
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(amount)
-  }
+    }).format(amount);
+  };
 
-  const totalCoverage = Object.values(policy.coverages).reduce((sum, val) => sum + val, 0)
+  const totalCoverage = Object.values(policy.coverages).reduce(
+    (sum, val) => sum + val,
+    0,
+  );
   const daysUntilExpiration = Math.ceil(
-    (new Date(policy.expirationDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
-  )
+    (new Date(policy.expirationDate).getTime() - new Date().getTime()) /
+      (1000 * 60 * 60 * 24),
+  );
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className={className}>
@@ -149,7 +170,9 @@ export function PolicyTabs({ policy, onEdit, className }: PolicyTabsProps) {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-400">Total Coverage</p>
-                    <p className="text-2xl font-bold text-white">{formatCurrency(totalCoverage)}</p>
+                    <p className="text-2xl font-bold text-white">
+                      {formatCurrency(totalCoverage)}
+                    </p>
                   </div>
                   <Shield className="w-8 h-8 text-blue-400" />
                 </div>
@@ -161,7 +184,9 @@ export function PolicyTabs({ policy, onEdit, className }: PolicyTabsProps) {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-400">Annual Premium</p>
-                    <p className="text-2xl font-bold text-white">{formatCurrency(policy.premium.annual)}</p>
+                    <p className="text-2xl font-bold text-white">
+                      {formatCurrency(policy.premium.annual)}
+                    </p>
                   </div>
                   <DollarSign className="w-8 h-8 text-green-400" />
                 </div>
@@ -173,7 +198,9 @@ export function PolicyTabs({ policy, onEdit, className }: PolicyTabsProps) {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-400">Expires In</p>
-                    <p className="text-2xl font-bold text-white">{daysUntilExpiration} days</p>
+                    <p className="text-2xl font-bold text-white">
+                      {daysUntilExpiration} days
+                    </p>
                   </div>
                   <Calendar className="w-8 h-8 text-yellow-400" />
                 </div>
@@ -185,7 +212,9 @@ export function PolicyTabs({ policy, onEdit, className }: PolicyTabsProps) {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-400">Status</p>
-                    <InsuranceBadge variant="active" className="mt-1">Active</InsuranceBadge>
+                    <InsuranceBadge variant="active" className="mt-1">
+                      Active
+                    </InsuranceBadge>
                   </div>
                   <Clock className="w-8 h-8 text-green-400" />
                 </div>
@@ -202,7 +231,9 @@ export function PolicyTabs({ policy, onEdit, className }: PolicyTabsProps) {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-gray-400">Policy Number</p>
-                  <p className="text-white font-medium">{policy.policyNumber}</p>
+                  <p className="text-white font-medium">
+                    {policy.policyNumber}
+                  </p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-400">Policy Type</p>
@@ -214,15 +245,21 @@ export function PolicyTabs({ policy, onEdit, className }: PolicyTabsProps) {
                 </div>
                 <div>
                   <p className="text-sm text-gray-400">Property Address</p>
-                  <p className="text-white font-medium">{policy.propertyAddress}</p>
+                  <p className="text-white font-medium">
+                    {policy.propertyAddress}
+                  </p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-400">Effective Date</p>
-                  <p className="text-white font-medium">{new Date(policy.effectiveDate).toLocaleDateString()}</p>
+                  <p className="text-white font-medium">
+                    {new Date(policy.effectiveDate).toLocaleDateString()}
+                  </p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-400">Expiration Date</p>
-                  <p className="text-white font-medium">{new Date(policy.expirationDate).toLocaleDateString()}</p>
+                  <p className="text-white font-medium">
+                    {new Date(policy.expirationDate).toLocaleDateString()}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -267,9 +304,11 @@ export function PolicyTabs({ policy, onEdit, className }: PolicyTabsProps) {
                 <div key={key}>
                   <div className="flex justify-between mb-2">
                     <span className="text-gray-300 capitalize">
-                      {key.replace(/([A-Z])/g, ' $1').trim()}
+                      {key.replace(/([A-Z])/g, " $1").trim()}
                     </span>
-                    <span className="text-white font-semibold">{formatCurrency(value)}</span>
+                    <span className="text-white font-semibold">
+                      {formatCurrency(value)}
+                    </span>
                   </div>
                   <Progress
                     value={(value / totalCoverage) * 100}
@@ -287,7 +326,9 @@ export function PolicyTabs({ policy, onEdit, className }: PolicyTabsProps) {
             <CardContent className="space-y-4">
               <div className="flex justify-between">
                 <span className="text-gray-300">Standard Deductible</span>
-                <span className="text-white font-semibold">{formatCurrency(policy.deductibles.standard)}</span>
+                <span className="text-white font-semibold">
+                  {formatCurrency(policy.deductibles.standard)}
+                </span>
               </div>
               {policy.deductibles.windHurricane && (
                 <div className="flex justify-between">
@@ -296,7 +337,8 @@ export function PolicyTabs({ policy, onEdit, className }: PolicyTabsProps) {
                     <AlertTriangle className="w-4 h-4 text-yellow-400" />
                   </span>
                   <span className="text-yellow-400 font-semibold">
-                    {policy.deductibles.windHurricanePercent}% ({formatCurrency(policy.deductibles.windHurricane)})
+                    {policy.deductibles.windHurricanePercent}% (
+                    {formatCurrency(policy.deductibles.windHurricane)})
                   </span>
                 </div>
               )}
@@ -304,7 +346,9 @@ export function PolicyTabs({ policy, onEdit, className }: PolicyTabsProps) {
               {policy.riders.length > 0 && (
                 <>
                   <div className="pt-4 border-t border-gray-700">
-                    <p className="text-sm text-gray-400 mb-3">Riders & Endorsements</p>
+                    <p className="text-sm text-gray-400 mb-3">
+                      Riders & Endorsements
+                    </p>
                     <div className="space-y-2">
                       {policy.riders.map((rider, index) => (
                         <Badge key={index} variant="outline" className="mr-2">
@@ -334,13 +378,17 @@ export function PolicyTabs({ policy, onEdit, className }: PolicyTabsProps) {
             {policy.documents.length > 0 ? (
               <div className="space-y-3">
                 {policy.documents.map((doc) => (
-                  <div key={doc.id} className="flex items-center justify-between p-3 bg-gray-700/30 rounded-lg">
+                  <div
+                    key={doc.id}
+                    className="flex items-center justify-between p-3 bg-gray-700/30 rounded-lg"
+                  >
                     <div className="flex items-center gap-3">
                       <FileText className="w-5 h-5 text-blue-400" />
                       <div>
                         <p className="text-white font-medium">{doc.name}</p>
                         <p className="text-sm text-gray-400">
-                          {doc.type} • {(doc.size / 1024).toFixed(1)} KB • {new Date(doc.uploadedAt).toLocaleDateString()}
+                          {doc.type} • {(doc.size / 1024).toFixed(1)} KB •{" "}
+                          {new Date(doc.uploadedAt).toLocaleDateString()}
                         </p>
                       </div>
                     </div>
@@ -351,7 +399,9 @@ export function PolicyTabs({ policy, onEdit, className }: PolicyTabsProps) {
                 ))}
               </div>
             ) : (
-              <p className="text-gray-400 text-center py-8">No documents uploaded yet</p>
+              <p className="text-gray-400 text-center py-8">
+                No documents uploaded yet
+              </p>
             )}
           </CardContent>
         </Card>
@@ -370,12 +420,21 @@ export function PolicyTabs({ policy, onEdit, className }: PolicyTabsProps) {
                   <div key={claim.id} className="p-4 bg-gray-700/30 rounded-lg">
                     <div className="flex justify-between items-start">
                       <div>
-                        <p className="text-white font-medium">Claim #{claim.claimNumber}</p>
-                        <p className="text-sm text-gray-400">{claim.type} • {new Date(claim.date).toLocaleDateString()}</p>
+                        <p className="text-white font-medium">
+                          Claim #{claim.claimNumber}
+                        </p>
+                        <p className="text-sm text-gray-400">
+                          {claim.type} •{" "}
+                          {new Date(claim.date).toLocaleDateString()}
+                        </p>
                       </div>
                       <div className="text-right">
-                        <p className="text-white font-semibold">{formatCurrency(claim.amount)}</p>
-                        <InsuranceBadge variant={`claim-${claim.status}`}>{claim.status}</InsuranceBadge>
+                        <p className="text-white font-semibold">
+                          {formatCurrency(claim.amount)}
+                        </p>
+                        <InsuranceBadge variant={`claim-${claim.status}`}>
+                          {claim.status}
+                        </InsuranceBadge>
                       </div>
                     </div>
                   </div>
@@ -398,18 +457,29 @@ export function PolicyTabs({ policy, onEdit, className }: PolicyTabsProps) {
             {policy.paymentHistory && policy.paymentHistory.length > 0 ? (
               <div className="space-y-3">
                 {policy.paymentHistory.map((payment) => (
-                  <div key={payment.id} className="flex justify-between items-center p-3 bg-gray-700/30 rounded-lg">
+                  <div
+                    key={payment.id}
+                    className="flex justify-between items-center p-3 bg-gray-700/30 rounded-lg"
+                  >
                     <div>
-                      <p className="text-white">{new Date(payment.date).toLocaleDateString()}</p>
+                      <p className="text-white">
+                        {new Date(payment.date).toLocaleDateString()}
+                      </p>
                       <p className="text-sm text-gray-400">{payment.method}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-white font-semibold">{formatCurrency(payment.amount)}</p>
-                      <Badge className={cn(
-                        payment.status === 'paid' ? 'bg-green-600/20 text-green-400' :
-                        payment.status === 'pending' ? 'bg-yellow-600/20 text-yellow-400' :
-                        'bg-red-600/20 text-red-400'
-                      )}>
+                      <p className="text-white font-semibold">
+                        {formatCurrency(payment.amount)}
+                      </p>
+                      <Badge
+                        className={cn(
+                          payment.status === "paid"
+                            ? "bg-green-600/20 text-green-400"
+                            : payment.status === "pending"
+                              ? "bg-yellow-600/20 text-yellow-400"
+                              : "bg-red-600/20 text-red-400",
+                        )}
+                      >
                         {payment.status}
                       </Badge>
                     </div>
@@ -417,11 +487,13 @@ export function PolicyTabs({ policy, onEdit, className }: PolicyTabsProps) {
                 ))}
               </div>
             ) : (
-              <p className="text-gray-400 text-center py-8">No payment history available</p>
+              <p className="text-gray-400 text-center py-8">
+                No payment history available
+              </p>
             )}
           </CardContent>
         </Card>
       </TabsContent>
     </Tabs>
-  )
+  );
 }

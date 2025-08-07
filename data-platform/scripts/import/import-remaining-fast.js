@@ -1,21 +1,21 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
-const { createClient } = require('@supabase/supabase-js');
-const readline = require('readline');
+const fs = require("fs");
+const path = require("path");
+const { createClient } = require("@supabase/supabase-js");
+const readline = require("readline");
 
 // Load env vars
-const dotenv = require('dotenv');
-dotenv.config({ path: path.join(__dirname, '..', '.env.local') });
+const dotenv = require("dotenv");
+dotenv.config({ path: path.join(__dirname, "..", ".env.local") });
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const BATCH_SIZE = 2000; // Much larger batches for speed
-const CLEANED_SPLIT_DIR = path.join(process.cwd(), 'CleanedSplit');
+const CLEANED_SPLIT_DIR = path.join(process.cwd(), "CleanedSplit");
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {
-  auth: { persistSession: false }
+  auth: { persistSession: false },
 });
 
 // Parse CSV efficiently
@@ -31,17 +31,17 @@ async function* readCSV(filePath) {
     if (!line.trim()) continue;
 
     if (lineNumber === 1) {
-      headers = line.split(',').map(h => h.trim().toLowerCase());
+      headers = line.split(",").map((h) => h.trim().toLowerCase());
       continue;
     }
 
     // Simple CSV parsing for speed
-    const values = line.split(',').map(v => {
+    const values = line.split(",").map((v) => {
       v = v.trim();
       if (v.startsWith('"') && v.endsWith('"')) {
         v = v.slice(1, -1);
       }
-      return v === '' ? null : v;
+      return v === "" ? null : v;
     });
 
     const record = {};
@@ -71,10 +71,12 @@ async function importFile(filePath) {
 
       if (batch.length >= BATCH_SIZE) {
         batchCount++;
-        process.stdout.write(`\r   Batch ${batchCount}: ${totalRecords} records...`);
+        process.stdout.write(
+          `\r   Batch ${batchCount}: ${totalRecords} records...`,
+        );
 
         const { error } = await supabase
-          .from('florida_parcels_csv_import')
+          .from("florida_parcels_csv_import")
           .insert(batch);
 
         if (error) throw error;
@@ -85,12 +87,12 @@ async function importFile(filePath) {
     // Final batch
     if (batch.length > 0) {
       batchCount++;
-      await supabase.from('florida_parcels_csv_import').insert(batch);
+      await supabase.from("florida_parcels_csv_import").insert(batch);
     }
 
     // Transfer to main table
     console.log(`\n   🔄 Transferring to main table...`);
-    await supabase.rpc('transfer_florida_parcels_staging');
+    await supabase.rpc("transfer_florida_parcels_staging");
 
     const duration = ((Date.now() - startTime) / 1000).toFixed(1);
     console.log(`   ✅ Success! ${totalRecords} records in ${duration}s`);
@@ -103,10 +105,11 @@ async function importFile(filePath) {
 }
 
 async function main() {
-  console.log('🚀 Fast Import for Remaining Files\n');
+  console.log("🚀 Fast Import for Remaining Files\n");
 
-  const files = fs.readdirSync(CLEANED_SPLIT_DIR)
-    .filter(f => f.endsWith('.csv'))
+  const files = fs
+    .readdirSync(CLEANED_SPLIT_DIR)
+    .filter((f) => f.endsWith(".csv"))
     .sort();
 
   console.log(`📊 Found ${files.length} remaining CSV files`);
@@ -124,7 +127,7 @@ async function main() {
       success++;
 
       // Move file
-      const importedDir = path.join(process.cwd(), 'CleanedSplit_imported');
+      const importedDir = path.join(process.cwd(), "CleanedSplit_imported");
       if (!fs.existsSync(importedDir)) fs.mkdirSync(importedDir);
       fs.renameSync(filePath, path.join(importedDir, files[i]));
     }
@@ -137,7 +140,9 @@ async function main() {
   }
 
   const totalMin = ((Date.now() - startTime) / 60000).toFixed(1);
-  console.log(`\n✅ Complete: ${success}/${files.length} files in ${totalMin} minutes`);
+  console.log(
+    `\n✅ Complete: ${success}/${files.length} files in ${totalMin} minutes`,
+  );
 }
 
 main().catch(console.error);

@@ -8,11 +8,11 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-import { defineConfig } from 'vitest/config'
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
     globals: true,
-    environment: 'node'
-  }
-})
+    environment: "node",
+  },
+});

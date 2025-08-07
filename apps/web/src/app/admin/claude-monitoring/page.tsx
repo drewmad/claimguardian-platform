@@ -6,14 +6,15 @@
  * @status stable
  */
 
-import { Metadata } from 'next'
-import { ClaudeMonitoringDashboard } from '@/components/claude/claude-monitoring-dashboard'
+import { Metadata } from "next";
+import { ClaudeMonitoringDashboard } from "@/components/claude/claude-monitoring-dashboard";
 
 export const metadata: Metadata = {
-  title: 'Claude Learning System Monitor | ClaimGuardian',
-  description: 'Real-time monitoring and analytics for the Claude Learning System',
-}
+  title: "Claude Learning System Monitor | ClaimGuardian",
+  description:
+    "Real-time monitoring and analytics for the Claude Learning System",
+};
 
 export default function ClaudeMonitoringPage() {
-  return <ClaudeMonitoringDashboard />
+  return <ClaudeMonitoringDashboard />;
 }

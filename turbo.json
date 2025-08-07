@@ -110,5 +110,11 @@
     }
   },
   "globalDependencies": ["**/.env.*local", "**/.env"],
-  "globalEnv": ["NODE_ENV", "CI", "VERCEL", "VERCEL_ENV", "TURBO_TELEMETRY_DISABLED"]
+  "globalEnv": [
+    "NODE_ENV",
+    "CI",
+    "VERCEL",
+    "VERCEL_ENV",
+    "TURBO_TELEMETRY_DISABLED"
+  ]
 }

@@ -9,42 +9,58 @@
 /* Enhanced Color System for Better Contrast */
 :root {
   /* Primary Text Colors - WCAG AA Compliant */
-  --text-primary: #ffffff;           /* white - for headings */
-  --text-secondary: #d1d5db;         /* gray-300 - for body text (improved from gray-400) */
-  --text-tertiary: #9ca3af;          /* gray-400 - for less important text */
-  --text-muted: #6b7280;             /* gray-500 - for disabled/muted text */
+  --text-primary: #ffffff; /* white - for headings */
+  --text-secondary: #d1d5db; /* gray-300 - for body text (improved from gray-400) */
+  --text-tertiary: #9ca3af; /* gray-400 - for less important text */
+  --text-muted: #6b7280; /* gray-500 - for disabled/muted text */
 
   /* Background Colors */
-  --bg-primary: #111827;              /* gray-900 - main background */
-  --bg-secondary: #1f2937;            /* gray-800 - card backgrounds */
-  --bg-tertiary: #374151;             /* gray-700 - hover states */
+  --bg-primary: #111827; /* gray-900 - main background */
+  --bg-secondary: #1f2937; /* gray-800 - card backgrounds */
+  --bg-tertiary: #374151; /* gray-700 - hover states */
   --bg-elevated: rgba(31, 41, 55, 0.5); /* gray-800/50 - elevated cards */
 
   /* Border Colors */
-  --border-primary: #374151;          /* gray-700 - main borders */
+  --border-primary: #374151; /* gray-700 - main borders */
   --border-secondary: rgba(55, 65, 81, 0.5); /* gray-700/50 - subtle borders */
 
   /* Status Colors - Enhanced for Dark Mode */
-  --status-success: #10b981;          /* green-500 */
+  --status-success: #10b981; /* green-500 */
   --status-success-bg: rgba(16, 185, 129, 0.2);
-  --status-warning: #f59e0b;          /* amber-500 */
+  --status-warning: #f59e0b; /* amber-500 */
   --status-warning-bg: rgba(245, 158, 11, 0.2);
-  --status-error: #ef4444;            /* red-500 */
+  --status-error: #ef4444; /* red-500 */
   --status-error-bg: rgba(239, 68, 68, 0.2);
-  --status-info: #3b82f6;             /* blue-500 */
+  --status-info: #3b82f6; /* blue-500 */
   --status-info-bg: rgba(59, 130, 246, 0.2);
 }
 
 /* Utility Classes for Consistent Usage */
-.text-primary { color: var(--text-primary); }
-.text-secondary { color: var(--text-secondary); }
-.text-tertiary { color: var(--text-tertiary); }
-.text-muted { color: var(--text-muted); }
+.text-primary {
+  color: var(--text-primary);
+}
+.text-secondary {
+  color: var(--text-secondary);
+}
+.text-tertiary {
+  color: var(--text-tertiary);
+}
+.text-muted {
+  color: var(--text-muted);
+}
 
-.bg-primary { background-color: var(--bg-primary); }
-.bg-secondary { background-color: var(--bg-secondary); }
-.bg-tertiary { background-color: var(--bg-tertiary); }
-.bg-elevated { background-color: var(--bg-elevated); }
+.bg-primary {
+  background-color: var(--bg-primary);
+}
+.bg-secondary {
+  background-color: var(--bg-secondary);
+}
+.bg-tertiary {
+  background-color: var(--bg-tertiary);
+}
+.bg-elevated {
+  background-color: var(--bg-elevated);
+}
 
 /* Enhanced Contrast for Small Text */
 .text-sm {
@@ -64,8 +80,8 @@
 /* High Contrast Mode Support */
 @media (prefers-contrast: high) {
   :root {
-    --text-secondary: #e5e7eb;     /* gray-200 for high contrast */
-    --text-tertiary: #d1d5db;      /* gray-300 for high contrast */
-    --border-primary: #4b5563;     /* gray-600 for high contrast */
+    --text-secondary: #e5e7eb; /* gray-200 for high contrast */
+    --text-tertiary: #d1d5db; /* gray-300 for high contrast */
+    --border-primary: #4b5563; /* gray-600 for high contrast */
   }
 }

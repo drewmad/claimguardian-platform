@@ -1,14 +1,14 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
-import { toast } from 'sonner'
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function FixDatabasePage() {
-  const [isApplying, setIsApplying] = useState(false)
-  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle')
+  const [isApplying, setIsApplying] = useState(false);
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
 
   const fixUserProfilesTable = `
 -- Fix user_profiles table to use user_id as primary key
@@ -123,42 +123,48 @@ CREATE TRIGGER on_auth_user_created
 -- Grant necessary permissions
 GRANT ALL ON public.user_profiles TO authenticated;
 GRANT ALL ON public.user_profiles TO service_role;
-  `
+  `;
 
   const handleApplyFix = async () => {
-    setIsApplying(true)
-    setStatus('idle')
+    setIsApplying(true);
+    setStatus("idle");
 
     try {
       // Show instructions since we can't directly execute SQL from the client
-      toast.info('Please run this SQL in your Supabase SQL Editor', {
+      toast.info("Please run this SQL in your Supabase SQL Editor", {
         duration: 10000,
-      })
+      });
 
       // Copy to clipboard
-      await navigator.clipboard.writeText(fixUserProfilesTable)
-      toast.success('SQL copied to clipboard!')
+      await navigator.clipboard.writeText(fixUserProfilesTable);
+      toast.success("SQL copied to clipboard!");
 
-      setStatus('success')
+      setStatus("success");
     } catch (error) {
-      console.error('Error:', error)
-      toast.error('Failed to copy SQL to clipboard')
-      setStatus('error')
+      console.error("Error:", error);
+      toast.error("Failed to copy SQL to clipboard");
+      setStatus("error");
     } finally {
-      setIsApplying(false)
+      setIsApplying(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 p-8">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-white mb-8">Fix Database Issues</h1>
+        <h1 className="text-3xl font-bold text-white mb-8">
+          Fix Database Issues
+        </h1>
 
         <Card className="bg-gray-800 border-gray-700 p-6">
-          <h2 className="text-xl font-semibold text-white mb-4">Fix user_profiles Table</h2>
+          <h2 className="text-xl font-semibold text-white mb-4">
+            Fix user_profiles Table
+          </h2>
 
           <div className="bg-gray-900 p-4 rounded-lg mb-6">
-            <p className="text-gray-300 mb-2">This will fix the following issues:</p>
+            <p className="text-gray-300 mb-2">
+              This will fix the following issues:
+            </p>
             <ul className="list-disc list-inside text-gray-400 space-y-1">
               <li>Rename 'id' column to 'user_id' to match application code</li>
               <li>Add proper foreign key constraint to auth.users</li>
@@ -172,9 +178,12 @@ GRANT ALL ON public.user_profiles TO service_role;
               <div className="flex items-start gap-2">
                 <AlertCircle className="w-5 h-5 text-yellow-400 mt-0.5" />
                 <div>
-                  <p className="text-yellow-300 font-medium">Manual Application Required</p>
+                  <p className="text-yellow-300 font-medium">
+                    Manual Application Required
+                  </p>
                   <p className="text-yellow-200 text-sm mt-1">
-                    Click the button below to copy the SQL to your clipboard, then:
+                    Click the button below to copy the SQL to your clipboard,
+                    then:
                   </p>
                   <ol className="list-decimal list-inside text-yellow-200 text-sm mt-2 space-y-1">
                     <li>Go to your Supabase Dashboard</li>
@@ -196,18 +205,17 @@ GRANT ALL ON public.user_profiles TO service_role;
                   Copying SQL...
                 </>
               ) : (
-                <>
-                  Copy SQL to Clipboard
-                </>
+                <>Copy SQL to Clipboard</>
               )}
             </Button>
 
-            {status === 'success' && (
+            {status === "success" && (
               <div className="bg-green-500/10 border border-green-500/30 p-4 rounded-lg">
                 <div className="flex items-center gap-2">
                   <CheckCircle className="w-5 h-5 text-green-400" />
                   <p className="text-green-300">
-                    SQL copied! Now paste it in your Supabase SQL Editor and run it.
+                    SQL copied! Now paste it in your Supabase SQL Editor and run
+                    it.
                   </p>
                 </div>
               </div>
@@ -227,5 +235,5 @@ GRANT ALL ON public.user_profiles TO service_role;
         </Card>
       </div>
     </div>
-  )
+  );
 }

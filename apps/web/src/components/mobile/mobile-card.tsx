@@ -8,25 +8,25 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-import { motion } from 'framer-motion'
-import { ReactNode } from 'react'
+import { motion } from "framer-motion";
+import { ReactNode } from "react";
 
-import { cn } from '@/lib/utils'
+import { cn } from "@/lib/utils";
 
 interface MobileCardProps {
-  children: ReactNode
-  className?: string
-  onClick?: () => void
-  interactive?: boolean
+  children: ReactNode;
+  className?: string;
+  onClick?: () => void;
+  interactive?: boolean;
 }
 
 export function MobileCard({
   children,
   className,
   onClick,
-  interactive = false
+  interactive = false,
 }: MobileCardProps) {
-  const isClickable = interactive || !!onClick
+  const isClickable = interactive || !!onClick;
 
   return (
     <motion.div
@@ -35,37 +35,33 @@ export function MobileCard({
         "bg-gray-800 rounded-xl shadow-lg",
         "transition-all duration-200",
         isClickable && "active:shadow-md cursor-pointer",
-        className
+        className,
       )}
       onClick={onClick}
     >
       {children}
     </motion.div>
-  )
+  );
 }
 
 interface MobileCardHeaderProps {
-  title: string
-  subtitle?: string
-  action?: ReactNode
-  icon?: ReactNode
+  title: string;
+  subtitle?: string;
+  action?: ReactNode;
+  icon?: ReactNode;
 }
 
 export function MobileCardHeader({
   title,
   subtitle,
   action,
-  icon
+  icon,
 }: MobileCardHeaderProps) {
   return (
     <div className="p-4 border-b border-gray-700">
       <div className="flex items-start justify-between">
         <div className="flex items-start gap-3 flex-1">
-          {icon && (
-            <div className="p-2 bg-gray-700 rounded-lg">
-              {icon}
-            </div>
-          )}
+          {icon && <div className="p-2 bg-gray-700 rounded-lg">{icon}</div>}
           <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-white truncate">{title}</h3>
             {subtitle && (
@@ -73,36 +69,28 @@ export function MobileCardHeader({
             )}
           </div>
         </div>
-        {action && (
-          <div className="ml-2 flex-shrink-0">
-            {action}
-          </div>
-        )}
+        {action && <div className="ml-2 flex-shrink-0">{action}</div>}
       </div>
     </div>
-  )
+  );
 }
 
 export function MobileCardContent({
   children,
-  className
+  className,
 }: {
-  children: ReactNode
-  className?: string
+  children: ReactNode;
+  className?: string;
 }) {
-  return (
-    <div className={cn("p-4", className)}>
-      {children}
-    </div>
-  )
+  return <div className={cn("p-4", className)}>{children}</div>;
 }
 
 // Swipeable card variant
 interface SwipeableCardProps extends MobileCardProps {
-  onSwipeLeft?: () => void
-  onSwipeRight?: () => void
-  leftAction?: ReactNode
-  rightAction?: ReactNode
+  onSwipeLeft?: () => void;
+  onSwipeRight?: () => void;
+  leftAction?: ReactNode;
+  rightAction?: ReactNode;
 }
 
 export function SwipeableCard({
@@ -120,12 +108,12 @@ export function SwipeableCard({
       dragConstraints={{ left: -100, right: 100 }}
       dragElastic={0.2}
       onDragEnd={(e, { offset, velocity }) => {
-        const swipe = offset.x * velocity.x
+        const swipe = offset.x * velocity.x;
 
         if (swipe < -10000 && onSwipeLeft) {
-          onSwipeLeft()
+          onSwipeLeft();
         } else if (swipe > 10000 && onSwipeRight) {
-          onSwipeRight()
+          onSwipeRight();
         }
       }}
       className="relative"
@@ -147,5 +135,5 @@ export function SwipeableCard({
         {children}
       </MobileCard>
     </motion.div>
-  )
+  );
 }

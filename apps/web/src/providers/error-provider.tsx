@@ -8,46 +8,52 @@
  * @tags ["provider", "error", "global", "recovery"]
  * @status stable
  */
-'use client'
+"use client";
 
-import { createContext, useContext, useCallback, ReactNode, useEffect } from 'react'
-import { create } from 'zustand'
-import { motion, AnimatePresence } from 'framer-motion'
-import { X, AlertTriangle } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { NetworkStatus } from '@/components/error/async-error-handler'
-import { logger } from '@/lib/logger'
-import { toast } from 'sonner'
+import {
+  createContext,
+  useContext,
+  useCallback,
+  ReactNode,
+  useEffect,
+} from "react";
+import { create } from "zustand";
+import { motion, AnimatePresence } from "framer-motion";
+import { X, AlertTriangle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { NetworkStatus } from "@/components/error/async-error-handler";
+import { logger } from "@/lib/logger";
+import { toast } from "sonner";
 
 interface GlobalError {
-  id: string
-  message: string
-  level: 'info' | 'warning' | 'error' | 'critical'
-  timestamp: number
-  context?: string
+  id: string;
+  message: string;
+  level: "info" | "warning" | "error" | "critical";
+  timestamp: number;
+  context?: string;
   action?: {
-    label: string
-    handler: () => void | Promise<void>
-  }
-  autoHide?: boolean
-  hideAfter?: number
-  persistent?: boolean
+    label: string;
+    handler: () => void | Promise<void>;
+  };
+  autoHide?: boolean;
+  hideAfter?: number;
+  persistent?: boolean;
 }
 
 interface ErrorStore {
-  errors: GlobalError[]
-  errorCount: number
-  lastErrorTime: number
+  errors: GlobalError[];
+  errorCount: number;
+  lastErrorTime: number;
 
-  addError: (error: Omit<GlobalError, 'id' | 'timestamp'>) => string
-  removeError: (id: string) => void
-  clearErrors: () => void
-  clearErrorsByLevel: (level: GlobalError['level']) => void
-  getErrorsByLevel: (level: GlobalError['level']) => GlobalError[]
-  hasErrors: () => boolean
-  hasErrorLevel: (level: GlobalError['level']) => boolean
+  addError: (error: Omit<GlobalError, "id" | "timestamp">) => string;
+  removeError: (id: string) => void;
+  clearErrors: () => void;
+  clearErrorsByLevel: (level: GlobalError["level"]) => void;
+  getErrorsByLevel: (level: GlobalError["level"]) => GlobalError[];
+  hasErrors: () => boolean;
+  hasErrorLevel: (level: GlobalError["level"]) => boolean;
 }
 
 export const useErrorStore = create<ErrorStore>((set, get) => ({
@@ -56,82 +62,93 @@ export const useErrorStore = create<ErrorStore>((set, get) => ({
   lastErrorTime: 0,
 
   addError: (errorData) => {
-    const id = `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-    const timestamp = Date.now()
+    const id = `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const timestamp = Date.now();
 
     const error: GlobalError = {
       ...errorData,
       id,
       timestamp,
-      autoHide: errorData.autoHide ?? (errorData.level === 'info' || errorData.level === 'warning'),
-      hideAfter: errorData.hideAfter ?? (errorData.level === 'error' ? 10000 : 5000)
-    }
+      autoHide:
+        errorData.autoHide ??
+        (errorData.level === "info" || errorData.level === "warning"),
+      hideAfter:
+        errorData.hideAfter ?? (errorData.level === "error" ? 10000 : 5000),
+    };
 
     set((state) => ({
       errors: [...state.errors, error],
       errorCount: state.errorCount + 1,
-      lastErrorTime: timestamp
-    }))
+      lastErrorTime: timestamp,
+    }));
 
     // Auto-hide if configured
     if (error.autoHide && error.hideAfter) {
       setTimeout(() => {
-        get().removeError(id)
-      }, error.hideAfter)
+        get().removeError(id);
+      }, error.hideAfter);
     }
 
     // Log error
-    logger.error('Global error added', {
+    logger.error("Global error added", {
       errorId: id,
       level: error.level,
       message: error.message,
-      context: error.context
-    })
+      context: error.context,
+    });
 
-    return id
+    return id;
   },
 
   removeError: (id) => {
     set((state) => ({
-      errors: state.errors.filter(error => error.id !== id)
-    }))
+      errors: state.errors.filter((error) => error.id !== id),
+    }));
   },
 
   clearErrors: () => {
-    set({ errors: [], errorCount: 0 })
+    set({ errors: [], errorCount: 0 });
   },
 
   clearErrorsByLevel: (level) => {
     set((state) => ({
-      errors: state.errors.filter(error => error.level !== level)
-    }))
+      errors: state.errors.filter((error) => error.level !== level),
+    }));
   },
 
   getErrorsByLevel: (level) => {
-    return get().errors.filter(error => error.level === level)
+    return get().errors.filter((error) => error.level === level);
   },
 
   hasErrors: () => {
-    return get().errors.length > 0
+    return get().errors.length > 0;
   },
 
   hasErrorLevel: (level) => {
-    return get().errors.some(error => error.level === level)
-  }
-}))
+    return get().errors.some((error) => error.level === level);
+  },
+}));
 
 interface ErrorContextValue {
-  addError: (error: Omit<GlobalError, 'id' | 'timestamp'>) => string
-  removeError: (id: string) => void
-  clearErrors: () => void
-  reportError: (error: Error | string, context?: string, level?: GlobalError['level']) => string
-  reportAsyncError: (error: Error, context?: string, retryHandler?: () => Promise<void>) => string
-  errors: GlobalError[]
-  hasErrors: boolean
-  hasCriticalErrors: boolean
+  addError: (error: Omit<GlobalError, "id" | "timestamp">) => string;
+  removeError: (id: string) => void;
+  clearErrors: () => void;
+  reportError: (
+    error: Error | string,
+    context?: string,
+    level?: GlobalError["level"],
+  ) => string;
+  reportAsyncError: (
+    error: Error,
+    context?: string,
+    retryHandler?: () => Promise<void>,
+  ) => string;
+  errors: GlobalError[];
+  hasErrors: boolean;
+  hasCriticalErrors: boolean;
 }
 
-const ErrorContext = createContext<ErrorContextValue | undefined>(undefined)
+const ErrorContext = createContext<ErrorContextValue | undefined>(undefined);
 
 export function ErrorProvider({ children }: { children: ReactNode }) {
   const {
@@ -140,81 +157,93 @@ export function ErrorProvider({ children }: { children: ReactNode }) {
     removeError,
     clearErrors,
     hasErrors,
-    hasErrorLevel
-  } = useErrorStore()
+    hasErrorLevel,
+  } = useErrorStore();
 
-  const reportError = useCallback((
-    error: Error | string,
-    context?: string,
-    level: GlobalError['level'] = 'error'
-  ): string => {
-    const message = typeof error === 'string' ? error : error.message
+  const reportError = useCallback(
+    (
+      error: Error | string,
+      context?: string,
+      level: GlobalError["level"] = "error",
+    ): string => {
+      const message = typeof error === "string" ? error : error.message;
 
-    return addError({
-      message,
-      level,
-      context,
-      autoHide: level !== 'critical',
-      persistent: level === 'critical'
-    })
-  }, [addError])
+      return addError({
+        message,
+        level,
+        context,
+        autoHide: level !== "critical",
+        persistent: level === "critical",
+      });
+    },
+    [addError],
+  );
 
-  const reportAsyncError = useCallback((
-    error: Error,
-    context?: string,
-    retryHandler?: () => Promise<void>
-  ): string => {
-    const action = retryHandler ? {
-      label: 'Retry',
-      handler: async () => {
-        try {
-          await retryHandler()
-          toast.success('Retry successful')
-        } catch (retryError) {
-          reportError(retryError as Error, context, 'error')
-        }
-      }
-    } : undefined
+  const reportAsyncError = useCallback(
+    (
+      error: Error,
+      context?: string,
+      retryHandler?: () => Promise<void>,
+    ): string => {
+      const action = retryHandler
+        ? {
+            label: "Retry",
+            handler: async () => {
+              try {
+                await retryHandler();
+                toast.success("Retry successful");
+              } catch (retryError) {
+                reportError(retryError as Error, context, "error");
+              }
+            },
+          }
+        : undefined;
 
-    return addError({
-      message: error.message,
-      level: 'error',
-      context,
-      action,
-      autoHide: false
-    })
-  }, [addError, reportError])
+      return addError({
+        message: error.message,
+        level: "error",
+        context,
+        action,
+        autoHide: false,
+      });
+    },
+    [addError, reportError],
+  );
 
   // Global error handler for unhandled promise rejections
   useEffect(() => {
     const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-      event.preventDefault()
+      event.preventDefault();
 
-      const error = event.reason instanceof Error
-        ? event.reason
-        : new Error(String(event.reason))
+      const error =
+        event.reason instanceof Error
+          ? event.reason
+          : new Error(String(event.reason));
 
-      reportError(error, 'Unhandled Promise Rejection', 'error')
-    }
+      reportError(error, "Unhandled Promise Rejection", "error");
+    };
 
     const handleError = (event: ErrorEvent) => {
-      event.preventDefault()
+      event.preventDefault();
 
       reportError(
         event.error || new Error(event.message),
         `${event.filename}:${event.lineno}:${event.colno}`,
-        'error'
-      )
-    }
+        "error",
+      );
+    };
 
-    window.addEventListener('unhandledrejection', handleUnhandledRejection)
-    window.addEventListener('error', handleError)
+    window.addEventListener("unhandledrejection", handleUnhandledRejection);
+    window.addEventListener("error", handleError);
 
     return () => {
-      window.removeEventListener('unhandledrejection', handleUnhandledRejection)
-      window.removeEventListener('error', handleError)
-    }
-  }, [reportError])
+      window.removeEventListener(
+        "unhandledrejection",
+        handleUnhandledRejection,
+      );
+      window.removeEventListener("error", handleError);
+    };
+  }, [reportError]);
 
   const contextValue: ErrorContextValue = {
     addError,
@@ -224,8 +253,8 @@ export function ErrorProvider({ children }: { children: ReactNode }) {
     reportAsyncError,
     errors,
     hasErrors: hasErrors(),
-    hasCriticalErrors: hasErrorLevel('critical')
-  }
+    hasCriticalErrors: hasErrorLevel("critical"),
+  };
 
   return (
     <ErrorContext.Provider value={contextValue}>
@@ -233,21 +262,21 @@ export function ErrorProvider({ children }: { children: ReactNode }) {
       <NetworkStatus />
       <ErrorDisplay />
     </ErrorContext.Provider>
-  )
+  );
 }
 
 export function useGlobalError() {
-  const context = useContext(ErrorContext)
+  const context = useContext(ErrorContext);
   if (!context) {
-    throw new Error('useGlobalError must be used within an ErrorProvider')
+    throw new Error("useGlobalError must be used within an ErrorProvider");
   }
-  return context
+  return context;
 }
 
 // Error display component
 function ErrorDisplay() {
-  const { errors, removeError } = useGlobalError()
-  const displayErrors = errors.slice(-3) // Show max 3 errors
+  const { errors, removeError } = useGlobalError();
+  const displayErrors = errors.slice(-3); // Show max 3 errors
 
   return (
     <div className="fixed bottom-4 right-4 z-50 space-y-2 pointer-events-none max-w-sm">
@@ -261,24 +290,34 @@ function ErrorDisplay() {
         ))}
       </AnimatePresence>
     </div>
-  )
+  );
 }
 
-function ErrorCard({ error, onClose }: { error: GlobalError; onClose: () => void }) {
-  const getLevelColor = (level: GlobalError['level']) => {
+function ErrorCard({
+  error,
+  onClose,
+}: {
+  error: GlobalError;
+  onClose: () => void;
+}) {
+  const getLevelColor = (level: GlobalError["level"]) => {
     switch (level) {
-      case 'info': return 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-      case 'warning': return 'border-orange-500 bg-orange-50 dark:bg-orange-900/20'
-      case 'error': return 'border-red-500 bg-red-50 dark:bg-red-900/20'
-      case 'critical': return 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
+      case "info":
+        return "border-blue-500 bg-blue-50 dark:bg-blue-900/20";
+      case "warning":
+        return "border-orange-500 bg-orange-50 dark:bg-orange-900/20";
+      case "error":
+        return "border-red-500 bg-red-50 dark:bg-red-900/20";
+      case "critical":
+        return "border-purple-500 bg-purple-50 dark:bg-purple-900/20";
     }
-  }
+  };
 
-  const getLevelIcon = (level: GlobalError['level']) => {
-    return AlertTriangle
-  }
+  const getLevelIcon = (level: GlobalError["level"]) => {
+    return AlertTriangle;
+  };
 
-  const Icon = getLevelIcon(error.level)
+  const Icon = getLevelIcon(error.level);
 
   return (
     <motion.div
@@ -337,19 +376,19 @@ function ErrorCard({ error, onClose }: { error: GlobalError; onClose: () => void
         </CardContent>
       </Card>
     </motion.div>
-  )
+  );
 }
 
 // Error collector for development and debugging
 export function ErrorCollector() {
-  const { errors, clearErrors } = useGlobalError()
+  const { errors, clearErrors } = useGlobalError();
 
-  if (process.env.NODE_ENV !== 'development') {
-    return null
+  if (process.env.NODE_ENV !== "development") {
+    return null;
   }
 
   if (errors.length === 0) {
-    return null
+    return null;
   }
 
   return (
@@ -371,11 +410,17 @@ export function ErrorCollector() {
           <div className="space-y-1 max-h-40 overflow-y-auto">
             {errors.slice(-5).map((error) => (
               <div key={error.id} className="text-xs">
-                <span className={`inline-block w-2 h-2 rounded-full mr-2 ${
-                  error.level === 'critical' ? 'bg-purple-400' :
-                  error.level === 'error' ? 'bg-red-400' :
-                  error.level === 'warning' ? 'bg-orange-400' : 'bg-blue-400'
-                }`} />
+                <span
+                  className={`inline-block w-2 h-2 rounded-full mr-2 ${
+                    error.level === "critical"
+                      ? "bg-purple-400"
+                      : error.level === "error"
+                        ? "bg-red-400"
+                        : error.level === "warning"
+                          ? "bg-orange-400"
+                          : "bg-blue-400"
+                  }`}
+                />
                 <span className="text-gray-300">
                   [{new Date(error.timestamp).toLocaleTimeString()}]
                 </span>
@@ -389,30 +434,31 @@ export function ErrorCollector() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
 
 // HOC for adding automatic error reporting to components
 export function withErrorReporting<P extends object>(
   Component: React.ComponentType<P>,
-  context?: string
+  context?: string,
 ) {
   return function ErrorReportingWrappedComponent(props: P) {
-    const { reportError } = useGlobalError()
+    const { reportError } = useGlobalError();
 
     useEffect(() => {
-      const componentName = Component.displayName || Component.name || 'Unknown'
+      const componentName =
+        Component.displayName || Component.name || "Unknown";
 
       // Report component mount
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`Component mounted: ${componentName}`)
+      if (process.env.NODE_ENV === "development") {
+        console.log(`Component mounted: ${componentName}`);
       }
 
       return () => {
         // Component unmount - could report if needed
-      }
-    }, [reportError])
+      };
+    }, [reportError]);
 
-    return <Component {...props} />
-  }
+    return <Component {...props} />;
+  };
 }

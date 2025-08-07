@@ -5,6 +5,7 @@ This directory contains the ETL (Extract, Transform, Load) pipeline for ingestin
 ## Overview
 
 The pipeline pulls parcel data from four primary sources:
+
 - **FGIO** (Florida Geographic Information Office) - Quarterly statewide updates
 - **FDOT** (Florida Department of Transportation) - Weekly delta updates
 - **FGDL** (Florida Geographic Data Library) - Yearly archives
@@ -41,24 +42,28 @@ The pipeline pulls parcel data from four primary sources:
 ## Data Sources
 
 ### FGIO (Quarterly)
+
 - **URL**: https://www.arcgis.com/home/item.html?id=efa909d6b1c841d298b0a649e7f71cf2
 - **Schedule**: 1st day of Jan, Apr, Jul, Oct at 02:00 UTC
 - **Type**: Full sync of statewide parcels
 - **Format**: ArcGIS FeatureServer (GeoJSON)
 
 ### FDOT (Weekly)
+
 - **URL**: https://gis.fdot.gov/arcgis/rest/services/Parcels/FeatureServer
 - **Schedule**: Every Sunday at 03:00 UTC
 - **Type**: Delta sync (only new ObjectIDs)
 - **Format**: 67 county-specific layers
 
 ### FGDL (Yearly)
+
 - **URL**: https://fgdl.org/explore-data/
 - **Schedule**: March 1st at 04:00 UTC
 - **Type**: Full yearly archive
 - **Format**: ZIP containing shapefiles
 
 ### DOR (Annual)
+
 - **URL**: https://floridarevenue.com/property/Pages/DataPortal_RequestAssessmentRollGISData.aspx
 - **Schedule**: August 1st at 05:00 UTC
 - **Type**: Official tax roll shapes
@@ -67,12 +72,14 @@ The pipeline pulls parcel data from four primary sources:
 ## Setup
 
 ### 1. Database Migration
+
 ```bash
 # Run the migration to create tables and functions
 pnpm db:migrate
 ```
 
 ### 2. Deploy Edge Functions
+
 ```bash
 # Make the deploy script executable
 chmod +x ./deploy.sh
@@ -82,13 +89,16 @@ chmod +x ./deploy.sh
 ```
 
 ### 3. Environment Variables
+
 Ensure these are set in your Supabase project:
+
 - `SUPABASE_URL`
 - `SUPABASE_SERVICE_ROLE_KEY`
 
 ## Manual Operations
 
 ### Trigger Manual Sync
+
 ```bash
 # FGIO quarterly sync
 supabase functions invoke fgio-sync
@@ -106,11 +116,13 @@ supabase functions invoke zip-ingest \
 ```
 
 ### Refresh Materialized View
+
 ```bash
 supabase db query 'REFRESH MATERIALIZED VIEW CONCURRENTLY public.parcels;'
 ```
 
 ### Monitor Logs
+
 ```bash
 # Follow function logs
 supabase functions logs --tail fgio-sync
@@ -126,7 +138,9 @@ supabase db query 'SELECT * FROM external.fl_parcel_ingest_events ORDER BY start
 ### Tables
 
 #### `external.fl_parcels_raw`
+
 Raw staging table for all parcel data:
+
 - `pk` - Primary key (UUID)
 - `source` - Data source (fgio/fdot/fgdl/dor)
 - `source_url` - Original data URL
@@ -138,7 +152,9 @@ Raw staging table for all parcel data:
 - `ingest_batch_id` - Links to ingest event
 
 #### `external.fl_parcel_ingest_events`
+
 Tracks ETL pipeline runs:
+
 - `id` - Event ID
 - `ingest_batch_id` - Unique batch identifier
 - `source` - Data source
@@ -152,7 +168,9 @@ Tracks ETL pipeline runs:
 ### Views
 
 #### `public.parcels`
+
 Materialized view with common attributes:
+
 - `parcel_id` - Unique identifier
 - `county_fips` - County code
 - `situs_address` - Property address
@@ -179,6 +197,7 @@ Materialized view with common attributes:
 ## Monitoring
 
 Use the included ParcelETLMonitor component to track:
+
 - Total parcels by source and county
 - Recent ingest events and status
 - Manual sync triggers
@@ -194,6 +213,7 @@ Use the included ParcelETLMonitor component to track:
 4. **Geometry Errors**: Ensure valid polygons with proper SRID
 
 ### Debug Commands
+
 ```bash
 # Check for failed ingests
 supabase db query "SELECT * FROM external.fl_parcel_ingest_events WHERE status = 'failed';"

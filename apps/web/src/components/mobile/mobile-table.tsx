@@ -9,36 +9,32 @@
  * @supabase-integration edge-functions
  */
 
-import { ChevronRight } from 'lucide-react'
-import { ReactNode } from 'react'
+import { ChevronRight } from "lucide-react";
+import { ReactNode } from "react";
 
-import { cn } from '@/lib/utils'
+import { cn } from "@/lib/utils";
 
 interface MobileTableProps {
-  children: ReactNode
-  className?: string
+  children: ReactNode;
+  className?: string;
 }
 
 export function MobileTable({ children, className }: MobileTableProps) {
-  return (
-    <div className={cn("space-y-2", className)}>
-      {children}
-    </div>
-  )
+  return <div className={cn("space-y-2", className)}>{children}</div>;
 }
 
 interface MobileTableRowProps {
-  onClick?: () => void
-  className?: string
-  children: ReactNode
+  onClick?: () => void;
+  className?: string;
+  children: ReactNode;
 }
 
 export function MobileTableRow({
   onClick,
   className,
-  children
+  children,
 }: MobileTableRowProps) {
-  const isClickable = !!onClick
+  const isClickable = !!onClick;
 
   return (
     <div
@@ -49,56 +45,56 @@ export function MobileTableRow({
         isClickable && [
           "cursor-pointer",
           "active:scale-[0.98]",
-          "hover:bg-gray-750"
+          "hover:bg-gray-750",
         ],
-        className
+        className,
       )}
     >
       {children}
     </div>
-  )
+  );
 }
 
 interface MobileTableCellProps {
-  label: string
-  value: ReactNode
-  action?: ReactNode
-  prominent?: boolean
+  label: string;
+  value: ReactNode;
+  action?: ReactNode;
+  prominent?: boolean;
 }
 
 export function MobileTableCell({
   label,
   value,
   action,
-  prominent = false
+  prominent = false,
 }: MobileTableCellProps) {
   return (
     <div className="flex items-center justify-between">
       <div className="min-w-0 flex-1">
         <p className="text-xs text-gray-400">{label}</p>
-        <p className={cn(
-          "truncate",
-          prominent ? "text-base font-semibold text-white" : "text-sm text-gray-200"
-        )}>
+        <p
+          className={cn(
+            "truncate",
+            prominent
+              ? "text-base font-semibold text-white"
+              : "text-sm text-gray-200",
+          )}
+        >
           {value}
         </p>
       </div>
-      {action && (
-        <div className="ml-2 flex-shrink-0">
-          {action}
-        </div>
-      )}
+      {action && <div className="ml-2 flex-shrink-0">{action}</div>}
     </div>
-  )
+  );
 }
 
 // Responsive table that transforms to cards on mobile
 interface ResponsiveTableProps<T = Record<string, unknown>> {
-  headers: string[]
-  data: T[]
-  renderCell: (item: T, key: string) => ReactNode
-  onRowClick?: (item: T) => void
-  keyField: keyof T
+  headers: string[];
+  data: T[];
+  renderCell: (item: T, key: string) => ReactNode;
+  onRowClick?: (item: T) => void;
+  keyField: keyof T;
 }
 
 export function ResponsiveTable({
@@ -106,7 +102,7 @@ export function ResponsiveTable({
   data,
   renderCell,
   onRowClick,
-  keyField
+  keyField,
 }: ResponsiveTableProps) {
   return (
     <>
@@ -133,7 +129,7 @@ export function ResponsiveTable({
                 onClick={() => onRowClick?.(item)}
                 className={cn(
                   "transition-colors",
-                  onRowClick && "cursor-pointer hover:bg-gray-800"
+                  onRowClick && "cursor-pointer hover:bg-gray-800",
                 )}
               >
                 {headers.map((header) => (
@@ -178,5 +174,5 @@ export function ResponsiveTable({
         ))}
       </MobileTable>
     </>
-  )
+  );
 }

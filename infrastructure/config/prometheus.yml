@@ -6,15 +6,15 @@ global:
   evaluation_interval: 15s
   scrape_timeout: 10s
   external_labels:
-    cluster: 'claimguardian-production'
-    environment: 'production'
+    cluster: "claimguardian-production"
+    environment: "production"
 
 # Alertmanager configuration
 alerting:
   alertmanagers:
     - static_configs:
         - targets:
-          - alertmanager:9093
+            - alertmanager:9093
 
 # Rules and alerts
 rule_files:
@@ -23,104 +23,104 @@ rule_files:
 # Scrape configurations
 scrape_configs:
   # Prometheus itself
-  - job_name: 'prometheus'
+  - job_name: "prometheus"
     static_configs:
-      - targets: ['localhost:9090']
+      - targets: ["localhost:9090"]
     scrape_interval: 15s
     metrics_path: /metrics
 
   # Node Exporter for system metrics
-  - job_name: 'node-exporter'
+  - job_name: "node-exporter"
     static_configs:
-      - targets: ['node-exporter:9100']
+      - targets: ["node-exporter:9100"]
     scrape_interval: 15s
     metrics_path: /metrics
 
   # ClaimGuardian Application instances
-  - job_name: 'claimguardian-app'
+  - job_name: "claimguardian-app"
     static_configs:
       - targets:
-        - 'app-1:3000'
-        - 'app-2:3000'
+          - "app-1:3000"
+          - "app-2:3000"
     scrape_interval: 30s
     metrics_path: /api/metrics
     scrape_timeout: 10s
     params:
-      format: ['prometheus']
+      format: ["prometheus"]
     relabel_configs:
       - source_labels: [__address__]
         target_label: instance
       - source_labels: [__address__]
-        regex: '([^:]+):(.*)'
+        regex: "([^:]+):(.*)"
         target_label: service
-        replacement: '${1}'
+        replacement: "${1}"
 
   # HAProxy Load Balancer
-  - job_name: 'haproxy'
+  - job_name: "haproxy"
     static_configs:
-      - targets: ['load-balancer:8404']
+      - targets: ["load-balancer:8404"]
     scrape_interval: 30s
     metrics_path: /stats
     params:
-      stats: ['']
-      csv: ['']
+      stats: [""]
+      csv: [""]
 
   # Redis Cache
-  - job_name: 'redis'
+  - job_name: "redis"
     static_configs:
-      - targets: ['redis:6379']
+      - targets: ["redis:6379"]
     scrape_interval: 30s
     metrics_path: /metrics
 
   # Background Worker
-  - job_name: 'claimguardian-worker'
+  - job_name: "claimguardian-worker"
     static_configs:
-      - targets: ['worker:3000']
+      - targets: ["worker:3000"]
     scrape_interval: 60s
     metrics_path: /api/worker/metrics
     scrape_timeout: 15s
 
   # MinIO Storage
-  - job_name: 'minio'
+  - job_name: "minio"
     static_configs:
-      - targets: ['minio:9000']
+      - targets: ["minio:9000"]
     scrape_interval: 60s
     metrics_path: /minio/v2/metrics/cluster
 
   # Database metrics (if available)
-  - job_name: 'postgres-exporter'
+  - job_name: "postgres-exporter"
     static_configs:
-      - targets: ['postgres-exporter:9187']
+      - targets: ["postgres-exporter:9187"]
     scrape_interval: 30s
     metrics_path: /metrics
 
   # External service monitoring
-  - job_name: 'external-services'
+  - job_name: "external-services"
     static_configs:
       - targets:
-        - 'api.openai.com:443'
-        - 'generativelanguage.googleapis.com:443'
-    scrape_interval: 300s  # 5 minutes
+          - "api.openai.com:443"
+          - "generativelanguage.googleapis.com:443"
+    scrape_interval: 300s # 5 minutes
     metrics_path: /
     scheme: https
     params:
       module: [http_2xx]
 
   # Custom application metrics
-  - job_name: 'claimguardian-business-metrics'
+  - job_name: "claimguardian-business-metrics"
     static_configs:
-      - targets: ['app-1:3000', 'app-2:3000']
+      - targets: ["app-1:3000", "app-2:3000"]
     scrape_interval: 60s
     metrics_path: /api/admin/metrics/business
     params:
-      format: ['prometheus']
+      format: ["prometheus"]
 
   # SSL Certificate monitoring
-  - job_name: 'ssl-certificates'
+  - job_name: "ssl-certificates"
     static_configs:
       - targets:
-        - 'claimguardianai.com:443'
-    scrape_interval: 86400s  # Daily
+          - "claimguardianai.com:443"
+    scrape_interval: 86400s # Daily
     metrics_path: /probe
     params:
       module: [ssl_cert]
@@ -158,7 +158,7 @@ recording_rules:
 
   # Business metrics rules
   - name: claimguardian.business
-    interval: 300s  # 5 minutes
+    interval: 300s # 5 minutes
     rules:
       - record: claimguardian:active_users_5m
         expr: increase(user_sessions_total[5m])

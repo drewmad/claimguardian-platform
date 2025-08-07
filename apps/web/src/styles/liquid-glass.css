@@ -15,10 +15,12 @@
 /* Base liquid glass effect */
 .liquid-glass-base {
   backdrop-filter: blur(16px) saturate(1.3);
-  background: linear-gradient(135deg,
+  background: linear-gradient(
+    135deg,
     rgba(255, 255, 255, 0.1) 0%,
     rgba(255, 255, 255, 0.05) 50%,
-    rgba(255, 255, 255, 0.08) 100%);
+    rgba(255, 255, 255, 0.08) 100%
+  );
   border: 1px solid rgba(255, 255, 255, 0.2);
   position: relative;
   overflow: hidden;
@@ -27,49 +29,60 @@
 /* Subtle variant for dashboard accents (Phase 2) */
 .liquid-glass-subtle {
   backdrop-filter: blur(8px) saturate(1.1);
-  background: linear-gradient(135deg,
+  background: linear-gradient(
+    135deg,
     rgba(255, 255, 255, 0.05) 0%,
     rgba(255, 255, 255, 0.02) 50%,
-    rgba(255, 255, 255, 0.04) 100%);
+    rgba(255, 255, 255, 0.04) 100%
+  );
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Medium variant for landing page cards (Phase 1) */
 .liquid-glass-medium {
   backdrop-filter: blur(20px) saturate(1.5);
-  background: linear-gradient(135deg,
+  background: linear-gradient(
+    135deg,
     rgba(255, 255, 255, 0.12) 0%,
     rgba(255, 255, 255, 0.06) 50%,
-    rgba(255, 255, 255, 0.10) 100%);
+    rgba(255, 255, 255, 0.1) 100%
+  );
   border: 1px solid rgba(255, 255, 255, 0.25);
 }
 
 /* Premium variant for AI tools (Phase 3) */
 .liquid-glass-premium {
-  backdrop-filter: blur(32px) saturate(2.0) brightness(1.1);
-  background: linear-gradient(125deg,
+  backdrop-filter: blur(32px) saturate(2) brightness(1.1);
+  background: linear-gradient(
+    125deg,
     rgba(6, 182, 212, 0.1) 0%,
     rgba(57, 255, 20, 0.05) 30%,
     rgba(0, 56, 168, 0.08) 70%,
-    rgba(220, 20, 60, 0.03) 100%);
+    rgba(220, 20, 60, 0.03) 100%
+  );
   border: 2px solid;
-  border-image: linear-gradient(45deg,
-    rgba(57, 255, 20, 0.5),
-    rgba(6, 182, 212, 0.3),
-    rgba(0, 56, 168, 0.4)) 1;
+  border-image: linear-gradient(
+      45deg,
+      rgba(57, 255, 20, 0.5),
+      rgba(6, 182, 212, 0.3),
+      rgba(0, 56, 168, 0.4)
+    )
+    1;
 }
 
 /* ===== INTERACTIVE EFFECTS ===== */
 
 /* Hover shimmer effect */
 .liquid-glass-hover::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(45deg,
+  background: linear-gradient(
+    45deg,
     transparent 30%,
     rgba(255, 255, 255, 0.1) 50%,
-    transparent 70%);
+    transparent 70%
+  );
   transform: translateX(-100%);
   transition: transform 0.6s ease;
   pointer-events: none;
@@ -108,15 +121,17 @@
 }
 
 .hero-liquid-glass::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(45deg,
+  background: linear-gradient(
+    45deg,
     transparent 0%,
     rgba(57, 255, 20, 0.03) 25%,
     rgba(0, 56, 168, 0.05) 50%,
     rgba(57, 255, 20, 0.03) 75%,
-    transparent 100%);
+    transparent 100%
+  );
   animation: liquid-flow 8s ease-in-out infinite;
   pointer-events: none;
 }
@@ -124,10 +139,12 @@
 /* Features section glass cards */
 .feature-card-liquid {
   backdrop-filter: blur(20px) saturate(1.5);
-  background: linear-gradient(135deg,
+  background: linear-gradient(
+    135deg,
     rgba(255, 255, 255, 0.12) 0%,
     rgba(255, 255, 255, 0.06) 50%,
-    rgba(255, 255, 255, 0.10) 100%);
+    rgba(255, 255, 255, 0.1) 100%
+  );
   border: 1px solid rgba(255, 255, 255, 0.25);
   transition: all 0.3s ease;
   border-radius: 1rem;
@@ -145,7 +162,8 @@
 
 /* Flowing gradient animation */
 @keyframes liquid-flow {
-  0%, 100% {
+  0%,
+  100% {
     background-position: 0% 50%;
     opacity: 0.3;
   }
@@ -157,7 +175,8 @@
 
 /* Gentle pulse for glass elements */
 @keyframes glass-pulse {
-  0%, 100% {
+  0%,
+  100% {
     backdrop-filter: blur(16px) saturate(1.3);
     opacity: 1;
   }
@@ -179,7 +198,8 @@
 
 /* Distortion ripple (for premium effects) */
 @keyframes liquid-distortion {
-  0%, 100% {
+  0%,
+  100% {
     filter: blur(0px) hue-rotate(0deg);
   }
   25% {
@@ -221,9 +241,11 @@
 @media (min-width: 768px) {
   .glass-desktop-enhanced {
     backdrop-filter: blur(20px) saturate(1.5);
-    background: linear-gradient(135deg,
+    background: linear-gradient(
+      135deg,
       rgba(255, 255, 255, 0.1) 0%,
-      rgba(255, 255, 255, 0.05) 100%);
+      rgba(255, 255, 255, 0.05) 100%
+    );
   }
 }
 
@@ -296,19 +318,23 @@
 /* Royal blue variant for active states */
 .liquid-glass-royal {
   border-color: rgba(0, 56, 168, 0.3);
-  background: linear-gradient(135deg,
+  background: linear-gradient(
+    135deg,
     rgba(0, 56, 168, 0.1) 0%,
     rgba(255, 255, 255, 0.05) 50%,
-    rgba(0, 56, 168, 0.08) 100%);
+    rgba(0, 56, 168, 0.08) 100%
+  );
 }
 
 /* Trust signal enhancement */
 .liquid-glass-trust {
   backdrop-filter: blur(12px) saturate(1.2);
-  background: linear-gradient(135deg,
+  background: linear-gradient(
+    135deg,
     rgba(255, 255, 255, 0.08) 0%,
     rgba(6, 182, 212, 0.05) 50%,
-    rgba(255, 255, 255, 0.06) 100%);
+    rgba(255, 255, 255, 0.06) 100%
+  );
   border: 1px solid rgba(6, 182, 212, 0.2);
 }
 
@@ -317,10 +343,12 @@
 /* Value proposition cards */
 .value-prop-liquid {
   backdrop-filter: blur(20px) saturate(1.5);
-  background: linear-gradient(135deg,
+  background: linear-gradient(
+    135deg,
     rgba(255, 255, 255, 0.12) 0%,
     rgba(255, 255, 255, 0.06) 50%,
-    rgba(255, 255, 255, 0.10) 100%);
+    rgba(255, 255, 255, 0.1) 100%
+  );
   border: 1px solid rgba(57, 255, 20, 0.3);
   box-shadow:
     0 0 20px rgba(57, 255, 20, 0.1),
@@ -337,10 +365,12 @@
 /* Trust signals with glass enhancement */
 .trust-signal-liquid {
   backdrop-filter: blur(12px) saturate(1.2);
-  background: linear-gradient(135deg,
+  background: linear-gradient(
+    135deg,
     rgba(255, 255, 255, 0.08) 0%,
     rgba(6, 182, 212, 0.05) 50%,
-    rgba(255, 255, 255, 0.06) 100%);
+    rgba(255, 255, 255, 0.06) 100%
+  );
   border: 1px solid rgba(6, 182, 212, 0.2);
   border-radius: 2rem;
   padding: 1rem 1.5rem;
@@ -348,17 +378,22 @@
 
 /* CTA button with premium glass */
 .cta-liquid {
-  backdrop-filter: blur(32px) saturate(2.0) brightness(1.1);
-  background: linear-gradient(125deg,
+  backdrop-filter: blur(32px) saturate(2) brightness(1.1);
+  background: linear-gradient(
+    125deg,
     rgba(6, 182, 212, 0.1) 0%,
     rgba(57, 255, 20, 0.05) 30%,
     rgba(0, 56, 168, 0.08) 70%,
-    rgba(220, 20, 60, 0.03) 100%);
+    rgba(220, 20, 60, 0.03) 100%
+  );
   border: 2px solid;
-  border-image: linear-gradient(45deg,
-    rgba(57, 255, 20, 0.5),
-    rgba(6, 182, 212, 0.3),
-    rgba(0, 56, 168, 0.4)) 1;
+  border-image: linear-gradient(
+      45deg,
+      rgba(57, 255, 20, 0.5),
+      rgba(6, 182, 212, 0.3),
+      rgba(0, 56, 168, 0.4)
+    )
+    1;
   box-shadow:
     0 0 20px rgba(57, 255, 20, 0.3),
     0 8px 32px rgba(0, 0, 0, 0.1);
@@ -369,13 +404,15 @@
 }
 
 .cta-liquid::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(45deg,
+  background: linear-gradient(
+    45deg,
     transparent 30%,
     rgba(255, 255, 255, 0.2) 50%,
-    transparent 70%);
+    transparent 70%
+  );
   transform: translateX(-100%);
   transition: transform 0.6s ease;
 }

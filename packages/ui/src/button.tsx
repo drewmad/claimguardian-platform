@@ -11,40 +11,44 @@
  * @status stable
  * @notes Enhanced with loading spinner, icon support, and proper ARIA attributes
  */
-'use client'
+"use client";
 
-import { cva, type VariantProps } from 'class-variance-authority'
-import * as React from 'react'
+import { cva, type VariantProps } from "class-variance-authority";
+import * as React from "react";
 
-import { cn } from './utils'
+import { cn } from "./utils";
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center rounded-lg text-sm font-medium backdrop-blur-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-border focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+  "inline-flex items-center justify-center rounded-lg text-sm font-medium backdrop-blur-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-border focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
-        default: 'bg-accent text-text-primary hover:bg-accent-hover shadow-lg border border-accent-border',
-        secondary: 'bg-panel text-text-primary hover:bg-panel/80 border border-border',
-        outline: 'border border-border bg-transparent text-text-primary hover:bg-panel',
-        ghost: 'hover:bg-panel text-text-primary',
-        link: 'text-accent underline-offset-4 hover:underline',
-        success: 'bg-success text-text-primary hover:bg-success/90 shadow-lg',
-        error: 'bg-error text-text-primary hover:bg-error/90 shadow-lg',
-        destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-lg'
+        default:
+          "bg-accent text-text-primary hover:bg-accent-hover shadow-lg border border-accent-border",
+        secondary:
+          "bg-panel text-text-primary hover:bg-panel/80 border border-border",
+        outline:
+          "border border-border bg-transparent text-text-primary hover:bg-panel",
+        ghost: "hover:bg-panel text-text-primary",
+        link: "text-accent underline-offset-4 hover:underline",
+        success: "bg-success text-text-primary hover:bg-success/90 shadow-lg",
+        error: "bg-error text-text-primary hover:bg-error/90 shadow-lg",
+        destructive:
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-lg",
       },
       size: {
-        default: 'h-10 px-4 py-2',
-        sm: 'h-9 rounded-lg px-3',
-        lg: 'h-11 rounded-lg px-8 text-base',
-        icon: 'h-10 w-10'
-      }
+        default: "h-10 px-4 py-2",
+        sm: "h-9 rounded-lg px-3",
+        lg: "h-11 rounded-lg px-8 text-base",
+        icon: "h-10 w-10",
+      },
     },
     defaultVariants: {
-      variant: 'default',
-      size: 'default'
-    }
-  }
-)
+      variant: "default",
+      size: "default",
+    },
+  },
+);
 
 // Loading spinner component
 const LoadingSpinner = ({ className }: { className?: string }) => (
@@ -69,50 +73,56 @@ const LoadingSpinner = ({ className }: { className?: string }) => (
       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
     />
   </svg>
-)
+);
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
-  loading?: boolean
-  loadingText?: string
-  leftIcon?: React.ReactNode
-  rightIcon?: React.ReactNode
+  loading?: boolean;
+  loadingText?: string;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({
-    className,
-    variant,
-    size,
-    children,
-    loading = false,
-    loadingText,
-    leftIcon,
-    rightIcon,
-    disabled,
-    onClick,
-    type = 'button',
-    ...props
-  }, ref) => {
-    const [isProcessing, setIsProcessing] = React.useState(false)
+  (
+    {
+      className,
+      variant,
+      size,
+      children,
+      loading = false,
+      loadingText,
+      leftIcon,
+      rightIcon,
+      disabled,
+      onClick,
+      type = "button",
+      ...props
+    },
+    ref,
+  ) => {
+    const [isProcessing, setIsProcessing] = React.useState(false);
 
-    const isDisabled = disabled || loading || isProcessing
+    const isDisabled = disabled || loading || isProcessing;
 
-    const handleClick = React.useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-      if (isProcessing || loading) return
+    const handleClick = React.useCallback(
+      (e: React.MouseEvent<HTMLButtonElement>) => {
+        if (isProcessing || loading) return;
 
-      // Allow default behavior for reset and submit buttons if no custom onClick
-      if ((type === 'reset' || type === 'submit') && !onClick) {
-        return // Let the browser handle the default behavior
-      }
+        // Allow default behavior for reset and submit buttons if no custom onClick
+        if ((type === "reset" || type === "submit") && !onClick) {
+          return; // Let the browser handle the default behavior
+        }
 
-      setIsProcessing(true)
-      onClick?.(e)
+        setIsProcessing(true);
+        onClick?.(e);
 
-      // Reset processing state after a short delay to prevent double-clicks
-      setTimeout(() => setIsProcessing(false), 300)
-    }, [onClick, isProcessing, loading, type])
+        // Reset processing state after a short delay to prevent double-clicks
+        setTimeout(() => setIsProcessing(false), 300);
+      },
+      [onClick, isProcessing, loading, type],
+    );
 
     return (
       <button
@@ -126,23 +136,15 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         {loading && <LoadingSpinner className="mr-2" />}
-        {!loading && leftIcon && (
-          <span className="mr-2">
-            {leftIcon}
-          </span>
-        )}
+        {!loading && leftIcon && <span className="mr-2">{leftIcon}</span>}
 
-        {loading ? (loadingText || null) : children}
+        {loading ? loadingText || null : children}
 
-        {!loading && rightIcon && (
-          <span className="ml-2">
-            {rightIcon}
-          </span>
-        )}
+        {!loading && rightIcon && <span className="ml-2">{rightIcon}</span>}
       </button>
-    )
-  }
-)
-Button.displayName = 'Button'
+    );
+  },
+);
+Button.displayName = "Button";
 
-export { Button, buttonVariants }
+export { Button, buttonVariants };

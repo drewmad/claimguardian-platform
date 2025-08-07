@@ -18,9 +18,9 @@ const supabase = createClient(
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   {
     auth: {
-      persistSession: false
-    }
-  }
+      persistSession: false,
+    },
+  },
 );
 
 interface FeatureProperties {
@@ -39,11 +39,14 @@ interface GeoJsonResponse {
   features: GeoJsonFeature[];
 }
 
-async function fetchWithRetry(url: string, attempts = REQUEST_CONFIG.retryAttempts): Promise<Response> {
+async function fetchWithRetry(
+  url: string,
+  attempts = REQUEST_CONFIG.retryAttempts,
+): Promise<Response> {
   for (let i = 0; i < attempts; i++) {
     try {
       const response = await fetch(url, {
-        signal: AbortSignal.timeout(REQUEST_CONFIG.timeout)
+        signal: AbortSignal.timeout(REQUEST_CONFIG.timeout),
       });
 
       if (response.ok) {
@@ -54,10 +57,11 @@ async function fetchWithRetry(url: string, attempts = REQUEST_CONFIG.retryAttemp
       if (response.status >= 400 && response.status < 500) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-
     } catch (error) {
       if (i === attempts - 1) throw error;
-      await new Promise(resolve => setTimeout(resolve, REQUEST_CONFIG.retryDelay));
+      await new Promise((resolve) =>
+        setTimeout(resolve, REQUEST_CONFIG.retryDelay),
+      );
     }
   }
 
@@ -77,8 +81,8 @@ export async function handler(req: Request): Promise<Response> {
       status: "started",
       metadata: {
         source_url: FGIO_REST,
-        started_by: "cron"
-      }
+        started_by: "cron",
+      },
     });
 
   if (logError) {
@@ -114,25 +118,32 @@ export async function handler(req: Request): Promise<Response> {
         const geoJson: GeoJsonResponse = await featuresResponse.json();
 
         if (!geoJson.features || geoJson.features.length === 0) {
-          console.warn(`No features returned for chunk ${i / REQUEST_CONFIG.maxRecordCount + 1}`);
+          console.warn(
+            `No features returned for chunk ${i / REQUEST_CONFIG.maxRecordCount + 1}`,
+          );
           continue;
         }
 
         // Transform features for insertion
         const rows = geoJson.features
-          .filter(feature => feature.properties.PARCELID && feature.properties.CNTYFIPS)
-          .map(feature => ({
+          .filter(
+            (feature) =>
+              feature.properties.PARCELID && feature.properties.CNTYFIPS,
+          )
+          .map((feature) => ({
             source: "fgio",
             source_url: FGIO_REST,
             county_fips: feature.properties.CNTYFIPS,
             parcel_id: feature.properties.PARCELID,
             geom: feature.geometry,
             attrs: feature.properties,
-            ingest_batch_id: ingestBatchId
+            ingest_batch_id: ingestBatchId,
           }));
 
         if (rows.length === 0) {
-          console.warn(`No valid rows in chunk ${i / REQUEST_CONFIG.maxRecordCount + 1}`);
+          console.warn(
+            `No valid rows in chunk ${i / REQUEST_CONFIG.maxRecordCount + 1}`,
+          );
           continue;
         }
 
@@ -141,17 +152,21 @@ export async function handler(req: Request): Promise<Response> {
           .from("fl_parcels_raw")
           .upsert(rows, {
             onConflict: "source,parcel_id",
-            ignoreDuplicates: false
+            ignoreDuplicates: false,
           });
 
         if (insertError) {
-          console.error(`Error inserting chunk ${i / REQUEST_CONFIG.maxRecordCount + 1}:`, insertError);
+          console.error(
+            `Error inserting chunk ${i / REQUEST_CONFIG.maxRecordCount + 1}:`,
+            insertError,
+          );
           totalErrors += rows.length;
         } else {
           totalInserted += rows.length;
-          console.log(`Processed chunk ${i / REQUEST_CONFIG.maxRecordCount + 1}: ${rows.length} parcels`);
+          console.log(
+            `Processed chunk ${i / REQUEST_CONFIG.maxRecordCount + 1}: ${rows.length} parcels`,
+          );
         }
-
       } catch (chunkError) {
         console.error(`Failed to process chunk starting at ${i}:`, chunkError);
         totalErrors += chunk.length;
@@ -159,7 +174,7 @@ export async function handler(req: Request): Promise<Response> {
 
       // Add small delay between chunks to avoid rate limiting
       if (i + REQUEST_CONFIG.maxRecordCount < objectIds.length) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
       }
     }
 
@@ -176,8 +191,8 @@ export async function handler(req: Request): Promise<Response> {
           total_objects: objectIds.length,
           total_inserted: totalInserted,
           total_errors: totalErrors,
-          duration_ms: Date.now() - startTime
-        }
+          duration_ms: Date.now() - startTime,
+        },
       })
       .eq("ingest_batch_id", ingestBatchId);
 
@@ -191,7 +206,9 @@ export async function handler(req: Request): Promise<Response> {
       console.error("Failed to refresh materialized view:", refreshError);
     }
 
-    console.log(`FGIO sync completed. Inserted: ${totalInserted}, Errors: ${totalErrors}`);
+    console.log(
+      `FGIO sync completed. Inserted: ${totalInserted}, Errors: ${totalErrors}`,
+    );
 
     return new Response(
       JSON.stringify({
@@ -199,14 +216,13 @@ export async function handler(req: Request): Promise<Response> {
         ingestBatchId,
         totalInserted,
         totalErrors,
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       }),
       {
         headers: { "Content-Type": "application/json" },
-        status: 200
-      }
+        status: 200,
+      },
     );
-
   } catch (error) {
     console.error("FGIO sync failed:", error);
 
@@ -216,7 +232,7 @@ export async function handler(req: Request): Promise<Response> {
       .update({
         status: "failed",
         error_message: error.message,
-        completed_at: new Date().toISOString()
+        completed_at: new Date().toISOString(),
       })
       .eq("ingest_batch_id", ingestBatchId);
 
@@ -224,12 +240,12 @@ export async function handler(req: Request): Promise<Response> {
       JSON.stringify({
         success: false,
         error: error.message,
-        ingestBatchId
+        ingestBatchId,
       }),
       {
         headers: { "Content-Type": "application/json" },
-        status: 500
-      }
+        status: 500,
+      },
     );
   }
 }

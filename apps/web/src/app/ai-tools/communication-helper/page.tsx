@@ -8,135 +8,175 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { MessageSquare, Copy, RefreshCw, Sparkles, FileText, Phone, Mail, Calendar, AlertTriangle, Edit3, Target, Brain, Loader2 } from 'lucide-react'
-import Link from 'next/link'
-import { useState, useEffect, useMemo } from 'react'
-import { toast } from 'sonner'
-import { logger } from "@/lib/logger/production-logger"
-import { toError } from '@claimguardian/utils'
+import {
+  MessageSquare,
+  Copy,
+  RefreshCw,
+  Sparkles,
+  FileText,
+  Phone,
+  Mail,
+  Calendar,
+  AlertTriangle,
+  Edit3,
+  Target,
+  Brain,
+  Loader2,
+} from "lucide-react";
+import Link from "next/link";
+import { useState, useEffect, useMemo } from "react";
+import { toast } from "sonner";
+import { logger } from "@/lib/logger/production-logger";
+import { toError } from "@claimguardian/utils";
 
-import { useAuth } from '@/components/auth/auth-provider'
-import { ProtectedRoute } from '@/components/auth/protected-route'
-import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { AIClientService } from '@/lib/ai/client-service'
-import { aiModelConfigService } from '@/lib/ai/model-config-service'
-
+import { useAuth } from "@/components/auth/auth-provider";
+import { ProtectedRoute } from "@/components/auth/protected-route";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { AIClientService } from "@/lib/ai/client-service";
+import { aiModelConfigService } from "@/lib/ai/model-config-service";
 
 interface CommunicationTemplate {
-  id: string
-  title: string
-  description: string
-  icon: React.ComponentType<{ className?: string }>
-  tone: 'formal' | 'professional' | 'assertive' | 'friendly'
-  context: string
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ComponentType<{ className?: string }>;
+  tone: "formal" | "professional" | "assertive" | "friendly";
+  context: string;
 }
 
 const TEMPLATES: CommunicationTemplate[] = [
   {
-    id: 'first-notice',
-    title: 'First Notice of Loss',
-    description: 'Initial claim notification to insurance company',
+    id: "first-notice",
+    title: "First Notice of Loss",
+    description: "Initial claim notification to insurance company",
     icon: AlertTriangle,
-    tone: 'professional',
-    context: 'Notifying insurance company of new damage claim'
+    tone: "professional",
+    context: "Notifying insurance company of new damage claim",
   },
   {
-    id: 'follow-up',
-    title: 'Claim Follow-Up',
-    description: 'Check status of pending claim',
+    id: "follow-up",
+    title: "Claim Follow-Up",
+    description: "Check status of pending claim",
     icon: Calendar,
-    tone: 'professional',
-    context: 'Following up on claim that has no response'
+    tone: "professional",
+    context: "Following up on claim that has no response",
   },
   {
-    id: 'dispute',
-    title: 'Dispute Settlement',
-    description: 'Challenge low settlement offer',
+    id: "dispute",
+    title: "Dispute Settlement",
+    description: "Challenge low settlement offer",
     icon: FileText,
-    tone: 'assertive',
-    context: 'Disputing inadequate settlement amount'
+    tone: "assertive",
+    context: "Disputing inadequate settlement amount",
   },
   {
-    id: 'request-info',
-    title: 'Request Information',
-    description: 'Ask for claim details or documents',
+    id: "request-info",
+    title: "Request Information",
+    description: "Ask for claim details or documents",
     icon: Mail,
-    tone: 'professional',
-    context: 'Requesting specific information about claim'
+    tone: "professional",
+    context: "Requesting specific information about claim",
   },
   {
-    id: 'escalation',
-    title: 'Escalate to Supervisor',
-    description: 'Request supervisor intervention',
+    id: "escalation",
+    title: "Escalate to Supervisor",
+    description: "Request supervisor intervention",
     icon: Phone,
-    tone: 'formal',
-    context: 'Escalating unresolved claim issues'
-  }
-]
+    tone: "formal",
+    context: "Escalating unresolved claim issues",
+  },
+];
 
 const TONE_OPTIONS = [
-  { value: 'formal', label: 'Formal', description: 'Official and highly professional' },
-  { value: 'professional', label: 'Professional', description: 'Business-appropriate and clear' },
-  { value: 'assertive', label: 'Assertive', description: 'Firm but respectful' },
-  { value: 'friendly', label: 'Friendly', description: 'Warm and conversational' }
-]
+  {
+    value: "formal",
+    label: "Formal",
+    description: "Official and highly professional",
+  },
+  {
+    value: "professional",
+    label: "Professional",
+    description: "Business-appropriate and clear",
+  },
+  {
+    value: "assertive",
+    label: "Assertive",
+    description: "Firm but respectful",
+  },
+  {
+    value: "friendly",
+    label: "Friendly",
+    description: "Warm and conversational",
+  },
+];
 
 export default function CommunicationHelperPage() {
-  const [selectedTemplate, setSelectedTemplate] = useState<CommunicationTemplate | null>(null)
-  const [tone, setTone] = useState<string>('professional')
-  const [recipientName, setRecipientName] = useState('')
-  const [claimNumber, setClaimNumber] = useState('')
-  const [keyPoints, setKeyPoints] = useState('')
-  const [generatedMessage, setGeneratedMessage] = useState('')
-  const [isGenerating, setIsGenerating] = useState(false)
-  const [hasOpenAIKey, setHasOpenAIKey] = useState(false)
-  const [hasGeminiKey, setHasGeminiKey] = useState(false)
-  const [configuredModel, setConfiguredModel] = useState<string>('openai')
-  const [fallbackModel, setFallbackModel] = useState<string>('gemini')
-  const { user } = useAuth()
-  const aiClient = useMemo(() => new AIClientService(), [])
+  const [selectedTemplate, setSelectedTemplate] =
+    useState<CommunicationTemplate | null>(null);
+  const [tone, setTone] = useState<string>("professional");
+  const [recipientName, setRecipientName] = useState("");
+  const [claimNumber, setClaimNumber] = useState("");
+  const [keyPoints, setKeyPoints] = useState("");
+  const [generatedMessage, setGeneratedMessage] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [hasOpenAIKey, setHasOpenAIKey] = useState(false);
+  const [hasGeminiKey, setHasGeminiKey] = useState(false);
+  const [configuredModel, setConfiguredModel] = useState<string>("openai");
+  const [fallbackModel, setFallbackModel] = useState<string>("gemini");
+  const { user } = useAuth();
+  const aiClient = useMemo(() => new AIClientService(), []);
 
   useEffect(() => {
     const initializeComponent = async () => {
       try {
         // Load model configuration
-        const modelConfig = await aiModelConfigService.getModelForFeature('communication-helper')
+        const modelConfig = await aiModelConfigService.getModelForFeature(
+          "communication-helper",
+        );
         if (modelConfig) {
-          setConfiguredModel(modelConfig.model)
-          setFallbackModel(modelConfig.fallback)
+          setConfiguredModel(modelConfig.model);
+          setFallbackModel(modelConfig.fallback);
         }
 
         // Check API keys
-        const keysStatus = await aiClient.checkKeys()
-        setHasOpenAIKey(keysStatus.hasOpenAIKey)
-        setHasGeminiKey(keysStatus.hasGeminiKey)
+        const keysStatus = await aiClient.checkKeys();
+        setHasOpenAIKey(keysStatus.hasOpenAIKey);
+        setHasGeminiKey(keysStatus.hasGeminiKey);
       } catch (error) {
-        logger.error('Failed to initialize communication helper:', toError(error))
+        logger.error(
+          "Failed to initialize communication helper:",
+          toError(error),
+        );
       }
-    }
-    initializeComponent()
-  }, [aiClient])
+    };
+    initializeComponent();
+  }, [aiClient]);
 
   const generateMessage = async () => {
-    if (!selectedTemplate || !keyPoints.trim() || (!hasOpenAIKey && !hasGeminiKey)) return
+    if (
+      !selectedTemplate ||
+      !keyPoints.trim() ||
+      (!hasOpenAIKey && !hasGeminiKey)
+    )
+      return;
 
-    setIsGenerating(true)
-    const startTime = Date.now()
+    setIsGenerating(true);
+    const startTime = Date.now();
 
     try {
       const prompt = `Write a ${tone} email for the following situation:
 
 Context: ${selectedTemplate.context}
-Recipient: ${recipientName || 'Insurance Company Representative'}
-Claim Number: ${claimNumber || '[CLAIM NUMBER]'}
+Recipient: ${recipientName || "Insurance Company Representative"}
+Claim Number: ${claimNumber || "[CLAIM NUMBER]"}
 Sender: ${user?.user_metadata?.firstName} ${user?.user_metadata?.lastName}
 
 Key points to address:
@@ -151,108 +191,129 @@ Guidelines:
 - Maintain professional boundaries
 - Reference Florida insurance regulations if relevant
 
-Format as a complete email ready to send.`
+Format as a complete email ready to send.`;
 
       // Helper to get provider from model name
-      const getProviderFromModel = (modelName: string): 'openai' | 'gemini' | 'claude' | 'grok' => {
-        if (modelName.includes('gpt') || modelName.includes('openai')) return 'openai'
-        if (modelName.includes('gemini') || modelName.includes('google')) return 'gemini'
-        if (modelName.includes('claude') || modelName.includes('anthropic')) return 'claude'
-        if (modelName.includes('grok')) return 'grok'
-        return 'openai' // default fallback
-      }
+      const getProviderFromModel = (
+        modelName: string,
+      ): "openai" | "gemini" | "claude" | "grok" => {
+        if (modelName.includes("gpt") || modelName.includes("openai"))
+          return "openai";
+        if (modelName.includes("gemini") || modelName.includes("google"))
+          return "gemini";
+        if (modelName.includes("claude") || modelName.includes("anthropic"))
+          return "claude";
+        if (modelName.includes("grok")) return "grok";
+        return "openai"; // default fallback
+      };
 
       // Helper to calculate estimated cost
-      const calculateEstimatedCost = (model: string, responseLength: number): number => {
+      const calculateEstimatedCost = (
+        model: string,
+        responseLength: number,
+      ): number => {
         const costPer1K: Record<string, number> = {
-          'gpt-4-turbo': 0.01,
-          'gpt-4': 0.03,
-          'gemini-1.5-pro': 0.005,
-          'claude-3-opus': 0.015,
-          'claude-3-sonnet': 0.003,
-          'grok-beta': 0.002
-        }
+          "gpt-4-turbo": 0.01,
+          "gpt-4": 0.03,
+          "gemini-1.5-pro": 0.005,
+          "claude-3-opus": 0.015,
+          "claude-3-sonnet": 0.003,
+          "grok-beta": 0.002,
+        };
 
-        const tokens = Math.ceil(responseLength / 4) // Rough token estimate
-        const cost = (tokens / 1000) * (costPer1K[model] || 0.01)
-        return parseFloat(cost.toFixed(6))
-      }
+        const tokens = Math.ceil(responseLength / 4); // Rough token estimate
+        const cost = (tokens / 1000) * (costPer1K[model] || 0.01);
+        return parseFloat(cost.toFixed(6));
+      };
 
-      const primaryProvider = getProviderFromModel(configuredModel)
+      const primaryProvider = getProviderFromModel(configuredModel);
 
       try {
         // Try primary model
-        const response = await aiClient.chat([
-          { role: 'system', content: 'You are an expert insurance communication specialist who helps policyholders communicate effectively with insurance companies.' },
-          { role: 'user', content: prompt }
-        ], primaryProvider as 'openai' | 'gemini')
+        const response = await aiClient.chat(
+          [
+            {
+              role: "system",
+              content:
+                "You are an expert insurance communication specialist who helps policyholders communicate effectively with insurance companies.",
+            },
+            { role: "user", content: prompt },
+          ],
+          primaryProvider as "openai" | "gemini",
+        );
 
         // Track successful usage
-        const responseTime = Date.now() - startTime
+        const responseTime = Date.now() - startTime;
         await aiModelConfigService.trackModelUsage({
-          featureId: 'communication-helper',
+          featureId: "communication-helper",
           model: configuredModel,
           success: true,
           responseTime,
-          cost: calculateEstimatedCost(configuredModel, response.length)
-        })
+          cost: calculateEstimatedCost(configuredModel, response.length),
+        });
 
-        setGeneratedMessage(response)
-        toast.success('Message generated successfully!')
-
+        setGeneratedMessage(response);
+        toast.success("Message generated successfully!");
       } catch (primaryError) {
         // Try fallback model
-        const fallbackProvider = getProviderFromModel(fallbackModel)
+        const fallbackProvider = getProviderFromModel(fallbackModel);
 
         try {
-          const response = await aiClient.chat([
-            { role: 'system', content: 'You are an expert insurance communication specialist who helps policyholders communicate effectively with insurance companies.' },
-            { role: 'user', content: prompt }
-          ], fallbackProvider as 'openai' | 'gemini')
+          const response = await aiClient.chat(
+            [
+              {
+                role: "system",
+                content:
+                  "You are an expert insurance communication specialist who helps policyholders communicate effectively with insurance companies.",
+              },
+              { role: "user", content: prompt },
+            ],
+            fallbackProvider as "openai" | "gemini",
+          );
 
           // Track fallback usage
-          const responseTime = Date.now() - startTime
+          const responseTime = Date.now() - startTime;
           await aiModelConfigService.trackModelUsage({
-            featureId: 'communication-helper',
+            featureId: "communication-helper",
             model: fallbackModel,
             success: true,
             responseTime,
-            cost: calculateEstimatedCost(fallbackModel, response.length)
-          })
+            cost: calculateEstimatedCost(fallbackModel, response.length),
+          });
 
-          setGeneratedMessage(response)
-          toast.success('Message generated successfully (using fallback model)!')
-
+          setGeneratedMessage(response);
+          toast.success(
+            "Message generated successfully (using fallback model)!",
+          );
         } catch (fallbackError) {
-          throw new Error('Both primary and fallback AI models failed')
+          throw new Error("Both primary and fallback AI models failed");
         }
       }
-
     } catch (error) {
       // Track failed usage
-      const responseTime = Date.now() - startTime
+      const responseTime = Date.now() - startTime;
       await aiModelConfigService.trackModelUsage({
-        featureId: 'communication-helper',
+        featureId: "communication-helper",
         model: configuredModel,
         success: false,
-        responseTime
-      })
+        responseTime,
+      });
 
-      logger.error('Error generating message:', toError(error))
-      toast.error('Failed to generate message')
+      logger.error("Error generating message:", toError(error));
+      toast.error("Failed to generate message");
     } finally {
-      setIsGenerating(false)
+      setIsGenerating(false);
     }
-  }
+  };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(generatedMessage)
-    toast.success('Message copied to clipboard!')
-  }
+    navigator.clipboard.writeText(generatedMessage);
+    toast.success("Message copied to clipboard!");
+  };
 
   const regenerate = () => {
-    generateMessage()
-  }
+    generateMessage();
+  };
 
   return (
     <ProtectedRoute>
@@ -277,13 +338,17 @@ Format as a complete email ready to send.`
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <h1 className="text-4xl font-bold text-white drop-shadow-[0_2px_20px_rgba(255,255,255,0.3)]">Communication Helper</h1>
+                      <h1 className="text-4xl font-bold text-white drop-shadow-[0_2px_20px_rgba(255,255,255,0.3)]">
+                        Communication Helper
+                      </h1>
                       <Badge className="bg-gradient-to-r from-yellow-600/30 to-orange-600/30 text-yellow-300 border-yellow-600/30 backdrop-blur-md shadow-[0_8px_32px_rgba(245,158,11,0.2)]">
                         Beta
                       </Badge>
                     </div>
                     <p className="text-gray-300 max-w-3xl drop-shadow-[0_2px_10px_rgba(0,0,0,0.3)]">
-                      AI-powered assistance for writing professional emails and messages to insurance companies. Get the right tone and include all necessary information.
+                      AI-powered assistance for writing professional emails and
+                      messages to insurance companies. Get the right tone and
+                      include all necessary information.
                     </p>
                   </div>
                 </div>
@@ -305,38 +370,44 @@ Format as a complete email ready to send.`
                   <CardContent>
                     <div className="space-y-2">
                       {TEMPLATES.map((template) => {
-                        const Icon = template.icon
+                        const Icon = template.icon;
                         return (
                           <button
                             key={template.id}
                             onClick={() => {
-                              setSelectedTemplate(template)
-                              setTone(template.tone)
+                              setSelectedTemplate(template);
+                              setTone(template.tone);
                             }}
                             className={`w-full text-left p-3 rounded-lg transition-all ${
                               selectedTemplate?.id === template.id
-                                ? 'bg-pink-600/20 border border-pink-600/30 backdrop-blur-md shadow-[0_8px_32px_rgba(236,72,153,0.2)]'
-                                : 'hover:bg-gray-700/50 backdrop-blur-md'
+                                ? "bg-pink-600/20 border border-pink-600/30 backdrop-blur-md shadow-[0_8px_32px_rgba(236,72,153,0.2)]"
+                                : "hover:bg-gray-700/50 backdrop-blur-md"
                             }`}
                           >
                             <div className="flex items-start gap-3">
-                              <div className={`p-2 rounded-lg ${
-                                selectedTemplate?.id === template.id
-                                  ? 'bg-pink-600/20 backdrop-blur-md border border-white/10'
-                                  : 'bg-gray-700/50 backdrop-blur-md'
-                              }`}>
-                                <Icon className={`h-4 w-4 ${
+                              <div
+                                className={`p-2 rounded-lg ${
                                   selectedTemplate?.id === template.id
-                                    ? 'text-pink-400 drop-shadow-[0_0_8px_rgba(236,72,153,0.5)]'
-                                    : 'text-gray-400'
-                                }`} />
+                                    ? "bg-pink-600/20 backdrop-blur-md border border-white/10"
+                                    : "bg-gray-700/50 backdrop-blur-md"
+                                }`}
+                              >
+                                <Icon
+                                  className={`h-4 w-4 ${
+                                    selectedTemplate?.id === template.id
+                                      ? "text-pink-400 drop-shadow-[0_0_8px_rgba(236,72,153,0.5)]"
+                                      : "text-gray-400"
+                                  }`}
+                                />
                               </div>
                               <div>
-                                <h4 className={`font-semibold ${
-                                  selectedTemplate?.id === template.id
-                                    ? 'text-white'
-                                    : 'text-gray-300'
-                                }`}>
+                                <h4
+                                  className={`font-semibold ${
+                                    selectedTemplate?.id === template.id
+                                      ? "text-white"
+                                      : "text-gray-300"
+                                  }`}
+                                >
                                   {template.title}
                                 </h4>
                                 <p className="text-xs text-gray-400 mt-1">
@@ -345,7 +416,7 @@ Format as a complete email ready to send.`
                               </div>
                             </div>
                           </button>
-                        )
+                        );
                       })}
                     </div>
                   </CardContent>
@@ -369,13 +440,17 @@ Format as a complete email ready to send.`
                           onClick={() => setTone(option.value)}
                           className={`w-full text-left p-3 rounded-lg transition-all ${
                             tone === option.value
-                              ? 'bg-purple-600/20 border border-purple-600/30 backdrop-blur-md shadow-[0_8px_32px_rgba(147,51,234,0.2)]'
-                              : 'hover:bg-gray-700/50 backdrop-blur-md'
+                              ? "bg-purple-600/20 border border-purple-600/30 backdrop-blur-md shadow-[0_8px_32px_rgba(147,51,234,0.2)]"
+                              : "hover:bg-gray-700/50 backdrop-blur-md"
                           }`}
                         >
-                          <h4 className={`font-medium ${
-                            tone === option.value ? 'text-white' : 'text-gray-300'
-                          }`}>
+                          <h4
+                            className={`font-medium ${
+                              tone === option.value
+                                ? "text-white"
+                                : "text-gray-300"
+                            }`}
+                          >
                             {option.label}
                           </h4>
                           <p className="text-xs text-gray-400 mt-1">
@@ -393,10 +468,14 @@ Format as a complete email ready to send.`
                 <Card className="bg-gray-800/70 backdrop-blur-xl border-gray-700/50 shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_60px_rgba(59,130,246,0.15)] transition-all duration-500">
                   <CardHeader>
                     <CardTitle className="text-white">
-                      {selectedTemplate ? selectedTemplate.title : 'Compose Message'}
+                      {selectedTemplate
+                        ? selectedTemplate.title
+                        : "Compose Message"}
                     </CardTitle>
                     {selectedTemplate && (
-                      <p className="text-sm text-gray-400">{selectedTemplate.description}</p>
+                      <p className="text-sm text-gray-400">
+                        {selectedTemplate.description}
+                      </p>
                     )}
                   </CardHeader>
                   <CardContent>
@@ -413,7 +492,9 @@ Format as a complete email ready to send.`
                       <div className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                           <div>
-                            <Label className="text-gray-300">Recipient Name</Label>
+                            <Label className="text-gray-300">
+                              Recipient Name
+                            </Label>
                             <Input
                               value={recipientName}
                               onChange={(e) => setRecipientName(e.target.value)}
@@ -422,7 +503,9 @@ Format as a complete email ready to send.`
                             />
                           </div>
                           <div>
-                            <Label className="text-gray-300">Claim Number</Label>
+                            <Label className="text-gray-300">
+                              Claim Number
+                            </Label>
                             <Input
                               value={claimNumber}
                               onChange={(e) => setClaimNumber(e.target.value)}
@@ -434,7 +517,8 @@ Format as a complete email ready to send.`
 
                         <div>
                           <Label className="text-gray-300">
-                            Key Points to Address <span className="text-red-400">*</span>
+                            Key Points to Address{" "}
+                            <span className="text-red-400">*</span>
                           </Label>
                           <Textarea
                             value={keyPoints}
@@ -447,7 +531,11 @@ Format as a complete email ready to send.`
 
                         <Button
                           onClick={generateMessage}
-                          disabled={!keyPoints.trim() || isGenerating || (!hasOpenAIKey && !hasGeminiKey)}
+                          disabled={
+                            !keyPoints.trim() ||
+                            isGenerating ||
+                            (!hasOpenAIKey && !hasGeminiKey)
+                          }
                           className="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white shadow-[0_8px_32px_rgba(236,72,153,0.3)] hover:shadow-[0_12px_40px_rgba(236,72,153,0.4)] transition-all duration-300 backdrop-blur-md border-0"
                         >
                           {isGenerating ? (
@@ -472,7 +560,9 @@ Format as a complete email ready to send.`
                   <Card className="mt-6 bg-gray-800/70 backdrop-blur-xl border-gray-700/50 shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_60px_rgba(34,197,94,0.15)] transition-all duration-500">
                     <CardHeader>
                       <div className="flex items-center justify-between">
-                        <CardTitle className="text-white">Generated Message</CardTitle>
+                        <CardTitle className="text-white">
+                          Generated Message
+                        </CardTitle>
                         <div className="flex gap-2">
                           <Button
                             variant="outline"
@@ -508,10 +598,13 @@ Format as a complete email ready to send.`
                             <Brain className="h-4 w-4 text-cyan-300 drop-shadow-[0_0_8px_rgba(6,182,212,0.6)]" />
                           </div>
                           <div>
-                            <h4 className="font-semibold text-cyan-300 mb-1">AI Analysis</h4>
+                            <h4 className="font-semibold text-cyan-300 mb-1">
+                              AI Analysis
+                            </h4>
                             <p className="text-sm text-gray-300">
-                              This message uses a {tone} tone and includes all key points.
-                              Remember to review and personalize before sending.
+                              This message uses a {tone} tone and includes all
+                              key points. Remember to review and personalize
+                              before sending.
                             </p>
                           </div>
                         </div>
@@ -530,7 +623,9 @@ Format as a complete email ready to send.`
                     <Edit3 className="h-6 w-6 text-purple-300 drop-shadow-[0_0_12px_rgba(147,51,234,0.7)]" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-white mb-2">Communication Best Practices</h3>
+                    <h3 className="text-lg font-semibold text-white mb-2">
+                      Communication Best Practices
+                    </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-300">
                       <ul className="space-y-1">
                         <li>• Always keep records of all communications</li>
@@ -553,5 +648,5 @@ Format as a complete email ready to send.`
         </div>
       </DashboardLayout>
     </ProtectedRoute>
-  )
+  );
 }

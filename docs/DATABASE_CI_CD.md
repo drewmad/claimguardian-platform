@@ -7,6 +7,7 @@ ClaimGuardian uses an advanced database CI/CD pipeline that automatically valida
 ## Architecture
 
 ### Single Schema Approach
+
 - **Source of Truth**: `supabase/schema.sql`
 - **No Migrations**: We use a single schema file to avoid Supabase CLI conflicts
 - **Version Control**: All changes tracked in Git with full history
@@ -14,12 +15,14 @@ ClaimGuardian uses an advanced database CI/CD pipeline that automatically valida
 ### CI/CD Workflows
 
 #### 1. Database CI (`database-ci.yml`) - Free Tier
+
 - Runs on every PR that modifies database files
 - Uses local PostgreSQL for validation
 - Auto-approves safe changes
 - Blocks breaking changes without manual approval
 
 #### 2. Database Review (`database-review.yml`) - Pro Tier
+
 - Creates isolated branch databases for testing
 - Tests schema changes in real Supabase environment
 - Validates Edge Functions against new schema
@@ -28,6 +31,7 @@ ClaimGuardian uses an advanced database CI/CD pipeline that automatically valida
 ## Workflow Process
 
 ### 1. Developer Makes Schema Changes
+
 ```bash
 # Edit schema
 vim supabase/schema.sql
@@ -42,6 +46,7 @@ git push origin feat/new-schema
 ```
 
 ### 2. Automated PR Validation
+
 When you create a PR, the CI automatically:
 
 1. **Detects Changes**: Identifies what changed in schema.sql
@@ -60,11 +65,13 @@ When you create a PR, the CI automatically:
 ### 3. PR Review Process
 
 #### For Safe Changes:
+
 - CI adds `database-auto-approved` label
 - PR can be merged immediately
 - Comment shows change summary
 
 #### For Breaking Changes:
+
 - CI blocks merge
 - Requires `database-migration-approved` label
 - Review includes:
@@ -73,7 +80,9 @@ When you create a PR, the CI automatically:
   - Rollback plan
 
 ### 4. Post-Merge Deployment
+
 After merge to main:
+
 1. Schema automatically applied to staging (if configured)
 2. Production deployment requires manual trigger
 3. TypeScript types regenerated
@@ -81,6 +90,7 @@ After merge to main:
 ## GitHub Setup
 
 ### Required Secrets
+
 ```bash
 SUPABASE_ACCESS_TOKEN    # From: npx supabase login
 SUPABASE_PROJECT_ID      # Your project ID
@@ -89,12 +99,15 @@ STAGING_DATABASE_URL     # Optional staging environment
 ```
 
 ### Required Labels
+
 Run this script to create labels:
+
 ```bash
 ./scripts/setup-database-labels.sh
 ```
 
 Creates:
+
 - `database-auto-approved` (green) - Safe changes
 - `database-migration-approved` (red) - Manual approval
 - `database-changes` (blue) - Contains DB changes
@@ -102,6 +115,7 @@ Creates:
 ## Local Development
 
 ### Validate Schema
+
 ```bash
 # Check if schema is valid
 ./scripts/db.sh schema validate
@@ -111,6 +125,7 @@ Creates:
 ```
 
 ### Apply Schema
+
 ```bash
 # Apply to local database
 ./scripts/db.sh schema apply
@@ -120,6 +135,7 @@ pnpm db:generate-types
 ```
 
 ### Create Backup
+
 ```bash
 # Before major changes
 ./scripts/db.sh backup
@@ -128,12 +144,14 @@ pnpm db:generate-types
 ## Best Practices
 
 ### 1. Always Test Locally First
+
 ```bash
 # Validate before committing
 ./scripts/db.sh schema validate
 ```
 
 ### 2. Use Descriptive PR Titles
+
 ```
 feat: add user_preferences table with RLS
 fix: add missing index on properties.user_id
@@ -141,7 +159,9 @@ breaking: remove deprecated claims_old table
 ```
 
 ### 3. Include RLS Policies
+
 Every new table should have RLS:
+
 ```sql
 -- Enable RLS
 ALTER TABLE my_table ENABLE ROW LEVEL SECURITY;
@@ -152,14 +172,18 @@ CREATE POLICY "Users can view own data" ON my_table
 ```
 
 ### 4. Add Indexes for Foreign Keys
+
 ```sql
 CREATE INDEX idx_my_table_user_id ON my_table(user_id);
 ```
 
 ### 5. Document Breaking Changes
+
 Include migration instructions in PR:
+
 ```markdown
 ## Migration Guide
+
 1. Backup data from old_table
 2. Run migration script
 3. Verify data integrity
@@ -168,15 +192,18 @@ Include migration instructions in PR:
 ## Troubleshooting
 
 ### CI Fails with "Schema application failed"
+
 - Check syntax errors in schema.sql
 - Verify all extensions are created
 - Check for circular dependencies
 
 ### "Tables without RLS" warning
+
 - Add RLS policies for new tables
 - Or explicitly document why RLS isn't needed
 
 ### Branch database creation fails
+
 - Verify Supabase Pro subscription
 - Check SUPABASE_ACCESS_TOKEN is valid
 - Ensure project has available branches
@@ -184,6 +211,7 @@ Include migration instructions in PR:
 ## Emergency Procedures
 
 ### Rollback Schema
+
 ```bash
 # Restore from backup
 ./scripts/db.sh backup restore <backup-file>
@@ -194,7 +222,9 @@ git revert <commit-hash>
 ```
 
 ### Skip CI Temporarily
+
 Add `[skip ci]` to commit message:
+
 ```bash
 git commit -m "fix: emergency schema fix [skip ci]"
 ```

@@ -5,10 +5,18 @@
   },
   "gemini": {
     "strengths": ["pattern recognition", "bulk analysis", "automation"],
-    "preferred_tasks": ["codebase analysis", "dependency updates", "test generation"]
+    "preferred_tasks": [
+      "codebase analysis",
+      "dependency updates",
+      "test generation"
+    ]
   },
   "chatgpt": {
     "strengths": ["user experience", "api design", "integration"],
-    "preferred_tasks": ["feature implementation", "api development", "debugging"]
+    "preferred_tasks": [
+      "feature implementation",
+      "api development",
+      "debugging"
+    ]
   }
 }

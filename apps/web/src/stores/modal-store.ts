@@ -9,39 +9,39 @@
  * @status stable
  * @notes Manages modal visibility and data across the application
  */
-import { create } from 'zustand'
+import { create } from "zustand";
 
 type ModalType =
-  | 'login'
-  | 'signup'
-  | 'forgotPassword'
-  | 'content'
-  | 'securityQuestions'
-  | 'sessionWarning'
-  | 'success'
-  | 'confirmation'
-  | 'settings'
-  | 'responsive-login'
-  | 'responsive-signup'
-  | 'responsive-forgot-password'
-  | 'enhanced-forgot-password'
-  | 'socialLogin'
+  | "login"
+  | "signup"
+  | "forgotPassword"
+  | "content"
+  | "securityQuestions"
+  | "sessionWarning"
+  | "success"
+  | "confirmation"
+  | "settings"
+  | "responsive-login"
+  | "responsive-signup"
+  | "responsive-forgot-password"
+  | "enhanced-forgot-password"
+  | "socialLogin";
 
 interface ModalData {
-  title?: string
+  title?: string;
   content?: {
-    description?: string
-    benefits?: string[]
-    sections?: Array<{ title: string; content: string }>
-  }
-  [key: string]: unknown
+    description?: string;
+    benefits?: string[];
+    sections?: Array<{ title: string; content: string }>;
+  };
+  [key: string]: unknown;
 }
 
 interface ModalState {
-  activeModal: ModalType | null
-  modalData: ModalData | null
-  openModal: (type: ModalType, data?: ModalData) => void
-  closeModal: () => void
+  activeModal: ModalType | null;
+  modalData: ModalData | null;
+  openModal: (type: ModalType, data?: ModalData) => void;
+  closeModal: () => void;
 }
 
 export const useModalStore = create<ModalState>((set) => ({
@@ -49,4 +49,4 @@ export const useModalStore = create<ModalState>((set) => ({
   modalData: null,
   openModal: (type, data) => set({ activeModal: type, modalData: data }),
   closeModal: () => set({ activeModal: null, modalData: null }),
-}))
+}));

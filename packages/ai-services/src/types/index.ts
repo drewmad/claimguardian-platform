@@ -28,25 +28,25 @@ export interface AIResponse {
 
 // Request types
 export type AIFeature =
-  | 'clara'
-  | 'clarity'
-  | 'max'
-  | 'sentinel'
-  | 'generic'
-  | 'document-categorizer'
-  | 'damage-analyzer'
-  | 'document-extractor'
-  | 'hurricane-analyzer'
-  | 'policy-analysis'
-  | 'policy-chat'
-  | 'receipt-scanner'
-  | 'claim-assistant'
-  | 'communication-helper'
-  | 'customer-communication'
-  | 'property-scanner'
-  | 'batch-processor'
-  | 'document-generator'
-  | 'florida-regulation-compliance';
+  | "clara"
+  | "clarity"
+  | "max"
+  | "sentinel"
+  | "generic"
+  | "document-categorizer"
+  | "damage-analyzer"
+  | "document-extractor"
+  | "hurricane-analyzer"
+  | "policy-analysis"
+  | "policy-chat"
+  | "receipt-scanner"
+  | "claim-assistant"
+  | "communication-helper"
+  | "customer-communication"
+  | "property-scanner"
+  | "batch-processor"
+  | "document-generator"
+  | "florida-regulation-compliance";
 
 export interface AIRequest {
   prompt: string;
@@ -55,7 +55,7 @@ export interface AIRequest {
   temperature?: number;
   userId: string;
   feature: AIFeature;
-  responseFormat?: 'text' | 'json';
+  responseFormat?: "text" | "json";
   examples?: Array<{ input: string; output: string }>;
   metadata?: Record<string, unknown>;
 }
@@ -72,16 +72,16 @@ export interface AIProviderConfig {
 
 // Chat types for conversational AI
 export interface ChatMessage {
-  role: 'system' | 'user' | 'assistant';
+  role: "system" | "user" | "assistant";
   content: string;
 }
 
-export interface ChatRequest extends Omit<AIRequest, 'prompt'> {
+export interface ChatRequest extends Omit<AIRequest, "prompt"> {
   messages: ChatMessage[];
 }
 
 export interface ChatResponse extends AIResponse {
-  role: 'assistant';
+  role: "assistant";
   orchestrated?: boolean;
 }
 
@@ -126,12 +126,15 @@ export interface CostEntry {
 }
 
 export interface UserCosts {
-  period: 'day' | 'week' | 'month';
+  period: "day" | "week" | "month";
   total: number;
-  byFeature: Record<string, {
-    cost: number;
-    requests: number;
-  }>;
+  byFeature: Record<
+    string,
+    {
+      cost: number;
+      requests: number;
+    }
+  >;
 }
 
 // Cache types
@@ -166,12 +169,15 @@ export interface CostMetrics {
 }
 
 export interface HealthMetrics {
-  status: 'healthy' | 'degraded' | 'unhealthy';
-  providers: Record<string, {
-    status: 'up' | 'down';
-    lastCheck: Date;
-    latency: number;
-  }>;
+  status: "healthy" | "degraded" | "unhealthy";
+  providers: Record<
+    string,
+    {
+      status: "up" | "down";
+      lastCheck: Date;
+      latency: number;
+    }
+  >;
   cache: {
     connected: boolean;
     memoryUsage: number;
@@ -191,7 +197,7 @@ export interface ClaraResponse {
   message: string;
   sentiment: number;
   suggestedActions?: string[];
-  emotionalTone: 'supportive' | 'encouraging' | 'calming' | 'celebratory';
+  emotionalTone: "supportive" | "encouraging" | "calming" | "celebratory";
   requiresHumanReview: boolean;
 }
 
@@ -227,21 +233,16 @@ export class AIServiceError extends Error {
     message: string,
     public code: string,
     public provider?: string,
-    public retryable: boolean = false
+    public retryable: boolean = false,
   ) {
     super(message);
-    this.name = 'AIServiceError';
+    this.name = "AIServiceError";
   }
 }
 
 export class RateLimitError extends AIServiceError {
   constructor(provider: string, _retryAfter?: number) {
-    super(
-      `Rate limit exceeded for ${provider}`,
-      'RATE_LIMIT',
-      provider,
-      true
-    );
+    super(`Rate limit exceeded for ${provider}`, "RATE_LIMIT", provider, true);
   }
 }
 
@@ -249,9 +250,9 @@ export class InvalidResponseError extends AIServiceError {
   constructor(provider: string, details: string) {
     super(
       `Invalid response from ${provider}: ${details}`,
-      'INVALID_RESPONSE',
+      "INVALID_RESPONSE",
       provider,
-      false
+      false,
     );
   }
 }

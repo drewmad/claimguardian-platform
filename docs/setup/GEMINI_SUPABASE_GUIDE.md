@@ -1,9 +1,11 @@
 # 🤖 Gemini CLI Supabase Connection Guide
 
 ## Overview
+
 This guide provides detailed instructions for connecting Gemini CLI to the ClaimGuardian Supabase database.
 
 ## Project Details
+
 - **Project ID**: `tmlrvecuwgppbaynesji`
 - **Project URL**: `https://tmlrvecuwgppbaynesji.supabase.co`
 - **Region**: US East
@@ -12,6 +14,7 @@ This guide provides detailed instructions for connecting Gemini CLI to the Claim
 ## Prerequisites
 
 ### 1. Install Required Tools
+
 ```bash
 # Install Supabase CLI
 brew install supabase/tap/supabase
@@ -25,7 +28,9 @@ jq --version
 ```
 
 ### 2. Obtain Credentials
+
 You'll need:
+
 - **Supabase Access Token**: Personal access token from Supabase dashboard
 - **Anon Key**: Public API key (safe for client-side)
 - **Service Role Key**: Admin API key (server-side only)
@@ -231,12 +236,14 @@ if __name__ == "__main__":
 ## Available Tables
 
 ### Core Tables
+
 - **properties**: Property information and details
 - **claims**: Insurance claims data
 - **damage_assessments**: Damage documentation
 - **ai_analyses**: AI-generated insights
 
 ### Legacy Tables (from previous system)
+
 - **forms**: Insurance form templates
 - **forms_clauses**: Form sections and clauses
 - **forms_embeddings**: AI embeddings for search
@@ -247,6 +254,7 @@ if __name__ == "__main__":
 ## Common Queries for Gemini
 
 ### 1. Get Florida Properties
+
 ```sql
 SELECT * FROM properties
 WHERE address->>'state' = 'FL'
@@ -255,12 +263,14 @@ LIMIT 10;
 ```
 
 ### 2. Find Properties by ZIP Code
+
 ```sql
 SELECT * FROM properties
 WHERE address->>'zip' = '33948';
 ```
 
 ### 3. Get Properties with Claims
+
 ```sql
 SELECT
     p.*,
@@ -272,6 +282,7 @@ HAVING COUNT(c.id) > 0;
 ```
 
 ### 4. Search Properties by Insurance Carrier
+
 ```sql
 SELECT * FROM properties
 WHERE details->>'insurance_carrier' ILIKE '%Citizens%';
@@ -296,6 +307,7 @@ WHERE details->>'insurance_carrier' ILIKE '%Citizens%';
 ## Troubleshooting
 
 ### Connection Issues
+
 ```bash
 # Test connection
 curl -I "${SUPABASE_URL}/rest/v1/" \
@@ -325,6 +337,7 @@ supabase db logs --tail 100
 ## Integration Examples
 
 ### Gemini Script for Property Analysis
+
 ```bash
 #!/bin/bash
 # analyze-properties.sh
@@ -346,6 +359,7 @@ echo "$properties" | jq -r 'group_by(.type) | map({type: .[0].type, count: lengt
 ```
 
 ### Batch Operations
+
 ```python
 # batch_operations.py
 import asyncio

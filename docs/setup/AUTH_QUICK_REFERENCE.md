@@ -3,6 +3,7 @@
 ## 🚀 Getting Started
 
 ### Basic Authentication Hook
+
 ```typescript
 import { useAuth } from '@/components/auth/auth-provider'
 
@@ -17,6 +18,7 @@ function MyComponent() {
 ```
 
 ### Opening Authentication Modals
+
 ```typescript
 import { useModalStore } from '@/stores/modal-store'
 
@@ -36,66 +38,70 @@ function Header() {
 ## 🔐 Core Services
 
 ### Authentication Service
+
 ```typescript
-import { authService } from '@/lib/auth/auth-service'
+import { authService } from "@/lib/auth/auth-service";
 
 // Sign up
 const { data, error } = await authService.signUp({
-  email: 'user@example.com',
-  password: 'password123',
-  firstName: 'John',
-  lastName: 'Doe'
-})
+  email: "user@example.com",
+  password: "password123",
+  firstName: "John",
+  lastName: "Doe",
+});
 
 // Sign in with remember me
 const result = await authService.signIn({
-  email: 'user@example.com',
-  password: 'password123',
-  rememberMe: true
-})
+  email: "user@example.com",
+  password: "password123",
+  rememberMe: true,
+});
 
 // Resend verification
-await authService.resendConfirmationEmail('user@example.com')
+await authService.resendConfirmationEmail("user@example.com");
 ```
 
 ### Profile Management
+
 ```typescript
-import { profileService } from '@/lib/auth/profile-service'
+import { profileService } from "@/lib/auth/profile-service";
 
 // Get profile
-const profile = await profileService.getProfile(userId)
+const profile = await profileService.getProfile(userId);
 
 // Update profile
 await profileService.updateProfile(userId, {
-  firstName: 'Jane',
-  phone: '+1234567890'
-})
+  firstName: "Jane",
+  phone: "+1234567890",
+});
 
 // Change email
 const result = await profileService.requestEmailChange(userId, {
-  newEmail: 'new@example.com',
-  password: 'currentPassword'
-})
+  newEmail: "new@example.com",
+  password: "currentPassword",
+});
 ```
 
 ### Security Questions
+
 ```typescript
-import { securityQuestionsService } from '@/lib/auth/security-questions-service'
+import { securityQuestionsService } from "@/lib/auth/security-questions-service";
 
 // Get available questions
-const questions = await securityQuestionsService.getQuestions()
+const questions = await securityQuestionsService.getQuestions();
 
 // Save answers
 await securityQuestionsService.saveAnswers(userId, [
-  { questionId: 'q1', answer: 'My first pet' },
-  { questionId: 'q2', answer: 'New York' },
-  { questionId: 'q3', answer: 'Smith' }
-])
+  { questionId: "q1", answer: "My first pet" },
+  { questionId: "q2", answer: "New York" },
+  { questionId: "q3", answer: "Smith" },
+]);
 ```
 
 ## ⏱️ Rate Limiting
 
 ### Using Rate Limit Hook
+
 ```typescript
 import { useRateLimit } from '@/hooks/use-rate-limit'
 
@@ -121,6 +127,7 @@ function EmailResendButton() {
 ## 🔄 Session Management
 
 ### Session Hook Usage
+
 ```typescript
 import { useAuth } from '@/components/auth/auth-provider'
 
@@ -141,35 +148,39 @@ function App() {
 ```
 
 ### Manual Session Refresh
+
 ```typescript
-import { sessionManager } from '@/lib/auth/session-manager'
+import { sessionManager } from "@/lib/auth/session-manager";
 
 // Force refresh session
-await sessionManager.forceRefresh()
+await sessionManager.forceRefresh();
 
 // Get time until expiry
-const seconds = await sessionManager.getTimeUntilExpiry()
+const seconds = await sessionManager.getTimeUntilExpiry();
 ```
 
 ## 📊 Login Activity
 
 ### Tracking Login Activity
+
 ```typescript
-import { loginActivityService } from '@/lib/auth/login-activity-service'
+import { loginActivityService } from "@/lib/auth/login-activity-service";
 
 // Get user's login activity
-const activities = await loginActivityService.getUserLoginActivity(userId, 20)
+const activities = await loginActivityService.getUserLoginActivity(userId, 20);
 
 // Get statistics
-const stats = await loginActivityService.getLoginStats(userId)
+const stats = await loginActivityService.getLoginStats(userId);
 
 // Check for suspicious activity
-const { suspicious, reasons } = await loginActivityService.checkSuspiciousActivity(userId)
+const { suspicious, reasons } =
+  await loginActivityService.checkSuspiciousActivity(userId);
 ```
 
 ## 🛡️ Protected Routes
 
 ### Creating Protected Pages
+
 ```typescript
 'use client'
 import { useAuth } from '@/components/auth/auth-provider'
@@ -196,6 +207,7 @@ export default function ProtectedPage() {
 ## 🎨 UI Components
 
 ### Authentication Modals Available
+
 - `LoginModal` - Email/password login with remember me
 - `SignupModal` - Registration with email verification
 - `ForgotPasswordModal` - Password reset request
@@ -203,47 +215,56 @@ export default function ProtectedPage() {
 - `SessionWarningModal` - Session expiry warning
 
 ### Using Modals
+
 ```typescript
 // Modal store provides these types
-type ModalType = 'login' | 'signup' | 'forgotPassword' | 'securityQuestions' | 'sessionWarning'
+type ModalType =
+  | "login"
+  | "signup"
+  | "forgotPassword"
+  | "securityQuestions"
+  | "sessionWarning";
 
-const { activeModal, openModal, closeModal } = useModalStore()
+const { activeModal, openModal, closeModal } = useModalStore();
 ```
 
 ## ⚠️ Error Handling
 
 ### Error Types
+
 ```typescript
 // All auth errors extend AppError
 interface AuthError {
-  message: string
-  code: ErrorCode
-  originalError?: Error
+  message: string;
+  code: ErrorCode;
+  originalError?: Error;
 }
 
 // Common error codes
-'AUTH_INVALID_CREDENTIALS'
-'AUTH_EMAIL_NOT_VERIFIED'
-'AUTH_USER_EXISTS'
-'RATE_LIMIT_ERROR'
-'VALIDATION_ERROR'
+("AUTH_INVALID_CREDENTIALS");
+("AUTH_EMAIL_NOT_VERIFIED");
+("AUTH_USER_EXISTS");
+("RATE_LIMIT_ERROR");
+("VALIDATION_ERROR");
 ```
 
 ### Handling Errors
+
 ```typescript
-const { error, clearError } = useAuth()
+const { error, clearError } = useAuth();
 
 useEffect(() => {
   if (error) {
-    console.error(`Auth error (${error.code}):`, error.message)
+    console.error(`Auth error (${error.code}):`, error.message);
     // Show user-friendly message
   }
-}, [error])
+}, [error]);
 ```
 
 ## 🔧 Configuration
 
 ### Environment Variables
+
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
@@ -251,47 +272,51 @@ NEXT_PUBLIC_SENTRY_DSN=your_sentry_dsn
 ```
 
 ### Session Manager Config
+
 ```typescript
-import { sessionManager } from '@/lib/auth/session-manager'
+import { sessionManager } from "@/lib/auth/session-manager";
 
 sessionManager.config = {
   refreshThresholdMinutes: 10,
   warningThresholdMinutes: 5,
   onSessionExpiring: () => showWarning(),
   onSessionExpired: () => forceLogout(),
-  onSessionRefreshed: () => hideWarning()
-}
+  onSessionRefreshed: () => hideWarning(),
+};
 ```
 
 ## 📱 Pages & Routes
 
 ### Authentication Pages
+
 - `/auth/verify` - Email verification callback
 - `/auth/recover` - Account recovery with security questions
 - `/auth/reset-password` - Password reset
 
 ### Account Management
+
 - `/account/profile` - Profile settings and management
 - `/account/login-activity` - Login history and security
 
 ## 🧪 Testing Utilities
 
 ### Test Authentication State
+
 ```typescript
 // Mock authenticated user for testing
 const mockUser = {
-  id: 'test-user-id',
-  email: 'test@example.com'
-}
+  id: "test-user-id",
+  email: "test@example.com",
+};
 
 // Mock auth provider in tests
-jest.mock('@/components/auth/auth-provider', () => ({
+jest.mock("@/components/auth/auth-provider", () => ({
   useAuth: () => ({
     user: mockUser,
     loading: false,
-    error: null
-  })
-}))
+    error: null,
+  }),
+}));
 ```
 
 ## 🚨 Common Pitfalls
@@ -306,6 +331,7 @@ jest.mock('@/components/auth/auth-provider', () => ({
 ## 📞 Support
 
 For issues or questions:
+
 1. Check error logs in Sentry
 2. Review login activity for security issues
 3. Verify environment configuration

@@ -30,33 +30,43 @@ export default function CompliancePage() {
             </h1>
 
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-              Understanding regulatory compliance for property intelligence and insurance documentation in Florida.
+              Understanding regulatory compliance for property intelligence and
+              insurance documentation in Florida.
             </p>
           </div>
 
           <div className="space-y-8">
             {/* Disclaimer */}
             <div className="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-6">
-              <h2 className="text-xl font-semibold text-yellow-400 mb-3">Important Notice</h2>
+              <h2 className="text-xl font-semibold text-yellow-400 mb-3">
+                Important Notice
+              </h2>
               <p className="text-gray-300">
-                ClaimGuardian is a property documentation and organization platform. We are not licensed insurance
-                adjusters, attorneys, or financial advisors. Our platform provides tools and information to help
-                you manage your property data, but does not constitute professional advice.
+                ClaimGuardian is a property documentation and organization
+                platform. We are not licensed insurance adjusters, attorneys, or
+                financial advisors. Our platform provides tools and information
+                to help you manage your property data, but does not constitute
+                professional advice.
               </p>
             </div>
 
             {/* Coming Soon Content */}
             <div className="bg-gray-800/50 rounded-xl p-8 border border-gray-700">
-              <h2 className="text-2xl font-semibold mb-6">Compliance Framework Under Development</h2>
+              <h2 className="text-2xl font-semibold mb-6">
+                Compliance Framework Under Development
+              </h2>
 
               <p className="text-gray-300 mb-6">
-                As a Florida-based family business, we're committed to full compliance with all applicable
-                regulations. Our compliance documentation is currently being developed and will include:
+                As a Florida-based family business, we're committed to full
+                compliance with all applicable regulations. Our compliance
+                documentation is currently being developed and will include:
               </p>
 
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <h3 className="font-semibold text-green-400 mb-3">Data Protection</h3>
+                  <h3 className="font-semibold text-green-400 mb-3">
+                    Data Protection
+                  </h3>
                   <ul className="space-y-2 text-gray-400 text-sm">
                     <li>• Privacy protection standards</li>
                     <li>• Data retention policies</li>
@@ -66,7 +76,9 @@ export default function CompliancePage() {
                 </div>
 
                 <div>
-                  <h3 className="font-semibold text-blue-400 mb-3">Florida Regulations</h3>
+                  <h3 className="font-semibold text-blue-400 mb-3">
+                    Florida Regulations
+                  </h3>
                   <ul className="space-y-2 text-gray-400 text-sm">
                     <li>• Insurance documentation rules</li>
                     <li>• Consumer protection compliance</li>
@@ -76,7 +88,9 @@ export default function CompliancePage() {
                 </div>
 
                 <div>
-                  <h3 className="font-semibold text-purple-400 mb-3">Industry Standards</h3>
+                  <h3 className="font-semibold text-purple-400 mb-3">
+                    Industry Standards
+                  </h3>
                   <ul className="space-y-2 text-gray-400 text-sm">
                     <li>• Property data security</li>
                     <li>• Documentation best practices</li>
@@ -86,7 +100,9 @@ export default function CompliancePage() {
                 </div>
 
                 <div>
-                  <h3 className="font-semibold text-orange-400 mb-3">User Rights</h3>
+                  <h3 className="font-semibold text-orange-400 mb-3">
+                    User Rights
+                  </h3>
                   <ul className="space-y-2 text-gray-400 text-sm">
                     <li>• Data ownership rights</li>
                     <li>• Platform access policies</li>
@@ -99,10 +115,12 @@ export default function CompliancePage() {
 
             {/* Contact for Compliance */}
             <div className="bg-gray-800/30 rounded-xl p-6 border border-gray-700">
-              <h3 className="text-lg font-semibold mb-3">Compliance Questions</h3>
+              <h3 className="text-lg font-semibold mb-3">
+                Compliance Questions
+              </h3>
               <p className="text-gray-400 mb-4">
-                If you have specific compliance questions or need clarification on our regulatory approach,
-                please contact our team.
+                If you have specific compliance questions or need clarification
+                on our regulatory approach, please contact our team.
               </p>
               <a
                 href="mailto:support@claimguardianai.com?subject=Compliance%20Question"
@@ -118,15 +136,21 @@ export default function CompliancePage() {
                 href="/legal/privacy-policy"
                 className="bg-gray-800/50 rounded-lg p-4 border border-gray-700 hover:border-gray-600 transition-colors"
               >
-                <h4 className="font-semibold text-green-400 mb-2">Privacy Policy</h4>
-                <p className="text-sm text-gray-400">How we protect your data</p>
+                <h4 className="font-semibold text-green-400 mb-2">
+                  Privacy Policy
+                </h4>
+                <p className="text-sm text-gray-400">
+                  How we protect your data
+                </p>
               </a>
 
               <a
                 href="/legal/terms-of-service"
                 className="bg-gray-800/50 rounded-lg p-4 border border-gray-700 hover:border-gray-600 transition-colors"
               >
-                <h4 className="font-semibold text-blue-400 mb-2">Terms of Service</h4>
+                <h4 className="font-semibold text-blue-400 mb-2">
+                  Terms of Service
+                </h4>
                 <p className="text-sm text-gray-400">Platform usage terms</p>
               </a>
 
@@ -134,7 +158,9 @@ export default function CompliancePage() {
                 href="/contact"
                 className="bg-gray-800/50 rounded-lg p-4 border border-gray-700 hover:border-gray-600 transition-colors"
               >
-                <h4 className="font-semibold text-purple-400 mb-2">Contact Support</h4>
+                <h4 className="font-semibold text-purple-400 mb-2">
+                  Contact Support
+                </h4>
                 <p className="text-sm text-gray-400">Get help from our team</p>
               </a>
             </div>
@@ -142,5 +168,5 @@ export default function CompliancePage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -8,11 +8,11 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-import { GeminiProviderAdapter } from './gemini-adapter'
+import { GeminiProviderAdapter } from "./gemini-adapter";
 
 // Re-export the adapter as GeminiProvider for backward compatibility
 export class GeminiProvider extends GeminiProviderAdapter {
   constructor(apiKey?: string) {
-    super(apiKey)
+    super(apiKey);
   }
 }

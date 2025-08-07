@@ -1,23 +1,28 @@
 #!/usr/bin/env node
 
-import { glob } from 'glob';
-import { readFile, writeFile } from 'fs/promises';
-import path from 'path';
+import { glob } from "glob";
+import { readFile, writeFile } from "fs/promises";
+import path from "path";
 
-const directoriesToScan = ['apps', 'packages'];
-const fileExtensions = ['.js', '.jsx', '.ts', '.tsx'];
-const ignorePatterns = ['**/node_modules/**', '**/dist/**', '**/build/**', '**/.next/**'];
+const directoriesToScan = ["apps", "packages"];
+const fileExtensions = [".js", ".jsx", ".ts", ".tsx"];
+const ignorePatterns = [
+  "**/node_modules/**",
+  "**/dist/**",
+  "**/build/**",
+  "**/.next/**",
+];
 
 // Common package mappings
 const packageMappings = {
-  'react': ['react'],
-  'next': ['next', 'next/'],
-  '@supabase/supabase-js': ['createClient', 'SupabaseClient'],
-  '@claimguardian/ui': ['Button', 'Card', 'Input'],
-  '@claimguardian/utils': ['formatDate', 'cn'],
-  'openai': ['OpenAI'],
-  'lucide-react': ['Plus', 'Minus', 'Home'],
-  'tailwindcss': ['twMerge', 'clsx']
+  react: ["react"],
+  next: ["next", "next/"],
+  "@supabase/supabase-js": ["createClient", "SupabaseClient"],
+  "@claimguardian/ui": ["Button", "Card", "Input"],
+  "@claimguardian/utils": ["formatDate", "cn"],
+  openai: ["OpenAI"],
+  "lucide-react": ["Plus", "Minus", "Home"],
+  tailwindcss: ["twMerge", "clsx"],
 };
 
 async function extractImports(content) {
@@ -27,7 +32,7 @@ async function extractImports(content) {
   const importPatterns = [
     /import\s+.*?\s+from\s+['"`]([^'"`]+)['"`]/g,
     /import\s*\(\s*['"`]([^'"`]+)['"`]\s*\)/g,
-    /require\s*\(\s*['"`]([^'"`]+)['"`]\s*\)/g
+    /require\s*\(\s*['"`]([^'"`]+)['"`]\s*\)/g,
   ];
 
   for (const pattern of importPatterns) {
@@ -36,17 +41,17 @@ async function extractImports(content) {
       let pkg = match[1];
 
       // Handle scoped packages and subpaths
-      if (pkg.startsWith('@')) {
-        const parts = pkg.split('/');
+      if (pkg.startsWith("@")) {
+        const parts = pkg.split("/");
         if (parts.length >= 2) {
           pkg = `${parts[0]}/${parts[1]}`;
         }
       } else {
-        pkg = pkg.split('/')[0];
+        pkg = pkg.split("/")[0];
       }
 
       // Filter out relative imports
-      if (!pkg.startsWith('.') && !pkg.startsWith('/')) {
+      if (!pkg.startsWith(".") && !pkg.startsWith("/")) {
         imports.add(pkg);
       }
     }
@@ -56,11 +61,14 @@ async function extractImports(content) {
 }
 
 async function updateDependencies() {
-  console.log('🔄 Starting dependency synchronization...\n');
+  console.log("🔄 Starting dependency synchronization...\n");
 
-  const filesToScan = await glob(`{${directoriesToScan.join(',')}}/**/*.{js,jsx,ts,tsx}`, {
-    ignore: ignorePatterns,
-  });
+  const filesToScan = await glob(
+    `{${directoriesToScan.join(",")}}/**/*.{js,jsx,ts,tsx}`,
+    {
+      ignore: ignorePatterns,
+    },
+  );
 
   let filesUpdated = 0;
 
@@ -69,10 +77,10 @@ async function updateDependencies() {
       continue;
     }
 
-    const content = await readFile(file, 'utf-8');
+    const content = await readFile(file, "utf-8");
 
     // Skip files without metadata
-    if (!content.includes('@fileMetadata')) {
+    if (!content.includes("@fileMetadata")) {
       continue;
     }
 
@@ -84,7 +92,9 @@ async function updateDependencies() {
     }
 
     // Find metadata block
-    const metadataMatch = content.match(/(\/\*\*[\s\S]*?@fileMetadata[\s\S]*?\*\/)/);
+    const metadataMatch = content.match(
+      /(\/\*\*[\s\S]*?@fileMetadata[\s\S]*?\*\/)/,
+    );
     if (!metadataMatch) {
       continue;
     }
@@ -103,8 +113,9 @@ async function updateDependencies() {
         // Compare arrays (order doesn't matter)
         const currentSet = new Set(currentDeps);
         const actualSet = new Set(actualImports);
-        needsUpdate = currentSet.size !== actualSet.size ||
-                     ![...currentSet].every(dep => actualSet.has(dep));
+        needsUpdate =
+          currentSet.size !== actualSet.size ||
+          ![...currentSet].every((dep) => actualSet.has(dep));
       } catch (e) {
         needsUpdate = true;
       }
@@ -120,7 +131,7 @@ async function updateDependencies() {
         // Update existing dependencies
         updatedMetadata = metadataBlock.replace(
           /@dependencies\s+\[.*?\]/s,
-          `@dependencies ${depsString}`
+          `@dependencies ${depsString}`,
         );
       } else {
         // Add dependencies after @purpose or before the closing */
@@ -128,37 +139,39 @@ async function updateDependencies() {
         if (purposeMatch) {
           updatedMetadata = metadataBlock.replace(
             purposeMatch[1],
-            `${purposeMatch[1]}\n * @dependencies ${depsString}`
+            `${purposeMatch[1]}\n * @dependencies ${depsString}`,
           );
         } else {
           // Add before closing */
           updatedMetadata = metadataBlock.replace(
             /\s*\*\//,
-            `\n * @dependencies ${depsString}\n */`
+            `\n * @dependencies ${depsString}\n */`,
           );
         }
       }
 
       // Update the file
       const updatedContent = content.replace(metadataBlock, updatedMetadata);
-      await writeFile(file, updatedContent, 'utf-8');
+      await writeFile(file, updatedContent, "utf-8");
 
       console.log(`📦 Updated dependencies in ${file}`);
-      console.log(`   Dependencies: ${actualImports.join(', ')}\n`);
+      console.log(`   Dependencies: ${actualImports.join(", ")}\n`);
       filesUpdated++;
     }
   }
 
   if (filesUpdated > 0) {
-    console.log(`✅ Successfully updated dependencies in ${filesUpdated} files.`);
+    console.log(
+      `✅ Successfully updated dependencies in ${filesUpdated} files.`,
+    );
   } else {
-    console.log('✅ All file dependencies are already up to date.');
+    console.log("✅ All file dependencies are already up to date.");
   }
 
   process.exit(0);
 }
 
-updateDependencies().catch(err => {
-  console.error('❌ Dependency sync failed:', err);
+updateDependencies().catch((err) => {
+  console.error("❌ Dependency sync failed:", err);
   process.exit(1);
 });

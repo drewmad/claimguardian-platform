@@ -6,17 +6,17 @@
  * @status stable
  */
 
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
-import { authLogger } from '@/lib/logger'
+import { authLogger } from "@/lib/logger";
 
 /**
  * Creates a Supabase client for server-side authentication
  * Uses httpOnly cookies for enhanced security
  */
 export async function createAuthClient() {
-  const cookieStore = await cookies()
+  const cookieStore = await cookies();
 
   try {
     const client = createServerClient(
@@ -25,7 +25,7 @@ export async function createAuthClient() {
       {
         cookies: {
           get(name: string) {
-            return cookieStore.get(name)?.value
+            return cookieStore.get(name)?.value;
           },
           set(name: string, value: string, options: Record<string, any>) {
             try {
@@ -34,37 +34,45 @@ export async function createAuthClient() {
                 value,
                 ...options,
                 // Ensure cookies are secure in production
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'lax' as const,
-                httpOnly: true
-              })
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "lax" as const,
+                httpOnly: true,
+              });
             } catch {
               // Cookie setting can fail in Server Components
               // This is expected behavior when called from non-route handlers
-              authLogger.debug('Cookie set called from Server Component', { name })
+              authLogger.debug("Cookie set called from Server Component", {
+                name,
+              });
             }
           },
           remove(name: string, options: Record<string, any>) {
             try {
               cookieStore.set({
                 name,
-                value: '',
+                value: "",
                 ...options,
-                maxAge: 0
-              })
+                maxAge: 0,
+              });
             } catch {
-              authLogger.debug('Cookie remove called from Server Component', { name })
+              authLogger.debug("Cookie remove called from Server Component", {
+                name,
+              });
             }
           },
         },
-      }
-    )
+      },
+    );
 
-    authLogger.info('Server auth client initialized')
-    return client
+    authLogger.info("Server auth client initialized");
+    return client;
   } catch (error) {
-    authLogger.error('Failed to initialize server auth client', {}, error as Error)
-    throw error
+    authLogger.error(
+      "Failed to initialize server auth client",
+      {},
+      error as Error,
+    );
+    throw error;
   }
 }
 
@@ -74,35 +82,46 @@ export async function createAuthClient() {
  */
 export async function getServerSession() {
   try {
-    const supabase = await createAuthClient()
+    const supabase = await createAuthClient();
 
     // Validate session by checking user
-    const { data: { user }, error: userError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
 
     if (userError || !user) {
-      authLogger.warn('Session validation failed', { error: userError?.message })
+      authLogger.warn("Session validation failed", {
+        error: userError?.message,
+      });
 
       // If user doesn't exist, clear the invalid session
-      if (userError?.message?.includes('User from sub claim in JWT does not exist')) {
-        authLogger.info('Clearing invalid session - user no longer exists')
-        await supabase.auth.signOut()
+      if (
+        userError?.message?.includes(
+          "User from sub claim in JWT does not exist",
+        )
+      ) {
+        authLogger.info("Clearing invalid session - user no longer exists");
+        await supabase.auth.signOut();
       }
 
-      return null
+      return null;
     }
 
     // If user is found, get the session from the user object
-    const { data: { session } } = await supabase.auth.getSession()
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
-    authLogger.debug('Valid session found', { userId: user.id })
+    authLogger.debug("Valid session found", { userId: user.id });
 
     return {
       ...session,
-      user
-    }
+      user,
+    };
   } catch (error) {
-    authLogger.error('Error getting server session', {}, error as Error)
-    return null
+    authLogger.error("Error getting server session", {}, error as Error);
+    return null;
   }
 }
 
@@ -112,18 +131,18 @@ export async function getServerSession() {
  */
 export async function serverSignOut() {
   try {
-    const supabase = await createAuthClient()
-    const { error } = await supabase.auth.signOut()
+    const supabase = await createAuthClient();
+    const { error } = await supabase.auth.signOut();
 
     if (error) {
-      authLogger.error('Server sign out error', {}, error)
-      throw error
+      authLogger.error("Server sign out error", {}, error);
+      throw error;
     }
 
-    authLogger.info('User signed out from server')
+    authLogger.info("User signed out from server");
   } catch (error) {
-    authLogger.error('Failed to sign out from server', {}, error as Error)
-    throw error
+    authLogger.error("Failed to sign out from server", {}, error as Error);
+    throw error;
   }
 }
 
@@ -132,18 +151,25 @@ export async function serverSignOut() {
  */
 export async function refreshServerSession() {
   try {
-    const supabase = await createAuthClient()
-    const { data: { session }, error } = await supabase.auth.refreshSession()
+    const supabase = await createAuthClient();
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.refreshSession();
 
     if (error || !session) {
-      authLogger.error('Failed to refresh server session', {}, error || undefined)
-      return null
+      authLogger.error(
+        "Failed to refresh server session",
+        {},
+        error || undefined,
+      );
+      return null;
     }
 
-    authLogger.info('Server session refreshed', { userId: session.user.id })
-    return session
+    authLogger.info("Server session refreshed", { userId: session.user.id });
+    return session;
   } catch (error) {
-    authLogger.error('Error refreshing server session', {}, error as Error)
-    return null
+    authLogger.error("Error refreshing server session", {}, error as Error);
+    return null;
   }
 }

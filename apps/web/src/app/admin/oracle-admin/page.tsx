@@ -9,15 +9,15 @@
  * @security-level admin-only
  */
 
-'use client'
+"use client";
 
-import { AdminLayout } from '@/components/admin/admin-layout'
-import { SettlementAnalyticsDashboard } from '@/components/oracle/settlement-analytics-dashboard'
+import { AdminLayout } from "@/components/admin/admin-layout";
+import { SettlementAnalyticsDashboard } from "@/components/oracle/settlement-analytics-dashboard";
 
 export default function OracleAdminPage() {
   return (
     <AdminLayout>
       <SettlementAnalyticsDashboard />
     </AdminLayout>
-  )
+  );
 }

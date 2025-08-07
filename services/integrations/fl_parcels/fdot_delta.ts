@@ -10,16 +10,21 @@
  */
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
-import { COUNTY_IDS, FDOT_SERVICE, REQUEST_CONFIG, COUNTY_FIPS_MAP } from "./config.ts";
+import {
+  COUNTY_IDS,
+  FDOT_SERVICE,
+  REQUEST_CONFIG,
+  COUNTY_FIPS_MAP,
+} from "./config.ts";
 
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   {
     auth: {
-      persistSession: false
-    }
-  }
+      persistSession: false,
+    },
+  },
 );
 
 interface FeatureProperties {
@@ -41,11 +46,14 @@ interface GeoJsonResponse {
   features: GeoJsonFeature[];
 }
 
-async function fetchWithRetry(url: string, attempts = REQUEST_CONFIG.retryAttempts): Promise<Response> {
+async function fetchWithRetry(
+  url: string,
+  attempts = REQUEST_CONFIG.retryAttempts,
+): Promise<Response> {
   for (let i = 0; i < attempts; i++) {
     try {
       const response = await fetch(url, {
-        signal: AbortSignal.timeout(REQUEST_CONFIG.timeout)
+        signal: AbortSignal.timeout(REQUEST_CONFIG.timeout),
       });
 
       if (response.ok) {
@@ -55,27 +63,36 @@ async function fetchWithRetry(url: string, attempts = REQUEST_CONFIG.retryAttemp
       if (response.status >= 400 && response.status < 500) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-
     } catch (error) {
       if (i === attempts - 1) throw error;
-      await new Promise(resolve => setTimeout(resolve, REQUEST_CONFIG.retryDelay));
+      await new Promise((resolve) =>
+        setTimeout(resolve, REQUEST_CONFIG.retryDelay),
+      );
     }
   }
 
   throw new Error("Max retry attempts reached");
 }
 
-async function syncCountyLayer(layerId: number, ingestBatchId: string): Promise<{ inserted: number; errors: number }> {
+async function syncCountyLayer(
+  layerId: number,
+  ingestBatchId: string,
+): Promise<{ inserted: number; errors: number }> {
   const layerUrl = `${FDOT_SERVICE}/${layerId}`;
   console.log(`Processing county layer ${layerId}...`);
 
   try {
     // Get max ObjectID already stored for this county
-    const { data: maxData, error: maxError } = await supabase
-      .rpc("max_objectid_for_county", { cnty_layer: layerId });
+    const { data: maxData, error: maxError } = await supabase.rpc(
+      "max_objectid_for_county",
+      { cnty_layer: layerId },
+    );
 
     if (maxError) {
-      console.error(`Error getting max ObjectID for layer ${layerId}:`, maxError);
+      console.error(
+        `Error getting max ObjectID for layer ${layerId}:`,
+        maxError,
+      );
     }
 
     const lastObjectId = maxData?.max || -1;
@@ -114,23 +131,25 @@ async function syncCountyLayer(layerId: number, ingestBatchId: string): Promise<
 
         // Transform features
         const rows = geoJson.features
-          .filter(feature => {
+          .filter((feature) => {
             const parcelId = feature.properties.PARCELID;
-            const countyFips = feature.properties.CNTYFIPS || feature.properties.COUNTYFIPS;
+            const countyFips =
+              feature.properties.CNTYFIPS || feature.properties.COUNTYFIPS;
             return parcelId && countyFips;
           })
-          .map(feature => {
+          .map((feature) => {
             // Add layerid to attrs for future reference
             feature.properties.layerid = layerId;
 
             return {
               source: "fdot",
               source_url: layerUrl,
-              county_fips: feature.properties.CNTYFIPS || feature.properties.COUNTYFIPS,
+              county_fips:
+                feature.properties.CNTYFIPS || feature.properties.COUNTYFIPS,
               parcel_id: feature.properties.PARCELID,
               geom: feature.geometry,
               attrs: feature.properties,
-              ingest_batch_id: ingestBatchId
+              ingest_batch_id: ingestBatchId,
             };
           });
 
@@ -143,24 +162,28 @@ async function syncCountyLayer(layerId: number, ingestBatchId: string): Promise<
           .from("fl_parcels_raw")
           .upsert(rows, {
             onConflict: "source,parcel_id",
-            ignoreDuplicates: false
+            ignoreDuplicates: false,
           });
 
         if (insertError) {
-          console.error(`Error inserting chunk for layer ${layerId}:`, insertError);
+          console.error(
+            `Error inserting chunk for layer ${layerId}:`,
+            insertError,
+          );
           totalErrors += rows.length;
         } else {
           totalInserted += rows.length;
         }
-
       } catch (chunkError) {
-        console.error(`Failed to process chunk for layer ${layerId}:`, chunkError);
+        console.error(
+          `Failed to process chunk for layer ${layerId}:`,
+          chunkError,
+        );
         totalErrors += chunk.length;
       }
     }
 
     return { inserted: totalInserted, errors: totalErrors };
-
   } catch (error) {
     console.error(`Failed to sync county layer ${layerId}:`, error);
     return { inserted: 0, errors: 0 };
@@ -172,25 +195,24 @@ export async function handler(req: Request): Promise<Response> {
   const ingestBatchId = crypto.randomUUID();
 
   // Log ingest start
-  await supabase
-    .from("fl_parcel_ingest_events")
-    .insert({
-      ingest_batch_id: ingestBatchId,
-      source: "fdot",
-      status: "started",
-      metadata: {
-        source_url: FDOT_SERVICE,
-        started_by: "cron",
-        sync_type: "delta"
-      }
-    });
+  await supabase.from("fl_parcel_ingest_events").insert({
+    ingest_batch_id: ingestBatchId,
+    source: "fdot",
+    status: "started",
+    metadata: {
+      source_url: FDOT_SERVICE,
+      started_by: "cron",
+      sync_type: "delta",
+    },
+  });
 
   try {
     console.log("Starting FDOT delta sync...");
 
     let totalInserted = 0;
     let totalErrors = 0;
-    const countyResults: Record<number, { inserted: number; errors: number }> = {};
+    const countyResults: Record<number, { inserted: number; errors: number }> =
+      {};
 
     // Process each county layer
     for (const layerId of COUNTY_IDS) {
@@ -201,7 +223,7 @@ export async function handler(req: Request): Promise<Response> {
 
       // Add delay between counties to avoid rate limiting
       if (layerId < COUNTY_IDS[COUNTY_IDS.length - 1]) {
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise((resolve) => setTimeout(resolve, 2000));
       }
     }
 
@@ -219,8 +241,8 @@ export async function handler(req: Request): Promise<Response> {
           total_inserted: totalInserted,
           total_errors: totalErrors,
           county_results: countyResults,
-          duration_ms: Date.now() - startTime
-        }
+          duration_ms: Date.now() - startTime,
+        },
       })
       .eq("ingest_batch_id", ingestBatchId);
 
@@ -230,7 +252,9 @@ export async function handler(req: Request): Promise<Response> {
       console.error("Failed to refresh materialized view:", refreshError);
     }
 
-    console.log(`FDOT delta sync completed. Inserted: ${totalInserted}, Errors: ${totalErrors}`);
+    console.log(
+      `FDOT delta sync completed. Inserted: ${totalInserted}, Errors: ${totalErrors}`,
+    );
 
     return new Response(
       JSON.stringify({
@@ -239,14 +263,13 @@ export async function handler(req: Request): Promise<Response> {
         totalInserted,
         totalErrors,
         countyResults,
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       }),
       {
         headers: { "Content-Type": "application/json" },
-        status: 200
-      }
+        status: 200,
+      },
     );
-
   } catch (error) {
     console.error("FDOT delta sync failed:", error);
 
@@ -256,7 +279,7 @@ export async function handler(req: Request): Promise<Response> {
       .update({
         status: "failed",
         error_message: error.message,
-        completed_at: new Date().toISOString()
+        completed_at: new Date().toISOString(),
       })
       .eq("ingest_batch_id", ingestBatchId);
 
@@ -264,12 +287,12 @@ export async function handler(req: Request): Promise<Response> {
       JSON.stringify({
         success: false,
         error: error.message,
-        ingestBatchId
+        ingestBatchId,
       }),
       {
         headers: { "Content-Type": "application/json" },
-        status: 500
-      }
+        status: 500,
+      },
     );
   }
 }

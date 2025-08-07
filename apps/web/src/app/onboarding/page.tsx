@@ -8,10 +8,10 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { AuthProvider } from '@/components/auth/auth-provider'
-import { OnboardingFlow } from '@/components/onboarding/onboarding-flow'
+import { AuthProvider } from "@/components/auth/auth-provider";
+import { OnboardingFlow } from "@/components/onboarding/onboarding-flow";
 
 export default function OnboardingPage() {
   return (
@@ -22,5 +22,5 @@ export default function OnboardingPage() {
         </div>
       </div>
     </AuthProvider>
-  )
+  );
 }

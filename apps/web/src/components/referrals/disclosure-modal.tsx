@@ -8,31 +8,45 @@
  * @insurance-context referrals
  */
 
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { AlertTriangle, Info, X, ExternalLink, Shield } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Badge } from '@/components/ui/badge'
+import { useState } from "react";
+import { AlertTriangle, Info, X, ExternalLink, Shield } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 
 interface ReferralProvider {
-  id: string
-  name: string
-  type: 'attorney' | 'broker' | 'contractor'
-  commission?: string
-  rating?: number
-  reviewCount?: number
+  id: string;
+  name: string;
+  type: "attorney" | "broker" | "contractor";
+  commission?: string;
+  rating?: number;
+  reviewCount?: number;
 }
 
 interface ReferralDisclosureModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onAccept: (provider: ReferralProvider) => void
-  providers: ReferralProvider[]
-  type: 'attorney' | 'broker' | 'contractor'
+  isOpen: boolean;
+  onClose: () => void;
+  onAccept: (provider: ReferralProvider) => void;
+  providers: ReferralProvider[];
+  type: "attorney" | "broker" | "contractor";
 }
 
 export function ReferralDisclosureModal({
@@ -40,29 +54,30 @@ export function ReferralDisclosureModal({
   onClose,
   onAccept,
   providers,
-  type
+  type,
 }: ReferralDisclosureModalProps) {
-  const [selectedProvider, setSelectedProvider] = useState<ReferralProvider | null>(null)
-  const [disclosureAccepted, setDisclosureAccepted] = useState(false)
-  const [understandCommission, setUnderstandCommission] = useState(false)
+  const [selectedProvider, setSelectedProvider] =
+    useState<ReferralProvider | null>(null);
+  const [disclosureAccepted, setDisclosureAccepted] = useState(false);
+  const [understandCommission, setUnderstandCommission] = useState(false);
 
   const handleAccept = () => {
     if (selectedProvider && disclosureAccepted && understandCommission) {
-      onAccept(selectedProvider)
-      onClose()
+      onAccept(selectedProvider);
+      onClose();
     }
-  }
+  };
 
   const getProviderTypeLabel = () => {
     switch (type) {
-      case 'attorney':
-        return 'Legal Professional'
-      case 'broker':
-        return 'Insurance Broker'
-      case 'contractor':
-        return 'Service Contractor'
+      case "attorney":
+        return "Legal Professional";
+      case "broker":
+        return "Insurance Broker";
+      case "contractor":
+        return "Service Contractor";
     }
-  }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -73,7 +88,8 @@ export function ReferralDisclosureModal({
             Choose Your {getProviderTypeLabel()}
           </DialogTitle>
           <DialogDescription className="text-gray-400">
-            Select from multiple independent providers. We are not affiliated with any of them.
+            Select from multiple independent providers. We are not affiliated
+            with any of them.
           </DialogDescription>
         </DialogHeader>
 
@@ -86,10 +102,11 @@ export function ReferralDisclosureModal({
                 Important Disclosure (FTC Required)
               </p>
               <p className="text-sm text-gray-300">
-                ClaimGuardian may receive a referral fee if you choose one of these services.
-                This does not affect your cost or our recommendations. We are completely independent
-                and not affiliated with any insurance company. You are free to choose any provider,
-                including those not listed here.
+                ClaimGuardian may receive a referral fee if you choose one of
+                these services. This does not affect your cost or our
+                recommendations. We are completely independent and not
+                affiliated with any insurance company. You are free to choose
+                any provider, including those not listed here.
               </p>
             </div>
           </div>
@@ -106,8 +123,8 @@ export function ReferralDisclosureModal({
               key={provider.id}
               className={`bg-gray-800 border-gray-700 cursor-pointer transition-all ${
                 selectedProvider?.id === provider.id
-                  ? 'border-blue-500 shadow-lg shadow-blue-500/20'
-                  : 'hover:border-gray-600'
+                  ? "border-blue-500 shadow-lg shadow-blue-500/20"
+                  : "hover:border-gray-600"
               }`}
               onClick={() => setSelectedProvider(provider)}
             >
@@ -135,14 +152,15 @@ export function ReferralDisclosureModal({
                   </div>
                   <div className="flex items-center gap-2">
                     {provider.commission && (
-                      <Badge variant="outline" className="text-xs text-gray-400 border-gray-600">
+                      <Badge
+                        variant="outline"
+                        className="text-xs text-gray-400 border-gray-600"
+                      >
                         Referral fee applies
                       </Badge>
                     )}
                     {selectedProvider?.id === provider.id && (
-                      <Badge className="bg-blue-600 text-white">
-                        Selected
-                      </Badge>
+                      <Badge className="bg-blue-600 text-white">Selected</Badge>
                     )}
                   </div>
                 </div>
@@ -156,24 +174,30 @@ export function ReferralDisclosureModal({
           <label className="flex items-start gap-3 cursor-pointer">
             <Checkbox
               checked={disclosureAccepted}
-              onCheckedChange={(checked) => setDisclosureAccepted(checked as boolean)}
+              onCheckedChange={(checked) =>
+                setDisclosureAccepted(checked as boolean)
+              }
               className="mt-0.5"
             />
             <span className="text-sm text-gray-300">
-              I understand that ClaimGuardian may receive a referral fee from the provider I choose,
-              and this does not affect the cost of services to me.
+              I understand that ClaimGuardian may receive a referral fee from
+              the provider I choose, and this does not affect the cost of
+              services to me.
             </span>
           </label>
 
           <label className="flex items-start gap-3 cursor-pointer">
             <Checkbox
               checked={understandCommission}
-              onCheckedChange={(checked) => setUnderstandCommission(checked as boolean)}
+              onCheckedChange={(checked) =>
+                setUnderstandCommission(checked as boolean)
+              }
               className="mt-0.5"
             />
             <span className="text-sm text-gray-300">
-              I acknowledge that ClaimGuardian is not affiliated with any of these providers and
-              I am free to choose any provider, including those not listed here.
+              I acknowledge that ClaimGuardian is not affiliated with any of
+              these providers and I am free to choose any provider, including
+              those not listed here.
             </span>
           </label>
         </div>
@@ -187,9 +211,10 @@ export function ReferralDisclosureModal({
                 Other Options Available
               </p>
               <p className="text-sm text-gray-400">
-                You can always find your own {type} independently. Try searching online,
-                asking friends for recommendations, or checking with your local bar association
-                (for attorneys) or state insurance department (for brokers).
+                You can always find your own {type} independently. Try searching
+                online, asking friends for recommendations, or checking with
+                your local bar association (for attorneys) or state insurance
+                department (for brokers).
               </p>
             </div>
           </div>
@@ -205,13 +230,15 @@ export function ReferralDisclosureModal({
           </Button>
           <Button
             onClick={handleAccept}
-            disabled={!selectedProvider || !disclosureAccepted || !understandCommission}
+            disabled={
+              !selectedProvider || !disclosureAccepted || !understandCommission
+            }
             className="bg-blue-600 hover:bg-blue-700 text-white"
           >
-            Continue with {selectedProvider?.name || 'Selected Provider'}
+            Continue with {selectedProvider?.name || "Selected Provider"}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

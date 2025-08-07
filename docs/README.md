@@ -5,6 +5,7 @@ Welcome to the ClaimGuardian documentation. This directory contains technical do
 ## Documentation Structure
 
 ### Main Documentation
+
 - **[PLATFORM_OVERVIEW.md](./PLATFORM_OVERVIEW.md)** - Complete platform architecture and features
 - **[AI_FEATURES_ROADMAP.md](./AI_FEATURES_ROADMAP.md)** - AI feature implementation roadmap
 - **[AI_SCHEMA_ANALYSIS.md](./AI_SCHEMA_ANALYSIS.md)** - AI-first database schema analysis
@@ -15,6 +16,7 @@ Welcome to the ClaimGuardian documentation. This directory contains technical do
 - **[SUPABASE_AUTH_SETUP.md](./SUPABASE_AUTH_SETUP.md)** - Authentication configuration guide
 
 ### Subdirectories
+
 - **`/context`** - Product requirements and context documents
   - [PRD.md](./context/PRD.md) - Product Requirements Document
 - **`/setup`** - Setup and deployment guides
@@ -43,6 +45,7 @@ Welcome to the ClaimGuardian documentation. This directory contains technical do
 ## Contributing
 
 When adding new documentation:
+
 1. Use clear, descriptive filenames
 2. Include a table of contents for longer documents
 3. Keep documentation up-to-date with code changes

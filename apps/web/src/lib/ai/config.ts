@@ -10,24 +10,24 @@
  */
 export const AI_MODELS = {
   OPENAI: {
-    CHAT: 'gpt-4-turbo-preview',
-    VISION: 'gpt-4-vision-preview',
-    TURBO: 'gpt-3.5-turbo',
+    CHAT: "gpt-4-turbo-preview",
+    VISION: "gpt-4-vision-preview",
+    TURBO: "gpt-3.5-turbo",
   },
   GEMINI: {
-    PRO: 'gemini-1.5-pro',
-    VISION: 'gemini-1.5-pro-vision',
-    FLASH: 'gemini-1.5-flash',
+    PRO: "gemini-1.5-pro",
+    VISION: "gemini-1.5-pro-vision",
+    FLASH: "gemini-1.5-flash",
   },
   CLAUDE: {
-    OPUS: 'claude-3-opus-20240229',
-    SONNET: 'claude-3-sonnet-20240229',
-    HAIKU: 'claude-3-haiku-20240307',
+    OPUS: "claude-3-opus-20240229",
+    SONNET: "claude-3-sonnet-20240229",
+    HAIKU: "claude-3-haiku-20240307",
   },
   GROK: {
-    BETA: 'grok-beta',
+    BETA: "grok-beta",
   },
-} as const
+} as const;
 
 export const AI_PROMPTS = {
   POLICY_CHAT: {
@@ -63,9 +63,11 @@ Be specific about damage observations and always prioritize safety.`,
 
 Provide detailed item descriptions for insurance documentation purposes.`,
   },
-} as const
+} as const;
 
 export const AI_ENDPOINTS = {
-  OPENAI: process.env.NEXT_PUBLIC_OPENAI_API_URL || 'https://api.openai.com/v1',
-  GEMINI: process.env.NEXT_PUBLIC_GEMINI_API_URL || 'https://generativelanguage.googleapis.com/v1beta',
-} as const
+  OPENAI: process.env.NEXT_PUBLIC_OPENAI_API_URL || "https://api.openai.com/v1",
+  GEMINI:
+    process.env.NEXT_PUBLIC_GEMINI_API_URL ||
+    "https://generativelanguage.googleapis.com/v1beta",
+} as const;

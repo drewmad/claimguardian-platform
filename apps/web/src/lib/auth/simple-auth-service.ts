@@ -12,28 +12,28 @@
  * Simplified auth service - just the basics
  */
 
-import { createBrowserSupabaseClient } from '@claimguardian/db'
-import { User } from '@supabase/supabase-js'
+import { createBrowserSupabaseClient } from "@claimguardian/db";
+import { User } from "@supabase/supabase-js";
 
 interface AuthResponse<T = unknown> {
-  data?: T
-  error?: Error
+  data?: T;
+  error?: Error;
 }
 
 interface SignUpData {
-  email: string
-  password: string
-  firstName?: string
-  lastName?: string
+  email: string;
+  password: string;
+  firstName?: string;
+  lastName?: string;
 }
 
 interface SignInData {
-  email: string
-  password: string
+  email: string;
+  password: string;
 }
 
 class SimpleAuthService {
-  private supabase = createBrowserSupabaseClient()
+  private supabase = createBrowserSupabaseClient();
 
   /**
    * Sign up a new user - SIMPLE VERSION
@@ -45,23 +45,23 @@ class SimpleAuthService {
         password: data.password,
         options: {
           data: {
-            firstName: data.firstName || '',
-            lastName: data.lastName || ''
-          }
-        }
-      })
+            firstName: data.firstName || "",
+            lastName: data.lastName || "",
+          },
+        },
+      });
 
       if (error) {
-        return { error }
+        return { error };
       }
 
       if (!authData.user) {
-        return { error: new Error('Signup failed') }
+        return { error: new Error("Signup failed") };
       }
 
-      return { data: authData.user }
+      return { data: authData.user };
     } catch (error) {
-      return { error: error as Error }
+      return { error: error as Error };
     }
   }
 
@@ -70,22 +70,23 @@ class SimpleAuthService {
    */
   async signIn(data: SignInData): Promise<AuthResponse<User>> {
     try {
-      const { data: authData, error } = await this.supabase.auth.signInWithPassword({
-        email: data.email,
-        password: data.password
-      })
+      const { data: authData, error } =
+        await this.supabase.auth.signInWithPassword({
+          email: data.email,
+          password: data.password,
+        });
 
       if (error) {
-        return { error }
+        return { error };
       }
 
       if (!authData.user) {
-        return { error: new Error('Login failed') }
+        return { error: new Error("Login failed") };
       }
 
-      return { data: authData.user }
+      return { data: authData.user };
     } catch (error) {
-      return { error: error as Error }
+      return { error: error as Error };
     }
   }
 
@@ -94,13 +95,13 @@ class SimpleAuthService {
    */
   async signOut(): Promise<AuthResponse<void>> {
     try {
-      const { error } = await this.supabase.auth.signOut()
+      const { error } = await this.supabase.auth.signOut();
       if (error) {
-        return { error }
+        return { error };
       }
-      return { data: undefined }
+      return { data: undefined };
     } catch (error) {
-      return { error: error as Error }
+      return { error: error as Error };
     }
   }
 
@@ -109,13 +110,16 @@ class SimpleAuthService {
    */
   async getCurrentUser(): Promise<AuthResponse<User | null>> {
     try {
-      const { data: { user }, error } = await this.supabase.auth.getUser()
+      const {
+        data: { user },
+        error,
+      } = await this.supabase.auth.getUser();
       if (error) {
-        return { error }
+        return { error };
       }
-      return { data: user }
+      return { data: user };
     } catch (error) {
-      return { error: error as Error }
+      return { error: error as Error };
     }
   }
 
@@ -124,15 +128,15 @@ class SimpleAuthService {
    */
   async resetPassword(email: string): Promise<AuthResponse<void>> {
     try {
-      const { error } = await this.supabase.auth.resetPasswordForEmail(email)
+      const { error } = await this.supabase.auth.resetPasswordForEmail(email);
       if (error) {
-        return { error }
+        return { error };
       }
-      return { data: undefined }
+      return { data: undefined };
     } catch (error) {
-      return { error: error as Error }
+      return { error: error as Error };
     }
   }
 }
 
-export const simpleAuthService = new SimpleAuthService()
+export const simpleAuthService = new SimpleAuthService();

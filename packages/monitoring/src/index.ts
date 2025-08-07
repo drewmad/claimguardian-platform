@@ -9,11 +9,16 @@
  * @supabase-integration edge-functions
  */
 // Performance metrics
-export * from './metrics'
-export { getMetricsCollector, recordMetric, recordDatabaseQuery, recordAPICall } from './metrics'
+export * from "./metrics";
+export {
+  getMetricsCollector,
+  recordMetric,
+  recordDatabaseQuery,
+  recordAPICall,
+} from "./metrics";
 
 // Error tracking with Sentry
-export * from './sentry'
+export * from "./sentry";
 export {
   initializeSentry,
   withErrorBoundary,
@@ -22,11 +27,11 @@ export {
   withTransaction,
   identifyUser,
   clearUser,
-  addBreadcrumb
-} from './sentry'
+  addBreadcrumb,
+} from "./sentry";
 
 // User behavior analytics
-export * from './analytics'
+export * from "./analytics";
 export {
   getAnalytics,
   identify,
@@ -34,9 +39,9 @@ export {
   trackPageView,
   trackFeatureUsage,
   trackError,
-  trackPerformance
-} from './analytics'
+  trackPerformance,
+} from "./analytics";
 
 // Monitoring utilities
-export { monitorSupabaseClient } from './supabase-monitor'
-export { createPerformanceObserver } from './performance-observer'
+export { monitorSupabaseClient } from "./supabase-monitor";
+export { createPerformanceObserver } from "./performance-observer";

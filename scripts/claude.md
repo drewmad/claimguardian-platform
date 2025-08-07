@@ -1,11 +1,13 @@
 # Scripts Directory - Claude.md
 
 ## Overview
+
 The scripts directory contains essential development, deployment, and maintenance scripts for the ClaimGuardian platform. Updated for modern toolchain with pnpm 10.13.1, Node.js 24.3.0, and enhanced automation.
 
 ## Core Scripts
 
 ### Database Operations (`db.sh`)
+
 Primary database management script with multiple subcommands.
 
 ```bash
@@ -28,12 +30,14 @@ Primary database management script with multiple subcommands.
 ```
 
 **Key Features:**
+
 - Single source of truth: Uses `supabase/schema.sql` (not migrations)
 - Production-safe: Validates operations before execution
 - Backup integration: Automatic backups before destructive operations
 - Type generation: Triggers TypeScript type updates
 
 ### Development Scripts (`dev.sh`)
+
 Development environment management and utilities.
 
 ```bash
@@ -53,6 +57,7 @@ Development environment management and utilities.
 ```
 
 ### Build Operations (`build.sh`)
+
 Production build management and optimization.
 
 ```bash
@@ -68,6 +73,7 @@ Production build management and optimization.
 ```
 
 ### Data Management (`data.sh`)
+
 Large-scale data processing and import operations.
 
 ```bash
@@ -85,6 +91,7 @@ Large-scale data processing and import operations.
 ## Utilities Directory (`utils/`)
 
 ### Data Import Utilities
+
 ```bash
 # Parallel processing
 ./scripts/utils/data-import/run-parallel-import.sh          # High-performance imports
@@ -97,6 +104,7 @@ node ./scripts/utils/data-import/import_cadastral_gdb.js    # Cadastral data imp
 ```
 
 ### Database Utilities
+
 ```bash
 # Schema management
 ./scripts/utils/db/schema-diff.sh           # Compare schema versions
@@ -105,6 +113,7 @@ node ./scripts/utils/data-import/import_cadastral_gdb.js    # Cadastral data imp
 ```
 
 ### Development Helpers
+
 ```bash
 # Code analysis
 ./scripts/utils/validate-lockfile.js        # Package.json/lockfile validation
@@ -115,6 +124,7 @@ node ./scripts/utils/data-import/import_cadastral_gdb.js    # Cadastral data imp
 ## Script Architecture Patterns
 
 ### Error Handling Standard
+
 ```bash
 #!/bin/bash
 set -euo pipefail  # Exit on error, undefined vars, pipe failures
@@ -147,6 +157,7 @@ success "Script completed successfully"
 ```
 
 ### Progress Tracking Pattern
+
 ```bash
 # Progress bar implementation
 show_progress() {
@@ -173,6 +184,7 @@ echo # New line after completion
 ```
 
 ### Configuration Management
+
 ```bash
 # Load configuration with defaults
 load_config() {
@@ -199,6 +211,7 @@ load_config() {
 ## Database Script Patterns
 
 ### Schema Management
+
 ```bash
 # schema_operations.sh
 dump_schema() {
@@ -238,6 +251,7 @@ apply_schema() {
 ```
 
 ### Migration Handling
+
 ```bash
 # migration_operations.sh
 apply_migrations() {
@@ -264,6 +278,7 @@ apply_migrations() {
 ## Data Processing Scripts
 
 ### Parallel Import Pattern
+
 ```bash
 # parallel_import.sh
 run_parallel_import() {
@@ -299,6 +314,7 @@ process_file() {
 ```
 
 ### Data Validation
+
 ```bash
 # validate_import.sh
 validate_import_results() {
@@ -332,6 +348,7 @@ validate_import_results() {
 ## Performance Monitoring
 
 ### Execution Time Tracking
+
 ```bash
 # timing.sh
 measure_execution() {
@@ -363,6 +380,7 @@ measure_execution "./scripts/data.sh import" "Data import"
 ```
 
 ### Resource Monitoring
+
 ```bash
 # monitor_resources.sh
 monitor_system_resources() {
@@ -386,6 +404,7 @@ monitor_system_resources() {
 ## Testing Scripts
 
 ### Integration Test Runner
+
 ```bash
 # test_runner.sh
 run_integration_tests() {
@@ -419,6 +438,7 @@ run_integration_tests() {
 ## Security & Validation
 
 ### Environment Validation
+
 ```bash
 # validate_environment.sh
 validate_environment() {
@@ -446,6 +466,7 @@ validate_environment() {
 ```
 
 ### Security Checks
+
 ```bash
 # security_check.sh
 security_audit() {
@@ -471,18 +492,21 @@ security_audit() {
 ## Usage Guidelines
 
 ### Script Execution
+
 - Always run scripts from project root
 - Check script permissions: `chmod +x scripts/*.sh`
 - Review script output for errors
 - Use `--help` flag for usage information
 
 ### Development Workflow
+
 1. **Start development**: `./scripts/dev.sh setup`
 2. **Regular maintenance**: `./scripts/dev.sh clean && ./scripts/dev.sh lint`
 3. **Database updates**: `./scripts/db.sh schema dump && pnpm db:generate-types`
 4. **Pre-deployment**: `./scripts/build.sh verify`
 
 ### Error Recovery
+
 - Check script logs in `logs/` directory
 - Use `--verbose` flag for detailed output
 - Restore from backup if needed: `./scripts/db.sh restore`
@@ -491,12 +515,14 @@ security_audit() {
 ## Maintenance
 
 ### Script Updates
+
 - Test changes in development environment
 - Validate with different data sets
 - Update documentation when modifying scripts
 - Use version control for script changes
 
 ### Performance Optimization
+
 - Profile long-running scripts
 - Implement parallel processing where possible
 - Cache expensive operations

@@ -8,9 +8,9 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-import { AIRequest, AIResponse, ChatRequest } from '../types/index';
+import { AIRequest, AIResponse, ChatRequest } from "../types/index";
 
-import { CacheManager } from './cache.manager';
+import { CacheManager } from "./cache.manager";
 
 interface SemanticCacheEntry {
   embedding: number[];
@@ -28,7 +28,7 @@ export class SemanticCache extends CacheManager {
   constructor(
     redisUrl?: string,
     enabled: boolean = true,
-    similarityThreshold: number = 0.85
+    similarityThreshold: number = 0.85,
   ) {
     super(redisUrl, enabled);
     this.similarityThreshold = similarityThreshold;
@@ -40,27 +40,36 @@ export class SemanticCache extends CacheManager {
   async findSimilar(
     request: AIRequest | ChatRequest,
     embedding: number[],
-    threshold: number = this.similarityThreshold
+    threshold: number = this.similarityThreshold,
   ): Promise<AIResponse | null> {
-    let bestMatch: { key: string; score: number; entry: SemanticCacheEntry } | null = null;
+    let bestMatch: {
+      key: string;
+      score: number;
+      entry: SemanticCacheEntry;
+    } | null = null;
 
     // Search through embeddings
     for (const [key, entry] of this.embeddings) {
       const similarity = this.cosineSimilarity(embedding, entry.embedding);
 
-      if (similarity > threshold && (!bestMatch || similarity > bestMatch.score)) {
+      if (
+        similarity > threshold &&
+        (!bestMatch || similarity > bestMatch.score)
+      ) {
         bestMatch = { key, score: similarity, entry };
       }
     }
 
     if (bestMatch) {
-      console.log(`[SemanticCache] Found similar request with score ${bestMatch.score.toFixed(3)}`);
+      console.log(
+        `[SemanticCache] Found similar request with score ${bestMatch.score.toFixed(3)}`,
+      );
 
       // Return the cached response
       return {
         ...bestMatch.entry.response,
         cached: true,
-        cacheScore: bestMatch.score
+        cacheScore: bestMatch.score,
       };
     }
 
@@ -72,7 +81,7 @@ export class SemanticCache extends CacheManager {
     request: AIRequest | ChatRequest,
     response: AIResponse,
     embedding: number[],
-    ttlOverride?: number
+    ttlOverride?: number,
   ): Promise<void> {
     // Store in regular cache
     await super.set(request, response, ttlOverride);
@@ -83,7 +92,7 @@ export class SemanticCache extends CacheManager {
       embedding,
       request,
       response,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
     // Manage cache size
@@ -138,24 +147,27 @@ export class SemanticCache extends CacheManager {
     if (!this.redis) return;
 
     try {
-      const keys = await this.redis.keys('ai:embedding:*');
+      const keys = await this.redis.keys("ai:embedding:*");
 
       for (const key of keys.slice(0, this.maxCacheSize)) {
         const data = await this.redis.get(key);
         if (data) {
           const entry = JSON.parse(data) as SemanticCacheEntry;
-          const cacheKey = key.replace('ai:embedding:', '');
+          const cacheKey = key.replace("ai:embedding:", "");
           this.embeddings.set(cacheKey, entry);
         }
       }
 
       console.log(`[SemanticCache] Loaded ${this.embeddings.size} embeddings`);
     } catch (error) {
-      console.error('[SemanticCache] Error loading embeddings:', error);
+      console.error("[SemanticCache] Error loading embeddings:", error);
     }
   }
 
-  private async saveEmbedding(key: string, entry: SemanticCacheEntry): Promise<void> {
+  private async saveEmbedding(
+    key: string,
+    entry: SemanticCacheEntry,
+  ): Promise<void> {
     if (!this.redis) return;
 
     try {
@@ -163,11 +175,11 @@ export class SemanticCache extends CacheManager {
       await this.redis.set(
         `ai:embedding:${key}`,
         JSON.stringify(entry),
-        'EX',
-        ttl
+        "EX",
+        ttl,
       );
     } catch (error) {
-      console.error('[SemanticCache] Error saving embedding:', error);
+      console.error("[SemanticCache] Error saving embedding:", error);
     }
   }
 
@@ -190,7 +202,9 @@ export class SemanticCache extends CacheManager {
     }
 
     // Normalize
-    const magnitude = Math.sqrt(embedding.reduce((sum, val) => sum + val * val, 0));
+    const magnitude = Math.sqrt(
+      embedding.reduce((sum, val) => sum + val * val, 0),
+    );
     if (magnitude > 0) {
       for (let i = 0; i < embedding.length; i++) {
         embedding[i] /= magnitude;
@@ -204,25 +218,23 @@ export class SemanticCache extends CacheManager {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash; // Convert to 32-bit integer
     }
     return hash;
   }
-
-
 
   async clearSemanticCache(): Promise<void> {
     this.embeddings.clear();
 
     if (this.redis) {
       try {
-        const keys = await this.redis.keys('ai:embedding:*');
+        const keys = await this.redis.keys("ai:embedding:*");
         if (keys.length > 0) {
           await this.redis.del(...keys);
         }
       } catch (error) {
-        console.error('[SemanticCache] Error clearing embeddings:', error);
+        console.error("[SemanticCache] Error clearing embeddings:", error);
       }
     }
 

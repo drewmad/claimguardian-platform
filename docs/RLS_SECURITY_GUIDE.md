@@ -37,6 +37,7 @@ These views use SECURITY DEFINER which can bypass RLS:
 ## RLS Policy Patterns
 
 ### Pattern 1: User Owns Resource
+
 ```sql
 -- Users can only see their own data
 CREATE POLICY "Users can view own records" ON table_name
@@ -53,6 +54,7 @@ CREATE POLICY "Users can delete own records" ON table_name
 ```
 
 ### Pattern 2: User Owns Parent Resource
+
 ```sql
 -- Users can access child records through parent ownership
 CREATE POLICY "Users can view related records" ON child_table
@@ -66,6 +68,7 @@ CREATE POLICY "Users can view related records" ON child_table
 ```
 
 ### Pattern 3: Service Role Only
+
 ```sql
 -- Only service role can access (for system tables)
 CREATE POLICY "Service role full access" ON system_table
@@ -74,6 +77,7 @@ CREATE POLICY "Service role full access" ON system_table
 ```
 
 ### Pattern 4: Public Read, Private Write
+
 ```sql
 -- Anyone can read, only owners can modify
 CREATE POLICY "Public read access" ON public_table
@@ -141,65 +145,79 @@ RESET SESSION AUTHORIZATION;
 ### User Data Tables
 
 #### properties
+
 - **Policy**: Users can only CRUD their own properties
 - **Key**: `user_id = auth.uid()`
 
 #### claims
+
 - **Policy**: Users can only CRUD their own claims
 - **Key**: `user_id = auth.uid()`
 
 #### policies (insurance)
+
 - **Policy**: Users can manage policies for their properties
 - **Key**: Property ownership check via JOIN
 
 #### damage_assessments
+
 - **Policy**: Users can manage assessments for their claims
 - **Key**: Claim ownership check via JOIN
 
 ### AI/ML Tables
 
 #### ai_processing_queue
+
 - **Policy**: Users see/manage their own queue items
 - **Key**: `user_id = auth.uid()`
 
 #### ml_model_versions
+
 - **Policy**: Authenticated users can view all models
 - **Write**: Service role only
 
 #### ai_training_datasets
+
 - **Policy**: Users manage their own datasets
 - **Key**: `user_id = auth.uid()`
 
 ### System Tables
 
 #### audit_logs, error_logs
+
 - **Policy**: Users see their own logs
 - **Insert**: Service role only
 
 #### security_logs, maintenance_log
+
 - **Policy**: Service role only (no user access)
 
 ### History Tables
 
 #### claims_history, policies_history, properties_history
+
 - **Policy**: Read-only access to own resource history
 - **Key**: JOIN to parent table for ownership
 
 ## Common Issues & Solutions
 
 ### Issue: "new row violates row-level security policy"
+
 **Cause**: Trying to insert data for another user
 **Solution**: Ensure `user_id` matches `auth.uid()` on insert
 
 ### Issue: Query returns no rows (but data exists)
+
 **Cause**: RLS filtering out rows user doesn't own
 **Solution**: Check data ownership, verify auth token
 
 ### Issue: Admin functions stopped working
+
 **Cause**: RLS blocking service role access
 **Solution**: Add explicit service role policies
 
 ### Issue: Performance degradation
+
 **Cause**: Complex RLS policies with multiple JOINs
 **Solution**: Simplify policies, add indexes on foreign keys
 

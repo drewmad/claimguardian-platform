@@ -1,9 +1,11 @@
 # ClaimGuardian Animation System Guide
 
 ## Overview
+
 Complete guide to ClaimGuardian's animation system built with Framer Motion, providing consistent and performant animations across the application.
 
 ## Table of Contents
+
 - [Animation Philosophy](#animation-philosophy)
 - [Core Animation Library](#core-animation-library)
 - [Implementation Patterns](#implementation-patterns)
@@ -18,6 +20,7 @@ Complete guide to ClaimGuardian's animation system built with Framer Motion, pro
 ClaimGuardian's animation system follows these principles:
 
 ### Design Goals
+
 - **Purposeful Motion**: Every animation serves a functional purpose
 - **Consistent Timing**: Standardized duration and easing curves
 - **Performance First**: GPU-accelerated transforms and opacity changes
@@ -25,6 +28,7 @@ ClaimGuardian's animation system follows these principles:
 - **Progressive Enhancement**: Works without JavaScript
 
 ### Motion Characteristics
+
 - **Duration**: 200-500ms for most transitions
 - **Easing**: Natural cubic-bezier curves
 - **Stagger**: 100-150ms delays for sequential animations
@@ -38,24 +42,24 @@ ClaimGuardian's animation system follows these principles:
 ### Location: `/lib/animations.ts`
 
 ```typescript
-import { Variants } from 'framer-motion'
+import { Variants } from "framer-motion";
 
 // Page-level transitions
 export const pageTransition: Variants = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-  exit: { opacity: 0, y: -20, transition: { duration: 0.3 } }
-}
+  exit: { opacity: 0, y: -20, transition: { duration: 0.3 } },
+};
 
 // Container for staggered children
 export const staggerContainer: Variants = {
   animate: {
     transition: {
       staggerChildren: 0.1,
-      delayChildren: 0.1
-    }
-  }
-}
+      delayChildren: 0.1,
+    },
+  },
+};
 
 // Basic entrance animations
 export const fadeInUp: Variants = {
@@ -63,54 +67,54 @@ export const fadeInUp: Variants = {
   animate: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.3, ease: "easeOut" }
-  }
-}
+    transition: { duration: 0.3, ease: "easeOut" },
+  },
+};
 
 export const fadeInDown: Variants = {
   initial: { opacity: 0, y: -20 },
   animate: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.3, ease: "easeOut" }
-  }
-}
+    transition: { duration: 0.3, ease: "easeOut" },
+  },
+};
 
 export const slideInLeft: Variants = {
   initial: { opacity: 0, x: -30 },
   animate: {
     opacity: 1,
     x: 0,
-    transition: { duration: 0.3, ease: "easeOut" }
-  }
-}
+    transition: { duration: 0.3, ease: "easeOut" },
+  },
+};
 
 export const slideInRight: Variants = {
   initial: { opacity: 0, x: 30 },
   animate: {
     opacity: 1,
     x: 0,
-    transition: { duration: 0.3, ease: "easeOut" }
-  }
-}
+    transition: { duration: 0.3, ease: "easeOut" },
+  },
+};
 
 export const scaleIn: Variants = {
   initial: { opacity: 0, scale: 0.9 },
   animate: {
     opacity: 1,
     scale: 1,
-    transition: { duration: 0.3, ease: "easeOut" }
-  }
-}
+    transition: { duration: 0.3, ease: "easeOut" },
+  },
+};
 
 export const rotateIn: Variants = {
   initial: { opacity: 0, rotate: -10 },
   animate: {
     opacity: 1,
     rotate: 0,
-    transition: { duration: 0.4, ease: "easeOut" }
-  }
-}
+    transition: { duration: 0.4, ease: "easeOut" },
+  },
+};
 
 export const bounceIn: Variants = {
   initial: { opacity: 0, scale: 0.3 },
@@ -121,39 +125,39 @@ export const bounceIn: Variants = {
       duration: 0.5,
       ease: "easeOut",
       type: "spring",
-      damping: 15
-    }
-  }
-}
+      damping: 15,
+    },
+  },
+};
 
 // Interactive animations
 export const hoverScale: Variants = {
   hover: {
     scale: 1.02,
-    transition: { duration: 0.2, ease: "easeOut" }
-  }
-}
+    transition: { duration: 0.2, ease: "easeOut" },
+  },
+};
 
 export const hoverGlow: Variants = {
   hover: {
     boxShadow: "0 10px 30px rgba(0, 255, 0, 0.2)",
-    transition: { duration: 0.2 }
-  }
-}
+    transition: { duration: 0.2 },
+  },
+};
 
 export const pressScale: Variants = {
   tap: {
     scale: 0.98,
-    transition: { duration: 0.1 }
-  }
-}
+    transition: { duration: 0.1 },
+  },
+};
 
 // Specialized animations
 export const modalOverlay: Variants = {
   initial: { opacity: 0 },
   animate: { opacity: 1 },
-  exit: { opacity: 0 }
-}
+  exit: { opacity: 0 },
+};
 
 export const modalContent: Variants = {
   initial: { opacity: 0, scale: 0.95, y: 20 },
@@ -161,27 +165,27 @@ export const modalContent: Variants = {
     opacity: 1,
     scale: 1,
     y: 0,
-    transition: { duration: 0.3, ease: "easeOut" }
+    transition: { duration: 0.3, ease: "easeOut" },
   },
   exit: {
     opacity: 0,
     scale: 0.95,
     y: 20,
-    transition: { duration: 0.2 }
-  }
-}
+    transition: { duration: 0.2 },
+  },
+};
 
 export const drawerSlide: Variants = {
   initial: { x: "100%" },
   animate: {
     x: 0,
-    transition: { duration: 0.4, ease: "easeOut" }
+    transition: { duration: 0.4, ease: "easeOut" },
   },
   exit: {
     x: "100%",
-    transition: { duration: 0.3, ease: "easeIn" }
-  }
-}
+    transition: { duration: 0.3, ease: "easeIn" },
+  },
+};
 
 // Loading animations
 export const pulse: Variants = {
@@ -190,10 +194,10 @@ export const pulse: Variants = {
     transition: {
       duration: 2,
       repeat: Infinity,
-      ease: "easeInOut"
-    }
-  }
-}
+      ease: "easeInOut",
+    },
+  },
+};
 
 export const spinner: Variants = {
   animate: {
@@ -201,10 +205,10 @@ export const spinner: Variants = {
     transition: {
       duration: 1,
       repeat: Infinity,
-      ease: "linear"
-    }
-  }
-}
+      ease: "linear",
+    },
+  },
+};
 ```
 
 ---
@@ -333,13 +337,17 @@ export function Modal({ isOpen, onClose, children }) {
 ## Performance Guidelines
 
 ### GPU-Accelerated Properties
+
 Always animate these properties for best performance:
+
 - `transform` (translate, scale, rotate)
 - `opacity`
 - `filter` (blur, brightness, etc.)
 
 ### Avoid Animating
+
 These properties cause layout thrashing:
+
 - `width`, `height`
 - `top`, `left`, `right`, `bottom`
 - `margin`, `padding`
@@ -351,27 +359,28 @@ These properties cause layout thrashing:
 // Use transform instead of changing position
 // ✅ Good
 const slideIn = {
-  animate: { x: 0, opacity: 1 }
-}
+  animate: { x: 0, opacity: 1 },
+};
 
 // ❌ Bad
 const slideInBad = {
-  animate: { left: 0, opacity: 1 }
-}
+  animate: { left: 0, opacity: 1 },
+};
 
 // Use scale instead of changing dimensions
 // ✅ Good
 const grow = {
-  animate: { scale: 1.1 }
-}
+  animate: { scale: 1.1 },
+};
 
 // ❌ Bad
 const growBad = {
-  animate: { width: "110%", height: "110%" }
-}
+  animate: { width: "110%", height: "110%" },
+};
 ```
 
 ### Layout Animations
+
 For layout changes, use Framer Motion's layout prop:
 
 ```typescript
@@ -467,6 +476,7 @@ export function LoadingComponent() {
 ## Best Practices
 
 ### 1. Use Variants for Consistency
+
 ```typescript
 // ✅ Good - Reusable variants
 <motion.div variants={fadeInUp} />
@@ -479,6 +489,7 @@ export function LoadingComponent() {
 ```
 
 ### 2. Implement Exit Animations
+
 ```typescript
 // ✅ Good - Smooth exit
 <AnimatePresence>
@@ -494,6 +505,7 @@ export function LoadingComponent() {
 ```
 
 ### 3. Consider Reduced Motion
+
 ```typescript
 // Respect user preferences
 const shouldReduceMotion = useReducedMotion()
@@ -508,6 +520,7 @@ const shouldReduceMotion = useReducedMotion()
 ```
 
 ### 4. Use Layout Animations Sparingly
+
 ```typescript
 // Only when necessary for layout changes
 <motion.div layout layoutId="unique-id">
@@ -516,18 +529,20 @@ const shouldReduceMotion = useReducedMotion()
 ```
 
 ### 5. Optimize Stagger Animations
+
 ```typescript
 // Control stagger timing based on list size
-const staggerDelay = Math.min(0.1, 0.5 / items.length)
+const staggerDelay = Math.min(0.1, 0.5 / items.length);
 
 const customStagger = {
   animate: {
-    transition: { staggerChildren: staggerDelay }
-  }
-}
+    transition: { staggerChildren: staggerDelay },
+  },
+};
 ```
 
 ### 6. Handle Animation States
+
 ```typescript
 const [isAnimating, setIsAnimating] = useState(false)
 
@@ -545,6 +560,7 @@ const [isAnimating, setIsAnimating] = useState(false)
 ## Accessibility Considerations
 
 ### Reduced Motion Support
+
 ```css
 /* Global CSS */
 @media (prefers-reduced-motion: reduce) {
@@ -557,29 +573,31 @@ const [isAnimating, setIsAnimating] = useState(false)
 ```
 
 ### React Hook for Reduced Motion
+
 ```typescript
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from "react";
 
 export function useReducedMotion() {
-  const [shouldReduceMotion, setShouldReduceMotion] = useState(false)
+  const [shouldReduceMotion, setShouldReduceMotion] = useState(false);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setShouldReduceMotion(mediaQuery.matches)
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setShouldReduceMotion(mediaQuery.matches);
 
     const handleChange = (e: MediaQueryListEvent) => {
-      setShouldReduceMotion(e.matches)
-    }
+      setShouldReduceMotion(e.matches);
+    };
 
-    mediaQuery.addEventListener('change', handleChange)
-    return () => mediaQuery.removeEventListener('change', handleChange)
-  }, [])
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
 
-  return shouldReduceMotion
+  return shouldReduceMotion;
 }
 ```
 
 ### Focus Management
+
 ```typescript
 // Maintain focus during animations
 export function AnimatedButton({ children, ...props }) {
@@ -609,6 +627,7 @@ export function AnimatedButton({ children, ...props }) {
 ## Debugging Animations
 
 ### Animation Inspector
+
 Add to components for debugging:
 
 ```typescript
@@ -629,6 +648,7 @@ Add to components for debugging:
 ```
 
 ### Performance Monitoring
+
 ```typescript
 // Monitor animation performance
 const [animationTime, setAnimationTime] = useState(0)
@@ -651,6 +671,7 @@ const [animationTime, setAnimationTime] = useState(0)
 ## Future Enhancements
 
 ### Planned Additions
+
 - Gesture-based animations (swipe, drag)
 - Scroll-triggered animations
 - Physics-based spring animations
@@ -659,6 +680,7 @@ const [animationTime, setAnimationTime] = useState(0)
 - Particle system animations
 
 ### Performance Improvements
+
 - Animation batching for better performance
 - Intersection Observer for viewport-based animations
 - Web Workers for complex calculations
@@ -666,6 +688,6 @@ const [animationTime, setAnimationTime] = useState(0)
 
 ---
 
-*Last updated: August 2025*
-*Version: 1.0*
-*Maintainer: Frontend Team*
+_Last updated: August 2025_
+_Version: 1.0_
+_Maintainer: Frontend Team_

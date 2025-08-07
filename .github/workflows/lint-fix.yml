@@ -3,7 +3,7 @@ name: Auto-fix Lint Issues
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 * * 1' # Weekly on Monday
+    - cron: "0 0 * * 1" # Weekly on Monday
   pull_request:
     types: [opened, synchronize]
 
@@ -23,8 +23,8 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'pnpm'
+          node-version: "22"
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -45,8 +45,8 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: 'fix: auto-fix ESLint issues'
-          title: 'fix: auto-fix ESLint issues'
+          commit-message: "fix: auto-fix ESLint issues"
+          title: "fix: auto-fix ESLint issues"
           body: |
             This PR contains automated ESLint fixes for:
             - Unescaped entities

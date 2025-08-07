@@ -11,13 +11,8 @@
       "resizeMode": "contain",
       "backgroundColor": "#1F2937"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "platforms": [
-      "ios",
-      "android"
-    ],
+    "assetBundlePatterns": ["**/*"],
+    "platforms": ["ios", "android"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.claimguardian.mobile",

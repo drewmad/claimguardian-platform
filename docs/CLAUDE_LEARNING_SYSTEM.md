@@ -52,6 +52,7 @@ The Claude Learning System is integrated into the ClaimGuardian monorepo. No add
 ### Configuration
 
 Environment variables:
+
 ```bash
 # Enable/disable features
 CLAUDE_LEARNING_ENABLED=true
@@ -68,6 +69,7 @@ CLAUDE_MIN_SAMPLE_SIZE=100
 ### Basic Usage
 
 #### 1. Test the System
+
 ```bash
 npm run claude:test-system
 ```
@@ -75,6 +77,7 @@ npm run claude:test-system
 This runs comprehensive tests on all components and provides a detailed report.
 
 #### 2. View Learning Statistics
+
 ```bash
 npm run claude:stats
 ```
@@ -82,6 +85,7 @@ npm run claude:stats
 Displays current learnings, patterns, and performance metrics.
 
 #### 3. Run Interactive Demo
+
 ```bash
 npm run claude:demo
 ```
@@ -89,6 +93,7 @@ npm run claude:demo
 Interactive demonstration of the learning system in action.
 
 #### 4. Export Learnings
+
 ```bash
 node scripts/claude/export-learnings.js
 ```
@@ -96,6 +101,7 @@ node scripts/claude/export-learnings.js
 Exports all learnings and patterns for sharing or archival.
 
 #### 5. Monitor Production
+
 ```bash
 node scripts/claude/monitor-production.js
 ```
@@ -107,6 +113,7 @@ Real-time production monitoring dashboard in your terminal.
 ### 1. Automatic Learning Capture
 
 The system automatically captures:
+
 - Task descriptions and approaches
 - Mistakes and corrections
 - Successful patterns
@@ -114,6 +121,7 @@ The system automatically captures:
 - Performance metrics
 
 Example learning:
+
 ```javascript
 {
   task: "Optimize database query performance",
@@ -129,6 +137,7 @@ Example learning:
 ### 2. Pattern Recognition
 
 Shared patterns are automatically derived from multiple learnings:
+
 ```javascript
 {
   name: "Parallel Tool Execution",
@@ -145,6 +154,7 @@ Shared patterns are automatically derived from multiple learnings:
 ### 3. A/B Testing
 
 Every optimization is validated through controlled experiments:
+
 - Control group: Standard approach
 - Treatment group: With learning system
 - Metrics: Success rate, execution time, error rate
@@ -153,6 +163,7 @@ Every optimization is validated through controlled experiments:
 ### 4. Automatic Threshold Tuning
 
 The system automatically adjusts confidence thresholds based on:
+
 - F1 score optimization
 - False positive/negative rates
 - Production performance data
@@ -161,6 +172,7 @@ The system automatically adjusts confidence thresholds based on:
 ### 5. Knowledge Sharing
 
 Export and import learnings between teams:
+
 ```javascript
 // Export
 const exportData = await claudeKnowledgeTransfer.exportKnowledge({
@@ -179,6 +191,7 @@ const result = await claudeKnowledgeTransfer.importKnowledge(
 ## Monitoring Dashboard
 
 Access the web-based monitoring dashboard:
+
 ```bash
 npm run claude:dashboard
 ```
@@ -186,6 +199,7 @@ npm run claude:dashboard
 Or visit: https://claimguardianai.com/admin?tab=claude-learning
 
 Dashboard features:
+
 - Real-time performance metrics
 - A/B test results
 - Learning application rate
@@ -198,51 +212,52 @@ Dashboard features:
 
 ```javascript
 claudeSharedPatterns.addPattern({
-  id: 'custom_pattern_1',
-  name: 'Custom Optimization Pattern',
-  category: 'performance_optimization',
-  description: 'Description of the pattern',
-  problem: 'Problem it solves',
-  solution: 'How to implement',
+  id: "custom_pattern_1",
+  name: "Custom Optimization Pattern",
+  category: "performance_optimization",
+  description: "Description of the pattern",
+  problem: "Problem it solves",
+  solution: "How to implement",
   confidence: 0.85,
   // ... other properties
-})
+});
 ```
 
 ### Manual Learning Recording
 
 ```javascript
 await completeLearningSystem.recordLearning({
-  task: 'Implement new feature',
-  mistakes: ['Forgot error handling'],
-  corrections: ['Added try-catch blocks'],
-  learnings: ['Always implement error boundaries'],
-  patterns: ['error-handling', 'defensive-programming'],
+  task: "Implement new feature",
+  mistakes: ["Forgot error handling"],
+  corrections: ["Added try-catch blocks"],
+  learnings: ["Always implement error boundaries"],
+  patterns: ["error-handling", "defensive-programming"],
   confidence: 0.9,
-  impact: 0.6
-})
+  impact: 0.6,
+});
 ```
 
 ### Feedback Collection
 
 ```javascript
 await claudeFeedbackLoops.collectUserFeedback({
-  sessionId: 'session_123',
-  feedbackType: 'positive',
-  category: 'performance',
-  description: 'Significant speed improvement',
+  sessionId: "session_123",
+  feedbackType: "positive",
+  category: "performance",
+  description: "Significant speed improvement",
   rating: 5,
   context: {
-    taskType: 'optimization',
+    taskType: "optimization",
     learningEnabled: true,
-    success: true
-  }
-})
+    success: true,
+  },
+});
 ```
 
 ## Performance Metrics
 
 The system tracks:
+
 - **Success Rate**: Percentage of successful task completions
 - **Execution Time**: Average time to complete tasks
 - **Learning Application Rate**: How often learnings are applied
@@ -292,16 +307,19 @@ node -e "require('./apps/web/src/lib/claude/claude-threshold-tuner').claudeThres
 ## Future Enhancements
 
 ### Phase 1: LLM Integration (Requires Opus)
+
 - Automatic meta-pattern synthesis
 - Natural language learning descriptions
 - Semantic similarity matching
 
 ### Phase 2: Advanced Automation
+
 - Auto-fix for high-confidence patterns
 - Proactive code suggestions
 - Automated refactoring
 
 ### Phase 3: Self-Improvement
+
 - Self-modifying code generation
 - Autonomous optimization
 - Cross-project learning transfer
@@ -309,6 +327,7 @@ node -e "require('./apps/web/src/lib/claude/claude-threshold-tuner').claudeThres
 ## API Reference
 
 See individual component files for detailed API documentation:
+
 - [Complete Learning System API](../apps/web/src/lib/claude/claude-complete-learning-system.ts)
 - [Production Monitor API](../apps/web/src/lib/claude/claude-production-monitor.ts)
 - [A/B Testing API](../apps/web/src/lib/claude/claude-ab-testing.ts)
@@ -317,6 +336,7 @@ See individual component files for detailed API documentation:
 ## Contributing
 
 When contributing to the Claude Learning System:
+
 1. Add comprehensive tests for new features
 2. Update documentation for API changes
 3. Follow the established pattern structure
@@ -326,10 +346,11 @@ When contributing to the Claude Learning System:
 ## Support
 
 For issues or questions:
+
 1. Check the troubleshooting section
 2. Review system logs in the monitoring dashboard
 3. Contact the AI team for advanced issues
 
 ---
 
-*Last Updated: August 2024*
+_Last Updated: August 2024_

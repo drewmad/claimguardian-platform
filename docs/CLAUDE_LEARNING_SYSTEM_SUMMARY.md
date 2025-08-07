@@ -5,6 +5,7 @@
 The Claude Learning System is now a fully-featured AI assistant framework with two tiers of capabilities:
 
 ### Tier 1: Core Features (Live Now)
+
 - **Complete Learning System**: Captures and applies learnings from every interaction
 - **Production Monitoring**: Real-time performance tracking and health checks
 - **A/B Testing**: Controlled experiments with ROI measurement
@@ -14,6 +15,7 @@ The Claude Learning System is now a fully-featured AI assistant framework with t
 - **Knowledge Transfer**: Export/import capabilities for team sharing
 
 ### Tier 2: LLM Features (Ready for Opus)
+
 - **Meta-Pattern Synthesis**: AI discovers patterns across learnings
 - **Semantic Similarity**: Intelligent matching using embeddings
 - **Natural Language Generation**: Human-readable documentation
@@ -83,12 +85,14 @@ ClaimGuardian/
 ## Performance Impact
 
 ### Current (Without LLM)
+
 - Task completion: 25% faster
 - Error reduction: 30% fewer bugs
 - Knowledge sharing: 5x more efficient
 - ROI: 350%+
 
 ### Projected (With LLM)
+
 - Pattern discovery: 600% increase
 - Match accuracy: 96% (up from 85%)
 - Documentation time: 87% reduction
@@ -98,11 +102,13 @@ ClaimGuardian/
 ## Cost Analysis
 
 ### Current Costs
+
 - Infrastructure: Minimal (uses existing)
 - Storage: <1GB typical usage
 - Processing: <2% overhead
 
 ### LLM Costs (Monthly)
+
 - Total: ~$183/month
 - Value generated: $8,000+/month
 - Net benefit: $7,800+/month
@@ -110,12 +116,14 @@ ClaimGuardian/
 ## Next Steps
 
 ### Immediate (When Opus Available)
+
 1. Set `ANTHROPIC_API_KEY`
 2. Run `npm run claude:enable-llm`
 3. Monitor with `npm run claude:monitor`
 4. Test with prepared test suites
 
 ### Future Enhancements
+
 - Multi-model support (GPT-4, Gemini)
 - Custom fine-tuning
 - Real-time pattern synthesis
@@ -139,4 +147,4 @@ This is not just a tool—it's an evolving AI partner that learns and improves a
 
 ---
 
-*Claude Learning System v2.0 - August 2025*
+_Claude Learning System v2.0 - August 2025_

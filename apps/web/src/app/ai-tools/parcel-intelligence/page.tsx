@@ -9,11 +9,11 @@
  * @florida-specific true
  */
 
-import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { ParcelLookup } from '@/components/parcel/parcel-lookup'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Database, MapPin, TrendingUp, Shield } from 'lucide-react'
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import { ParcelLookup } from "@/components/parcel/parcel-lookup";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Database, MapPin, TrendingUp, Shield } from "lucide-react";
 
 export default function ParcelIntelligencePage() {
   return (
@@ -27,8 +27,9 @@ export default function ParcelIntelligencePage() {
             </span>
           </h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            AI-powered property analysis using Florida's complete 9.6M parcel dataset.
-            Get instant insights on property values, risk factors, and market intelligence.
+            AI-powered property analysis using Florida's complete 9.6M parcel
+            dataset. Get instant insights on property values, risk factors, and
+            market intelligence.
           </p>
         </div>
 
@@ -37,15 +38,21 @@ export default function ParcelIntelligencePage() {
           <Card className="bg-gray-800/50 border-gray-700">
             <CardContent className="p-6 text-center">
               <Database className="w-8 h-8 text-blue-400 mx-auto mb-3" />
-              <h3 className="text-lg font-semibold text-white mb-2">9.6M Records</h3>
-              <p className="text-gray-400 text-sm">Complete Florida parcel database</p>
+              <h3 className="text-lg font-semibold text-white mb-2">
+                9.6M Records
+              </h3>
+              <p className="text-gray-400 text-sm">
+                Complete Florida parcel database
+              </p>
             </CardContent>
           </Card>
 
           <Card className="bg-gray-800/50 border-gray-700">
             <CardContent className="p-6 text-center">
               <MapPin className="w-8 h-8 text-green-400 mx-auto mb-3" />
-              <h3 className="text-lg font-semibold text-white mb-2">67 Counties</h3>
+              <h3 className="text-lg font-semibold text-white mb-2">
+                67 Counties
+              </h3>
               <p className="text-gray-400 text-sm">Statewide coverage</p>
             </CardContent>
           </Card>
@@ -53,7 +60,9 @@ export default function ParcelIntelligencePage() {
           <Card className="bg-gray-800/50 border-gray-700">
             <CardContent className="p-6 text-center">
               <TrendingUp className="w-8 h-8 text-yellow-400 mx-auto mb-3" />
-              <h3 className="text-lg font-semibold text-white mb-2">AI Analysis</h3>
+              <h3 className="text-lg font-semibold text-white mb-2">
+                AI Analysis
+              </h3>
               <p className="text-gray-400 text-sm">Automated risk assessment</p>
             </CardContent>
           </Card>
@@ -61,7 +70,9 @@ export default function ParcelIntelligencePage() {
           <Card className="bg-gray-800/50 border-gray-700">
             <CardContent className="p-6 text-center">
               <Shield className="w-8 h-8 text-purple-400 mx-auto mb-3" />
-              <h3 className="text-lg font-semibold text-white mb-2">Insurance Ready</h3>
+              <h3 className="text-lg font-semibold text-white mb-2">
+                Insurance Ready
+              </h3>
               <p className="text-gray-400 text-sm">Coverage optimization</p>
             </CardContent>
           </Card>
@@ -81,7 +92,9 @@ export default function ParcelIntelligencePage() {
           <CardContent className="space-y-4">
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <h4 className="text-white font-medium mb-2">Security Features</h4>
+                <h4 className="text-white font-medium mb-2">
+                  Security Features
+                </h4>
                 <ul className="space-y-1 text-gray-400 text-sm">
                   <li>• Row Level Security (RLS) enabled</li>
                   <li>• Comprehensive audit logging</li>
@@ -110,5 +123,5 @@ export default function ParcelIntelligencePage() {
         </Card>
       </div>
     </DashboardLayout>
-  )
+  );
 }

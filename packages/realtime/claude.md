@@ -1,9 +1,11 @@
 # Realtime Package - Claude.md
 
 ## Overview
+
 The `@claimguardian/realtime` package provides WebSocket-based real-time subscriptions and live updates using Supabase's Realtime Engine.
 
 ## Architecture
+
 - **WebSocket Connections**: Persistent connections for live updates
 - **Supabase Realtime**: Built on PostgreSQL's logical replication
 - **React Hooks**: Declarative real-time data subscriptions
@@ -13,100 +15,112 @@ The `@claimguardian/realtime` package provides WebSocket-based real-time subscri
 ## Key Features
 
 ### Real-time Table Subscriptions
+
 ```typescript
-import { useRealtimeTable } from '@claimguardian/realtime'
+import { useRealtimeTable } from "@claimguardian/realtime";
 
 // Subscribe to table changes
-const { data, error, loading } = useRealtimeTable(supabase, 'claims', {
+const { data, error, loading } = useRealtimeTable(supabase, "claims", {
   onInsert: (record) => {
-    toast.success(`New claim created: ${record.claim_number}`)
+    toast.success(`New claim created: ${record.claim_number}`);
   },
   onUpdate: ({ old, new: updated }) => {
-    toast.info(`Claim ${updated.claim_number} updated`)
+    toast.info(`Claim ${updated.claim_number} updated`);
   },
   onDelete: (record) => {
-    toast.warning(`Claim ${record.claim_number} deleted`)
+    toast.warning(`Claim ${record.claim_number} deleted`);
   },
-  enabled: true // Can be toggled based on component state
-})
+  enabled: true, // Can be toggled based on component state
+});
 ```
 
 ### Real-time Channels
+
 ```typescript
-import { useRealtimeChannel } from '@claimguardian/realtime'
+import { useRealtimeChannel } from "@claimguardian/realtime";
 
 // Create custom channels for specific features
-const { channel, send, connected } = useRealtimeChannel(supabase, 'claim-updates', {
-  onMessage: (payload) => {
-    console.log('Received message:', payload)
+const { channel, send, connected } = useRealtimeChannel(
+  supabase,
+  "claim-updates",
+  {
+    onMessage: (payload) => {
+      console.log("Received message:", payload);
+    },
+    onJoin: () => {
+      console.log("Joined channel");
+    },
+    onLeave: () => {
+      console.log("Left channel");
+    },
   },
-  onJoin: () => {
-    console.log('Joined channel')
-  },
-  onLeave: () => {
-    console.log('Left channel')
-  }
-})
+);
 
 // Send messages to channel participants
 const notifyClaimUpdate = (claimId: string, status: string) => {
-  send('claim-status-change', {
+  send("claim-status-change", {
     claimId,
     status,
-    timestamp: new Date().toISOString()
-  })
-}
+    timestamp: new Date().toISOString(),
+  });
+};
 ```
 
 ### Presence Tracking
+
 ```typescript
-import { usePresence } from '@claimguardian/realtime'
+import { usePresence } from "@claimguardian/realtime";
 
 // Track who's currently viewing a claim
-const { presences, track, untrack } = usePresence(supabase, 'claim-123', {
+const { presences, track, untrack } = usePresence(supabase, "claim-123", {
   userId: user.id,
   userName: user.name,
-  avatar: user.avatar
-})
+  avatar: user.avatar,
+});
 
 // Show active users
-const activeUsers = Object.values(presences).map(presence => presence.userName)
+const activeUsers = Object.values(presences).map(
+  (presence) => presence.userName,
+);
 ```
 
 ## Hook Patterns
 
 ### useRealtimeTable
+
 Primary hook for table-level subscriptions.
 
 ```typescript
 interface UseRealtimeTableOptions<T> {
-  onInsert?: (record: T) => void
-  onUpdate?: (data: { old: T; new: T }) => void
-  onDelete?: (record: T) => void
-  enabled?: boolean
-  filter?: string // SQL filter expression
+  onInsert?: (record: T) => void;
+  onUpdate?: (data: { old: T; new: T }) => void;
+  onDelete?: (record: T) => void;
+  enabled?: boolean;
+  filter?: string; // SQL filter expression
 }
 
 const useRealtimeTable = <T = unknown>(
   supabase: SupabaseClient,
   table: string,
-  options?: UseRealtimeTableOptions<T>
+  options?: UseRealtimeTableOptions<T>,
 ) => {
   // Implementation handles subscription lifecycle
   // Returns: { data, error, loading, subscription }
-}
+};
 ```
 
 ### useRealtimeSubscription
+
 Alias for `useRealtimeTable` for backward compatibility.
 
 ```typescript
 // These are equivalent:
-const result1 = useRealtimeTable(supabase, 'properties', options)
-const result2 = useRealtimeSubscription(supabase, 'properties', options)
+const result1 = useRealtimeTable(supabase, "properties", options);
+const result2 = useRealtimeSubscription(supabase, "properties", options);
 ```
 
 ### useRealtimeChannel
+
 For custom channel-based communication.
 
 ```typescript
@@ -114,19 +128,20 @@ const useRealtimeChannel = (
   supabase: SupabaseClient,
   channelName: string,
   options: {
-    onMessage?: (payload: any) => void
-    onJoin?: () => void
-    onLeave?: () => void
-    onError?: (error: Error) => void
-  }
+    onMessage?: (payload: any) => void;
+    onJoin?: () => void;
+    onLeave?: () => void;
+    onError?: (error: Error) => void;
+  },
 ) => {
   // Returns: { channel, send, connected, error }
-}
+};
 ```
 
 ## Real-time Use Cases
 
 ### Collaborative Claim Editing
+
 ```typescript
 const ClaimEditor = ({ claimId }: { claimId: string }) => {
   const [claim, setClaim] = useState<Claim | null>(null)
@@ -152,6 +167,7 @@ const ClaimEditor = ({ claimId }: { claimId: string }) => {
 ```
 
 ### Live Status Updates
+
 ```typescript
 const ClaimStatusTracker = () => {
   const [claims, setClaims] = useState<Claim[]>([])
@@ -180,6 +196,7 @@ const ClaimStatusTracker = () => {
 ```
 
 ### Activity Feed
+
 ```typescript
 const ActivityFeed = () => {
   const [activities, setActivities] = useState<Activity[]>([])
@@ -204,6 +221,7 @@ const ActivityFeed = () => {
 ## Connection Management
 
 ### Automatic Reconnection
+
 ```typescript
 // Built-in reconnection logic
 const { connected, reconnecting } = useRealtimeTable(supabase, 'claims', {
@@ -217,6 +235,7 @@ if (reconnecting) {
 ```
 
 ### Connection Status
+
 ```typescript
 const ConnectionStatus = () => {
   const [isConnected, setIsConnected] = useState(false)
@@ -243,50 +262,54 @@ const ConnectionStatus = () => {
 ## Performance Optimization
 
 ### Selective Subscriptions
+
 ```typescript
 // Only subscribe to specific columns to reduce bandwidth
-const { data } = useRealtimeTable(supabase, 'claims', {
+const { data } = useRealtimeTable(supabase, "claims", {
   onUpdate: ({ new: updated }) => {
     // Only status and updated_at columns are sent
-    handleStatusChange(updated.status)
+    handleStatusChange(updated.status);
   },
   // Note: Column filtering requires database configuration
-})
+});
 ```
 
 ### Conditional Subscriptions
+
 ```typescript
 const ClaimDetails = ({ claimId, isActive }: Props) => {
   // Only subscribe when component is active
-  useRealtimeTable(supabase, 'claims', {
+  useRealtimeTable(supabase, "claims", {
     onUpdate: handleUpdate,
     enabled: isActive, // Stops subscription when false
-    filter: `id=eq.${claimId}`
-  })
-}
+    filter: `id=eq.${claimId}`,
+  });
+};
 ```
 
 ### Debounced Updates
+
 ```typescript
-import { useDebouncedCallback } from 'use-debounce'
+import { useDebouncedCallback } from "use-debounce";
 
 const ClaimForm = () => {
   const debouncedUpdate = useDebouncedCallback((claim: Claim) => {
     // Update UI after 500ms of no new changes
-    updateClaimDisplay(claim)
-  }, 500)
+    updateClaimDisplay(claim);
+  }, 500);
 
-  useRealtimeTable(supabase, 'claims', {
+  useRealtimeTable(supabase, "claims", {
     onUpdate: ({ new: updated }) => {
-      debouncedUpdate(updated)
-    }
-  })
-}
+      debouncedUpdate(updated);
+    },
+  });
+};
 ```
 
 ## Error Handling
 
 ### Subscription Errors
+
 ```typescript
 const { error } = useRealtimeTable(supabase, 'claims', {
   onInsert: handleInsert,
@@ -302,6 +325,7 @@ if (error) {
 ```
 
 ### Network Resilience
+
 ```typescript
 // Handle temporary network issues
 const [networkStatus, setNetworkStatus] = useState('online')
@@ -328,38 +352,40 @@ if (networkStatus === 'offline') {
 ## Testing
 
 ### Mock Realtime Events
+
 ```typescript
 // packages/realtime/src/__tests__/useRealtimeSubscription.test.ts
-import { renderHook } from '@testing-library/react'
-import { useRealtimeSubscription } from '../hooks'
+import { renderHook } from "@testing-library/react";
+import { useRealtimeSubscription } from "../hooks";
 
-describe('useRealtimeSubscription', () => {
-  it('should handle table updates', () => {
-    const mockSupabase = createMockSupabaseClient()
-    const onUpdate = vi.fn()
+describe("useRealtimeSubscription", () => {
+  it("should handle table updates", () => {
+    const mockSupabase = createMockSupabaseClient();
+    const onUpdate = vi.fn();
 
     const { result } = renderHook(() =>
-      useRealtimeSubscription(mockSupabase, 'claims', { onUpdate })
-    )
+      useRealtimeSubscription(mockSupabase, "claims", { onUpdate }),
+    );
 
     // Simulate realtime update
-    mockSupabase.channel().trigger('postgres_changes', {
-      eventType: 'UPDATE',
-      new: { id: '1', status: 'approved' },
-      old: { id: '1', status: 'pending' }
-    })
+    mockSupabase.channel().trigger("postgres_changes", {
+      eventType: "UPDATE",
+      new: { id: "1", status: "approved" },
+      old: { id: "1", status: "pending" },
+    });
 
     expect(onUpdate).toHaveBeenCalledWith({
-      new: { id: '1', status: 'approved' },
-      old: { id: '1', status: 'pending' }
-    })
-  })
-})
+      new: { id: "1", status: "approved" },
+      old: { id: "1", status: "pending" },
+    });
+  });
+});
 ```
 
 ## Security Considerations
 
 ### Row Level Security
+
 ```sql
 -- Enable RLS on tables with real-time subscriptions
 ALTER TABLE public.claims ENABLE ROW LEVEL SECURITY;
@@ -372,28 +398,31 @@ CREATE POLICY "Users can view own claims" ON public.claims
 ```
 
 ### Channel Security
+
 ```typescript
 // Secure channels with proper authorization
 const secureChannel = supabase.channel(`claim-${claimId}`, {
   config: {
     presence: {
       key: user.id,
-    }
-  }
-})
+    },
+  },
+});
 
 // Verify user has access to claim before joining channel
 if (await userCanAccessClaim(user.id, claimId)) {
-  secureChannel.subscribe()
+  secureChannel.subscribe();
 }
 ```
 
 ## Dependencies
+
 - `@supabase/supabase-js ^2.53.0` - Supabase client
 - `react ^18.3.1` - React hooks
 - `@testing-library/react ^14.0.0` - Testing utilities
 
 ## Build Configuration
+
 ```json
 {
   "scripts": {
@@ -407,17 +436,21 @@ if (await userCanAccessClaim(user.id, claimId)) {
 ## Common Issues & Solutions
 
 ### Subscription Not Working
+
 - **Issue**: Real-time updates not received
 - **Fix**: Check RLS policies, verify user authentication, ensure table has real-time enabled
 
 ### Memory Leaks
+
 - **Issue**: Subscriptions not cleaned up
 - **Fix**: Use hooks properly, ensure components unmount correctly
 
 ### Too Many Connections
+
 - **Issue**: Exceeding connection limits
 - **Fix**: Use conditional subscriptions, unsubscribe when not needed
 
 ### Performance Issues
+
 - **Issue**: Too many updates causing lag
 - **Fix**: Use debouncing, filter subscriptions, limit update frequency

@@ -6,70 +6,73 @@
  * @status stable
  */
 
-import { createClient } from '@supabase/supabase-js'
-import type { Database } from '@claimguardian/db'
+import { createClient } from "@supabase/supabase-js";
+import type { Database } from "@claimguardian/db";
 
 interface PartitionStrategy {
-  table: string
-  type: 'range' | 'list' | 'hash' | 'composite'
-  column: string | string[]
-  interval?: 'daily' | 'weekly' | 'monthly' | 'yearly'
-  values?: string[] | number[]
-  subPartitions?: PartitionStrategy
+  table: string;
+  type: "range" | "list" | "hash" | "composite";
+  column: string | string[];
+  interval?: "daily" | "weekly" | "monthly" | "yearly";
+  values?: string[] | number[];
+  subPartitions?: PartitionStrategy;
 }
 
 interface PartitionInfo {
-  name: string
-  parent: string
-  type: string
-  boundaries: unknown
-  rowCount: number
-  sizeBytes: number
-  created: Date
-  lastAccessed: Date
-  status: 'active' | 'archived' | 'dropping'
+  name: string;
+  parent: string;
+  type: string;
+  boundaries: unknown;
+  rowCount: number;
+  sizeBytes: number;
+  created: Date;
+  lastAccessed: Date;
+  status: "active" | "archived" | "dropping";
 }
 
 interface PartitionMetrics {
-  totalPartitions: number
-  activePartitions: number
-  totalRows: number
-  totalSize: number
-  avgPartitionSize: number
-  hotPartitions: PartitionInfo[]
-  coldPartitions: PartitionInfo[]
-  fragmentedPartitions: PartitionInfo[]
+  totalPartitions: number;
+  activePartitions: number;
+  totalRows: number;
+  totalSize: number;
+  avgPartitionSize: number;
+  hotPartitions: PartitionInfo[];
+  coldPartitions: PartitionInfo[];
+  fragmentedPartitions: PartitionInfo[];
 }
 
 interface MaintenanceTask {
-  id: string
-  type: 'create' | 'drop' | 'vacuum' | 'reindex' | 'analyze'
-  target: string
-  priority: 'high' | 'medium' | 'low'
-  scheduled: Date
-  status: 'pending' | 'running' | 'completed' | 'failed'
-  error?: string
+  id: string;
+  type: "create" | "drop" | "vacuum" | "reindex" | "analyze";
+  target: string;
+  priority: "high" | "medium" | "low";
+  scheduled: Date;
+  status: "pending" | "running" | "completed" | "failed";
+  error?: string;
 }
 
 class IntelligentPartitionManager {
-  private supabase: ReturnType<typeof createClient<Database>> | null = null
-  private strategies = new Map<string, PartitionStrategy>()
-  private partitionCache = new Map<string, PartitionInfo[]>()
-  private maintenanceTasks: MaintenanceTask[] = []
-  private autoPartitionEnabled = true
+  private supabase: ReturnType<typeof createClient<Database>> | null = null;
+  private strategies = new Map<string, PartitionStrategy>();
+  private partitionCache = new Map<string, PartitionInfo[]>();
+  private maintenanceTasks: MaintenanceTask[] = [];
+  private autoPartitionEnabled = true;
 
   constructor() {
-    this.initializeSupabase()
-    this.registerDefaultStrategies()
-    this.startMaintenanceScheduler()
+    this.initializeSupabase();
+    this.registerDefaultStrategies();
+    this.startMaintenanceScheduler();
   }
 
   private initializeSupabase(): void {
-    if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    if (
+      process.env.NEXT_PUBLIC_SUPABASE_URL &&
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    ) {
       this.supabase = createClient<Database>(
         process.env.NEXT_PUBLIC_SUPABASE_URL,
-        process.env.SUPABASE_SERVICE_ROLE_KEY
-      )
+        process.env.SUPABASE_SERVICE_ROLE_KEY,
+      );
     }
   }
 
@@ -78,107 +81,131 @@ class IntelligentPartitionManager {
    */
   private registerDefaultStrategies(): void {
     // Analytics events - time-based partitioning
-    this.strategies.set('analytics_events', {
-      table: 'analytics_events',
-      type: 'range',
-      column: 'timestamp',
-      interval: 'daily'
-    })
+    this.strategies.set("analytics_events", {
+      table: "analytics_events",
+      type: "range",
+      column: "timestamp",
+      interval: "daily",
+    });
 
     // Florida parcels - geographic partitioning by county
-    this.strategies.set('florida_parcels', {
-      table: 'florida_parcels',
-      type: 'list',
-      column: 'county_name',
+    this.strategies.set("florida_parcels", {
+      table: "florida_parcels",
+      type: "list",
+      column: "county_name",
       values: [
-        'MIAMI-DADE', 'BROWARD', 'PALM BEACH', 'HILLSBOROUGH', 'ORANGE',
-        'PINELLAS', 'DUVAL', 'LEE', 'POLK', 'BREVARD'
+        "MIAMI-DADE",
+        "BROWARD",
+        "PALM BEACH",
+        "HILLSBOROUGH",
+        "ORANGE",
+        "PINELLAS",
+        "DUVAL",
+        "LEE",
+        "POLK",
+        "BREVARD",
         // Top 10 counties by population
       ],
       subPartitions: {
-        table: 'florida_parcels',
-        type: 'hash',
-        column: 'parcel_id',
-        values: [0, 1, 2, 3] // 4 hash buckets per county
-      }
-    })
+        table: "florida_parcels",
+        type: "hash",
+        column: "parcel_id",
+        values: [0, 1, 2, 3], // 4 hash buckets per county
+      },
+    });
 
     // Claims - composite partitioning by status and date
-    this.strategies.set('claims', {
-      table: 'claims',
-      type: 'composite',
-      column: ['status', 'created_at'],
-      interval: 'monthly'
-    })
+    this.strategies.set("claims", {
+      table: "claims",
+      type: "composite",
+      column: ["status", "created_at"],
+      interval: "monthly",
+    });
 
     // AI model usage - partitioned by model and date
-    this.strategies.set('ai_model_usage', {
-      table: 'ai_model_usage',
-      type: 'range',
-      column: 'created_at',
-      interval: 'weekly',
+    this.strategies.set("ai_model_usage", {
+      table: "ai_model_usage",
+      type: "range",
+      column: "created_at",
+      interval: "weekly",
       subPartitions: {
-        table: 'ai_model_usage',
-        type: 'list',
-        column: 'model',
-        values: ['gpt-4', 'gpt-3.5', 'gemini-pro', 'claude-3']
-      }
-    })
+        table: "ai_model_usage",
+        type: "list",
+        column: "model",
+        values: ["gpt-4", "gpt-3.5", "gemini-pro", "claude-3"],
+      },
+    });
 
     // User analytics - hash partitioning for even distribution
-    this.strategies.set('user_analytics_summary', {
-      table: 'user_analytics_summary',
-      type: 'hash',
-      column: 'user_id',
-      values: Array.from({ length: 16 }, (_, i) => i) // 16 hash partitions
-    })
+    this.strategies.set("user_analytics_summary", {
+      table: "user_analytics_summary",
+      type: "hash",
+      column: "user_id",
+      values: Array.from({ length: 16 }, (_, i) => i), // 16 hash partitions
+    });
   }
 
   /**
    * Create partitions based on strategy
    */
-  async createPartitions(tableName: string, options?: {
-    ahead?: number // Days/months to create ahead
-    parallel?: boolean
-  }): Promise<string[]> {
-    const strategy = this.strategies.get(tableName)
+  async createPartitions(
+    tableName: string,
+    options?: {
+      ahead?: number; // Days/months to create ahead
+      parallel?: boolean;
+    },
+  ): Promise<string[]> {
+    const strategy = this.strategies.get(tableName);
     if (!strategy) {
-      throw new Error(`No partition strategy found for table: ${tableName}`)
+      throw new Error(`No partition strategy found for table: ${tableName}`);
     }
 
-    const createdPartitions: string[] = []
+    const createdPartitions: string[] = [];
 
     try {
       switch (strategy.type) {
-        case 'range':
-          createdPartitions.push(...await this.createRangePartitions(strategy, options?.ahead))
-          break
+        case "range":
+          createdPartitions.push(
+            ...(await this.createRangePartitions(strategy, options?.ahead)),
+          );
+          break;
 
-        case 'list':
-          createdPartitions.push(...await this.createListPartitions(strategy))
-          break
+        case "list":
+          createdPartitions.push(
+            ...(await this.createListPartitions(strategy)),
+          );
+          break;
 
-        case 'hash':
-          createdPartitions.push(...await this.createHashPartitions(strategy))
-          break
+        case "hash":
+          createdPartitions.push(
+            ...(await this.createHashPartitions(strategy)),
+          );
+          break;
 
-        case 'composite':
-          createdPartitions.push(...await this.createCompositePartitions(strategy, options?.ahead))
-          break
+        case "composite":
+          createdPartitions.push(
+            ...(await this.createCompositePartitions(strategy, options?.ahead)),
+          );
+          break;
       }
 
       // Create sub-partitions if defined
       if (strategy.subPartitions && createdPartitions.length > 0) {
         for (const parentPartition of createdPartitions) {
-          await this.createSubPartitions(parentPartition, strategy.subPartitions)
+          await this.createSubPartitions(
+            parentPartition,
+            strategy.subPartitions,
+          );
         }
       }
 
-      console.log(`Created ${createdPartitions.length} partitions for ${tableName}`)
-      return createdPartitions
+      console.log(
+        `Created ${createdPartitions.length} partitions for ${tableName}`,
+      );
+      return createdPartitions;
     } catch (error) {
-      console.error(`Failed to create partitions for ${tableName}:`, error)
-      throw error
+      console.error(`Failed to create partitions for ${tableName}:`, error);
+      throw error;
     }
   }
 
@@ -187,132 +214,138 @@ class IntelligentPartitionManager {
    */
   private async createRangePartitions(
     strategy: PartitionStrategy,
-    aheadDays = 7
+    aheadDays = 7,
   ): Promise<string[]> {
-    const partitions: string[] = []
-    const now = new Date()
-    const futureDate = new Date(now.getTime() + aheadDays * 24 * 60 * 60 * 1000)
+    const partitions: string[] = [];
+    const now = new Date();
+    const futureDate = new Date(
+      now.getTime() + aheadDays * 24 * 60 * 60 * 1000,
+    );
 
-    let currentDate = new Date(now)
-    currentDate.setHours(0, 0, 0, 0)
+    let currentDate = new Date(now);
+    currentDate.setHours(0, 0, 0, 0);
 
     while (currentDate <= futureDate) {
       const partitionName = this.generatePartitionName(
         strategy.table,
-        'range',
-        currentDate
-      )
+        "range",
+        currentDate,
+      );
 
-      const startDate = new Date(currentDate)
-      const endDate = this.getNextInterval(currentDate, strategy.interval!)
+      const startDate = new Date(currentDate);
+      const endDate = this.getNextInterval(currentDate, strategy.interval!);
 
       const sql = `
         CREATE TABLE IF NOT EXISTS ${partitionName}
         PARTITION OF ${strategy.table}
         FOR VALUES FROM ('${startDate.toISOString()}')
         TO ('${endDate.toISOString()}');
-      `
+      `;
 
       try {
         if (this.supabase) {
-          await this.executeSQL(sql)
-          partitions.push(partitionName)
+          await this.executeSQL(sql);
+          partitions.push(partitionName);
 
           // Create indexes on partition
-          await this.createPartitionIndexes(partitionName, strategy)
+          await this.createPartitionIndexes(partitionName, strategy);
         }
       } catch (error) {
-        console.error(`Failed to create partition ${partitionName}:`, error)
+        console.error(`Failed to create partition ${partitionName}:`, error);
       }
 
-      currentDate = endDate
+      currentDate = endDate;
     }
 
-    return partitions
+    return partitions;
   }
 
   /**
    * Create list-based partitions (categorical)
    */
-  private async createListPartitions(strategy: PartitionStrategy): Promise<string[]> {
-    const partitions: string[] = []
-    const values = strategy.values as string[]
+  private async createListPartitions(
+    strategy: PartitionStrategy,
+  ): Promise<string[]> {
+    const partitions: string[] = [];
+    const values = strategy.values as string[];
 
     for (const value of values) {
       const partitionName = this.generatePartitionName(
         strategy.table,
-        'list',
-        value
-      )
+        "list",
+        value,
+      );
 
       const sql = `
         CREATE TABLE IF NOT EXISTS ${partitionName}
         PARTITION OF ${strategy.table}
         FOR VALUES IN ('${value}');
-      `
+      `;
 
       try {
         if (this.supabase) {
-          await this.executeSQL(sql)
-          partitions.push(partitionName)
+          await this.executeSQL(sql);
+          partitions.push(partitionName);
 
           // Create indexes
-          await this.createPartitionIndexes(partitionName, strategy)
+          await this.createPartitionIndexes(partitionName, strategy);
         }
       } catch (error) {
-        console.error(`Failed to create partition ${partitionName}:`, error)
+        console.error(`Failed to create partition ${partitionName}:`, error);
       }
     }
 
     // Create default partition for other values
-    const defaultPartition = `${strategy.table}_default`
+    const defaultPartition = `${strategy.table}_default`;
     const defaultSql = `
       CREATE TABLE IF NOT EXISTS ${defaultPartition}
       PARTITION OF ${strategy.table} DEFAULT;
-    `
+    `;
 
     try {
       if (this.supabase) {
-        await this.executeSQL(defaultSql)
-        partitions.push(defaultPartition)
+        await this.executeSQL(defaultSql);
+        partitions.push(defaultPartition);
       }
     } catch (error) {
-      console.error(`Failed to create default partition:`, error)
+      console.error(`Failed to create default partition:`, error);
     }
 
-    return partitions
+    return partitions;
   }
 
   /**
    * Create hash-based partitions (even distribution)
    */
-  private async createHashPartitions(strategy: PartitionStrategy): Promise<string[]> {
-    const partitions: string[] = []
-    const buckets = (strategy.values as number[]).length
+  private async createHashPartitions(
+    strategy: PartitionStrategy,
+  ): Promise<string[]> {
+    const partitions: string[] = [];
+    const buckets = (strategy.values as number[]).length;
 
     for (let i = 0; i < buckets; i++) {
-      const partitionName = `${strategy.table}_hash_${i}`
+      const partitionName = `${strategy.table}_hash_${i}`;
 
       const sql = `
         CREATE TABLE IF NOT EXISTS ${partitionName}
         PARTITION OF ${strategy.table}
         FOR VALUES WITH (modulus ${buckets}, remainder ${i});
-      `
+      `;
 
       try {
         if (this.supabase) {
-          await this.executeSQL(sql)
-          partitions.push(partitionName)
+          await this.executeSQL(sql);
+          partitions.push(partitionName);
 
           // Create indexes
-          await this.createPartitionIndexes(partitionName, strategy)
+          await this.createPartitionIndexes(partitionName, strategy);
         }
       } catch (error) {
-        console.error(`Failed to create partition ${partitionName}:`, error)
+        console.error(`Failed to create partition ${partitionName}:`, error);
       }
     }
 
-    return partitions
+    return partitions;
   }
 
   /**
@@ -320,48 +353,65 @@ class IntelligentPartitionManager {
    */
   private async createCompositePartitions(
     strategy: PartitionStrategy,
-    aheadDays = 30
+    aheadDays = 30,
   ): Promise<string[]> {
-    const partitions: string[] = []
+    const partitions: string[] = [];
 
     // For composite partitioning, we need to handle multiple dimensions
     // Example: claims partitioned by status and month
-    const statuses = ['draft', 'submitted', 'acknowledged', 'investigating', 'approved', 'denied', 'settled', 'closed', 'reopened', 'withdrawn']
-    const now = new Date()
-    const futureDate = new Date(now.getTime() + aheadDays * 24 * 60 * 60 * 1000)
+    const statuses = [
+      "draft",
+      "submitted",
+      "acknowledged",
+      "investigating",
+      "approved",
+      "denied",
+      "settled",
+      "closed",
+      "reopened",
+      "withdrawn",
+    ];
+    const now = new Date();
+    const futureDate = new Date(
+      now.getTime() + aheadDays * 24 * 60 * 60 * 1000,
+    );
 
     for (const status of statuses) {
-      let currentDate = new Date(now)
-      currentDate.setDate(1) // Start of month
-      currentDate.setHours(0, 0, 0, 0)
+      let currentDate = new Date(now);
+      currentDate.setDate(1); // Start of month
+      currentDate.setHours(0, 0, 0, 0);
 
       while (currentDate <= futureDate) {
-        const partitionName = `${strategy.table}_${status}_${currentDate.getFullYear()}_${String(currentDate.getMonth() + 1).padStart(2, '0')}`
+        const partitionName = `${strategy.table}_${status}_${currentDate.getFullYear()}_${String(currentDate.getMonth() + 1).padStart(2, "0")}`;
 
-        const startDate = new Date(currentDate)
-        const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
+        const startDate = new Date(currentDate);
+        const endDate = new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth() + 1,
+          1,
+        );
 
         const sql = `
           CREATE TABLE IF NOT EXISTS ${partitionName}
           PARTITION OF ${strategy.table}
           FOR VALUES FROM ('${status}', '${startDate.toISOString()}')
           TO ('${status}', '${endDate.toISOString()}');
-        `
+        `;
 
         try {
           if (this.supabase) {
-            await this.executeSQL(sql)
-            partitions.push(partitionName)
+            await this.executeSQL(sql);
+            partitions.push(partitionName);
           }
         } catch (error) {
-          console.error(`Failed to create partition ${partitionName}:`, error)
+          console.error(`Failed to create partition ${partitionName}:`, error);
         }
 
-        currentDate = endDate
+        currentDate = endDate;
       }
     }
 
-    return partitions
+    return partitions;
   }
 
   /**
@@ -369,93 +419,101 @@ class IntelligentPartitionManager {
    */
   private async createSubPartitions(
     parentPartition: string,
-    subStrategy: PartitionStrategy
+    subStrategy: PartitionStrategy,
   ): Promise<void> {
     // Implementation would create sub-partitions under parent
-    console.log(`Creating sub-partitions for ${parentPartition}`)
+    console.log(`Creating sub-partitions for ${parentPartition}`);
   }
 
   /**
    * Analyze partition usage and recommend optimizations
    */
   async analyzePartitions(tableName: string): Promise<{
-    metrics: PartitionMetrics
-    recommendations: string[]
+    metrics: PartitionMetrics;
+    recommendations: string[];
   }> {
-    const partitions = await this.getPartitionInfo(tableName)
+    const partitions = await this.getPartitionInfo(tableName);
 
     const metrics: PartitionMetrics = {
       totalPartitions: partitions.length,
-      activePartitions: partitions.filter(p => p.status === 'active').length,
+      activePartitions: partitions.filter((p) => p.status === "active").length,
       totalRows: partitions.reduce((sum, p) => sum + p.rowCount, 0),
       totalSize: partitions.reduce((sum, p) => sum + p.sizeBytes, 0),
       avgPartitionSize: 0,
       hotPartitions: [],
       coldPartitions: [],
-      fragmentedPartitions: []
-    }
+      fragmentedPartitions: [],
+    };
 
     if (partitions.length > 0) {
-      metrics.avgPartitionSize = metrics.totalSize / partitions.length
+      metrics.avgPartitionSize = metrics.totalSize / partitions.length;
     }
 
     // Identify hot partitions (recently accessed)
-    const recentThreshold = new Date(Date.now() - 24 * 60 * 60 * 1000) // 24 hours
-    metrics.hotPartitions = partitions.filter(p => p.lastAccessed > recentThreshold)
+    const recentThreshold = new Date(Date.now() - 24 * 60 * 60 * 1000); // 24 hours
+    metrics.hotPartitions = partitions.filter(
+      (p) => p.lastAccessed > recentThreshold,
+    );
 
     // Identify cold partitions (not accessed in 30 days)
-    const coldThreshold = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-    metrics.coldPartitions = partitions.filter(p => p.lastAccessed < coldThreshold)
+    const coldThreshold = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    metrics.coldPartitions = partitions.filter(
+      (p) => p.lastAccessed < coldThreshold,
+    );
 
     // Identify fragmented partitions (need maintenance)
-    metrics.fragmentedPartitions = partitions.filter(p => {
+    metrics.fragmentedPartitions = partitions.filter((p) => {
       // Simplified check - in reality would check actual fragmentation
-      return p.rowCount > 1000000 || p.sizeBytes > 1024 * 1024 * 1024 // 1GB
-    })
+      return p.rowCount > 1000000 || p.sizeBytes > 1024 * 1024 * 1024; // 1GB
+    });
 
     // Generate recommendations
-    const recommendations: string[] = []
+    const recommendations: string[] = [];
 
     if (metrics.coldPartitions.length > 10) {
       recommendations.push(
-        `Archive ${metrics.coldPartitions.length} cold partitions to reduce storage costs`
-      )
+        `Archive ${metrics.coldPartitions.length} cold partitions to reduce storage costs`,
+      );
     }
 
     if (metrics.fragmentedPartitions.length > 0) {
       recommendations.push(
-        `Run VACUUM on ${metrics.fragmentedPartitions.length} fragmented partitions`
-      )
+        `Run VACUUM on ${metrics.fragmentedPartitions.length} fragmented partitions`,
+      );
     }
 
-    if (metrics.avgPartitionSize > 5 * 1024 * 1024 * 1024) { // 5GB
+    if (metrics.avgPartitionSize > 5 * 1024 * 1024 * 1024) {
+      // 5GB
       recommendations.push(
-        'Consider increasing partition granularity to reduce partition size'
-      )
+        "Consider increasing partition granularity to reduce partition size",
+      );
     }
 
-    const hotPartitionRatio = metrics.hotPartitions.length / metrics.totalPartitions
+    const hotPartitionRatio =
+      metrics.hotPartitions.length / metrics.totalPartitions;
     if (hotPartitionRatio < 0.1) {
       recommendations.push(
-        'Most partitions are cold - consider archiving strategy'
-      )
+        "Most partitions are cold - consider archiving strategy",
+      );
     }
 
-    return { metrics, recommendations }
+    return { metrics, recommendations };
   }
 
   /**
    * Automatic partition maintenance
    */
   async performMaintenance(): Promise<void> {
-    console.log('Starting partition maintenance...')
+    console.log("Starting partition maintenance...");
 
     // Process pending maintenance tasks
-    const pendingTasks = this.maintenanceTasks.filter(t => t.status === 'pending')
+    const pendingTasks = this.maintenanceTasks.filter(
+      (t) => t.status === "pending",
+    );
 
     for (const task of pendingTasks) {
       if (task.scheduled <= new Date()) {
-        await this.executeMaintenanceTask(task)
+        await this.executeMaintenanceTask(task);
       }
     }
 
@@ -463,27 +521,28 @@ class IntelligentPartitionManager {
     for (const [tableName, strategy] of this.strategies.entries()) {
       try {
         // Create future partitions
-        if (strategy.type === 'range' && this.autoPartitionEnabled) {
-          await this.createPartitions(tableName, { ahead: 7 })
+        if (strategy.type === "range" && this.autoPartitionEnabled) {
+          await this.createPartitions(tableName, { ahead: 7 });
         }
 
         // Analyze and optimize
-        const { metrics, recommendations } = await this.analyzePartitions(tableName)
+        const { metrics, recommendations } =
+          await this.analyzePartitions(tableName);
 
         // Schedule maintenance based on recommendations
         if (recommendations.length > 0) {
-          console.log(`Recommendations for ${tableName}:`, recommendations)
+          console.log(`Recommendations for ${tableName}:`, recommendations);
 
           for (const recommendation of recommendations) {
-            if (recommendation.includes('Archive')) {
-              this.scheduleArchival(metrics.coldPartitions)
-            } else if (recommendation.includes('VACUUM')) {
-              this.scheduleVacuum(metrics.fragmentedPartitions)
+            if (recommendation.includes("Archive")) {
+              this.scheduleArchival(metrics.coldPartitions);
+            } else if (recommendation.includes("VACUUM")) {
+              this.scheduleVacuum(metrics.fragmentedPartitions);
             }
           }
         }
       } catch (error) {
-        console.error(`Maintenance failed for ${tableName}:`, error)
+        console.error(`Maintenance failed for ${tableName}:`, error);
       }
     }
   }
@@ -492,36 +551,36 @@ class IntelligentPartitionManager {
    * Execute maintenance task
    */
   private async executeMaintenanceTask(task: MaintenanceTask): Promise<void> {
-    task.status = 'running'
+    task.status = "running";
 
     try {
       switch (task.type) {
-        case 'create':
-          await this.executeSQL(`CREATE TABLE IF NOT EXISTS ${task.target}`)
-          break
+        case "create":
+          await this.executeSQL(`CREATE TABLE IF NOT EXISTS ${task.target}`);
+          break;
 
-        case 'drop':
-          await this.executeSQL(`DROP TABLE IF EXISTS ${task.target}`)
-          break
+        case "drop":
+          await this.executeSQL(`DROP TABLE IF EXISTS ${task.target}`);
+          break;
 
-        case 'vacuum':
-          await this.executeSQL(`VACUUM ANALYZE ${task.target}`)
-          break
+        case "vacuum":
+          await this.executeSQL(`VACUUM ANALYZE ${task.target}`);
+          break;
 
-        case 'reindex':
-          await this.executeSQL(`REINDEX TABLE ${task.target}`)
-          break
+        case "reindex":
+          await this.executeSQL(`REINDEX TABLE ${task.target}`);
+          break;
 
-        case 'analyze':
-          await this.executeSQL(`ANALYZE ${task.target}`)
-          break
+        case "analyze":
+          await this.executeSQL(`ANALYZE ${task.target}`);
+          break;
       }
 
-      task.status = 'completed'
+      task.status = "completed";
     } catch (error) {
-      task.status = 'failed'
-      task.error = error instanceof Error ? error.message : 'Unknown error'
-      console.error(`Maintenance task failed:`, error)
+      task.status = "failed";
+      task.error = error instanceof Error ? error.message : "Unknown error";
+      console.error(`Maintenance task failed:`, error);
     }
   }
 
@@ -532,12 +591,12 @@ class IntelligentPartitionManager {
     for (const partition of partitions) {
       this.maintenanceTasks.push({
         id: `archive_${partition.name}_${Date.now()}`,
-        type: 'drop',
+        type: "drop",
         target: partition.name,
-        priority: 'low',
+        priority: "low",
         scheduled: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 week
-        status: 'pending'
-      })
+        status: "pending",
+      });
     }
   }
 
@@ -548,12 +607,12 @@ class IntelligentPartitionManager {
     for (const partition of partitions) {
       this.maintenanceTasks.push({
         id: `vacuum_${partition.name}_${Date.now()}`,
-        type: 'vacuum',
+        type: "vacuum",
         target: partition.name,
-        priority: 'medium',
+        priority: "medium",
         scheduled: new Date(Date.now() + 60 * 60 * 1000), // 1 hour
-        status: 'pending'
-      })
+        status: "pending",
+      });
     }
   }
 
@@ -562,12 +621,12 @@ class IntelligentPartitionManager {
    */
   private async getPartitionInfo(tableName: string): Promise<PartitionInfo[]> {
     // Check cache first
-    const cached = this.partitionCache.get(tableName)
+    const cached = this.partitionCache.get(tableName);
     if (cached && cached.length > 0) {
-      return cached
+      return cached;
     }
 
-    if (!this.supabase) return []
+    if (!this.supabase) return [];
 
     try {
       const sql = `
@@ -585,40 +644,47 @@ class IntelligentPartitionManager {
         WHERE p.relname = $1
         AND c.relkind = 'r'
         ORDER BY c.relname;
-      `
+      `;
 
       // Note: Direct SQL execution not available - return mock data for now
-      console.warn('Partition manager attempted to execute raw SQL - not implemented:', sql)
-      const data: any[] = [] // Mock empty partition list
+      console.warn(
+        "Partition manager attempted to execute raw SQL - not implemented:",
+        sql,
+      );
+      const data: any[] = []; // Mock empty partition list
 
       interface PartitionRow {
-        partition_name: string
-        parent_name: string
-        boundaries: unknown
-        row_count: string
-        size_bytes: string
-        last_accessed?: string
+        partition_name: string;
+        parent_name: string;
+        boundaries: unknown;
+        row_count: string;
+        size_bytes: string;
+        last_accessed?: string;
       }
 
-      const partitions: PartitionInfo[] = (data || []).map((row: PartitionRow) => ({
-        name: row.partition_name,
-        parent: row.parent_name,
-        type: this.strategies.get(tableName)?.type || 'unknown',
-        boundaries: row.boundaries,
-        rowCount: parseInt(row.row_count) || 0,
-        sizeBytes: parseInt(row.size_bytes) || 0,
-        created: new Date(), // Would need to query pg_class.relcreated
-        lastAccessed: row.last_accessed ? new Date(row.last_accessed) : new Date(0),
-        status: 'active'
-      }))
+      const partitions: PartitionInfo[] = (data || []).map(
+        (row: PartitionRow) => ({
+          name: row.partition_name,
+          parent: row.parent_name,
+          type: this.strategies.get(tableName)?.type || "unknown",
+          boundaries: row.boundaries,
+          rowCount: parseInt(row.row_count) || 0,
+          sizeBytes: parseInt(row.size_bytes) || 0,
+          created: new Date(), // Would need to query pg_class.relcreated
+          lastAccessed: row.last_accessed
+            ? new Date(row.last_accessed)
+            : new Date(0),
+          status: "active",
+        }),
+      );
 
       // Cache results
-      this.partitionCache.set(tableName, partitions)
+      this.partitionCache.set(tableName, partitions);
 
-      return partitions
+      return partitions;
     } catch (error) {
-      console.error(`Failed to get partition info for ${tableName}:`, error)
-      return []
+      console.error(`Failed to get partition info for ${tableName}:`, error);
+      return [];
     }
   }
 
@@ -627,19 +693,19 @@ class IntelligentPartitionManager {
    */
   private async createPartitionIndexes(
     partitionName: string,
-    strategy: PartitionStrategy
+    strategy: PartitionStrategy,
   ): Promise<void> {
     // Create same indexes as parent table
-    const indexes = this.getTableIndexes(strategy.table)
+    const indexes = this.getTableIndexes(strategy.table);
 
     for (const index of indexes) {
       const sql = `CREATE INDEX IF NOT EXISTS idx_${partitionName}_${index.column}
-                   ON ${partitionName} (${index.column})`
+                   ON ${partitionName} (${index.column})`;
 
       try {
-        await this.executeSQL(sql)
+        await this.executeSQL(sql);
       } catch (error) {
-        console.error(`Failed to create index on ${partitionName}:`, error)
+        console.error(`Failed to create index on ${partitionName}:`, error);
       }
     }
   }
@@ -647,27 +713,29 @@ class IntelligentPartitionManager {
   /**
    * Get table indexes configuration
    */
-  private getTableIndexes(tableName: string): Array<{ column: string; type: string }> {
+  private getTableIndexes(
+    tableName: string,
+  ): Array<{ column: string; type: string }> {
     // Return standard indexes based on table
     const indexMap: Record<string, Array<{ column: string; type: string }>> = {
       analytics_events: [
-        { column: 'timestamp', type: 'btree' },
-        { column: 'event_type', type: 'btree' },
-        { column: 'user_id', type: 'btree' }
+        { column: "timestamp", type: "btree" },
+        { column: "event_type", type: "btree" },
+        { column: "user_id", type: "btree" },
       ],
       florida_parcels: [
-        { column: 'parcel_id', type: 'btree' },
-        { column: 'county_name', type: 'btree' },
-        { column: 'own_name', type: 'gin' }
+        { column: "parcel_id", type: "btree" },
+        { column: "county_name", type: "btree" },
+        { column: "own_name", type: "gin" },
       ],
       claims: [
-        { column: 'claim_number', type: 'btree' },
-        { column: 'status', type: 'btree' },
-        { column: 'created_at', type: 'btree' }
-      ]
-    }
+        { column: "claim_number", type: "btree" },
+        { column: "status", type: "btree" },
+        { column: "created_at", type: "btree" },
+      ],
+    };
 
-    return indexMap[tableName] || []
+    return indexMap[tableName] || [];
   }
 
   /**
@@ -676,14 +744,14 @@ class IntelligentPartitionManager {
   private generatePartitionName(
     tableName: string,
     type: string,
-    identifier: Date | string
+    identifier: Date | string,
   ): string {
     if (identifier instanceof Date) {
-      const dateStr = identifier.toISOString().split('T')[0].replace(/-/g, '_')
-      return `${tableName}_${dateStr}`
+      const dateStr = identifier.toISOString().split("T")[0].replace(/-/g, "_");
+      return `${tableName}_${dateStr}`;
     } else {
-      const cleanId = identifier.toLowerCase().replace(/[^a-z0-9]/g, '_')
-      return `${tableName}_${cleanId}`
+      const cleanId = identifier.toLowerCase().replace(/[^a-z0-9]/g, "_");
+      return `${tableName}_${cleanId}`;
     }
   }
 
@@ -691,24 +759,24 @@ class IntelligentPartitionManager {
    * Get next interval date
    */
   private getNextInterval(date: Date, interval: string): Date {
-    const next = new Date(date)
+    const next = new Date(date);
 
     switch (interval) {
-      case 'daily':
-        next.setDate(next.getDate() + 1)
-        break
-      case 'weekly':
-        next.setDate(next.getDate() + 7)
-        break
-      case 'monthly':
-        next.setMonth(next.getMonth() + 1)
-        break
-      case 'yearly':
-        next.setFullYear(next.getFullYear() + 1)
-        break
+      case "daily":
+        next.setDate(next.getDate() + 1);
+        break;
+      case "weekly":
+        next.setDate(next.getDate() + 7);
+        break;
+      case "monthly":
+        next.setMonth(next.getMonth() + 1);
+        break;
+      case "yearly":
+        next.setFullYear(next.getFullYear() + 1);
+        break;
     }
 
-    return next
+    return next;
   }
 
   /**
@@ -716,7 +784,7 @@ class IntelligentPartitionManager {
    */
   private async executeSQL(sql: string): Promise<void> {
     // In production, this would execute against the database
-    console.log('Executing SQL:', sql.substring(0, 100) + '...')
+    console.log("Executing SQL:", sql.substring(0, 100) + "...");
   }
 
   /**
@@ -724,61 +792,67 @@ class IntelligentPartitionManager {
    */
   private startMaintenanceScheduler(): void {
     // Run maintenance every hour
-    setInterval(() => {
-      this.performMaintenance()
-    }, 60 * 60 * 1000)
+    setInterval(
+      () => {
+        this.performMaintenance();
+      },
+      60 * 60 * 1000,
+    );
 
     // Initial run
-    this.performMaintenance()
+    this.performMaintenance();
   }
 
   /**
    * Get partition strategy for table
    */
   getStrategy(tableName: string): PartitionStrategy | undefined {
-    return this.strategies.get(tableName)
+    return this.strategies.get(tableName);
   }
 
   /**
    * Register custom partition strategy
    */
   registerStrategy(tableName: string, strategy: PartitionStrategy): void {
-    this.strategies.set(tableName, strategy)
+    this.strategies.set(tableName, strategy);
   }
 
   /**
    * Get maintenance task status
    */
   getMaintenanceStatus(): {
-    pending: number
-    running: number
-    completed: number
-    failed: number
-    tasks: MaintenanceTask[]
+    pending: number;
+    running: number;
+    completed: number;
+    failed: number;
+    tasks: MaintenanceTask[];
   } {
     return {
-      pending: this.maintenanceTasks.filter(t => t.status === 'pending').length,
-      running: this.maintenanceTasks.filter(t => t.status === 'running').length,
-      completed: this.maintenanceTasks.filter(t => t.status === 'completed').length,
-      failed: this.maintenanceTasks.filter(t => t.status === 'failed').length,
-      tasks: this.maintenanceTasks.slice(-50) // Last 50 tasks
-    }
+      pending: this.maintenanceTasks.filter((t) => t.status === "pending")
+        .length,
+      running: this.maintenanceTasks.filter((t) => t.status === "running")
+        .length,
+      completed: this.maintenanceTasks.filter((t) => t.status === "completed")
+        .length,
+      failed: this.maintenanceTasks.filter((t) => t.status === "failed").length,
+      tasks: this.maintenanceTasks.slice(-50), // Last 50 tasks
+    };
   }
 
   /**
    * Enable/disable auto partitioning
    */
   setAutoPartition(enabled: boolean): void {
-    this.autoPartitionEnabled = enabled
+    this.autoPartitionEnabled = enabled;
   }
 }
 
 // Export singleton instance
-export const partitionManager = new IntelligentPartitionManager()
+export const partitionManager = new IntelligentPartitionManager();
 
 export type {
   PartitionStrategy,
   PartitionInfo,
   PartitionMetrics,
-  MaintenanceTask
-}
+  MaintenanceTask,
+};

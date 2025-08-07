@@ -5,13 +5,13 @@
  * @owner backend-team
  * @status stable
  */
-'use server'
+"use server";
 
-import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
-import { authLogger } from '@/lib/logger'
-import { createAuthClient, serverSignOut } from '@/lib/supabase/server-auth'
+import { authLogger } from "@/lib/logger";
+import { createAuthClient, serverSignOut } from "@/lib/supabase/server-auth";
 
 /**
  * Server action to sign out the user
@@ -19,13 +19,13 @@ import { createAuthClient, serverSignOut } from '@/lib/supabase/server-auth'
  */
 export async function signOutAction() {
   try {
-    await serverSignOut()
-    revalidatePath('/', 'layout')
-    redirect('/')
+    await serverSignOut();
+    revalidatePath("/", "layout");
+    redirect("/");
   } catch (error) {
-    authLogger.error('Sign out action failed', {}, error as Error)
+    authLogger.error("Sign out action failed", {}, error as Error);
     // Still redirect even if sign out fails
-    redirect('/')
+    redirect("/");
   }
 }
 
@@ -35,13 +35,16 @@ export async function signOutAction() {
  */
 export async function validateSessionAction(): Promise<boolean> {
   try {
-    const supabase = await createAuthClient()
-    const { data: { user }, error } = await supabase.auth.getUser()
+    const supabase = await createAuthClient();
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
 
-    return !error && !!user
+    return !error && !!user;
   } catch (error) {
-    authLogger.error('Session validation failed', {}, error as Error)
-    return false
+    authLogger.error("Session validation failed", {}, error as Error);
+    return false;
   }
 }
 
@@ -51,19 +54,22 @@ export async function validateSessionAction(): Promise<boolean> {
  */
 export async function refreshSessionAction(): Promise<boolean> {
   try {
-    const supabase = await createAuthClient()
-    const { data: { session }, error } = await supabase.auth.refreshSession()
+    const supabase = await createAuthClient();
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.refreshSession();
 
     if (error || !session) {
-      authLogger.error('Session refresh failed', {}, error || undefined)
-      return false
+      authLogger.error("Session refresh failed", {}, error || undefined);
+      return false;
     }
 
-    revalidatePath('/', 'layout')
-    return true
+    revalidatePath("/", "layout");
+    return true;
   } catch (error) {
-    authLogger.error('Session refresh action failed', {}, error as Error)
-    return false
+    authLogger.error("Session refresh action failed", {}, error as Error);
+    return false;
   }
 }
 
@@ -73,19 +79,24 @@ export async function refreshSessionAction(): Promise<boolean> {
  */
 export async function getSessionExpiryAction(): Promise<number | null> {
   try {
-    const supabase = await createAuthClient()
-    const { data: { user }, error } = await supabase.auth.getUser()
+    const supabase = await createAuthClient();
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
 
     if (error || !user) {
-      return null
+      return null;
     }
 
-    const { data: { session } } = await supabase.auth.getSession()
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
-    return session?.expires_at || null
+    return session?.expires_at || null;
   } catch (error) {
-    authLogger.error('Get session expiry failed', {}, error as Error)
-    return null
+    authLogger.error("Get session expiry failed", {}, error as Error);
+    return null;
   }
 }
 
@@ -94,47 +105,58 @@ export async function getSessionExpiryAction(): Promise<number | null> {
  * Returns success status and any error message
  */
 export async function resendVerificationAction(email: string): Promise<{
-  success: boolean
-  error?: string
-  rateLimited?: boolean
+  success: boolean;
+  error?: string;
+  rateLimited?: boolean;
 }> {
   try {
-    authLogger.info('Resending verification email', { email })
+    authLogger.info("Resending verification email", { email });
 
-    const supabase = await createAuthClient()
+    const supabase = await createAuthClient();
     const { error } = await supabase.auth.resend({
-      type: 'signup',
+      type: "signup",
       email,
       options: {
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/verify-enhanced`
-      }
-    })
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/auth/verify-enhanced`,
+      },
+    });
 
     if (error) {
-      if (error.message.includes('rate limit') || error.message.includes('too many')) {
-        authLogger.warn('Email verification rate limited', { email, error: error.message })
+      if (
+        error.message.includes("rate limit") ||
+        error.message.includes("too many")
+      ) {
+        authLogger.warn("Email verification rate limited", {
+          email,
+          error: error.message,
+        });
         return {
           success: false,
           rateLimited: true,
-          error: 'Too many attempts. Please wait before requesting another email.'
-        }
+          error:
+            "Too many attempts. Please wait before requesting another email.",
+        };
       }
 
-      authLogger.error('Failed to resend verification email', { email }, error)
+      authLogger.error("Failed to resend verification email", { email }, error);
       return {
         success: false,
-        error: error.message
-      }
+        error: error.message,
+      };
     }
 
-    authLogger.info('Verification email sent successfully', { email })
-    return { success: true }
+    authLogger.info("Verification email sent successfully", { email });
+    return { success: true };
   } catch (error) {
-    authLogger.error('Unexpected error resending verification email', { email }, error as Error)
+    authLogger.error(
+      "Unexpected error resending verification email",
+      { email },
+      error as Error,
+    );
     return {
       success: false,
-      error: 'An unexpected error occurred while sending verification email'
-    }
+      error: "An unexpected error occurred while sending verification email",
+    };
   }
 }
 
@@ -143,25 +165,28 @@ export async function resendVerificationAction(email: string): Promise<{
  * Returns the current user's verification status
  */
 export async function checkVerificationStatusAction(): Promise<{
-  isVerified: boolean
-  email?: string
-  user?: any
+  isVerified: boolean;
+  email?: string;
+  user?: any;
 }> {
   try {
-    const supabase = await createAuthClient()
-    const { data: { user }, error } = await supabase.auth.getUser()
+    const supabase = await createAuthClient();
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
 
     if (error || !user) {
-      return { isVerified: false }
+      return { isVerified: false };
     }
 
     return {
       isVerified: !!user.email_confirmed_at,
       email: user.email,
-      user
-    }
+      user,
+    };
   } catch (error) {
-    authLogger.error('Failed to check verification status', {}, error as Error)
-    return { isVerified: false }
+    authLogger.error("Failed to check verification status", {}, error as Error);
+    return { isVerified: false };
   }
 }

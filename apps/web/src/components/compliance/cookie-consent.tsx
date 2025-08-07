@@ -8,63 +8,63 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { Cookie, X, Settings, Check } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { Cookie, X, Settings, Check } from "lucide-react";
+import { useState, useEffect } from "react";
 
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
 interface CookieConsent {
-  essential: boolean
-  analytics: boolean
-  marketing: boolean
-  timestamp: string
-  version: string
+  essential: boolean;
+  analytics: boolean;
+  marketing: boolean;
+  timestamp: string;
+  version: string;
 }
 
-const COOKIE_CONSENT_KEY = 'claimguardian_cookie_consent'
-const COOKIE_CONSENT_VERSION = '1.0'
+const COOKIE_CONSENT_KEY = "claimguardian_cookie_consent";
+const COOKIE_CONSENT_VERSION = "1.0";
 
 export function CookieConsentBanner() {
-  const [showBanner, setShowBanner] = useState(false)
-  const [showSettings, setShowSettings] = useState(false)
+  const [showBanner, setShowBanner] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [consent, setConsent] = useState<CookieConsent>({
     essential: true, // Always true
     analytics: false,
     marketing: false,
     timestamp: new Date().toISOString(),
-    version: COOKIE_CONSENT_VERSION
-  })
+    version: COOKIE_CONSENT_VERSION,
+  });
 
   // Check for existing consent
   useEffect(() => {
-    const storedConsent = localStorage.getItem(COOKIE_CONSENT_KEY)
+    const storedConsent = localStorage.getItem(COOKIE_CONSENT_KEY);
 
     if (!storedConsent) {
       // No consent found, show banner
-      setShowBanner(true)
+      setShowBanner(true);
     } else {
       try {
-        const parsed = JSON.parse(storedConsent) as CookieConsent
+        const parsed = JSON.parse(storedConsent) as CookieConsent;
 
         // Check if consent version is current
         if (parsed.version !== COOKIE_CONSENT_VERSION) {
           // Version mismatch, show banner again
-          setShowBanner(true)
+          setShowBanner(true);
         } else {
           // Valid consent found
-          setConsent(parsed)
-          applyCookieSettings(parsed)
+          setConsent(parsed);
+          applyCookieSettings(parsed);
         }
       } catch {
         // Invalid consent data, show banner
-        setShowBanner(true)
+        setShowBanner(true);
       }
     }
-  }, [])
+  }, []);
 
   // Apply cookie settings
   const applyCookieSettings = (settings: CookieConsent) => {
@@ -73,59 +73,59 @@ export function CookieConsentBanner() {
     // Analytics cookies
     if (settings.analytics) {
       // Enable Google Analytics or other analytics
-      if (typeof window !== 'undefined' && window.gtag) {
-        window.gtag('consent', 'update', {
-          analytics_storage: 'granted'
-        })
+      if (typeof window !== "undefined" && window.gtag) {
+        window.gtag("consent", "update", {
+          analytics_storage: "granted",
+        });
       }
     } else {
       // Disable analytics
-      if (typeof window !== 'undefined' && window.gtag) {
-        window.gtag('consent', 'update', {
-          analytics_storage: 'denied'
-        })
+      if (typeof window !== "undefined" && window.gtag) {
+        window.gtag("consent", "update", {
+          analytics_storage: "denied",
+        });
       }
     }
 
     // Marketing cookies
     if (settings.marketing) {
       // Enable marketing cookies
-      if (typeof window !== 'undefined' && window.gtag) {
-        window.gtag('consent', 'update', {
-          ad_storage: 'granted'
-        })
+      if (typeof window !== "undefined" && window.gtag) {
+        window.gtag("consent", "update", {
+          ad_storage: "granted",
+        });
       }
     } else {
       // Disable marketing cookies
-      if (typeof window !== 'undefined' && window.gtag) {
-        window.gtag('consent', 'update', {
-          ad_storage: 'denied'
-        })
+      if (typeof window !== "undefined" && window.gtag) {
+        window.gtag("consent", "update", {
+          ad_storage: "denied",
+        });
       }
     }
-  }
+  };
 
   // Save consent
   const saveConsent = (newConsent: CookieConsent) => {
     // Save to localStorage
-    localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify(newConsent))
+    localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify(newConsent));
 
     // Apply settings
-    applyCookieSettings(newConsent)
+    applyCookieSettings(newConsent);
 
     // Hide banner
-    setShowBanner(false)
-    setShowSettings(false)
+    setShowBanner(false);
+    setShowSettings(false);
 
     // Track consent (if analytics enabled)
-    if (newConsent.analytics && typeof window !== 'undefined' && window.gtag) {
-      window.gtag('event', 'cookie_consent', {
+    if (newConsent.analytics && typeof window !== "undefined" && window.gtag) {
+      window.gtag("event", "cookie_consent", {
         essential: newConsent.essential,
         analytics: newConsent.analytics,
-        marketing: newConsent.marketing
-      })
+        marketing: newConsent.marketing,
+      });
     }
-  }
+  };
 
   // Accept all cookies
   const acceptAll = () => {
@@ -134,12 +134,12 @@ export function CookieConsentBanner() {
       analytics: true,
       marketing: true,
       timestamp: new Date().toISOString(),
-      version: COOKIE_CONSENT_VERSION
-    }
+      version: COOKIE_CONSENT_VERSION,
+    };
 
-    setConsent(newConsent)
-    saveConsent(newConsent)
-  }
+    setConsent(newConsent);
+    saveConsent(newConsent);
+  };
 
   // Accept only essential
   const acceptEssential = () => {
@@ -148,25 +148,25 @@ export function CookieConsentBanner() {
       analytics: false,
       marketing: false,
       timestamp: new Date().toISOString(),
-      version: COOKIE_CONSENT_VERSION
-    }
+      version: COOKIE_CONSENT_VERSION,
+    };
 
-    setConsent(newConsent)
-    saveConsent(newConsent)
-  }
+    setConsent(newConsent);
+    saveConsent(newConsent);
+  };
 
   // Save custom settings
   const saveSettings = () => {
     const newConsent: CookieConsent = {
       ...consent,
       timestamp: new Date().toISOString(),
-      version: COOKIE_CONSENT_VERSION
-    }
+      version: COOKIE_CONSENT_VERSION,
+    };
 
-    saveConsent(newConsent)
-  }
+    saveConsent(newConsent);
+  };
 
-  if (!showBanner) return null
+  if (!showBanner) return null;
 
   return (
     <>
@@ -187,10 +187,10 @@ export function CookieConsentBanner() {
                       Cookie Preferences
                     </h3>
                     <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-                      We use cookies to enhance your experience on ClaimGuardian.
-                      Essential cookies help our site function properly, while optional
-                      cookies help us understand how you use our services and show you
-                      relevant content.
+                      We use cookies to enhance your experience on
+                      ClaimGuardian. Essential cookies help our site function
+                      properly, while optional cookies help us understand how
+                      you use our services and show you relevant content.
                     </p>
                     <div className="flex flex-wrap gap-3">
                       <Button
@@ -199,10 +199,7 @@ export function CookieConsentBanner() {
                       >
                         Accept All
                       </Button>
-                      <Button
-                        onClick={acceptEssential}
-                        variant="outline"
-                      >
+                      <Button onClick={acceptEssential} variant="outline">
                         Essential Only
                       </Button>
                       <Button
@@ -232,8 +229,9 @@ export function CookieConsentBanner() {
                     Cookie Settings
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-300">
-                    Choose which cookies you want to accept. Essential cookies cannot
-                    be disabled as they are required for the site to function.
+                    Choose which cookies you want to accept. Essential cookies
+                    cannot be disabled as they are required for the site to
+                    function.
                   </p>
                 </div>
 
@@ -245,25 +243,31 @@ export function CookieConsentBanner() {
                         Essential Cookies
                       </Label>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        Required for the website to function properly. These include
-                        security, authentication, and session management.
+                        Required for the website to function properly. These
+                        include security, authentication, and session
+                        management.
                       </p>
                     </div>
                     <div className="ml-4 flex items-center">
                       <Check className="h-5 w-5 text-green-600" />
-                      <span className="text-sm text-gray-500 ml-2">Always On</span>
+                      <span className="text-sm text-gray-500 ml-2">
+                        Always On
+                      </span>
                     </div>
                   </div>
 
                   {/* Analytics Cookies */}
                   <div className="flex items-start justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
                     <div className="flex-1">
-                      <Label htmlFor="analytics" className="text-base font-medium">
+                      <Label
+                        htmlFor="analytics"
+                        className="text-base font-medium"
+                      >
                         Analytics Cookies
                       </Label>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        Help us understand how you use our website so we can improve
-                        your experience. All data is anonymized.
+                        Help us understand how you use our website so we can
+                        improve your experience. All data is anonymized.
                       </p>
                     </div>
                     <Switch
@@ -279,7 +283,10 @@ export function CookieConsentBanner() {
                   {/* Marketing Cookies */}
                   <div className="flex items-start justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
                     <div className="flex-1">
-                      <Label htmlFor="marketing" className="text-base font-medium">
+                      <Label
+                        htmlFor="marketing"
+                        className="text-base font-medium"
+                      >
                         Marketing Cookies
                       </Label>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
@@ -306,10 +313,7 @@ export function CookieConsentBanner() {
                     Back
                   </Button>
                   <div className="flex gap-3">
-                    <Button
-                      onClick={acceptEssential}
-                      variant="outline"
-                    >
+                    <Button onClick={acceptEssential} variant="outline">
                       Reject Optional
                     </Button>
                     <Button
@@ -326,28 +330,28 @@ export function CookieConsentBanner() {
         </div>
       </div>
     </>
-  )
+  );
 }
 
 // Utility hook for checking cookie consent
 export function useCookieConsent() {
-  const [consent, setConsent] = useState<CookieConsent | null>(null)
+  const [consent, setConsent] = useState<CookieConsent | null>(null);
 
   useEffect(() => {
-    const storedConsent = localStorage.getItem(COOKIE_CONSENT_KEY)
+    const storedConsent = localStorage.getItem(COOKIE_CONSENT_KEY);
     if (storedConsent) {
       try {
-        setConsent(JSON.parse(storedConsent))
+        setConsent(JSON.parse(storedConsent));
       } catch {
-        setConsent(null)
+        setConsent(null);
       }
     }
-  }, [])
+  }, []);
 
   return {
     hasConsent: !!consent,
     consent,
     hasAnalytics: consent?.analytics ?? false,
-    hasMarketing: consent?.marketing ?? false
-  }
+    hasMarketing: consent?.marketing ?? false,
+  };
 }

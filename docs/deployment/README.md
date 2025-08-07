@@ -5,23 +5,28 @@ This directory contains deployment guides, maintenance reports, and infrastructu
 ## Contents
 
 ### Maintenance Reports
+
 - **[REPOSITORY_CLEANUP_SUMMARY.md](./REPOSITORY_CLEANUP_SUMMARY.md)** - Recent repository cleanup actions
 - **[UNUSED_FILES_REPORT.md](./UNUSED_FILES_REPORT.md)** - Analysis of unused files in the codebase
 
 ### Deployment Guides
 
 #### Vercel Deployment
+
 The application is configured for automatic deployment on Vercel:
+
 1. Connect your GitHub repository to Vercel
 2. Configure environment variables in Vercel dashboard
 3. Deploy with `pnpm install --no-frozen-lockfile`
 
 #### Supabase Setup
+
 See [Supabase Setup Guide](../setup/SUPABASE_SETUP.md) for detailed instructions.
 
 ## Quick Deployment Checklist
 
 ### Pre-deployment
+
 - [ ] All tests passing (`pnpm test`)
 - [ ] Type checking passes (`pnpm type-check`)
 - [ ] Environment variables configured
@@ -29,6 +34,7 @@ See [Supabase Setup Guide](../setup/SUPABASE_SETUP.md) for detailed instructions
 - [ ] Edge functions deployed
 
 ### Production Environment Variables
+
 ```bash
 # Required
 NEXT_PUBLIC_SUPABASE_URL=
@@ -49,6 +55,7 @@ NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=
 ```
 
 ### Post-deployment
+
 - [ ] Verify all pages load correctly
 - [ ] Test authentication flow
 - [ ] Check AI features functionality
@@ -94,6 +101,7 @@ pnpm db:types
 ## Support
 
 For deployment issues:
+
 - Check [Vercel Status](https://vercel-status.com/)
 - Check [Supabase Status](https://status.supabase.com/)
 - Contact: devops@claimguardianai.com

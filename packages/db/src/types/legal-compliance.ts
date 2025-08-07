@@ -7,39 +7,25 @@
  */
 
 export type LegalDocumentType =
-  | 'privacy_policy'
-  | 'terms_of_service'
-  | 'ai_use_agreement'
-  | 'cookie_policy'
-  | 'data_processing_agreement';
+  | "privacy_policy"
+  | "terms_of_service"
+  | "ai_use_agreement"
+  | "cookie_policy"
+  | "data_processing_agreement";
 
 export type ConsentActionType =
-  | 'accepted'
-  | 'declined'
-  | 'withdrawn'
-  | 'updated';
+  | "accepted"
+  | "declined"
+  | "withdrawn"
+  | "updated";
 
-export type ConsentMethod =
-  | 'signup'
-  | 'settings'
-  | 'prompted'
-  | 'auto_update';
+export type ConsentMethod = "signup" | "settings" | "prompted" | "auto_update";
 
-export type ConsentFlow =
-  | 'standard'
-  | 'gdpr'
-  | 'ccpa';
+export type ConsentFlow = "standard" | "gdpr" | "ccpa";
 
-export type DeviceType =
-  | 'mobile'
-  | 'tablet'
-  | 'desktop';
+export type DeviceType = "mobile" | "tablet" | "desktop";
 
-export type LogoutReason =
-  | 'user'
-  | 'timeout'
-  | 'admin'
-  | 'security';
+export type LogoutReason = "user" | "timeout" | "admin" | "security";
 
 export interface Geolocation {
   country?: string;
@@ -161,7 +147,7 @@ export interface SignupData {
   ipAddress?: string;
   userAgent?: string;
   deviceFingerprint?: string;
-  deviceType?: 'mobile' | 'tablet' | 'desktop';
+  deviceType?: "mobile" | "tablet" | "desktop";
   screenResolution?: string;
 
   // Location data

@@ -8,62 +8,74 @@
  * @tags ["maps", "mapbox", "florida", "properties", "geospatial"]
  * @status stable
  */
-'use client'
+"use client";
 
-import { useEffect, useRef, useState, useCallback } from 'react'
-import mapboxgl from 'mapbox-gl'
-import { MapPin, Home, AlertTriangle, Layers, Search, Filter } from 'lucide-react'
-import 'mapbox-gl/dist/mapbox-gl.css'
+import { useEffect, useRef, useState, useCallback } from "react";
+import mapboxgl from "mapbox-gl";
+import {
+  MapPin,
+  Home,
+  AlertTriangle,
+  Layers,
+  Search,
+  Filter,
+} from "lucide-react";
+import "mapbox-gl/dist/mapbox-gl.css";
 
 // Types
 interface Property {
-  id: string
-  name: string
-  address: string
-  coordinates: [number, number] // [longitude, latitude]
-  type: 'single_family' | 'condo' | 'townhouse' | 'commercial' | 'multi_family'
-  value: number
-  insuranceStatus: 'active' | 'expired' | 'pending' | 'none'
-  claimsCount: number
-  riskLevel: 'low' | 'medium' | 'high'
-  county: string
-  lastUpdated: Date
+  id: string;
+  name: string;
+  address: string;
+  coordinates: [number, number]; // [longitude, latitude]
+  type: "single_family" | "condo" | "townhouse" | "commercial" | "multi_family";
+  value: number;
+  insuranceStatus: "active" | "expired" | "pending" | "none";
+  claimsCount: number;
+  riskLevel: "low" | "medium" | "high";
+  county: string;
+  lastUpdated: Date;
 }
 
 interface MapLayer {
-  id: string
-  name: string
-  visible: boolean
-  color: string
+  id: string;
+  name: string;
+  visible: boolean;
+  color: string;
 }
 
 interface FloridaPropertyMapProps {
-  properties?: Property[]
-  center?: [number, number]
-  zoom?: number
-  showControls?: boolean
-  showSearch?: boolean
-  onPropertyClick?: (property: Property) => void
-  className?: string
-  height?: string
-  mapStyle?: string
+  properties?: Property[];
+  center?: [number, number];
+  zoom?: number;
+  showControls?: boolean;
+  showSearch?: boolean;
+  onPropertyClick?: (property: Property) => void;
+  className?: string;
+  height?: string;
+  mapStyle?: string;
 }
 
 // Florida-specific map configuration
-const FLORIDA_CENTER: [number, number] = [-82.4572, 27.9506]
+const FLORIDA_CENTER: [number, number] = [-82.4572, 27.9506];
 const FLORIDA_BOUNDS: [[number, number], [number, number]] = [
   [-87.6349, 24.3963], // Southwest coordinates
-  [-79.9743, 31.0007]  // Northeast coordinates
-]
+  [-79.9743, 31.0007], // Northeast coordinates
+];
 
 // Map layers configuration
 const DEFAULT_LAYERS: MapLayer[] = [
-  { id: 'properties', name: 'Properties', visible: true, color: '#10b981' },
-  { id: 'claims', name: 'Claims', visible: true, color: '#f59e0b' },
-  { id: 'risk-zones', name: 'Risk Zones', visible: false, color: '#ef4444' },
-  { id: 'flood-zones', name: 'Flood Zones', visible: false, color: '#3b82f6' },
-  { id: 'hurricane-tracks', name: 'Hurricane History', visible: false, color: '#8b5cf6' }
-]
+  { id: "properties", name: "Properties", visible: true, color: "#10b981" },
+  { id: "claims", name: "Claims", visible: true, color: "#f59e0b" },
+  { id: "risk-zones", name: "Risk Zones", visible: false, color: "#ef4444" },
+  { id: "flood-zones", name: "Flood Zones", visible: false, color: "#3b82f6" },
+  {
+    id: "hurricane-tracks",
+    name: "Hurricane History",
+    visible: false,
+    color: "#8b5cf6",
+  },
+];
 
 export function FloridaPropertyMap({
   properties = [],
@@ -72,32 +84,36 @@ export function FloridaPropertyMap({
   showControls = true,
   showSearch = true,
   onPropertyClick,
-  className = '',
-  height = '500px',
-  mapStyle = 'mapbox://styles/mapbox/dark-v11'
+  className = "",
+  height = "500px",
+  mapStyle = "mapbox://styles/mapbox/dark-v11",
 }: FloridaPropertyMapProps) {
   // Refs
-  const mapContainer = useRef<HTMLDivElement>(null)
-  const map = useRef<mapboxgl.Map | null>(null)
-  const markers = useRef<mapboxgl.Marker[]>([])
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const map = useRef<mapboxgl.Map | null>(null);
+  const markers = useRef<mapboxgl.Marker[]>([]);
 
   // State
-  const [mapLoaded, setMapLoaded] = useState(false)
-  const [layers, setLayers] = useState<MapLayer[]>(DEFAULT_LAYERS)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null)
-  const [showLayerControls, setShowLayerControls] = useState(false)
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const [layers, setLayers] = useState<MapLayer[]>(DEFAULT_LAYERS);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(
+    null,
+  );
+  const [showLayerControls, setShowLayerControls] = useState(false);
 
   // Initialize map
   useEffect(() => {
-    if (!mapContainer.current) return
+    if (!mapContainer.current) return;
 
     // Set Mapbox access token (should be in environment variables)
-    mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ''
+    mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
 
     if (!mapboxgl.accessToken) {
-      console.warn('Mapbox access token not found. Add NEXT_PUBLIC_MAPBOX_TOKEN to your environment variables.')
-      return
+      console.warn(
+        "Mapbox access token not found. Add NEXT_PUBLIC_MAPBOX_TOKEN to your environment variables.",
+      );
+      return;
     }
 
     // Create map instance
@@ -107,56 +123,60 @@ export function FloridaPropertyMap({
       center,
       zoom,
       maxBounds: FLORIDA_BOUNDS,
-      attributionControl: false
-    })
+      attributionControl: false,
+    });
 
     // Add navigation controls
     if (showControls) {
-      map.current.addControl(new mapboxgl.NavigationControl(), 'top-right')
-      map.current.addControl(new mapboxgl.FullscreenControl(), 'top-right')
-      map.current.addControl(new mapboxgl.AttributionControl({ compact: true }), 'bottom-right')
+      map.current.addControl(new mapboxgl.NavigationControl(), "top-right");
+      map.current.addControl(new mapboxgl.FullscreenControl(), "top-right");
+      map.current.addControl(
+        new mapboxgl.AttributionControl({ compact: true }),
+        "bottom-right",
+      );
     }
 
     // Map load event
-    map.current.on('load', () => {
-      setMapLoaded(true)
+    map.current.on("load", () => {
+      setMapLoaded(true);
 
       // Add data sources and layers
-      addMapSources()
-      addMapLayers()
-    })
+      addMapSources();
+      addMapLayers();
+    });
 
     // Cleanup
     return () => {
-      markers.current.forEach(marker => marker.remove())
-      markers.current = []
-      map.current?.remove()
-    }
-  }, [center, zoom, mapStyle, showControls])
+      markers.current.forEach((marker) => marker.remove());
+      markers.current = [];
+      map.current?.remove();
+    };
+  }, [center, zoom, mapStyle, showControls]);
 
   // Add property markers when properties change
   useEffect(() => {
-    if (!map.current || !mapLoaded) return
+    if (!map.current || !mapLoaded) return;
 
     // Clear existing markers
-    markers.current.forEach(marker => marker.remove())
-    markers.current = []
+    markers.current.forEach((marker) => marker.remove());
+    markers.current = [];
 
     // Add markers for each property
-    properties.forEach(property => {
-      const marker = createPropertyMarker(property)
-      markers.current.push(marker)
-    })
-  }, [properties, mapLoaded])
+    properties.forEach((property) => {
+      const marker = createPropertyMarker(property);
+      markers.current.push(marker);
+    });
+  }, [properties, mapLoaded]);
 
   // Create property marker
-  const createPropertyMarker = useCallback((property: Property) => {
-    if (!map.current) return new mapboxgl.Marker()
+  const createPropertyMarker = useCallback(
+    (property: Property) => {
+      if (!map.current) return new mapboxgl.Marker();
 
-    // Create custom marker element
-    const markerElement = document.createElement('div')
-    markerElement.className = 'property-marker'
-    markerElement.style.cssText = `
+      // Create custom marker element
+      const markerElement = document.createElement("div");
+      markerElement.className = "property-marker";
+      markerElement.style.cssText = `
       width: 12px;
       height: 12px;
       border-radius: 50%;
@@ -165,55 +185,65 @@ export function FloridaPropertyMap({
       transition: transform 0.2s ease;
       background-color: ${getPropertyColor(property)};
       box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    `
+    `;
 
-    // Hover effects
-    markerElement.addEventListener('mouseenter', () => {
-      markerElement.style.transform = 'scale(1.5)'
-      markerElement.style.zIndex = '1000'
-    })
+      // Hover effects
+      markerElement.addEventListener("mouseenter", () => {
+        markerElement.style.transform = "scale(1.5)";
+        markerElement.style.zIndex = "1000";
+      });
 
-    markerElement.addEventListener('mouseleave', () => {
-      markerElement.style.transform = 'scale(1)'
-      markerElement.style.zIndex = 'auto'
-    })
+      markerElement.addEventListener("mouseleave", () => {
+        markerElement.style.transform = "scale(1)";
+        markerElement.style.zIndex = "auto";
+      });
 
-    // Create marker
-    const marker = new mapboxgl.Marker(markerElement)
-      .setLngLat(property.coordinates)
-      .addTo(map.current!)
+      // Create marker
+      const marker = new mapboxgl.Marker(markerElement)
+        .setLngLat(property.coordinates)
+        .addTo(map.current!);
 
-    // Create popup
-    const popup = new mapboxgl.Popup({
-      offset: 15,
-      className: 'property-popup'
-    }).setHTML(createPopupHTML(property))
+      // Create popup
+      const popup = new mapboxgl.Popup({
+        offset: 15,
+        className: "property-popup",
+      }).setHTML(createPopupHTML(property));
 
-    // Add click event
-    markerElement.addEventListener('click', () => {
-      setSelectedProperty(property)
-      onPropertyClick?.(property)
-      marker.setPopup(popup).togglePopup()
-    })
+      // Add click event
+      markerElement.addEventListener("click", () => {
+        setSelectedProperty(property);
+        onPropertyClick?.(property);
+        marker.setPopup(popup).togglePopup();
+      });
 
-    return marker
-  }, [onPropertyClick])
+      return marker;
+    },
+    [onPropertyClick],
+  );
 
   // Get property marker color based on status
   const getPropertyColor = (property: Property): string => {
     switch (property.insuranceStatus) {
-      case 'active': return '#10b981' // Green
-      case 'expired': return '#ef4444' // Red
-      case 'pending': return '#f59e0b' // Orange
-      case 'none': return '#6b7280' // Gray
-      default: return '#6b7280'
+      case "active":
+        return "#10b981"; // Green
+      case "expired":
+        return "#ef4444"; // Red
+      case "pending":
+        return "#f59e0b"; // Orange
+      case "none":
+        return "#6b7280"; // Gray
+      default:
+        return "#6b7280";
     }
-  }
+  };
 
   // Create popup HTML
   const createPopupHTML = (property: Property): string => {
     const formatCurrency = (value: number) =>
-      new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value)
+      new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(value);
 
     return `
       <div class="p-3 min-w-64">
@@ -227,7 +257,7 @@ export function FloridaPropertyMap({
         <div class="grid grid-cols-2 gap-2 text-xs">
           <div>
             <span class="text-gray-400">Type:</span>
-            <span class="text-white ml-1">${property.type.replace('_', ' ')}</span>
+            <span class="text-white ml-1">${property.type.replace("_", " ")}</span>
           </div>
           <div>
             <span class="text-gray-400">Value:</span>
@@ -243,127 +273,141 @@ export function FloridaPropertyMap({
           </div>
         </div>
       </div>
-    `
-  }
+    `;
+  };
 
   // Get status badge CSS class
   const getStatusBadgeClass = (status: string): string => {
     switch (status) {
-      case 'active': return 'bg-green-600 text-white'
-      case 'expired': return 'bg-red-600 text-white'
-      case 'pending': return 'bg-orange-600 text-white'
-      case 'none': return 'bg-gray-600 text-white'
-      default: return 'bg-gray-600 text-white'
+      case "active":
+        return "bg-green-600 text-white";
+      case "expired":
+        return "bg-red-600 text-white";
+      case "pending":
+        return "bg-orange-600 text-white";
+      case "none":
+        return "bg-gray-600 text-white";
+      default:
+        return "bg-gray-600 text-white";
     }
-  }
+  };
 
   // Get risk level color class
   const getRiskColorClass = (riskLevel: string): string => {
     switch (riskLevel) {
-      case 'low': return 'text-green-400'
-      case 'medium': return 'text-orange-400'
-      case 'high': return 'text-red-400'
-      default: return 'text-gray-400'
+      case "low":
+        return "text-green-400";
+      case "medium":
+        return "text-orange-400";
+      case "high":
+        return "text-red-400";
+      default:
+        return "text-gray-400";
     }
-  }
+  };
 
   // Add map data sources
   const addMapSources = useCallback(() => {
-    if (!map.current) return
+    if (!map.current) return;
 
     // Add GeoJSON source for Florida counties (placeholder)
-    map.current.addSource('florida-counties', {
-      type: 'geojson',
+    map.current.addSource("florida-counties", {
+      type: "geojson",
       data: {
-        type: 'FeatureCollection',
-        features: [] // Would be populated with actual county data
-      }
-    })
+        type: "FeatureCollection",
+        features: [], // Would be populated with actual county data
+      },
+    });
 
     // Add source for flood zones
-    map.current.addSource('flood-zones', {
-      type: 'geojson',
+    map.current.addSource("flood-zones", {
+      type: "geojson",
       data: {
-        type: 'FeatureCollection',
-        features: [] // Would be populated with FEMA flood zone data
-      }
-    })
-  }, [])
+        type: "FeatureCollection",
+        features: [], // Would be populated with FEMA flood zone data
+      },
+    });
+  }, []);
 
   // Add map layers
   const addMapLayers = useCallback(() => {
-    if (!map.current) return
+    if (!map.current) return;
 
     // Add county boundaries layer
     map.current.addLayer({
-      id: 'county-boundaries',
-      type: 'line',
-      source: 'florida-counties',
+      id: "county-boundaries",
+      type: "line",
+      source: "florida-counties",
       paint: {
-        'line-color': '#374151',
-        'line-width': 1,
-        'line-opacity': 0.5
-      }
-    })
+        "line-color": "#374151",
+        "line-width": 1,
+        "line-opacity": 0.5,
+      },
+    });
 
     // Add flood zones layer
     map.current.addLayer({
-      id: 'flood-zones-layer',
-      type: 'fill',
-      source: 'flood-zones',
+      id: "flood-zones-layer",
+      type: "fill",
+      source: "flood-zones",
       paint: {
-        'fill-color': '#3b82f6',
-        'fill-opacity': 0.2
-      }
-    })
+        "fill-color": "#3b82f6",
+        "fill-opacity": 0.2,
+      },
+    });
 
     // Initially hide flood zones
-    map.current.setLayoutProperty('flood-zones-layer', 'visibility', 'none')
-  }, [])
+    map.current.setLayoutProperty("flood-zones-layer", "visibility", "none");
+  }, []);
 
   // Filter properties based on search
-  const filteredProperties = properties.filter(property =>
-    property.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    property.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    property.county.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  const filteredProperties = properties.filter(
+    (property) =>
+      property.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      property.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      property.county.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
 
   // Toggle layer visibility
   const toggleLayer = (layerId: string) => {
-    setLayers(prev => prev.map(layer =>
-      layer.id === layerId
-        ? { ...layer, visible: !layer.visible }
-        : layer
-    ))
+    setLayers((prev) =>
+      prev.map((layer) =>
+        layer.id === layerId ? { ...layer, visible: !layer.visible } : layer,
+      ),
+    );
 
-    if (map.current && layerId === 'flood-zones') {
-      const visibility = layers.find(l => l.id === layerId)?.visible ? 'none' : 'visible'
-      map.current.setLayoutProperty('flood-zones-layer', 'visibility', visibility)
+    if (map.current && layerId === "flood-zones") {
+      const visibility = layers.find((l) => l.id === layerId)?.visible
+        ? "none"
+        : "visible";
+      map.current.setLayoutProperty(
+        "flood-zones-layer",
+        "visibility",
+        visibility,
+      );
     }
-  }
+  };
 
   // Fly to property
   const flyToProperty = (property: Property) => {
-    if (!map.current) return
+    if (!map.current) return;
 
     map.current.flyTo({
       center: property.coordinates,
       zoom: 14,
-      duration: 1000
-    })
+      duration: 1000,
+    });
 
-    setSelectedProperty(property)
-    onPropertyClick?.(property)
-  }
+    setSelectedProperty(property);
+    onPropertyClick?.(property);
+  };
 
   return (
-    <div className={`relative overflow-hidden rounded-lg border border-gray-700 ${className}`}>
+    <div
+      className={`relative overflow-hidden rounded-lg border border-gray-700 ${className}`}
+    >
       {/* Map Container */}
-      <div
-        ref={mapContainer}
-        className="w-full"
-        style={{ height }}
-      />
+      <div ref={mapContainer} className="w-full" style={{ height }} />
 
       {/* Search Bar */}
       {showSearch && (
@@ -394,9 +438,14 @@ export function FloridaPropertyMap({
 
           {showLayerControls && (
             <div className="absolute top-12 right-0 bg-gray-800/95 border border-gray-600 rounded-lg p-3 min-w-48 backdrop-blur-sm">
-              <h3 className="font-medium text-white mb-2 text-sm">Map Layers</h3>
-              {layers.map(layer => (
-                <label key={layer.id} className="flex items-center justify-between py-1">
+              <h3 className="font-medium text-white mb-2 text-sm">
+                Map Layers
+              </h3>
+              {layers.map((layer) => (
+                <label
+                  key={layer.id}
+                  className="flex items-center justify-between py-1"
+                >
                   <span className="text-sm text-gray-300">{layer.name}</span>
                   <input
                     type="checkbox"
@@ -419,7 +468,7 @@ export function FloridaPropertyMap({
               {filteredProperties.length} Properties Found
             </h3>
             <div className="space-y-2">
-              {filteredProperties.slice(0, 5).map(property => (
+              {filteredProperties.slice(0, 5).map((property) => (
                 <button
                   key={property.id}
                   onClick={() => flyToProperty(property)}
@@ -427,15 +476,25 @@ export function FloridaPropertyMap({
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-white">{property.name}</p>
-                      <p className="text-xs text-gray-400">{property.address}</p>
+                      <p className="text-sm font-medium text-white">
+                        {property.name}
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        {property.address}
+                      </p>
                     </div>
                     <div className="flex items-center ml-2">
-                      <span className={`w-2 h-2 rounded-full ${
-                        property.insuranceStatus === 'active' ? 'bg-green-400' :
-                        property.insuranceStatus === 'expired' ? 'bg-red-400' :
-                        property.insuranceStatus === 'pending' ? 'bg-orange-400' : 'bg-gray-400'
-                      }`} />
+                      <span
+                        className={`w-2 h-2 rounded-full ${
+                          property.insuranceStatus === "active"
+                            ? "bg-green-400"
+                            : property.insuranceStatus === "expired"
+                              ? "bg-red-400"
+                              : property.insuranceStatus === "pending"
+                                ? "bg-orange-400"
+                                : "bg-gray-400"
+                        }`}
+                      />
                     </div>
                   </div>
                 </button>
@@ -447,7 +506,9 @@ export function FloridaPropertyMap({
 
       {/* Map Legend */}
       <div className="absolute bottom-4 left-4 bg-gray-800/95 border border-gray-600 rounded-lg p-3 backdrop-blur-sm">
-        <h4 className="font-medium text-white mb-2 text-xs">Insurance Status</h4>
+        <h4 className="font-medium text-white mb-2 text-xs">
+          Insurance Status
+        </h4>
         <div className="space-y-1">
           <div className="flex items-center">
             <div className="w-3 h-3 rounded-full bg-green-400 mr-2" />
@@ -483,13 +544,16 @@ export function FloridaPropertyMap({
         <div className="absolute inset-0 bg-gray-900/90 flex items-center justify-center backdrop-blur-sm">
           <div className="text-center p-6">
             <AlertTriangle className="w-12 h-12 text-orange-400 mx-auto mb-3" />
-            <h3 className="text-lg font-medium text-white mb-2">Mapbox Token Required</h3>
+            <h3 className="text-lg font-medium text-white mb-2">
+              Mapbox Token Required
+            </h3>
             <p className="text-sm text-gray-300">
-              Add your Mapbox access token to NEXT_PUBLIC_MAPBOX_TOKEN environment variable
+              Add your Mapbox access token to NEXT_PUBLIC_MAPBOX_TOKEN
+              environment variable
             </p>
           </div>
         </div>
       )}
     </div>
-  )
+  );
 }

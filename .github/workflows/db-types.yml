@@ -3,8 +3,8 @@ name: Generate Database Types
 on:
   push:
     paths:
-      - 'supabase/schema.sql'
-      - 'supabase/migrations/**/*.sql'
+      - "supabase/schema.sql"
+      - "supabase/migrations/**/*.sql"
   workflow_dispatch:
 
 jobs:
@@ -22,8 +22,8 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'pnpm'
+          node-version: "22"
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

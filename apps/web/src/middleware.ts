@@ -8,78 +8,87 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-import { botProtection } from '@/lib/security/bot-protection'
-import { createClient } from '@/lib/supabase/middleware'
-import { rateLimiter, RateLimiter } from '@/lib/security/rate-limiter'
-import { logger } from "@/lib/logger/production-logger"
-import { toError } from '@claimguardian/utils'
+import { botProtection } from "@/lib/security/bot-protection";
+import { createClient } from "@/lib/supabase/middleware";
+import { rateLimiter, RateLimiter } from "@/lib/security/rate-limiter";
+import { logger } from "@/lib/logger/production-logger";
+import { toError } from "@claimguardian/utils";
 
 // Type guards for middleware safety
 type MiddlewareRequest = NextRequest & {
   cookies: {
-    getAll(): Array<{ name: string; value: string }>
-  }
-}
+    getAll(): Array<{ name: string; value: string }>;
+  };
+};
 
 type MiddlewareResponse = NextResponse & {
   cookies: {
-    set(name: string, value: string, options?: Record<string, unknown>): void
-  }
-}
+    set(name: string, value: string, options?: Record<string, unknown>): void;
+  };
+};
 
 function isValidRequest(request: NextRequest): request is MiddlewareRequest {
-  return 'cookies' in request && typeof request.cookies.getAll === 'function'
+  return "cookies" in request && typeof request.cookies.getAll === "function";
 }
 
-function isValidResponse(response: NextResponse): response is MiddlewareResponse {
-  return 'cookies' in response && typeof response.cookies.set === 'function'
+function isValidResponse(
+  response: NextResponse,
+): response is MiddlewareResponse {
+  return "cookies" in response && typeof response.cookies.set === "function";
 }
 
 // Helper to clear all auth cookies
 function clearAuthCookies(request: NextRequest, response: NextResponse) {
   if (!isValidRequest(request) || !isValidResponse(response)) {
-    logger.warn('[MIDDLEWARE] Invalid request or response objects for cookie clearing')
-    return
+    logger.warn(
+      "[MIDDLEWARE] Invalid request or response objects for cookie clearing",
+    );
+    return;
   }
 
-  const cookies = request.cookies.getAll()
+  const cookies = request.cookies.getAll();
 
-  cookies.forEach(cookie => {
+  cookies.forEach((cookie) => {
     // Clear Supabase auth cookies and any custom auth cookies
-    if (cookie.name.includes('sb-') ||
-        cookie.name.includes('auth') ||
-        cookie.name === 'supabase-auth-token') {
-      response.cookies.set(cookie.name, '', {
-        path: '/',
+    if (
+      cookie.name.includes("sb-") ||
+      cookie.name.includes("auth") ||
+      cookie.name === "supabase-auth-token"
+    ) {
+      response.cookies.set(cookie.name, "", {
+        path: "/",
         expires: new Date(0),
         maxAge: 0,
-        sameSite: 'lax',
-        secure: process.env.NODE_ENV === 'production',
-        httpOnly: true
-      })
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+        httpOnly: true,
+      });
     }
-  })
+  });
 
-  logger.info('[MIDDLEWARE] Cleared all auth cookies')
+  logger.info("[MIDDLEWARE] Cleared all auth cookies");
 }
 
 // Helper to add security headers
 function addSecurityHeaders(response: NextResponse, pathname: string) {
   // Base security headers
-  response.headers.set('X-Frame-Options', 'DENY')
-  response.headers.set('X-Content-Type-Options', 'nosniff')
-  response.headers.set('X-XSS-Protection', '1; mode=block')
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
-  response.headers.set('X-DNS-Prefetch-Control', 'on')
-  response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload')
-  response.headers.set('X-Permitted-Cross-Domain-Policies', 'none')
+  response.headers.set("X-Frame-Options", "DENY");
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("X-XSS-Protection", "1; mode=block");
+  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  response.headers.set("X-DNS-Prefetch-Control", "on");
+  response.headers.set(
+    "Strict-Transport-Security",
+    "max-age=31536000; includeSubDomains; preload",
+  );
+  response.headers.set("X-Permitted-Cross-Domain-Policies", "none");
 
   // Content Security Policy with comprehensive directives
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-  const supabaseHost = supabaseUrl ? new URL(supabaseUrl).hostname : ''
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+  const supabaseHost = supabaseUrl ? new URL(supabaseUrl).hostname : "";
 
   const cspDirectives = [
     "default-src 'self'",
@@ -104,170 +113,210 @@ function addSecurityHeaders(response: NextResponse, pathname: string) {
     // Form action: Only allow self
     "form-action 'self'",
     // Upgrade insecure requests in production
-    process.env.NODE_ENV === 'production' ? "upgrade-insecure-requests" : "",
+    process.env.NODE_ENV === "production" ? "upgrade-insecure-requests" : "",
     // Worker sources for PWA support
     "worker-src 'self' blob:",
     // Manifest for PWA
     "manifest-src 'self'",
     // Frame sources (if needed for embeds)
-    "frame-src 'self' https://www.google.com https://maps.google.com"
-  ].filter(Boolean)
+    "frame-src 'self' https://www.google.com https://maps.google.com",
+  ].filter(Boolean);
 
-  response.headers.set('Content-Security-Policy', cspDirectives.join('; '))
+  response.headers.set("Content-Security-Policy", cspDirectives.join("; "));
 
   // Report-Only CSP for monitoring violations without blocking
-  if (process.env.NODE_ENV === 'production') {
-    const reportUri = process.env.CSP_REPORT_URI || '/api/csp-report'
-    const reportOnlyDirectives = [...cspDirectives, `report-uri ${reportUri}`]
-    response.headers.set('Content-Security-Policy-Report-Only', reportOnlyDirectives.join('; '))
+  if (process.env.NODE_ENV === "production") {
+    const reportUri = process.env.CSP_REPORT_URI || "/api/csp-report";
+    const reportOnlyDirectives = [...cspDirectives, `report-uri ${reportUri}`];
+    response.headers.set(
+      "Content-Security-Policy-Report-Only",
+      reportOnlyDirectives.join("; "),
+    );
   }
 
   // Permissions Policy based on route
-  if (pathname.includes('/damage-analyzer') ||
-      pathname.includes('/ai-tools') ||
-      pathname.includes('/evidence-organizer') ||
-      pathname.includes('/3d-model-generator')) {
-    response.headers.set('Permissions-Policy', 'camera=(self), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=()')
+  if (
+    pathname.includes("/damage-analyzer") ||
+    pathname.includes("/ai-tools") ||
+    pathname.includes("/evidence-organizer") ||
+    pathname.includes("/3d-model-generator")
+  ) {
+    response.headers.set(
+      "Permissions-Policy",
+      "camera=(self), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=()",
+    );
   } else {
-    response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=()')
+    response.headers.set(
+      "Permissions-Policy",
+      "camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=()",
+    );
   }
 }
 
 export async function middleware(request: NextRequest) {
-  const response = NextResponse.next()
-  const pathname = request.nextUrl.pathname
+  const response = NextResponse.next();
+  const pathname = request.nextUrl.pathname;
 
   // Skip middleware for static assets and health checks
-  const skipRateLimit = [
-    '/_next',
-    '/favicon.ico',
-    '/api/health',
-    '/debug'
-  ]
+  const skipRateLimit = ["/_next", "/favicon.ico", "/api/health", "/debug"];
 
   // Skip middleware for static assets and API routes that don't need auth
   const publicPaths = [
-    '/_next',
-    '/favicon.ico',
-    '/api/health',
-    '/api/legal/documents',
-    '/debug'
-  ]
+    "/_next",
+    "/favicon.ico",
+    "/api/health",
+    "/api/legal/documents",
+    "/debug",
+  ];
 
   // Define truly public pages that don't require authentication
   const publicPages = [
-    '/',
-    '/auth/signin',
-    '/auth/signup',
-    '/auth/recover',
-    '/auth/reset-password',
-    '/auth/verify',
-    '/auth/callback',
-    '/legal/privacy-policy',
-    '/legal/terms-of-service',
-    '/legal/ai-use-agreement',
-    '/contact',
-    '/blog',
-    '/guides',
-    '/hurricane-prep',
-    '/onboarding'
-  ]
+    "/",
+    "/auth/signin",
+    "/auth/signup",
+    "/auth/recover",
+    "/auth/reset-password",
+    "/auth/verify",
+    "/auth/callback",
+    "/legal/privacy-policy",
+    "/legal/terms-of-service",
+    "/legal/ai-use-agreement",
+    "/contact",
+    "/blog",
+    "/guides",
+    "/hurricane-prep",
+    "/onboarding",
+  ];
 
-  if (publicPaths.some(path => pathname.startsWith(path))) {
-    return response
+  if (publicPaths.some((path) => pathname.startsWith(path))) {
+    return response;
   }
 
   // Apply rate limiting (except for static assets)
-  if (!skipRateLimit.some(path => pathname.startsWith(path))) {
-    const rateLimitConfig = getRateLimitConfigForPath(pathname)
-    const rateLimitResult = await rateLimiter.isRateLimited(request, pathname, rateLimitConfig)
+  if (!skipRateLimit.some((path) => pathname.startsWith(path))) {
+    const rateLimitConfig = getRateLimitConfigForPath(pathname);
+    const rateLimitResult = await rateLimiter.isRateLimited(
+      request,
+      pathname,
+      rateLimitConfig,
+    );
 
     if (rateLimitResult.limited) {
       // Log rate limit violation for security monitoring
-      logger.warn('[RATE_LIMIT_EXCEEDED]', {
+      logger.warn("[RATE_LIMIT_EXCEEDED]", {
         timestamp: new Date().toISOString(),
-        ip: request.headers.get('x-forwarded-for')?.split(',')[0] || request.headers.get('x-real-ip') || 'unknown',
+        ip:
+          request.headers.get("x-forwarded-for")?.split(",")[0] ||
+          request.headers.get("x-real-ip") ||
+          "unknown",
         path: pathname,
         method: request.method,
-        userAgent: request.headers.get('user-agent'),
-        resetTime: new Date(rateLimitResult.resetTime).toISOString()
-      })
+        userAgent: request.headers.get("user-agent"),
+        resetTime: new Date(rateLimitResult.resetTime).toISOString(),
+      });
 
       return new NextResponse(
         JSON.stringify({
-          error: 'Rate limit exceeded',
-          message: 'Too many requests. Please try again later.',
-          resetTime: new Date(rateLimitResult.resetTime).toISOString()
+          error: "Rate limit exceeded",
+          message: "Too many requests. Please try again later.",
+          resetTime: new Date(rateLimitResult.resetTime).toISOString(),
         }),
         {
           status: 429,
           headers: {
-            'Content-Type': 'application/json',
-            'Retry-After': Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000).toString(),
-            'X-RateLimit-Limit': rateLimitConfig.maxRequests.toString(),
-            'X-RateLimit-Remaining': '0',
-            'X-RateLimit-Reset': rateLimitResult.resetTime.toString()
-          }
-        }
-      )
+            "Content-Type": "application/json",
+            "Retry-After": Math.ceil(
+              (rateLimitResult.resetTime - Date.now()) / 1000,
+            ).toString(),
+            "X-RateLimit-Limit": rateLimitConfig.maxRequests.toString(),
+            "X-RateLimit-Remaining": "0",
+            "X-RateLimit-Reset": rateLimitResult.resetTime.toString(),
+          },
+        },
+      );
     }
 
     // Add rate limit headers to successful responses
-    response.headers.set('X-RateLimit-Limit', rateLimitConfig.maxRequests.toString())
-    response.headers.set('X-RateLimit-Remaining', rateLimitResult.remaining.toString())
-    response.headers.set('X-RateLimit-Reset', rateLimitResult.resetTime.toString())
+    response.headers.set(
+      "X-RateLimit-Limit",
+      rateLimitConfig.maxRequests.toString(),
+    );
+    response.headers.set(
+      "X-RateLimit-Remaining",
+      rateLimitResult.remaining.toString(),
+    );
+    response.headers.set(
+      "X-RateLimit-Reset",
+      rateLimitResult.resetTime.toString(),
+    );
   }
 
   // Bot protection check
-  const botCheck = botProtection.checkRequest(request)
+  const botCheck = botProtection.checkRequest(request);
 
   // Block obvious bots
   if (botCheck.shouldBlock) {
-    logger.info('[MIDDLEWARE] Bot blocked:', {
+    logger.info("[MIDDLEWARE] Bot blocked:", {
       confidence: botCheck.confidence,
       reasons: botCheck.reasons,
       path: pathname,
-      userAgent: request.headers.get('user-agent')
-    })
+      userAgent: request.headers.get("user-agent"),
+    });
 
-    return new NextResponse('Access Denied', {
+    return new NextResponse("Access Denied", {
       status: 403,
       headers: {
-        'Content-Type': 'text/plain',
-      }
-    })
+        "Content-Type": "text/plain",
+      },
+    });
   }
 
   // Add bot detection headers for client-side handling
   if (botCheck.shouldChallenge) {
-    response.headers.set('X-Bot-Challenge', 'true')
-    response.headers.set('X-Bot-Confidence', botCheck.confidence.toString())
+    response.headers.set("X-Bot-Challenge", "true");
+    response.headers.set("X-Bot-Confidence", botCheck.confidence.toString());
   }
 
   // Determine if this is a public page
-  const isPublicPage = publicPages.includes(pathname) ||
-                      publicPages.some(page => pathname.startsWith(page))
+  const isPublicPage =
+    publicPages.includes(pathname) ||
+    publicPages.some((page) => pathname.startsWith(page));
 
   // Create Supabase client for middleware
-  const supabase = createClient(request, response)
+  const supabase = createClient(request, response);
 
   try {
-    const { data: { user }, error } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
 
     // Only log auth errors for protected routes, not public pages
     if (error && !isPublicPage) {
-      logger.error(`[MIDDLEWARE] Session error at ${pathname}:`, new Error(error.message))
+      logger.error(
+        `[MIDDLEWARE] Session error at ${pathname}:`,
+        new Error(error.message),
+      );
 
       // Handle refresh token errors by clearing cookies (only for protected routes)
-      if (error.message.includes('refresh_token_not_found') ||
-          error.message.includes('Invalid Refresh Token') ||
-          error.message.includes('invalid_grant')) {
-        clearAuthCookies(request, response)
+      if (
+        error.message.includes("refresh_token_not_found") ||
+        error.message.includes("Invalid Refresh Token") ||
+        error.message.includes("invalid_grant")
+      ) {
+        clearAuthCookies(request, response);
 
         // Redirect to signin if on protected route
-        const protectedPaths = ['/dashboard', '/ai-tools', '/account', '/admin']
-        if (protectedPaths.some(path => pathname.startsWith(path))) {
-          return NextResponse.redirect(new URL('/auth/signin?message=Session expired', request.url))
+        const protectedPaths = [
+          "/dashboard",
+          "/ai-tools",
+          "/account",
+          "/admin",
+        ];
+        if (protectedPaths.some((path) => pathname.startsWith(path))) {
+          return NextResponse.redirect(
+            new URL("/auth/signin?message=Session expired", request.url),
+          );
         }
       }
     } else if (error && isPublicPage) {
@@ -276,76 +325,91 @@ export async function middleware(request: NextRequest) {
     }
 
     // Double-validate session for extra security on protected routes only
-    let validatedUser = null
+    let validatedUser = null;
     if (user && !error && !isPublicPage) {
-      const { data: { user: validatedUserFromGet }, error: userError } = await supabase.auth.getUser()
+      const {
+        data: { user: validatedUserFromGet },
+        error: userError,
+      } = await supabase.auth.getUser();
 
       if (!userError && validatedUserFromGet) {
-        validatedUser = validatedUserFromGet
+        validatedUser = validatedUserFromGet;
       } else if (userError) {
-        logger.warn('[MIDDLEWARE] User validation failed:', {
+        logger.warn("[MIDDLEWARE] User validation failed:", {
           error: userError.message,
           path: pathname,
-          sessionUser: user.email
-        })
+          sessionUser: user.email,
+        });
 
         // Clear cookies on validation failure
-        if (userError.message?.includes('refresh_token') ||
-            userError.message?.includes('Invalid') ||
-            userError.message?.includes('User from sub claim in JWT does not exist')) {
-          clearAuthCookies(request, response)
+        if (
+          userError.message?.includes("refresh_token") ||
+          userError.message?.includes("Invalid") ||
+          userError.message?.includes(
+            "User from sub claim in JWT does not exist",
+          )
+        ) {
+          clearAuthCookies(request, response);
           // Sign out to clear server-side session
-          await supabase.auth.signOut()
+          await supabase.auth.signOut();
         }
       }
     } else if (user && !error && isPublicPage) {
       // For public pages, if user exists, use them directly without double validation
-      validatedUser = user
+      validatedUser = user;
     }
 
     // Audit logging for security and compliance
     try {
       // Get IP address and user agent
-      const ip = request.headers.get('x-forwarded-for')?.split(',')[0] ||
-                 request.headers.get('x-real-ip') ||
-                 request.headers.get('cf-connecting-ip') ||
-                 'unknown'
+      const ip =
+        request.headers.get("x-forwarded-for")?.split(",")[0] ||
+        request.headers.get("x-real-ip") ||
+        request.headers.get("cf-connecting-ip") ||
+        "unknown";
 
-      const userAgent = request.headers.get('user-agent') || 'unknown'
+      const userAgent = request.headers.get("user-agent") || "unknown";
 
       // Build metadata for logging
       const metadata = {
         method: request.method,
         path: pathname,
         query: Object.fromEntries(request.nextUrl.searchParams),
-        referer: request.headers.get('referer'),
-        timestamp: new Date().toISOString()
-      }
+        referer: request.headers.get("referer"),
+        timestamp: new Date().toISOString(),
+      };
 
       // Log authenticated requests to audit_logs (only for protected routes to reduce noise)
       if (validatedUser && !isPublicPage) {
-        await supabase.from('audit_logs').insert({
+        await supabase.from("audit_logs").insert({
           user_id: validatedUser.id,
           action: `${request.method} ${pathname}`,
-          resource_type: 'http_request',
+          resource_type: "http_request",
           resource_id: pathname,
           ip_address: ip,
           user_agent: userAgent,
-          metadata
-        })
+          metadata,
+        });
       }
 
       // Log security-sensitive events to security_logs
-      const securityPaths = ['/auth/', '/api/', '/admin/']
-      const shouldLogSecurity = securityPaths.some(path => pathname.startsWith(path))
+      const securityPaths = ["/auth/", "/api/", "/admin/"];
+      const shouldLogSecurity = securityPaths.some((path) =>
+        pathname.startsWith(path),
+      );
 
-      if (shouldLogSecurity || (request.method !== 'GET' && request.method !== 'HEAD')) {
-        const severity = pathname.startsWith('/admin/') ? 'warning' : 'info'
-        const eventType = pathname.startsWith('/auth/') ? 'auth_attempt' :
-                         pathname.startsWith('/api/') ? 'api_call' :
-                         'admin_access'
+      if (
+        shouldLogSecurity ||
+        (request.method !== "GET" && request.method !== "HEAD")
+      ) {
+        const severity = pathname.startsWith("/admin/") ? "warning" : "info";
+        const eventType = pathname.startsWith("/auth/")
+          ? "auth_attempt"
+          : pathname.startsWith("/api/")
+            ? "api_call"
+            : "admin_access";
 
-        await supabase.from('security_logs').insert({
+        await supabase.from("security_logs").insert({
           event_type: eventType,
           severity: severity,
           user_id: validatedUser?.id || null,
@@ -355,135 +419,155 @@ export async function middleware(request: NextRequest) {
           metadata: {
             ...metadata,
             authenticated: !!validatedUser,
-            user_email: validatedUser?.email
-          }
-        })
+            user_email: validatedUser?.email,
+          },
+        });
       }
     } catch (error) {
       // Don't block requests if logging fails
-      logger.warn('[MIDDLEWARE] Audit logging failed:', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        path: pathname
-      })
+      logger.warn("[MIDDLEWARE] Audit logging failed:", {
+        error: error instanceof Error ? error.message : "Unknown error",
+        path: pathname,
+      });
     }
 
     // Log access attempts for security monitoring
-    if (process.env.NODE_ENV === 'production' && pathname.startsWith('/admin')) {
-      logger.info('[SECURITY] Admin access attempt:', {
+    if (
+      process.env.NODE_ENV === "production" &&
+      pathname.startsWith("/admin")
+    ) {
+      logger.info("[SECURITY] Admin access attempt:", {
         timestamp: new Date().toISOString(),
-        userId: validatedUser?.id || 'unauthenticated',
-        userEmail: validatedUser?.email || 'unknown',
+        userId: validatedUser?.id || "unauthenticated",
+        userEmail: validatedUser?.email || "unknown",
         path: pathname,
-        ip: request.headers.get('x-forwarded-for')?.split(',')[0] ||
-            request.headers.get('x-real-ip') || 'unknown',
-        userAgent: request.headers.get('user-agent')
-      })
+        ip:
+          request.headers.get("x-forwarded-for")?.split(",")[0] ||
+          request.headers.get("x-real-ip") ||
+          "unknown",
+        userAgent: request.headers.get("user-agent"),
+      });
     }
 
     // Protected routes configuration
     const protectedRoutes = [
-      { path: '/dashboard', requiresAuth: true },
-      { path: '/ai-tools', requiresAuth: true },
-      { path: '/account', requiresAuth: true },
-      { path: '/admin', requiresAuth: true, requiresAdmin: true }
-    ]
+      { path: "/dashboard", requiresAuth: true },
+      { path: "/ai-tools", requiresAuth: true },
+      { path: "/account", requiresAuth: true },
+      { path: "/admin", requiresAuth: true, requiresAdmin: true },
+    ];
 
     // Check if current path is protected
-    const matchedRoute = protectedRoutes.find(route => pathname.startsWith(route.path))
+    const matchedRoute = protectedRoutes.find((route) =>
+      pathname.startsWith(route.path),
+    );
 
     if (matchedRoute?.requiresAuth && !validatedUser) {
       // Store the attempted URL for redirect after login
-      const redirectUrl = new URL('/auth/signin', request.url)
-      redirectUrl.searchParams.set('redirect', pathname)
-      redirectUrl.searchParams.set('message', 'Please sign in to continue')
+      const redirectUrl = new URL("/auth/signin", request.url);
+      redirectUrl.searchParams.set("redirect", pathname);
+      redirectUrl.searchParams.set("message", "Please sign in to continue");
 
-      return NextResponse.redirect(redirectUrl)
+      return NextResponse.redirect(redirectUrl);
     }
 
     // Check admin routes (placeholder for future implementation)
     if (matchedRoute?.requiresAdmin && validatedUser) {
       // TODO: Check if user has admin role
       // For now, log the attempt
-      logger.warn('[MIDDLEWARE] Admin route accessed:', {
+      logger.warn("[MIDDLEWARE] Admin route accessed:", {
         userId: validatedUser.id,
         email: validatedUser.email,
-        path: pathname
-      })
+        path: pathname,
+      });
     }
 
     // Auth pages redirect if already authenticated
-    const authPaths = ['/auth/signin', '/auth/signup']
+    const authPaths = ["/auth/signin", "/auth/signup"];
     if (authPaths.includes(pathname) && validatedUser) {
       // Get redirect URL from query params or default to dashboard
-      const redirectTo = request.nextUrl.searchParams.get('redirect') || '/dashboard'
-      return NextResponse.redirect(new URL(redirectTo, request.url))
+      const redirectTo =
+        request.nextUrl.searchParams.get("redirect") || "/dashboard";
+      return NextResponse.redirect(new URL(redirectTo, request.url));
     }
-
   } catch (error) {
-    logger.error(`[MIDDLEWARE] Unexpected error at ${pathname}:`, toError(error))
+    logger.error(
+      `[MIDDLEWARE] Unexpected error at ${pathname}:`,
+      toError(error),
+    );
 
     // Don't block requests on unexpected errors
     // Just log and continue
   }
 
   // Add security headers to all responses
-  addSecurityHeaders(response, pathname)
+  addSecurityHeaders(response, pathname);
 
   // Add request ID for tracking
-  response.headers.set('X-Request-Id', crypto.randomUUID())
+  response.headers.set("X-Request-Id", crypto.randomUUID());
 
-  return response
+  return response;
 }
 
 // Helper function to get rate limit configuration based on path
 function getRateLimitConfigForPath(pathname: string) {
   // Authentication paths - very strict
-  if (pathname.includes('/auth/signin') ||
-      pathname.includes('/auth/callback') ||
-      pathname.includes('/api/auth/signin')) {
-    return RateLimiter.configs.strict
+  if (
+    pathname.includes("/auth/signin") ||
+    pathname.includes("/auth/callback") ||
+    pathname.includes("/api/auth/signin")
+  ) {
+    return RateLimiter.configs.strict;
   }
 
   // Password reset paths - very strict
-  if (pathname.includes('/auth/reset') ||
-      pathname.includes('/auth/recover') ||
-      pathname.includes('/api/auth/reset')) {
-    return { maxRequests: 3, windowMs: 60 * 60 * 1000 } // 3 per hour
+  if (
+    pathname.includes("/auth/reset") ||
+    pathname.includes("/auth/recover") ||
+    pathname.includes("/api/auth/reset")
+  ) {
+    return { maxRequests: 3, windowMs: 60 * 60 * 1000 }; // 3 per hour
   }
 
   // Registration paths - strict
-  if (pathname.includes('/auth/signup') ||
-      pathname.includes('/api/auth/signup')) {
-    return { maxRequests: 5, windowMs: 60 * 60 * 1000 } // 5 per hour
+  if (
+    pathname.includes("/auth/signup") ||
+    pathname.includes("/api/auth/signup")
+  ) {
+    return { maxRequests: 5, windowMs: 60 * 60 * 1000 }; // 5 per hour
   }
 
   // Upload paths - moderate
-  if (pathname.includes('/upload') ||
-      pathname.includes('/api/upload') ||
-      pathname.includes('/api/documents')) {
-    return { maxRequests: 10, windowMs: 60 * 60 * 1000 } // 10 per hour
+  if (
+    pathname.includes("/upload") ||
+    pathname.includes("/api/upload") ||
+    pathname.includes("/api/documents")
+  ) {
+    return { maxRequests: 10, windowMs: 60 * 60 * 1000 }; // 10 per hour
   }
 
   // AI processing paths - moderate
-  if (pathname.includes('/ai-tools') ||
-      pathname.includes('/api/ai') ||
-      pathname.includes('/api/analysis') ||
-      pathname.includes('/api/extraction')) {
-    return { maxRequests: 30, windowMs: 60 * 60 * 1000 } // 30 per hour
+  if (
+    pathname.includes("/ai-tools") ||
+    pathname.includes("/api/ai") ||
+    pathname.includes("/api/analysis") ||
+    pathname.includes("/api/extraction")
+  ) {
+    return { maxRequests: 30, windowMs: 60 * 60 * 1000 }; // 30 per hour
   }
 
   // API paths - standard
-  if (pathname.startsWith('/api/')) {
-    return RateLimiter.configs.moderate
+  if (pathname.startsWith("/api/")) {
+    return RateLimiter.configs.moderate;
   }
 
   // Admin paths - strict
-  if (pathname.startsWith('/admin')) {
-    return RateLimiter.configs.strict
+  if (pathname.startsWith("/admin")) {
+    return RateLimiter.configs.strict;
   }
 
   // Default for all other paths - lenient
-  return RateLimiter.configs.lenient
+  return RateLimiter.configs.lenient;
 }
 
 export const config = {
@@ -496,6 +580,6 @@ export const config = {
      * - public folder
      * - images/videos/fonts with extensions
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|mp4|mov|webm|woff|woff2|ttf|otf)$).*)',
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|mp4|mov|webm|woff|woff2|ttf|otf)$).*)",
   ],
-}
+};

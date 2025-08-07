@@ -8,10 +8,10 @@
  * @tags ["ui", "camera", "capture", "ai", "enhanced"]
  * @status stable
  */
-'use client'
+"use client";
 
-import { useState, useRef, useCallback, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useRef, useCallback, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Camera,
   Video,
@@ -34,86 +34,86 @@ import {
   Maximize,
   Minimize,
   Play,
-  Pause
-} from 'lucide-react'
+  Pause,
+} from "lucide-react";
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Progress } from '@/components/ui/progress'
-import { useToast } from '@/components/notifications/toast-system'
-import { cn } from '@/lib/utils'
-import { logger } from '@/lib/logger'
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/components/notifications/toast-system";
+import { cn } from "@/lib/utils";
+import { logger } from "@/lib/logger";
 
-export type CaptureMode = 'photo' | 'video'
-export type CameraFacing = 'user' | 'environment'
-export type CaptureQuality = 'low' | 'medium' | 'high'
+export type CaptureMode = "photo" | "video";
+export type CameraFacing = "user" | "environment";
+export type CaptureQuality = "low" | "medium" | "high";
 
 interface CameraConstraints {
-  width: { ideal: number; max: number }
-  height: { ideal: number; max: number }
-  facingMode: CameraFacing
-  frameRate?: { ideal: number }
+  width: { ideal: number; max: number };
+  height: { ideal: number; max: number };
+  facingMode: CameraFacing;
+  frameRate?: { ideal: number };
 }
 
 interface CapturedMedia {
-  id: string
-  type: CaptureMode
-  blob: Blob
-  url: string
-  thumbnail: string
-  timestamp: Date
-  size: string
-  dimensions?: { width: number; height: number }
-  duration?: number
-  aiAnalysis?: any
+  id: string;
+  type: CaptureMode;
+  blob: Blob;
+  url: string;
+  thumbnail: string;
+  timestamp: Date;
+  size: string;
+  dimensions?: { width: number; height: number };
+  duration?: number;
+  aiAnalysis?: any;
 }
 
 interface CameraCaptureEnhancedProps {
-  mode?: CaptureMode
-  onCapture?: (media: CapturedMedia) => void
-  onError?: (error: string) => void
-  maxCaptures?: number
-  quality?: CaptureQuality
-  enableAI?: boolean
-  autoAnalyze?: boolean
-  showGrid?: boolean
-  allowModeSwitch?: boolean
-  className?: string
+  mode?: CaptureMode;
+  onCapture?: (media: CapturedMedia) => void;
+  onError?: (error: string) => void;
+  maxCaptures?: number;
+  quality?: CaptureQuality;
+  enableAI?: boolean;
+  autoAnalyze?: boolean;
+  showGrid?: boolean;
+  allowModeSwitch?: boolean;
+  className?: string;
 }
 
 export function CameraCaptureEnhanced({
-  mode = 'photo',
+  mode = "photo",
   onCapture,
   onError,
   maxCaptures = 10,
-  quality = 'high',
+  quality = "high",
   enableAI = true,
   autoAnalyze = false,
   showGrid = true,
   allowModeSwitch = true,
-  className
+  className,
 }: CameraCaptureEnhancedProps) {
-  const [currentMode, setCurrentMode] = useState<CaptureMode>(mode)
-  const [isStreamActive, setIsStreamActive] = useState(false)
-  const [isRecording, setIsRecording] = useState(false)
-  const [facing, setFacing] = useState<CameraFacing>('environment')
-  const [captures, setCaptures] = useState<CapturedMedia[]>([])
-  const [selectedCapture, setSelectedCapture] = useState<string | null>(null)
-  const [showSettings, setShowSettings] = useState(false)
-  const [isFullscreen, setIsFullscreen] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [isAnalyzing, setIsAnalyzing] = useState(false)
-  const [analysisProgress, setAnalysisProgress] = useState(0)
+  const [currentMode, setCurrentMode] = useState<CaptureMode>(mode);
+  const [isStreamActive, setIsStreamActive] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [facing, setFacing] = useState<CameraFacing>("environment");
+  const [captures, setCaptures] = useState<CapturedMedia[]>([]);
+  const [selectedCapture, setSelectedCapture] = useState<string | null>(null);
+  const [showSettings, setShowSettings] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisProgress, setAnalysisProgress] = useState(0);
 
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const streamRef = useRef<MediaStream | null>(null)
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
-  const recordedChunksRef = useRef<Blob[]>([])
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const recordedChunksRef = useRef<Blob[]>([]);
 
-  const { success, error: showError, info } = useToast()
+  const { success, error: showError, info } = useToast();
 
   // Camera constraints based on quality setting
   const getCameraConstraints = useCallback((): CameraConstraints => {
@@ -121,359 +121,413 @@ export function CameraCaptureEnhanced({
       low: {
         width: { ideal: 640, max: 1280 },
         height: { ideal: 480, max: 720 },
-        facingMode: facing
+        facingMode: facing,
       },
       medium: {
         width: { ideal: 1280, max: 1920 },
         height: { ideal: 720, max: 1080 },
         facingMode: facing,
-        frameRate: { ideal: 30 }
+        frameRate: { ideal: 30 },
       },
       high: {
         width: { ideal: 1920, max: 3840 },
         height: { ideal: 1080, max: 2160 },
         facingMode: facing,
-        frameRate: { ideal: 30 }
-      }
-    }
+        frameRate: { ideal: 30 },
+      },
+    };
 
-    return constraints[quality]
-  }, [facing, quality])
+    return constraints[quality];
+  }, [facing, quality]);
 
   // Start camera stream
   const startCamera = useCallback(async () => {
     try {
-      setError(null)
+      setError(null);
 
       const constraints = {
         video: getCameraConstraints(),
-        audio: currentMode === 'video'
-      }
+        audio: currentMode === "video",
+      };
 
-      const stream = await navigator.mediaDevices.getUserMedia(constraints)
-      streamRef.current = stream
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      streamRef.current = stream;
 
       if (videoRef.current) {
-        videoRef.current.srcObject = stream
-        await videoRef.current.play()
-        setIsStreamActive(true)
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play();
+        setIsStreamActive(true);
 
-        success('Camera activated', {
-          subtitle: `Ready to capture ${currentMode}s`
-        })
+        success("Camera activated", {
+          subtitle: `Ready to capture ${currentMode}s`,
+        });
       }
 
-      logger.track('camera_started', {
+      logger.track("camera_started", {
         mode: currentMode,
         facing,
-        quality
-      })
-
+        quality,
+      });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to access camera'
-      setError(errorMessage)
-      onError?.(errorMessage)
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to access camera";
+      setError(errorMessage);
+      onError?.(errorMessage);
 
-      showError('Camera access failed', {
-        subtitle: errorMessage
-      })
+      showError("Camera access failed", {
+        subtitle: errorMessage,
+      });
 
-      logger.error('Camera start failed', { mode: currentMode, facing }, err as Error)
+      logger.error(
+        "Camera start failed",
+        { mode: currentMode, facing },
+        err as Error,
+      );
     }
-  }, [currentMode, facing, quality, getCameraConstraints, onError, success, showError])
+  }, [
+    currentMode,
+    facing,
+    quality,
+    getCameraConstraints,
+    onError,
+    success,
+    showError,
+  ]);
 
   // Stop camera stream
   const stopCamera = useCallback(() => {
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop())
-      streamRef.current = null
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
     }
 
     if (videoRef.current) {
-      videoRef.current.srcObject = null
+      videoRef.current.srcObject = null;
     }
 
-    setIsStreamActive(false)
-    setIsRecording(false)
-  }, [])
+    setIsStreamActive(false);
+    setIsRecording(false);
+  }, []);
 
   // Switch camera facing
   const switchCamera = useCallback(async () => {
-    const newFacing: CameraFacing = facing === 'user' ? 'environment' : 'user'
-    setFacing(newFacing)
+    const newFacing: CameraFacing = facing === "user" ? "environment" : "user";
+    setFacing(newFacing);
 
     if (isStreamActive) {
-      stopCamera()
+      stopCamera();
       // Small delay to ensure cleanup
       setTimeout(() => {
-        setFacing(newFacing)
-        startCamera()
-      }, 100)
+        setFacing(newFacing);
+        startCamera();
+      }, 100);
     }
-  }, [facing, isStreamActive, stopCamera, startCamera])
+  }, [facing, isStreamActive, stopCamera, startCamera]);
 
   // Capture photo
   const capturePhoto = useCallback(async () => {
-    if (!videoRef.current || !canvasRef.current || !isStreamActive) return
+    if (!videoRef.current || !canvasRef.current || !isStreamActive) return;
 
     try {
-      const video = videoRef.current
-      const canvas = canvasRef.current
-      const context = canvas.getContext('2d')
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      const context = canvas.getContext("2d");
 
-      if (!context) return
+      if (!context) return;
 
       // Set canvas dimensions to video dimensions
-      canvas.width = video.videoWidth
-      canvas.height = video.videoHeight
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
 
       // Draw video frame to canvas
-      context.drawImage(video, 0, 0, canvas.width, canvas.height)
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
       // Convert to blob
-      canvas.toBlob(async (blob) => {
-        if (!blob) return
+      canvas.toBlob(
+        async (blob) => {
+          if (!blob) return;
 
-        const url = URL.createObjectURL(blob)
-        const thumbnail = canvas.toDataURL('image/jpeg', 0.3)
-
-        const capture: CapturedMedia = {
-          id: `photo-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-          type: 'photo',
-          blob,
-          url,
-          thumbnail,
-          timestamp: new Date(),
-          size: formatFileSize(blob.size),
-          dimensions: { width: canvas.width, height: canvas.height }
-        }
-
-        setCaptures(prev => [...prev, capture])
-        setSelectedCapture(capture.id)
-        onCapture?.(capture)
-
-        success('Photo captured!', {
-          subtitle: enableAI && autoAnalyze ? 'Starting AI analysis...' : 'Photo saved'
-        })
-
-        // Auto-analyze if enabled
-        if (enableAI && autoAnalyze) {
-          setTimeout(() => analyzeMedia(capture), 500)
-        }
-
-        logger.track('photo_captured', {
-          dimensions: `${canvas.width}x${canvas.height}`,
-          fileSize: blob.size,
-          facing
-        })
-
-      }, 'image/jpeg', 0.9)
-
-    } catch (err) {
-      showError('Capture failed', {
-        subtitle: 'Failed to capture photo'
-      })
-      logger.error('Photo capture failed', {}, err as Error)
-    }
-  }, [isStreamActive, onCapture, enableAI, autoAnalyze, success, showError, facing])
-
-  // Start/stop video recording
-  const toggleVideoRecording = useCallback(async () => {
-    if (!isStreamActive || !streamRef.current) return
-
-    try {
-      if (!isRecording) {
-        // Start recording
-        recordedChunksRef.current = []
-
-        const mediaRecorder = new MediaRecorder(streamRef.current, {
-          mimeType: 'video/webm;codecs=vp9'
-        })
-
-        mediaRecorderRef.current = mediaRecorder
-
-        mediaRecorder.ondataavailable = (event) => {
-          if (event.data.size > 0) {
-            recordedChunksRef.current.push(event.data)
-          }
-        }
-
-        mediaRecorder.onstop = async () => {
-          const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' })
-          const url = URL.createObjectURL(blob)
-
-          // Create thumbnail from video
-          const thumbnail = await createVideoThumbnail(url)
+          const url = URL.createObjectURL(blob);
+          const thumbnail = canvas.toDataURL("image/jpeg", 0.3);
 
           const capture: CapturedMedia = {
-            id: `video-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-            type: 'video',
+            id: `photo-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            type: "photo",
             blob,
             url,
             thumbnail,
             timestamp: new Date(),
             size: formatFileSize(blob.size),
-            duration: (Date.now() - recordingStartTime) / 1000
+            dimensions: { width: canvas.width, height: canvas.height },
+          };
+
+          setCaptures((prev) => [...prev, capture]);
+          setSelectedCapture(capture.id);
+          onCapture?.(capture);
+
+          success("Photo captured!", {
+            subtitle:
+              enableAI && autoAnalyze
+                ? "Starting AI analysis..."
+                : "Photo saved",
+          });
+
+          // Auto-analyze if enabled
+          if (enableAI && autoAnalyze) {
+            setTimeout(() => analyzeMedia(capture), 500);
           }
 
-          setCaptures(prev => [...prev, capture])
-          setSelectedCapture(capture.id)
-          onCapture?.(capture)
-
-          success('Video recorded!', {
-            subtitle: `Duration: ${Math.round(capture.duration!)}s`
-          })
-
-          logger.track('video_recorded', {
-            duration: capture.duration,
+          logger.track("photo_captured", {
+            dimensions: `${canvas.width}x${canvas.height}`,
             fileSize: blob.size,
-            facing
-          })
-        }
-
-        const recordingStartTime = Date.now()
-        mediaRecorder.start()
-        setIsRecording(true)
-
-        info('Recording started', {
-          subtitle: 'Tap the record button again to stop'
-        })
-
-      } else {
-        // Stop recording
-        if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-          mediaRecorderRef.current.stop()
-        }
-        setIsRecording(false)
-      }
-
+            facing,
+          });
+        },
+        "image/jpeg",
+        0.9,
+      );
     } catch (err) {
-      showError('Recording failed', {
-        subtitle: 'Failed to record video'
-      })
-      logger.error('Video recording failed', {}, err as Error)
+      showError("Capture failed", {
+        subtitle: "Failed to capture photo",
+      });
+      logger.error("Photo capture failed", {}, err as Error);
     }
-  }, [isStreamActive, isRecording, onCapture, success, info, showError, facing])
+  }, [
+    isStreamActive,
+    onCapture,
+    enableAI,
+    autoAnalyze,
+    success,
+    showError,
+    facing,
+  ]);
 
-  // Analyze media with AI
-  const analyzeMedia = useCallback(async (media: CapturedMedia) => {
-    if (!enableAI) return
-
-    setIsAnalyzing(true)
-    setAnalysisProgress(0)
+  // Start/stop video recording
+  const toggleVideoRecording = useCallback(async () => {
+    if (!isStreamActive || !streamRef.current) return;
 
     try {
-      // Simulate AI analysis with progress
-      for (let progress = 0; progress <= 100; progress += 10) {
-        await new Promise(resolve => setTimeout(resolve, 150))
-        setAnalysisProgress(progress)
+      if (!isRecording) {
+        // Start recording
+        recordedChunksRef.current = [];
+
+        const mediaRecorder = new MediaRecorder(streamRef.current, {
+          mimeType: "video/webm;codecs=vp9",
+        });
+
+        mediaRecorderRef.current = mediaRecorder;
+
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            recordedChunksRef.current.push(event.data);
+          }
+        };
+
+        mediaRecorder.onstop = async () => {
+          const blob = new Blob(recordedChunksRef.current, {
+            type: "video/webm",
+          });
+          const url = URL.createObjectURL(blob);
+
+          // Create thumbnail from video
+          const thumbnail = await createVideoThumbnail(url);
+
+          const capture: CapturedMedia = {
+            id: `video-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            type: "video",
+            blob,
+            url,
+            thumbnail,
+            timestamp: new Date(),
+            size: formatFileSize(blob.size),
+            duration: (Date.now() - recordingStartTime) / 1000,
+          };
+
+          setCaptures((prev) => [...prev, capture]);
+          setSelectedCapture(capture.id);
+          onCapture?.(capture);
+
+          success("Video recorded!", {
+            subtitle: `Duration: ${Math.round(capture.duration!)}s`,
+          });
+
+          logger.track("video_recorded", {
+            duration: capture.duration,
+            fileSize: blob.size,
+            facing,
+          });
+        };
+
+        const recordingStartTime = Date.now();
+        mediaRecorder.start();
+        setIsRecording(true);
+
+        info("Recording started", {
+          subtitle: "Tap the record button again to stop",
+        });
+      } else {
+        // Stop recording
+        if (
+          mediaRecorderRef.current &&
+          mediaRecorderRef.current.state === "recording"
+        ) {
+          mediaRecorderRef.current.stop();
+        }
+        setIsRecording(false);
       }
-
-      // Mock AI results
-      const aiAnalysis = {
-        confidence: Math.floor(Math.random() * 20) + 80,
-        detectedObjects: ['damage', 'structure', 'debris'],
-        damageAssessment: {
-          severity: 'moderate',
-          type: 'water damage',
-          affectedArea: 'floor and walls'
-        },
-        recommendations: [
-          'Document from multiple angles',
-          'Include reference objects for scale',
-          'Capture close-up details'
-        ]
-      }
-
-      // Update capture with AI results
-      setCaptures(prev => prev.map(capture =>
-        capture.id === media.id
-          ? { ...capture, aiAnalysis }
-          : capture
-      ))
-
-      success('AI analysis complete!', {
-        subtitle: `Confidence: ${aiAnalysis.confidence}%`,
-        actions: [{
-          label: 'View Results',
-          onClick: () => setSelectedCapture(media.id)
-        }]
-      })
-
-      logger.track('media_analyzed', {
-        mediaType: media.type,
-        confidence: aiAnalysis.confidence,
-        detectedObjects: aiAnalysis.detectedObjects.length
-      })
-
     } catch (err) {
-      showError('Analysis failed', {
-        subtitle: 'AI analysis could not be completed'
-      })
-      logger.error('Media analysis failed', { mediaId: media.id }, err as Error)
-    } finally {
-      setIsAnalyzing(false)
-      setAnalysisProgress(0)
+      showError("Recording failed", {
+        subtitle: "Failed to record video",
+      });
+      logger.error("Video recording failed", {}, err as Error);
     }
-  }, [enableAI, success, showError])
+  }, [
+    isStreamActive,
+    isRecording,
+    onCapture,
+    success,
+    info,
+    showError,
+    facing,
+  ]);
+
+  // Analyze media with AI
+  const analyzeMedia = useCallback(
+    async (media: CapturedMedia) => {
+      if (!enableAI) return;
+
+      setIsAnalyzing(true);
+      setAnalysisProgress(0);
+
+      try {
+        // Simulate AI analysis with progress
+        for (let progress = 0; progress <= 100; progress += 10) {
+          await new Promise((resolve) => setTimeout(resolve, 150));
+          setAnalysisProgress(progress);
+        }
+
+        // Mock AI results
+        const aiAnalysis = {
+          confidence: Math.floor(Math.random() * 20) + 80,
+          detectedObjects: ["damage", "structure", "debris"],
+          damageAssessment: {
+            severity: "moderate",
+            type: "water damage",
+            affectedArea: "floor and walls",
+          },
+          recommendations: [
+            "Document from multiple angles",
+            "Include reference objects for scale",
+            "Capture close-up details",
+          ],
+        };
+
+        // Update capture with AI results
+        setCaptures((prev) =>
+          prev.map((capture) =>
+            capture.id === media.id ? { ...capture, aiAnalysis } : capture,
+          ),
+        );
+
+        success("AI analysis complete!", {
+          subtitle: `Confidence: ${aiAnalysis.confidence}%`,
+          actions: [
+            {
+              label: "View Results",
+              onClick: () => setSelectedCapture(media.id),
+            },
+          ],
+        });
+
+        logger.track("media_analyzed", {
+          mediaType: media.type,
+          confidence: aiAnalysis.confidence,
+          detectedObjects: aiAnalysis.detectedObjects.length,
+        });
+      } catch (err) {
+        showError("Analysis failed", {
+          subtitle: "AI analysis could not be completed",
+        });
+        logger.error(
+          "Media analysis failed",
+          { mediaId: media.id },
+          err as Error,
+        );
+      } finally {
+        setIsAnalyzing(false);
+        setAnalysisProgress(0);
+      }
+    },
+    [enableAI, success, showError],
+  );
 
   // Delete capture
-  const deleteCapture = useCallback((captureId: string) => {
-    setCaptures(prev => {
-      const updated = prev.filter(c => c.id !== captureId)
+  const deleteCapture = useCallback(
+    (captureId: string) => {
+      setCaptures((prev) => {
+        const updated = prev.filter((c) => c.id !== captureId);
 
-      // Cleanup blob URL
-      const capture = prev.find(c => c.id === captureId)
-      if (capture) {
-        URL.revokeObjectURL(capture.url)
+        // Cleanup blob URL
+        const capture = prev.find((c) => c.id === captureId);
+        if (capture) {
+          URL.revokeObjectURL(capture.url);
+        }
+
+        return updated;
+      });
+
+      if (selectedCapture === captureId) {
+        setSelectedCapture(null);
       }
 
-      return updated
-    })
-
-    if (selectedCapture === captureId) {
-      setSelectedCapture(null)
-    }
-
-    info('Capture deleted')
-  }, [selectedCapture, info])
+      info("Capture deleted");
+    },
+    [selectedCapture, info],
+  );
 
   // Download capture
-  const downloadCapture = useCallback((capture: CapturedMedia) => {
-    const link = document.createElement('a')
-    link.href = capture.url
-    link.download = `${capture.type}-${capture.timestamp.toISOString()}.${capture.type === 'photo' ? 'jpg' : 'webm'}`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+  const downloadCapture = useCallback(
+    (capture: CapturedMedia) => {
+      const link = document.createElement("a");
+      link.href = capture.url;
+      link.download = `${capture.type}-${capture.timestamp.toISOString()}.${capture.type === "photo" ? "jpg" : "webm"}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
 
-    success('Download started', {
-      subtitle: `Saving ${capture.type} to device`
-    })
-  }, [success])
+      success("Download started", {
+        subtitle: `Saving ${capture.type} to device`,
+      });
+    },
+    [success],
+  );
 
   // Initialize camera on mount
   useEffect(() => {
-    startCamera()
-    return () => stopCamera()
-  }, [])
+    startCamera();
+    return () => stopCamera();
+  }, []);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      captures.forEach(capture => {
-        URL.revokeObjectURL(capture.url)
-      })
-    }
-  }, [captures])
+      captures.forEach((capture) => {
+        URL.revokeObjectURL(capture.url);
+      });
+    };
+  }, [captures]);
 
   return (
-    <div className={cn("relative bg-black rounded-lg overflow-hidden", className)}>
+    <div
+      className={cn("relative bg-black rounded-lg overflow-hidden", className)}
+    >
       {/* Camera View */}
-      <div className={cn(
-        "relative",
-        isFullscreen ? "fixed inset-0 z-50" : "aspect-video"
-      )}>
+      <div
+        className={cn(
+          "relative",
+          isFullscreen ? "fixed inset-0 z-50" : "aspect-video",
+        )}
+      >
         <video
           ref={videoRef}
           autoPlay
@@ -482,10 +536,7 @@ export function CameraCaptureEnhanced({
           className="w-full h-full object-cover"
         />
 
-        <canvas
-          ref={canvasRef}
-          className="hidden"
-        />
+        <canvas ref={canvasRef} className="hidden" />
 
         {/* Grid overlay */}
         {showGrid && isStreamActive && (
@@ -526,8 +577,13 @@ export function CameraCaptureEnhanced({
                 <Zap className="w-6 h-6 text-blue-400 animate-pulse" />
               </div>
               <h4 className="font-medium mb-2">AI Analysis in Progress</h4>
-              <Progress value={analysisProgress} className="w-48 mx-auto mb-2" />
-              <p className="text-sm text-gray-300">{analysisProgress}% complete</p>
+              <Progress
+                value={analysisProgress}
+                className="w-48 mx-auto mb-2"
+              />
+              <p className="text-sm text-gray-300">
+                {analysisProgress}% complete
+              </p>
             </div>
           </div>
         )}
@@ -552,7 +608,11 @@ export function CameraCaptureEnhanced({
             onClick={() => setIsFullscreen(!isFullscreen)}
             className="bg-black/50 text-white hover:bg-black/70"
           >
-            {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
+            {isFullscreen ? (
+              <Minimize className="w-4 h-4" />
+            ) : (
+              <Maximize className="w-4 h-4" />
+            )}
           </Button>
 
           <Button
@@ -571,17 +631,17 @@ export function CameraCaptureEnhanced({
           {allowModeSwitch && (
             <div className="flex bg-black/50 rounded-full p-1">
               <Button
-                variant={currentMode === 'photo' ? 'default' : 'ghost'}
+                variant={currentMode === "photo" ? "default" : "ghost"}
                 size="sm"
-                onClick={() => setCurrentMode('photo')}
+                onClick={() => setCurrentMode("photo")}
                 className="rounded-full"
               >
                 <Camera className="w-4 h-4" />
               </Button>
               <Button
-                variant={currentMode === 'video' ? 'default' : 'ghost'}
+                variant={currentMode === "video" ? "default" : "ghost"}
                 size="sm"
-                onClick={() => setCurrentMode('video')}
+                onClick={() => setCurrentMode("video")}
                 className="rounded-full"
               >
                 <Video className="w-4 h-4" />
@@ -592,18 +652,20 @@ export function CameraCaptureEnhanced({
           {/* Capture button */}
           <Button
             size="lg"
-            onClick={currentMode === 'photo' ? capturePhoto : toggleVideoRecording}
+            onClick={
+              currentMode === "photo" ? capturePhoto : toggleVideoRecording
+            }
             disabled={!isStreamActive}
             className={cn(
               "w-16 h-16 rounded-full border-4 border-white",
-              currentMode === 'photo'
+              currentMode === "photo"
                 ? "bg-white hover:bg-gray-100"
                 : isRecording
-                ? "bg-red-600 hover:bg-red-700"
-                : "bg-white hover:bg-gray-100"
+                  ? "bg-red-600 hover:bg-red-700"
+                  : "bg-white hover:bg-gray-100",
             )}
           >
-            {currentMode === 'photo' ? (
+            {currentMode === "photo" ? (
               <Circle className="w-8 h-8 text-black" />
             ) : isRecording ? (
               <Square className="w-8 h-8 text-white fill-white" />
@@ -640,7 +702,7 @@ export function CameraCaptureEnhanced({
                   "relative aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-all",
                   selectedCapture === capture.id
                     ? "border-blue-500 ring-2 ring-blue-200"
-                    : "border-transparent hover:border-white/30"
+                    : "border-transparent hover:border-white/30",
                 )}
                 onClick={() => setSelectedCapture(capture.id)}
               >
@@ -653,7 +715,11 @@ export function CameraCaptureEnhanced({
                 {/* Type indicator */}
                 <div className="absolute top-1 left-1">
                   <Badge variant="secondary" className="text-xs">
-                    {capture.type === 'photo' ? <Camera className="w-3 h-3" /> : <Video className="w-3 h-3" />}
+                    {capture.type === "photo" ? (
+                      <Camera className="w-3 h-3" />
+                    ) : (
+                      <Video className="w-3 h-3" />
+                    )}
                   </Badge>
                 </div>
 
@@ -672,8 +738,8 @@ export function CameraCaptureEnhanced({
                     variant="ghost"
                     size="sm"
                     onClick={(e) => {
-                      e.stopPropagation()
-                      downloadCapture(capture)
+                      e.stopPropagation();
+                      downloadCapture(capture);
                     }}
                     className="h-6 w-6 p-0 bg-black/50 hover:bg-black/70"
                   >
@@ -684,8 +750,8 @@ export function CameraCaptureEnhanced({
                     variant="ghost"
                     size="sm"
                     onClick={(e) => {
-                      e.stopPropagation()
-                      deleteCapture(capture.id)
+                      e.stopPropagation();
+                      deleteCapture(capture.id);
                     }}
                     className="h-6 w-6 p-0 bg-black/50 hover:bg-black/70"
                   >
@@ -708,20 +774,22 @@ export function CameraCaptureEnhanced({
             className="absolute inset-x-0 bottom-0 bg-gray-900/95 backdrop-blur-sm p-4"
           >
             {(() => {
-              const capture = captures.find(c => c.id === selectedCapture)
-              if (!capture) return null
+              const capture = captures.find((c) => c.id === selectedCapture);
+              if (!capture) return null;
 
               return (
                 <div className="space-y-3">
                   <div className="flex items-start justify-between">
                     <div>
                       <h4 className="text-white font-medium">
-                        {capture.type === 'photo' ? 'Photo' : 'Video'} Details
+                        {capture.type === "photo" ? "Photo" : "Video"} Details
                       </h4>
                       <p className="text-gray-400 text-sm">
                         {capture.timestamp.toLocaleString()} • {capture.size}
-                        {capture.dimensions && ` • ${capture.dimensions.width}x${capture.dimensions.height}`}
-                        {capture.duration && ` • ${Math.round(capture.duration)}s`}
+                        {capture.dimensions &&
+                          ` • ${capture.dimensions.width}x${capture.dimensions.height}`}
+                        {capture.duration &&
+                          ` • ${Math.round(capture.duration)}s`}
                       </p>
                     </div>
 
@@ -740,16 +808,30 @@ export function CameraCaptureEnhanced({
                     <div className="bg-blue-900/30 rounded-lg p-3">
                       <div className="flex items-center gap-2 mb-2">
                         <Zap className="w-4 h-4 text-blue-400" />
-                        <span className="text-blue-300 font-medium">AI Analysis</span>
-                        <Badge variant="outline" className="text-blue-300 border-blue-400">
+                        <span className="text-blue-300 font-medium">
+                          AI Analysis
+                        </span>
+                        <Badge
+                          variant="outline"
+                          className="text-blue-300 border-blue-400"
+                        >
                           {capture.aiAnalysis.confidence}% confidence
                         </Badge>
                       </div>
 
                       <div className="text-sm text-blue-200 space-y-1">
-                        <p>Damage Type: {capture.aiAnalysis.damageAssessment.type}</p>
-                        <p>Severity: {capture.aiAnalysis.damageAssessment.severity}</p>
-                        <p>Detected: {capture.aiAnalysis.detectedObjects.join(', ')}</p>
+                        <p>
+                          Damage Type:{" "}
+                          {capture.aiAnalysis.damageAssessment.type}
+                        </p>
+                        <p>
+                          Severity:{" "}
+                          {capture.aiAnalysis.damageAssessment.severity}
+                        </p>
+                        <p>
+                          Detected:{" "}
+                          {capture.aiAnalysis.detectedObjects.join(", ")}
+                        </p>
                       </div>
                     </div>
                   )}
@@ -780,42 +862,42 @@ export function CameraCaptureEnhanced({
                     </Button>
                   </div>
                 </div>
-              )
+              );
             })()}
           </motion.div>
         )}
       </AnimatePresence>
     </div>
-  )
+  );
 }
 
 // Helper functions
 function formatFileSize(bytes: number): string {
-  const units = ['B', 'KB', 'MB', 'GB']
-  let size = bytes
-  let unitIndex = 0
+  const units = ["B", "KB", "MB", "GB"];
+  let size = bytes;
+  let unitIndex = 0;
 
   while (size >= 1024 && unitIndex < units.length - 1) {
-    size /= 1024
-    unitIndex++
+    size /= 1024;
+    unitIndex++;
   }
 
-  return `${size.toFixed(1)} ${units[unitIndex]}`
+  return `${size.toFixed(1)} ${units[unitIndex]}`;
 }
 
 async function createVideoThumbnail(videoUrl: string): Promise<string> {
   return new Promise((resolve) => {
-    const video = document.createElement('video')
-    const canvas = document.createElement('canvas')
-    const context = canvas.getContext('2d')
+    const video = document.createElement("video");
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
 
-    video.addEventListener('loadeddata', () => {
-      canvas.width = video.videoWidth
-      canvas.height = video.videoHeight
-      context?.drawImage(video, 0, 0)
-      resolve(canvas.toDataURL('image/jpeg', 0.7))
-    })
+    video.addEventListener("loadeddata", () => {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      context?.drawImage(video, 0, 0);
+      resolve(canvas.toDataURL("image/jpeg", 0.7));
+    });
 
-    video.src = videoUrl
-  })
+    video.src = videoUrl;
+  });
 }

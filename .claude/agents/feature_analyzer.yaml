@@ -3,19 +3,19 @@ version: 0.1.0
 type: subagent
 description: Maintain a living feature map for any repository.
 triggers:
-- git_push_event
+  - git_push_event
 goals:
-- Detect new endpoints, CLI flags, or UI elements on each commit.
-- Update FEATURES.md with description, owner, and test coverage badge.
-- Signal untested or undocumented features.
+  - Detect new endpoints, CLI flags, or UI elements on each commit.
+  - Update FEATURES.md with description, owner, and test coverage badge.
+  - Signal untested or undocumented features.
 inputs:
-- git_diff
+  - git_diff
 allowed_tools:
-- git_cli
-- markdown_editor
+  - git_cli
+  - markdown_editor
 outputs:
   files:
-  - FEATURES.md
+    - FEATURES.md
   notifications: Slack
 author: Mad Engineering AI Swarm
-created_at: '2025-07-29T17:53:36.046680Z'
+created_at: "2025-07-29T17:53:36.046680Z"

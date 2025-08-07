@@ -9,18 +9,22 @@
  * @supabase-integration edge-functions
  */
 declare module "@claimguardian/ui" {
-  import * as React from 'react';
+  import * as React from "react";
 
   interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-    variant?: 'default' | 'secondary' | 'ghost' | 'link';
-    size?: 'default' | 'sm' | 'lg' | 'icon';
+    variant?: "default" | "secondary" | "ghost" | "link";
+    size?: "default" | "sm" | "lg" | "icon";
   }
-  export const Button: React.ForwardRefExoticComponent<ButtonProps & React.RefAttributes<HTMLButtonElement>>;
+  export const Button: React.ForwardRefExoticComponent<
+    ButtonProps & React.RefAttributes<HTMLButtonElement>
+  >;
 
   interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     error?: string;
   }
-  export const Input: React.ForwardRefExoticComponent<InputProps & React.RefAttributes<HTMLInputElement>>;
+  export const Input: React.ForwardRefExoticComponent<
+    InputProps & React.RefAttributes<HTMLInputElement>
+  >;
 
   interface SimpleModalProps {
     isOpen: boolean;
@@ -31,14 +35,21 @@ declare module "@claimguardian/ui" {
   }
   export const Modal: React.FC<SimpleModalProps>;
 
-  export const Card: React.ForwardRefExoticComponent<React.HTMLAttributes<HTMLDivElement> & React.RefAttributes<HTMLDivElement>>;
+  export const Card: React.ForwardRefExoticComponent<
+    React.HTMLAttributes<HTMLDivElement> & React.RefAttributes<HTMLDivElement>
+  >;
 
-  export const Label: React.ForwardRefExoticComponent<React.LabelHTMLAttributes<HTMLLabelElement> & React.RefAttributes<HTMLLabelElement>>;
+  export const Label: React.ForwardRefExoticComponent<
+    React.LabelHTMLAttributes<HTMLLabelElement> &
+      React.RefAttributes<HTMLLabelElement>
+  >;
 
   interface CheckboxProps extends React.InputHTMLAttributes<HTMLInputElement> {
     onCheckedChange?: (checked: boolean) => void;
   }
-  export const Checkbox: React.ForwardRefExoticComponent<CheckboxProps & React.RefAttributes<HTMLButtonElement>>;
+  export const Checkbox: React.ForwardRefExoticComponent<
+    CheckboxProps & React.RefAttributes<HTMLButtonElement>
+  >;
 
   function cn(...inputs: (string | undefined | null | boolean)[]): string;
   export { cn };

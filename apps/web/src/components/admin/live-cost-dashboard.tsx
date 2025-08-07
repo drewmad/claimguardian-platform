@@ -3,15 +3,21 @@
  * Shows real-time AI cost monitoring and alerts
  */
 
-'use client'
+"use client";
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Progress } from '@/components/ui/progress'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   DollarSign,
   TrendingUp,
@@ -29,41 +35,45 @@ import {
   RefreshCw,
   Bell,
   BellOff,
-  Settings
-} from 'lucide-react'
-import webSocketCostMonitor, { RealTimeCostUpdate } from '@/services/websocket-cost-monitor'
-import alertDeliverySystem, { AlertPayload } from '@/services/alert-delivery-system'
+  Settings,
+} from "lucide-react";
+import webSocketCostMonitor, {
+  RealTimeCostUpdate,
+} from "@/services/websocket-cost-monitor";
+import alertDeliverySystem, {
+  AlertPayload,
+} from "@/services/alert-delivery-system";
 
 interface LiveMetrics {
-  totalCostToday: number
-  requestsToday: number
-  activeUsers: number
-  avgResponseTime: number
-  successRate: number
-  costPerMinute: number
-  requestsPerMinute: number
-  errorRate: number
-  topSpendingUser: string
-  topCostTool: string
-  budgetUtilization: number
-  alertsCount: number
+  totalCostToday: number;
+  requestsToday: number;
+  activeUsers: number;
+  avgResponseTime: number;
+  successRate: number;
+  costPerMinute: number;
+  requestsPerMinute: number;
+  errorRate: number;
+  topSpendingUser: string;
+  topCostTool: string;
+  budgetUtilization: number;
+  alertsCount: number;
 }
 
 interface RealtimeAlert {
-  id: string
-  type: string
-  message: string
-  severity: 'info' | 'warning' | 'critical'
-  timestamp: string
-  userId?: string
-  metadata?: Record<string, unknown>
-  isNew: boolean
+  id: string;
+  type: string;
+  message: string;
+  severity: "info" | "warning" | "critical";
+  timestamp: string;
+  userId?: string;
+  metadata?: Record<string, unknown>;
+  isNew: boolean;
 }
 
 export function LiveCostDashboard() {
-  const [isConnected, setIsConnected] = useState(false)
-  const [isPaused, setIsPaused] = useState(false)
-  const [soundEnabled, setSoundEnabled] = useState(true)
+  const [isConnected, setIsConnected] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(true);
   const [metrics, setMetrics] = useState<LiveMetrics>({
     totalCostToday: 0,
     requestsToday: 0,
@@ -73,209 +83,226 @@ export function LiveCostDashboard() {
     costPerMinute: 0,
     requestsPerMinute: 0,
     errorRate: 0,
-    topSpendingUser: 'Unknown',
-    topCostTool: 'None',
+    topSpendingUser: "Unknown",
+    topCostTool: "None",
     budgetUtilization: 0,
-    alertsCount: 0
-  })
-  const [recentUpdates, setRecentUpdates] = useState<RealTimeCostUpdate[]>([])
-  const [realtimeAlerts, setRealtimeAlerts] = useState<RealtimeAlert[]>([])
-  const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected'>('disconnected')
+    alertsCount: 0,
+  });
+  const [recentUpdates, setRecentUpdates] = useState<RealTimeCostUpdate[]>([]);
+  const [realtimeAlerts, setRealtimeAlerts] = useState<RealtimeAlert[]>([]);
+  const [connectionStatus, setConnectionStatus] = useState<
+    "connecting" | "connected" | "disconnected"
+  >("disconnected");
 
   // Initialize WebSocket connection
   useEffect(() => {
-    initializeConnection()
+    initializeConnection();
     return () => {
-      cleanup()
-    }
-  }, [])
+      cleanup();
+    };
+  }, []);
 
   const initializeConnection = useCallback(async () => {
-    setConnectionStatus('connecting')
+    setConnectionStatus("connecting");
 
     try {
-      const success = await webSocketCostMonitor.initialize()
+      const success = await webSocketCostMonitor.initialize();
 
       if (success) {
         // Subscribe to real-time updates
-        const subscribed = webSocketCostMonitor.subscribe('live-dashboard', handleRealtimeUpdate)
+        const subscribed = webSocketCostMonitor.subscribe(
+          "live-dashboard",
+          handleRealtimeUpdate,
+        );
 
         if (subscribed) {
-          setIsConnected(true)
-          setConnectionStatus('connected')
+          setIsConnected(true);
+          setConnectionStatus("connected");
 
           // Load initial metrics
-          await loadInitialMetrics()
+          await loadInitialMetrics();
 
-          console.log('Live cost dashboard connected')
+          console.log("Live cost dashboard connected");
         } else {
-          throw new Error('Failed to subscribe to updates')
+          throw new Error("Failed to subscribe to updates");
         }
       } else {
-        throw new Error('Failed to initialize WebSocket monitor')
+        throw new Error("Failed to initialize WebSocket monitor");
       }
-
     } catch (error) {
-      console.error('Connection failed:', error)
-      setIsConnected(false)
-      setConnectionStatus('disconnected')
+      console.error("Connection failed:", error);
+      setIsConnected(false);
+      setConnectionStatus("disconnected");
 
       // Retry connection in 30 seconds
       setTimeout(() => {
         if (!isConnected) {
-          initializeConnection()
+          initializeConnection();
         }
-      }, 30000)
+      }, 30000);
     }
-  }, [isConnected])
+  }, [isConnected]);
 
   const cleanup = useCallback(() => {
     if (isConnected) {
-      webSocketCostMonitor.unsubscribe('live-dashboard')
-      webSocketCostMonitor.destroy()
-      setIsConnected(false)
-      setConnectionStatus('disconnected')
+      webSocketCostMonitor.unsubscribe("live-dashboard");
+      webSocketCostMonitor.destroy();
+      setIsConnected(false);
+      setConnectionStatus("disconnected");
     }
-  }, [isConnected])
+  }, [isConnected]);
 
-  const handleRealtimeUpdate = useCallback((update: RealTimeCostUpdate) => {
-    if (isPaused) return
+  const handleRealtimeUpdate = useCallback(
+    (update: RealTimeCostUpdate) => {
+      if (isPaused) return;
 
-    console.log('Real-time update received:', update)
+      console.log("Real-time update received:", update);
 
-    // Update metrics based on the update
-    setMetrics(prevMetrics => updateMetricsFromUpdate(prevMetrics, update))
+      // Update metrics based on the update
+      setMetrics((prevMetrics) => updateMetricsFromUpdate(prevMetrics, update));
 
-    // Add to recent updates (keep last 50)
-    setRecentUpdates(prev => [update, ...prev].slice(0, 50))
+      // Add to recent updates (keep last 50)
+      setRecentUpdates((prev) => [update, ...prev].slice(0, 50));
 
-    // Handle alerts
-    if (update.type === 'budget_alert' || update.type === 'usage_spike' || update.type === 'model_error') {
-      const alert: RealtimeAlert = {
-        id: `${update.type}_${Date.now()}`,
-        type: update.type,
-        message: update.data.message,
-        severity: update.data.severity,
-        timestamp: update.data.timestamp,
-        userId: update.data.user_id,
-        metadata: update.data.metadata,
-        isNew: true
+      // Handle alerts
+      if (
+        update.type === "budget_alert" ||
+        update.type === "usage_spike" ||
+        update.type === "model_error"
+      ) {
+        const alert: RealtimeAlert = {
+          id: `${update.type}_${Date.now()}`,
+          type: update.type,
+          message: update.data.message,
+          severity: update.data.severity,
+          timestamp: update.data.timestamp,
+          userId: update.data.user_id,
+          metadata: update.data.metadata,
+          isNew: true,
+        };
+
+        setRealtimeAlerts((prev) => [alert, ...prev].slice(0, 20));
+
+        // Play sound for critical alerts
+        if (soundEnabled && update.data.severity === "critical") {
+          playAlertSound();
+        }
+
+        // Auto-mark as read after 10 seconds
+        setTimeout(() => {
+          setRealtimeAlerts((prev) =>
+            prev.map((a) => (a.id === alert.id ? { ...a, isNew: false } : a)),
+          );
+        }, 10000);
       }
+    },
+    [isPaused, soundEnabled],
+  );
 
-      setRealtimeAlerts(prev => [alert, ...prev].slice(0, 20))
+  const updateMetricsFromUpdate = (
+    prevMetrics: LiveMetrics,
+    update: RealTimeCostUpdate,
+  ): LiveMetrics => {
+    const newMetrics = { ...prevMetrics };
 
-      // Play sound for critical alerts
-      if (soundEnabled && update.data.severity === 'critical') {
-        playAlertSound()
-      }
-
-      // Auto-mark as read after 10 seconds
-      setTimeout(() => {
-        setRealtimeAlerts(prev =>
-          prev.map(a => a.id === alert.id ? { ...a, isNew: false } : a)
-        )
-      }, 10000)
-    }
-  }, [isPaused, soundEnabled])
-
-  const updateMetricsFromUpdate = (prevMetrics: LiveMetrics, update: RealTimeCostUpdate): LiveMetrics => {
-    const newMetrics = { ...prevMetrics }
-
-    if (update.type === 'cost_update' && update.data.cost_delta) {
-      newMetrics.totalCostToday += update.data.cost_delta
-      newMetrics.requestsToday += 1
+    if (update.type === "cost_update" && update.data.cost_delta) {
+      newMetrics.totalCostToday += update.data.cost_delta;
+      newMetrics.requestsToday += 1;
 
       if (update.data.tool_name) {
-        newMetrics.topCostTool = update.data.tool_name
+        newMetrics.topCostTool = update.data.tool_name;
       }
     }
 
-    if (update.type === 'budget_alert') {
-      newMetrics.alertsCount += 1
+    if (update.type === "budget_alert") {
+      newMetrics.alertsCount += 1;
     }
 
-    return newMetrics
-  }
+    return newMetrics;
+  };
 
   const loadInitialMetrics = async () => {
     try {
-      const response = await fetch('/api/admin/ai-costs/quick-stats')
+      const response = await fetch("/api/admin/ai-costs/quick-stats");
       if (response.ok) {
-        const data = await response.json()
-        setMetrics(prev => ({
+        const data = await response.json();
+        setMetrics((prev) => ({
           ...prev,
           totalCostToday: data.todayCost || 0,
           requestsToday: data.todayRequests || 0,
           activeUsers: data.activeUsers || 0,
           avgResponseTime: data.avgResponseTime || 0,
           successRate: data.successRate || 1,
-          topCostTool: data.topCostTool || 'None',
-          alertsCount: data.budgetAlertsCount || 0
-        }))
+          topCostTool: data.topCostTool || "None",
+          alertsCount: data.budgetAlertsCount || 0,
+        }));
       }
     } catch (error) {
-      console.error('Failed to load initial metrics:', error)
+      console.error("Failed to load initial metrics:", error);
     }
-  }
+  };
 
   const playAlertSound = () => {
     try {
-      const audio = new Audio('/sounds/alert.wav')
-      audio.volume = 0.3
-      audio.play().catch(e => console.log('Could not play alert sound:', e))
+      const audio = new Audio("/sounds/alert.wav");
+      audio.volume = 0.3;
+      audio.play().catch((e) => console.log("Could not play alert sound:", e));
     } catch (error) {
-      console.log('Alert sound not available')
+      console.log("Alert sound not available");
     }
-  }
+  };
 
   const togglePause = () => {
-    setIsPaused(!isPaused)
-  }
+    setIsPaused(!isPaused);
+  };
 
   const toggleSound = () => {
-    setSoundEnabled(!soundEnabled)
-  }
+    setSoundEnabled(!soundEnabled);
+  };
 
   const reconnect = () => {
-    cleanup()
+    cleanup();
     setTimeout(() => {
-      initializeConnection()
-    }, 1000)
-  }
+      initializeConnection();
+    }, 1000);
+  };
 
-  const testAlert = async (severity: 'info' | 'warning' | 'critical') => {
+  const testAlert = async (severity: "info" | "warning" | "critical") => {
     const testAlert: AlertPayload = {
       id: `test-${Date.now()}`,
-      type: 'system_alert',
+      type: "system_alert",
       severity,
       title: `Test ${severity.toUpperCase()} Alert`,
       message: `This is a test ${severity} alert from the live cost dashboard`,
       timestamp: new Date().toISOString(),
-      channels: ['email', 'slack']
-    }
+      channels: ["email", "slack"],
+    };
 
     try {
-      await alertDeliverySystem.deliverAlert(testAlert)
-      alert(`Test ${severity} alert sent successfully!`)
+      await alertDeliverySystem.deliverAlert(testAlert);
+      alert(`Test ${severity} alert sent successfully!`);
     } catch (error) {
-      alert(`Failed to send test alert: ${error}`)
+      alert(`Failed to send test alert: ${error}`);
     }
-  }
+  };
 
   const connectionStatusColor = useMemo(() => {
     switch (connectionStatus) {
-      case 'connected': return 'text-green-400'
-      case 'connecting': return 'text-yellow-400'
-      default: return 'text-red-400'
+      case "connected":
+        return "text-green-400";
+      case "connecting":
+        return "text-yellow-400";
+      default:
+        return "text-red-400";
     }
-  }, [connectionStatus])
+  }, [connectionStatus]);
 
-  const formatCost = (cost: number) => `$${cost.toFixed(2)}`
+  const formatCost = (cost: number) => `$${cost.toFixed(2)}`;
   const formatNumber = (num: number) => {
-    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`
-    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`
-    return num.toString()
-  }
+    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+    return num.toString();
+  };
 
   return (
     <div className="space-y-6">
@@ -283,13 +310,19 @@ export function LiveCostDashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white">Live Cost Dashboard</h1>
-          <p className="text-gray-400">Real-time AI cost monitoring and alerts</p>
+          <p className="text-gray-400">
+            Real-time AI cost monitoring and alerts
+          </p>
         </div>
 
         <div className="flex items-center gap-4">
           {/* Connection Status */}
           <div className={`flex items-center gap-2 ${connectionStatusColor}`}>
-            {isConnected ? <Wifi className="h-4 w-4" /> : <WifiOff className="h-4 w-4" />}
+            {isConnected ? (
+              <Wifi className="h-4 w-4" />
+            ) : (
+              <WifiOff className="h-4 w-4" />
+            )}
             <span className="text-sm capitalize">{connectionStatus}</span>
           </div>
 
@@ -301,8 +334,12 @@ export function LiveCostDashboard() {
               onClick={togglePause}
               className="flex items-center gap-2"
             >
-              {isPaused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
-              {isPaused ? 'Resume' : 'Pause'}
+              {isPaused ? (
+                <Play className="h-4 w-4" />
+              ) : (
+                <Pause className="h-4 w-4" />
+              )}
+              {isPaused ? "Resume" : "Pause"}
             </Button>
 
             <Button
@@ -311,7 +348,11 @@ export function LiveCostDashboard() {
               onClick={toggleSound}
               className="flex items-center gap-2"
             >
-              {soundEnabled ? <Bell className="h-4 w-4" /> : <BellOff className="h-4 w-4" />}
+              {soundEnabled ? (
+                <Bell className="h-4 w-4" />
+              ) : (
+                <BellOff className="h-4 w-4" />
+              )}
               Sound
             </Button>
 
@@ -319,10 +360,12 @@ export function LiveCostDashboard() {
               variant="outline"
               size="sm"
               onClick={reconnect}
-              disabled={connectionStatus === 'connecting'}
+              disabled={connectionStatus === "connecting"}
               className="flex items-center gap-2"
             >
-              <RefreshCw className={`h-4 w-4 ${connectionStatus === 'connecting' ? 'animate-spin' : ''}`} />
+              <RefreshCw
+                className={`h-4 w-4 ${connectionStatus === "connecting" ? "animate-spin" : ""}`}
+              />
               Reconnect
             </Button>
           </div>
@@ -354,9 +397,9 @@ export function LiveCostDashboard() {
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="alerts">
             Alerts
-            {realtimeAlerts.filter(a => a.isNew).length > 0 && (
+            {realtimeAlerts.filter((a) => a.isNew).length > 0 && (
               <Badge variant="destructive" className="ml-2 animate-pulse">
-                {realtimeAlerts.filter(a => a.isNew).length}
+                {realtimeAlerts.filter((a) => a.isNew).length}
               </Badge>
             )}
           </TabsTrigger>
@@ -371,7 +414,9 @@ export function LiveCostDashboard() {
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-medium text-gray-400">Today's Cost</CardTitle>
+                  <CardTitle className="text-sm font-medium text-gray-400">
+                    Today's Cost
+                  </CardTitle>
                   <DollarSign className="h-4 w-4 text-green-400" />
                 </div>
               </CardHeader>
@@ -389,7 +434,9 @@ export function LiveCostDashboard() {
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-medium text-gray-400">Requests Today</CardTitle>
+                  <CardTitle className="text-sm font-medium text-gray-400">
+                    Requests Today
+                  </CardTitle>
                   <Activity className="h-4 w-4 text-blue-400" />
                 </div>
               </CardHeader>
@@ -407,7 +454,9 @@ export function LiveCostDashboard() {
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-medium text-gray-400">Active Users</CardTitle>
+                  <CardTitle className="text-sm font-medium text-gray-400">
+                    Active Users
+                  </CardTitle>
                   <Users className="h-4 w-4 text-purple-400" />
                 </div>
               </CardHeader>
@@ -415,20 +464,25 @@ export function LiveCostDashboard() {
                 <div className="text-2xl font-bold text-white">
                   {metrics.activeUsers}
                 </div>
-                <div className="text-xs text-gray-400">
-                  Last 24 hours
-                </div>
+                <div className="text-xs text-gray-400">Last 24 hours</div>
               </CardContent>
             </Card>
 
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-medium text-gray-400">Success Rate</CardTitle>
-                  <CheckCircle2 className={`h-4 w-4 ${
-                    metrics.successRate > 0.95 ? 'text-green-400' :
-                    metrics.successRate > 0.90 ? 'text-yellow-400' : 'text-red-400'
-                  }`} />
+                  <CardTitle className="text-sm font-medium text-gray-400">
+                    Success Rate
+                  </CardTitle>
+                  <CheckCircle2
+                    className={`h-4 w-4 ${
+                      metrics.successRate > 0.95
+                        ? "text-green-400"
+                        : metrics.successRate > 0.9
+                          ? "text-yellow-400"
+                          : "text-red-400"
+                    }`}
+                  />
                 </div>
               </CardHeader>
               <CardContent>
@@ -455,20 +509,26 @@ export function LiveCostDashboard() {
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-gray-400">Avg Response Time</span>
-                  <span className="text-white font-medium">{metrics.avgResponseTime}ms</span>
+                  <span className="text-white font-medium">
+                    {metrics.avgResponseTime}ms
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-400">Error Rate</span>
-                  <span className={`font-medium ${
-                    metrics.errorRate > 0.10 ? 'text-red-400' : 'text-green-400'
-                  }`}>
+                  <span
+                    className={`font-medium ${
+                      metrics.errorRate > 0.1
+                        ? "text-red-400"
+                        : "text-green-400"
+                    }`}
+                  >
                     {(metrics.errorRate * 100).toFixed(1)}%
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-400">Top Cost Tool</span>
                   <span className="text-white font-medium capitalize">
-                    {metrics.topCostTool.replace(/-/g, ' ')}
+                    {metrics.topCostTool.replace(/-/g, " ")}
                   </span>
                 </div>
               </CardContent>
@@ -484,14 +544,18 @@ export function LiveCostDashboard() {
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-gray-400">Active Alerts</span>
-                  <Badge variant={metrics.alertsCount > 0 ? 'destructive' : 'outline'}>
+                  <Badge
+                    variant={
+                      metrics.alertsCount > 0 ? "destructive" : "outline"
+                    }
+                  >
                     {metrics.alertsCount}
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-400">Connection Status</span>
-                  <Badge variant={isConnected ? 'default' : 'outline'}>
-                    {isConnected ? 'Connected' : 'Disconnected'}
+                  <Badge variant={isConnected ? "default" : "outline"}>
+                    {isConnected ? "Connected" : "Disconnected"}
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
@@ -523,25 +587,32 @@ export function LiveCostDashboard() {
                         No alerts yet
                       </div>
                     ) : (
-                      realtimeAlerts.map(alert => (
+                      realtimeAlerts.map((alert) => (
                         <div
                           key={alert.id}
                           className={`p-4 rounded border ${
-                            alert.severity === 'critical' ? 'bg-red-500/10 border-red-500/20' :
-                            alert.severity === 'warning' ? 'bg-yellow-500/10 border-yellow-500/20' :
-                            'bg-blue-500/10 border-blue-500/20'
-                          } ${alert.isNew ? 'animate-pulse' : ''}`}
+                            alert.severity === "critical"
+                              ? "bg-red-500/10 border-red-500/20"
+                              : alert.severity === "warning"
+                                ? "bg-yellow-500/10 border-yellow-500/20"
+                                : "bg-blue-500/10 border-blue-500/20"
+                          } ${alert.isNew ? "animate-pulse" : ""}`}
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                              <Badge variant={
-                                alert.severity === 'critical' ? 'destructive' :
-                                alert.severity === 'warning' ? 'outline' : 'secondary'
-                              }>
+                              <Badge
+                                variant={
+                                  alert.severity === "critical"
+                                    ? "destructive"
+                                    : alert.severity === "warning"
+                                      ? "outline"
+                                      : "secondary"
+                                }
+                              >
                                 {alert.severity.toUpperCase()}
                               </Badge>
                               <span className="text-gray-400 text-sm">
-                                {alert.type.replace(/_/g, ' ')}
+                                {alert.type.replace(/_/g, " ")}
                               </span>
                             </div>
                             <span className="text-gray-400 text-xs">
@@ -561,28 +632,26 @@ export function LiveCostDashboard() {
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader>
                   <CardTitle className="text-white">Test Alerts</CardTitle>
-                  <CardDescription>
-                    Test alert delivery system
-                  </CardDescription>
+                  <CardDescription>Test alert delivery system</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <Button
                     variant="outline"
-                    onClick={() => testAlert('info')}
+                    onClick={() => testAlert("info")}
                     className="w-full"
                   >
                     Test Info Alert
                   </Button>
                   <Button
                     variant="outline"
-                    onClick={() => testAlert('warning')}
+                    onClick={() => testAlert("warning")}
                     className="w-full text-yellow-400 border-yellow-400"
                   >
                     Test Warning Alert
                   </Button>
                   <Button
                     variant="outline"
-                    onClick={() => testAlert('critical')}
+                    onClick={() => testAlert("critical")}
                     className="w-full text-red-400 border-red-400"
                   >
                     Test Critical Alert
@@ -615,11 +684,15 @@ export function LiveCostDashboard() {
                       className="flex items-center justify-between p-2 rounded bg-gray-700/50"
                     >
                       <div className="flex items-center gap-3">
-                        <div className={`w-2 h-2 rounded-full ${
-                          update.data.severity === 'critical' ? 'bg-red-400' :
-                          update.data.severity === 'warning' ? 'bg-yellow-400' :
-                          'bg-green-400'
-                        }`} />
+                        <div
+                          className={`w-2 h-2 rounded-full ${
+                            update.data.severity === "critical"
+                              ? "bg-red-400"
+                              : update.data.severity === "warning"
+                                ? "bg-yellow-400"
+                                : "bg-green-400"
+                          }`}
+                        />
                         <span className="text-white text-sm">
                           {update.data.message}
                         </span>
@@ -651,38 +724,50 @@ export function LiveCostDashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-white font-medium">Sound Alerts</div>
-                  <div className="text-gray-400 text-sm">Play sound for critical alerts</div>
+                  <div className="text-gray-400 text-sm">
+                    Play sound for critical alerts
+                  </div>
                 </div>
                 <Button
                   variant="outline"
                   onClick={toggleSound}
-                  className={soundEnabled ? 'text-green-400 border-green-400' : ''}
+                  className={
+                    soundEnabled ? "text-green-400 border-green-400" : ""
+                  }
                 >
-                  {soundEnabled ? 'Enabled' : 'Disabled'}
+                  {soundEnabled ? "Enabled" : "Disabled"}
                 </Button>
               </div>
 
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-white font-medium">Auto-refresh</div>
-                  <div className="text-gray-400 text-sm">Automatically refresh metrics</div>
+                  <div className="text-gray-400 text-sm">
+                    Automatically refresh metrics
+                  </div>
                 </div>
                 <Button
                   variant="outline"
                   onClick={togglePause}
-                  className={!isPaused ? 'text-green-400 border-green-400' : ''}
+                  className={!isPaused ? "text-green-400 border-green-400" : ""}
                 >
-                  {!isPaused ? 'Enabled' : 'Disabled'}
+                  {!isPaused ? "Enabled" : "Disabled"}
                 </Button>
               </div>
 
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-white font-medium">Connection Status</div>
-                  <div className="text-gray-400 text-sm">WebSocket connection health</div>
+                  <div className="text-white font-medium">
+                    Connection Status
+                  </div>
+                  <div className="text-gray-400 text-sm">
+                    WebSocket connection health
+                  </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-400' : 'bg-red-400'}`} />
+                  <div
+                    className={`w-2 h-2 rounded-full ${isConnected ? "bg-green-400" : "bg-red-400"}`}
+                  />
                   <span className={connectionStatusColor}>
                     {connectionStatus}
                   </span>
@@ -693,7 +778,7 @@ export function LiveCostDashboard() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
 
-export default LiveCostDashboard
+export default LiveCostDashboard;

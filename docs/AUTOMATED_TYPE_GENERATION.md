@@ -29,6 +29,7 @@ ClaimGuardian uses automated TypeScript type generation from the Supabase databa
 **File**: `.github/workflows/generate-database-types.yml`
 
 Key features:
+
 - Uses pnpm 10.13.1 and Node.js 24
 - Runs type compilation check after generation
 - Creates detailed summary in GitHub Actions
@@ -49,6 +50,7 @@ Set these in Repository Settings > Secrets and variables > Actions:
 ## Manual Commands
 
 ### Generate Types Locally
+
 ```bash
 # From project root
 pnpm db:generate-types
@@ -58,12 +60,14 @@ cd apps/web && pnpm db:types
 ```
 
 ### Generate Types (Local Database)
+
 ```bash
 # If running Supabase locally
 pnpm db:generate-types:local
 ```
 
 ### Trigger GitHub Actions Manually
+
 ```bash
 # Using GitHub CLI
 gh workflow run generate-database-types.yml
@@ -80,22 +84,22 @@ gh run list --workflow=generate-database-types.yml
 The generated types are available in the `@claimguardian/db` package:
 
 ```typescript
-import { Database } from '@claimguardian/db/types'
+import { Database } from "@claimguardian/db/types";
 
 // Table types
-type Property = Database['public']['Tables']['properties']['Row']
-type PropertyInsert = Database['public']['Tables']['properties']['Insert']
-type PropertyUpdate = Database['public']['Tables']['properties']['Update']
+type Property = Database["public"]["Tables"]["properties"]["Row"];
+type PropertyInsert = Database["public"]["Tables"]["properties"]["Insert"];
+type PropertyUpdate = Database["public"]["Tables"]["properties"]["Update"];
 
 // Use with Supabase client
-import { createClient } from '@supabase/supabase-js'
-const supabase = createClient<Database>(url, key)
+import { createClient } from "@supabase/supabase-js";
+const supabase = createClient<Database>(url, key);
 
 // Type-safe queries
 const { data, error } = await supabase
-  .from('properties')
-  .select('*')
-  .eq('user_id', userId)
+  .from("properties")
+  .select("*")
+  .eq("user_id", userId);
 // data is typed as Property[] | null
 ```
 
@@ -104,6 +108,7 @@ const { data, error } = await supabase
 ### Types Not Generating
 
 1. **Check Supabase Link**:
+
    ```bash
    cd apps/web
    supabase projects list
@@ -111,6 +116,7 @@ const { data, error } = await supabase
    ```
 
 2. **Re-link if Needed**:
+
    ```bash
    supabase link --project-ref tmlrvecuwgppbaynesji
    ```
@@ -130,12 +136,14 @@ const { data, error } = await supabase
 ### Type Compilation Errors
 
 1. **Verify Generated File**:
+
    ```bash
    # Check if file exists and has content
    ls -la packages/db/src/types/database.types.ts
    ```
 
 2. **Test Compilation**:
+
    ```bash
    pnpm --filter @claimguardian/db type-check
    ```

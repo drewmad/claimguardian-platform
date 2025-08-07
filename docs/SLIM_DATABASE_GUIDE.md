@@ -15,12 +15,14 @@ The ClaimGuardian database has grown significantly with advanced features. This 
 ### Option 1: Minimal Core (Recommended for New Projects)
 
 **What it includes:**
+
 - User profiles and authentication
 - Properties management
 - Claims tracking
 - Basic document storage
 
 **What it removes:**
+
 - AI/ML infrastructure
 - Florida parcel data
 - Multi-tenant architecture
@@ -29,6 +31,7 @@ The ClaimGuardian database has grown significantly with advanced features. This 
 
 **Size reduction:** ~95% smaller
 **Commands:**
+
 ```bash
 # Apply minimal schema
 psql -f scripts/create-minimal-schema.sql
@@ -40,11 +43,13 @@ node scripts/generate-minimal-types.js
 ### Option 2: Remove AI Infrastructure Only
 
 **What it keeps:**
+
 - Core functionality
 - Multi-tenant architecture
 - Florida parcel data (if needed)
 
 **What it removes:**
+
 - AI performance monitoring (time-series tables)
 - ML model management
 - Advanced analytics
@@ -52,6 +57,7 @@ node scripts/generate-minimal-types.js
 
 **Size reduction:** ~80% smaller
 **Commands:**
+
 ```bash
 psql -f scripts/remove-ai-infrastructure.sql
 ```
@@ -59,17 +65,20 @@ psql -f scripts/remove-ai-infrastructure.sql
 ### Option 3: Remove Florida Parcel Data
 
 **What it keeps:**
+
 - All application features
 - AI functionality
 - Multi-tenant architecture
 
 **What it removes:**
+
 - 14M+ parcel records (florida_parcels)
 - GIS processing tables
 - County data sync infrastructure
 
 **Size reduction:** ~200GB storage savings
 **Commands:**
+
 ```bash
 psql -f scripts/remove-parcel-data.sql
 ```
@@ -77,11 +86,13 @@ psql -f scripts/remove-parcel-data.sql
 ### Option 4: Simplify Multi-Tenant
 
 **What it keeps:**
+
 - Basic tenant isolation
 - Organization management
 - User roles and permissions
 
 **What it removes:**
+
 - Advanced billing infrastructure
 - Comprehensive audit logging
 - State expansion planning
@@ -89,6 +100,7 @@ psql -f scripts/remove-parcel-data.sql
 
 **Size reduction:** ~40% fewer tables
 **Commands:**
+
 ```bash
 psql -f scripts/simplify-multitenant.sql
 ```
@@ -118,6 +130,7 @@ LIMIT 20;
 ### Step 2: Choose Your Approach
 
 **For new projects or prototypes:**
+
 ```bash
 # Start with minimal core
 psql -f scripts/create-minimal-schema.sql
@@ -125,6 +138,7 @@ node scripts/generate-minimal-types.js
 ```
 
 **For existing deployments:**
+
 ```bash
 # Incremental slimming
 psql -f scripts/remove-ai-infrastructure.sql  # Biggest impact
@@ -158,31 +172,33 @@ Remove imports and references to removed tables:
 // import { getExpansionPlans } from '@/actions/expansion'
 
 // Keep essential imports
-import { getUserProfile } from '@/actions/auth'
-import { getProperties } from '@/actions/properties'
-import { getClaims } from '@/actions/claims'
+import { getUserProfile } from "@/actions/auth";
+import { getProperties } from "@/actions/properties";
+import { getClaims } from "@/actions/claims";
 ```
 
 ## 📊 Size Comparison
 
-| Configuration | Tables | Estimated Size | Type File Size | Use Case |
-|---------------|--------|----------------|----------------|----------|
-| **Full System** | 50+ | 200GB+ | 99KB+ | Production with all features |
-| **No AI Infrastructure** | 35+ | 40GB+ | 60KB+ | Core app without AI monitoring |
-| **No Parcel Data** | 45+ | 2GB+ | 90KB+ | App without GIS features |
-| **Simplified Multi-Tenant** | 30+ | 30GB+ | 50KB+ | Basic multi-tenancy |
-| **Minimal Core** | 8 | 100MB+ | 5KB | MVP/prototype |
+| Configuration               | Tables | Estimated Size | Type File Size | Use Case                       |
+| --------------------------- | ------ | -------------- | -------------- | ------------------------------ |
+| **Full System**             | 50+    | 200GB+         | 99KB+          | Production with all features   |
+| **No AI Infrastructure**    | 35+    | 40GB+          | 60KB+          | Core app without AI monitoring |
+| **No Parcel Data**          | 45+    | 2GB+           | 90KB+          | App without GIS features       |
+| **Simplified Multi-Tenant** | 30+    | 30GB+          | 50KB+          | Basic multi-tenancy            |
+| **Minimal Core**            | 8      | 100MB+         | 5KB            | MVP/prototype                  |
 
 ## 🔄 Migration Paths
 
 ### From Full to Minimal
 
 1. **Backup your data:**
+
    ```bash
    pg_dump claimguardian > backup_full.sql
    ```
 
 2. **Export essential data:**
+
    ```bash
    pg_dump --data-only --table=user_profiles --table=properties --table=claims claimguardian > essential_data.sql
    ```
@@ -198,11 +214,13 @@ import { getClaims } from '@/actions/claims'
 ### Incremental Slimming
 
 1. **Remove AI infrastructure first (biggest impact):**
+
    ```bash
    psql -f scripts/remove-ai-infrastructure.sql
    ```
 
 2. **Remove parcel data if not needed:**
+
    ```bash
    psql -f scripts/remove-parcel-data.sql
    ```
@@ -250,18 +268,22 @@ pnpm test -- --skip-pattern="ai-analytics|parcel|expansion"
 ## 🚀 Performance Benefits
 
 ### Query Performance
+
 - **Before**: 5-10 second queries on large tables
 - **After**: Sub-second queries on focused tables
 
 ### Build Performance
+
 - **Before**: Type generation fails (99K+ tokens)
 - **After**: Type generation succeeds (<5K tokens)
 
 ### Storage Costs
+
 - **Before**: $200+ monthly for database storage
 - **After**: $20+ monthly for database storage
 
 ### Development Speed
+
 - **Before**: Complex schema difficult to understand
 - **After**: Simple schema easy to work with
 
@@ -346,16 +368,19 @@ WHERE table_schema = 'public';
 ## 🎯 Recommendations
 
 ### For New Projects
+
 1. **Start with Minimal Core** - Add features as needed
 2. **Use targeted type generation** - Avoid massive auto-generated files
 3. **Plan for growth** - Design schema to be easily expandable
 
 ### For Existing Projects
+
 1. **Remove AI infrastructure first** - Biggest immediate impact
 2. **Evaluate parcel data need** - 200GB savings if not required
 3. **Simplify gradually** - Test after each slimming step
 
 ### For Production
+
 1. **Backup before slimming** - Always have rollback option
 2. **Test thoroughly** - Verify all needed functionality works
 3. **Monitor performance** - Ensure slimming improves performance

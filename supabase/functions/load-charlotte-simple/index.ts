@@ -1,44 +1,47 @@
-import "jsr:@supabase/functions-js/edge-runtime.d.ts"
-import { createClient } from 'jsr:@supabase/supabase-js@2'
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "jsr:@supabase/supabase-js@2";
 
-const CHARLOTTE_LAYER_ID = 8
-const CHARLOTTE_FIPS = '12015'
+const CHARLOTTE_LAYER_ID = 8;
+const CHARLOTTE_FIPS = "12015";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
 
 Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
   }
 
   try {
-    const { offset = 0, limit = 1000 } = await req.json() // Increased default limit for efficiency (API max ~1000)
+    const { offset = 0, limit = 1000 } = await req.json(); // Increased default limit for efficiency (API max ~1000)
 
-    console.log(`Loading Charlotte County parcels - Offset: ${offset}, Limit: ${limit}`)
+    console.log(
+      `Loading Charlotte County parcels - Offset: ${offset}, Limit: ${limit}`,
+    );
 
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    const supabase = createClient(supabaseUrl, supabaseServiceKey)
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Build FDOT URL
     // NOTE: This FDOT service is 2022 vintage. For 2024 DOR data, download GeoJSON from
     // geodata.floridagio.gov/datasets/FGIO::florida-statewide-parcels-polygon,
     // upload to Supabase Storage, and process via separate function for WHERE COUNTY='CHARLOTTE'
-    const fdotUrl = `https://gis.fdot.gov/arcgis/rest/services/Parcels/FeatureServer/${CHARLOTTE_LAYER_ID}/query`
+    const fdotUrl = `https://gis.fdot.gov/arcgis/rest/services/Parcels/FeatureServer/${CHARLOTTE_LAYER_ID}/query`;
     const params = new URLSearchParams({
-      where: '1=1',
-      outFields: '*',
-      f: 'json',
+      where: "1=1",
+      outFields: "*",
+      f: "json",
       resultOffset: offset.toString(),
       resultRecordCount: limit.toString(),
-      returnGeometry: 'true',
-      outSR: '4326'
-    })
+      returnGeometry: "true",
+      outSR: "4326",
+    });
 
-    console.log('Fetching from:', `${fdotUrl}?${params}`)
+    console.log("Fetching from:", `${fdotUrl}?${params}`);
 
     // Fetch with exponential backoff retry logic
     let data;
@@ -47,46 +50,55 @@ Deno.serve(async (req) => {
 
     while (attempts < maxRetries) {
       try {
-        const response = await fetch(`${fdotUrl}?${params}`)
+        const response = await fetch(`${fdotUrl}?${params}`);
         if (!response.ok) {
-          throw new Error(`FDOT API error: ${response.status} - ${await response.text()}`)
+          throw new Error(
+            `FDOT API error: ${response.status} - ${await response.text()}`,
+          );
         }
-        data = await response.json()
+        data = await response.json();
         break;
       } catch (err) {
         attempts++;
         if (attempts === maxRetries) throw err;
-        const delay = 1000 * (2 ** attempts); // Exponential backoff: 2s, 4s, 8s
-        console.warn(`Retry ${attempts} after error: ${err.message}. Waiting ${delay}ms...`)
-        await new Promise(resolve => setTimeout(resolve, delay));
+        const delay = 1000 * 2 ** attempts; // Exponential backoff: 2s, 4s, 8s
+        console.warn(
+          `Retry ${attempts} after error: ${err.message}. Waiting ${delay}ms...`,
+        );
+        await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
 
-    const features = data.features || []
-    console.log(`Received ${features.length} features`)
+    const features = data.features || [];
+    console.log(`Received ${features.length} features`);
 
-    const records = []
-    let errors = 0
-    const errorDetails = []
+    const records = [];
+    let errors = 0;
+    const errorDetails = [];
 
     for (const feature of features) {
       try {
-        const { attributes, geometry } = feature
+        const { attributes, geometry } = feature;
 
         // Fixed WKT conversion: Use POLYGON for single ring, MULTIPOLYGON for multiple
-        let wkt = null
+        let wkt = null;
         if (geometry?.rings) {
-          const rings = geometry.rings
+          const rings = geometry.rings;
           if (rings.length === 1) {
             // Single ring - use POLYGON with double parentheses
-            const ringStr = rings[0].map(coord => `${coord[0]} ${coord[1]}`).join(',')
-            wkt = `SRID=4326;POLYGON((${ringStr}))`
+            const ringStr = rings[0]
+              .map((coord) => `${coord[0]} ${coord[1]}`)
+              .join(",");
+            wkt = `SRID=4326;POLYGON((${ringStr}))`;
           } else if (rings.length > 1) {
             // Multiple rings - use MULTIPOLYGON with proper nesting
-            const multiStr = rings.map(ring =>
-              `((${ring.map(coord => `${coord[0]} ${coord[1]}`).join(',')}))`
-            ).join(',')
-            wkt = `SRID=4326;MULTIPOLYGON(${multiStr})`
+            const multiStr = rings
+              .map(
+                (ring) =>
+                  `((${ring.map((coord) => `${coord[0]} ${coord[1]}`).join(",")}))`,
+              )
+              .join(",");
+            wkt = `SRID=4326;MULTIPOLYGON(${multiStr})`;
           }
         }
 
@@ -133,109 +145,113 @@ Deno.serve(async (req) => {
           LONGITUDE: geometry?.rings?.[0]?.[0]?.[0] || null,
 
           // Metadata
-          data_source: 'FDOT',
-          import_batch: `charlotte_${new Date().toISOString().split('T')[0]}`,
+          data_source: "FDOT",
+          import_batch: `charlotte_${new Date().toISOString().split("T")[0]}`,
           import_date: new Date().toISOString(),
-        }
+        };
 
         if (!record.PARCEL_ID) {
-          errors++
-          errorDetails.push({ reason: 'Missing parcel ID', attributes })
-          continue
+          errors++;
+          errorDetails.push({ reason: "Missing parcel ID", attributes });
+          continue;
         }
 
-        records.push(record)
+        records.push(record);
       } catch (err) {
-        console.error('Error processing parcel:', err)
-        errors++
+        console.error("Error processing parcel:", err);
+        errors++;
         errorDetails.push({
           reason: err.message,
           parcelId: feature?.attributes?.PARCELNO,
-          error: err.stack
-        })
+          error: err.stack,
+        });
       }
     }
 
     // Batch upsert for efficiency
     if (records.length > 0) {
-      const { error } = await supabase
-        .from('florida_parcels')
-        .upsert(records, {
-          onConflict: 'CO_NO,PARCEL_ID', // Use composite unique constraint
-          ignoreDuplicates: false
-        })
+      const { error } = await supabase.from("florida_parcels").upsert(records, {
+        onConflict: "CO_NO,PARCEL_ID", // Use composite unique constraint
+        ignoreDuplicates: false,
+      });
 
       if (error) {
-        console.error('Batch upsert error:', error)
-        throw error
+        console.error("Batch upsert error:", error);
+        throw error;
       }
     }
 
-    const processed = records.length
-    const hasMore = data.exceededTransferLimit || features.length === limit
+    const processed = records.length;
+    const hasMore = data.exceededTransferLimit || features.length === limit;
 
     // Log to system_logs table for traceability
     try {
-      await supabase.from('system_logs').insert({
-        level: 'info',
-        message: 'Charlotte parcels load completed',
+      await supabase.from("system_logs").insert({
+        level: "info",
+        message: "Charlotte parcels load completed",
         metadata: {
           offset,
           limit,
           processed,
           errors,
           hasMore,
-          errorSample: errorDetails.slice(0, 5) // Log first 5 errors
+          errorSample: errorDetails.slice(0, 5), // Log first 5 errors
         },
-        created_at: new Date().toISOString()
-      })
+        created_at: new Date().toISOString(),
+      });
     } catch (logError) {
-      console.error('Failed to write to system_logs:', logError)
+      console.error("Failed to write to system_logs:", logError);
     }
 
-    return new Response(JSON.stringify({
-      success: true,
-      processed,
-      errors,
-      total: features.length,
-      hasMore,
-      nextOffset: hasMore ? offset + limit : null,
-      message: processed > 0 ?
-        `Successfully processed ${processed} parcels with ${errors} errors` :
-        'No parcels processed'
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    })
-
+    return new Response(
+      JSON.stringify({
+        success: true,
+        processed,
+        errors,
+        total: features.length,
+        hasMore,
+        nextOffset: hasMore ? offset + limit : null,
+        message:
+          processed > 0
+            ? `Successfully processed ${processed} parcels with ${errors} errors`
+            : "No parcels processed",
+      }),
+      {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
   } catch (err) {
-    console.error('Function error:', err)
+    console.error("Function error:", err);
 
     // Try to log error to system_logs
     try {
       const supabase = createClient(
-        Deno.env.get('SUPABASE_URL')!,
-        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-      )
-      await supabase.from('system_logs').insert({
-        level: 'error',
-        message: 'Charlotte parcels load failed',
+        Deno.env.get("SUPABASE_URL")!,
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      );
+      await supabase.from("system_logs").insert({
+        level: "error",
+        message: "Charlotte parcels load failed",
         metadata: {
           error: err.message,
-          stack: err.stack
+          stack: err.stack,
         },
-        created_at: new Date().toISOString()
-      })
+        created_at: new Date().toISOString(),
+      });
     } catch (logError) {
-      console.error('Failed to log error:', logError)
+      console.error("Failed to log error:", logError);
     }
 
-    return new Response(JSON.stringify({
-      error: err.message,
-      success: false,
-      details: err.stack
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 500
-    })
+    return new Response(
+      JSON.stringify({
+        error: err.message,
+        success: false,
+        details: err.stack,
+      }),
+      {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 500,
+      },
+    );
   }
-})
+});

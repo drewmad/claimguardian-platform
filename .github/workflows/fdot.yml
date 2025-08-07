@@ -2,7 +2,7 @@ name: FDOT Parcel Sync
 
 on:
   schedule:
-    - cron:  '0 4 20 6 *'   # 20 June 04:00 UTC – after annual DOR update
+    - cron: "0 4 20 6 *" # 20 June 04:00 UTC – after annual DOR update
   workflow_dispatch:
 
 jobs:

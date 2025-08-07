@@ -8,71 +8,86 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { Calculator, DollarSign, AlertTriangle, CheckCircle, XCircle, Info, BarChart, Sparkles, Scale, Target, Brain, Loader2 } from 'lucide-react'
-import Link from 'next/link'
-import { useState } from 'react'
-import { toast } from 'sonner'
-import { logger } from "@/lib/logger/production-logger"
-import { toError } from '@claimguardian/utils'
+import {
+  Calculator,
+  DollarSign,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+  Info,
+  BarChart,
+  Sparkles,
+  Scale,
+  Target,
+  Brain,
+  Loader2,
+} from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { toast } from "sonner";
+import { logger } from "@/lib/logger/production-logger";
+import { toError } from "@claimguardian/utils";
 
-import { useAuth } from '@/components/auth/auth-provider'
-import { ProtectedRoute } from '@/components/auth/protected-route'
-import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Progress } from '@/components/ui/progress'
-import { Textarea } from '@/components/ui/textarea'
-import { enhancedAIClient } from '@/lib/ai/enhanced-client'
-
+import { useAuth } from "@/components/auth/auth-provider";
+import { ProtectedRoute } from "@/components/auth/protected-route";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
+import { Textarea } from "@/components/ui/textarea";
+import { enhancedAIClient } from "@/lib/ai/enhanced-client";
 
 interface SettlementAnalysis {
-  fairnessScore: number
-  recommendation: 'accept' | 'negotiate' | 'reject'
-  reasoning: string[]
+  fairnessScore: number;
+  recommendation: "accept" | "negotiate" | "reject";
+  reasoning: string[];
   comparisons: {
-    category: string
-    yourCase: number
-    average: number
-    difference: number
-  }[]
-  negotiationPoints: string[]
-  redFlags: string[]
-  strengthsOfOffer: string[]
+    category: string;
+    yourCase: number;
+    average: number;
+    difference: number;
+  }[];
+  negotiationPoints: string[];
+  redFlags: string[];
+  strengthsOfOffer: string[];
 }
 
 export default function SettlementAnalyzerPage() {
-  const [claimAmount, setClaimAmount] = useState('')
-  const [offeredAmount, setOfferedAmount] = useState('')
-  const [damageType, setDamageType] = useState('')
-  const [propertyType, setPropertyType] = useState('')
-  const [damageDescription, setDamageDescription] = useState('')
-  const [deductible, setDeductible] = useState('')
-  const [analysis, setAnalysis] = useState<SettlementAnalysis | null>(null)
-  const [isAnalyzing, setIsAnalyzing] = useState(false)
-  const [hasOpenAIKey, setHasOpenAIKey] = useState(true) // Assume available for now
-  const [hasGeminiKey, setHasGeminiKey] = useState(true) // Assume available for now
-  const { user } = useAuth()
+  const [claimAmount, setClaimAmount] = useState("");
+  const [offeredAmount, setOfferedAmount] = useState("");
+  const [damageType, setDamageType] = useState("");
+  const [propertyType, setPropertyType] = useState("");
+  const [damageDescription, setDamageDescription] = useState("");
+  const [deductible, setDeductible] = useState("");
+  const [analysis, setAnalysis] = useState<SettlementAnalysis | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [hasOpenAIKey, setHasOpenAIKey] = useState(true); // Assume available for now
+  const [hasGeminiKey, setHasGeminiKey] = useState(true); // Assume available for now
+  const { user } = useAuth();
 
   const analyzeSettlement = async () => {
-    if (!claimAmount || !offeredAmount || !damageType) return
+    if (!claimAmount || !offeredAmount || !damageType) return;
 
-    setIsAnalyzing(true)
+    setIsAnalyzing(true);
 
     try {
-      const claimValue = parseFloat(claimAmount)
-      const offerValue = parseFloat(offeredAmount)
-      const deductibleValue = parseFloat(deductible) || 0
-      const offerPercentage = ((offerValue / (claimValue - deductibleValue)) * 100).toFixed(1)
+      const claimValue = parseFloat(claimAmount);
+      const offerValue = parseFloat(offeredAmount);
+      const deductibleValue = parseFloat(deductible) || 0;
+      const offerPercentage = (
+        (offerValue / (claimValue - deductibleValue)) *
+        100
+      ).toFixed(1);
 
       const prompt = `Analyze this insurance settlement offer:
 
-Property Type: ${propertyType || 'Residential'}
+Property Type: ${propertyType || "Residential"}
 Damage Type: ${damageType}
 Original Claim Amount: $${claimValue.toLocaleString()}
 Settlement Offer: $${offerValue.toLocaleString()}
@@ -99,64 +114,86 @@ Provide a detailed analysis in JSON format:
   "strengthsOfOffer": ["positive aspects of the offer"]
 }
 
-Consider Florida insurance law, typical settlements for similar claims, and the completeness of the offer.`
+Consider Florida insurance law, typical settlements for similar claims, and the completeness of the offer.`;
 
       const messages = [
-        { role: 'system' as const, content: 'You are an insurance settlement expert with deep knowledge of Florida property insurance claims and typical settlement patterns.' },
-        { role: 'user' as const, content: prompt }
-      ]
+        {
+          role: "system" as const,
+          content:
+            "You are an insurance settlement expert with deep knowledge of Florida property insurance claims and typical settlement patterns.",
+        },
+        { role: "user" as const, content: prompt },
+      ];
 
       // Use enhanced AI client with automatic model selection and A/B testing
       const response = await enhancedAIClient.enhancedChat({
         messages,
-        featureId: 'settlement-analyzer'
-      })
+        featureId: "settlement-analyzer",
+      });
 
       try {
-        const parsedAnalysis = JSON.parse(response)
-        setAnalysis(parsedAnalysis)
+        const parsedAnalysis = JSON.parse(response);
+        setAnalysis(parsedAnalysis);
       } catch {
         // Fallback if response isn't valid JSON
         const fallbackAnalysis: SettlementAnalysis = {
-          fairnessScore: offerValue / claimValue > 0.8 ? 75 : offerValue / claimValue > 0.6 ? 50 : 25,
-          recommendation: offerValue / claimValue > 0.8 ? 'accept' : offerValue / claimValue > 0.6 ? 'negotiate' : 'reject',
+          fairnessScore:
+            offerValue / claimValue > 0.8
+              ? 75
+              : offerValue / claimValue > 0.6
+                ? 50
+                : 25,
+          recommendation:
+            offerValue / claimValue > 0.8
+              ? "accept"
+              : offerValue / claimValue > 0.6
+                ? "negotiate"
+                : "reject",
           reasoning: [response],
           comparisons: [],
           negotiationPoints: [],
           redFlags: [],
-          strengthsOfOffer: []
-        }
-        setAnalysis(fallbackAnalysis)
+          strengthsOfOffer: [],
+        };
+        setAnalysis(fallbackAnalysis);
       }
 
-      toast.success('Settlement analysis complete!')
+      toast.success("Settlement analysis complete!");
     } catch (error) {
-      logger.error('Settlement analysis error:', toError(error))
-      toast.error('Failed to analyze settlement')
+      logger.error("Settlement analysis error:", toError(error));
+      toast.error("Failed to analyze settlement");
     } finally {
-      setIsAnalyzing(false)
+      setIsAnalyzing(false);
     }
-  }
+  };
 
   const getRecommendationColor = (recommendation: string) => {
     switch (recommendation) {
-      case 'accept': return 'text-green-400'
-      case 'negotiate': return 'text-yellow-400'
-      case 'reject': return 'text-red-400'
-      default: return 'text-gray-400'
+      case "accept":
+        return "text-green-400";
+      case "negotiate":
+        return "text-yellow-400";
+      case "reject":
+        return "text-red-400";
+      default:
+        return "text-gray-400";
     }
-  }
+  };
 
   const getRecommendationIcon = (recommendation: string) => {
     switch (recommendation) {
-      case 'accept': return CheckCircle
-      case 'negotiate': return Scale
-      case 'reject': return XCircle
-      default: return Info
+      case "accept":
+        return CheckCircle;
+      case "negotiate":
+        return Scale;
+      case "reject":
+        return XCircle;
+      default:
+        return Info;
     }
-  }
+  };
 
-  const isFormValid = claimAmount && offeredAmount && damageType
+  const isFormValid = claimAmount && offeredAmount && damageType;
 
   return (
     <ProtectedRoute>
@@ -181,13 +218,17 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <h1 className="text-4xl font-bold text-white drop-shadow-[0_2px_20px_rgba(255,255,255,0.3)]">Settlement Analyzer</h1>
+                      <h1 className="text-4xl font-bold text-white drop-shadow-[0_2px_20px_rgba(255,255,255,0.3)]">
+                        Settlement Analyzer
+                      </h1>
                       <Badge className="bg-gradient-to-r from-yellow-600/30 to-orange-600/30 text-yellow-300 border-yellow-600/30 backdrop-blur-md shadow-[0_8px_32px_rgba(245,158,11,0.2)]">
                         Beta
                       </Badge>
                     </div>
                     <p className="text-gray-300 max-w-3xl drop-shadow-[0_2px_10px_rgba(0,0,0,0.3)]">
-                      Analyze settlement offers and compare with typical payouts for similar claims. Get AI-powered insights to help you make informed decisions.
+                      Analyze settlement offers and compare with typical payouts
+                      for similar claims. Get AI-powered insights to help you
+                      make informed decisions.
                     </p>
                   </div>
                 </div>
@@ -199,7 +240,8 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
               <Alert className="bg-red-900/20 border-red-600/30 backdrop-blur-md shadow-[0_8px_32px_rgba(220,38,38,0.2)]">
                 <AlertTriangle className="h-4 w-4 text-red-400" />
                 <AlertDescription className="text-red-300">
-                  AI API keys required. Please configure OpenAI or Gemini API keys to use this tool.
+                  AI API keys required. Please configure OpenAI or Gemini API
+                  keys to use this tool.
                 </AlertDescription>
               </Alert>
             )}
@@ -217,13 +259,17 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <form className="space-y-4" onSubmit={(e) => {
-                      e.preventDefault()
-                      analyzeSettlement()
-                    }}>
+                    <form
+                      className="space-y-4"
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        analyzeSettlement();
+                      }}
+                    >
                       <div>
                         <Label className="text-gray-300">
-                          Original Claim Amount <span className="text-red-400">*</span>
+                          Original Claim Amount{" "}
+                          <span className="text-red-400">*</span>
                         </Label>
                         <div className="relative mt-1">
                           <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
@@ -240,7 +286,8 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
 
                       <div>
                         <Label className="text-gray-300">
-                          Settlement Offer <span className="text-red-400">*</span>
+                          Settlement Offer{" "}
+                          <span className="text-red-400">*</span>
                         </Label>
                         <div className="relative mt-1">
                           <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
@@ -256,9 +303,7 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
                       </div>
 
                       <div>
-                        <Label className="text-gray-300">
-                          Deductible
-                        </Label>
+                        <Label className="text-gray-300">Deductible</Label>
                         <div className="relative mt-1">
                           <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
                           <Input
@@ -301,7 +346,9 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
                           className="mt-1 w-full bg-gray-700/50 border-gray-600/50 text-white rounded-md px-3 py-2 backdrop-blur-md"
                         >
                           <option value="">Select property type</option>
-                          <option value="single-family">Single Family Home</option>
+                          <option value="single-family">
+                            Single Family Home
+                          </option>
                           <option value="condo">Condo</option>
                           <option value="townhouse">Townhouse</option>
                           <option value="mobile">Mobile Home</option>
@@ -310,7 +357,9 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
                       </div>
 
                       <div>
-                        <Label className="text-gray-300">Damage Description</Label>
+                        <Label className="text-gray-300">
+                          Damage Description
+                        </Label>
                         <Textarea
                           value={damageDescription}
                           onChange={(e) => setDamageDescription(e.target.value)}
@@ -322,7 +371,11 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
 
                       <Button
                         type="submit"
-                        disabled={!isFormValid || isAnalyzing || (!hasOpenAIKey && !hasGeminiKey)}
+                        disabled={
+                          !isFormValid ||
+                          isAnalyzing ||
+                          (!hasOpenAIKey && !hasGeminiKey)
+                        }
                         className="w-full bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white shadow-[0_8px_32px_rgba(245,158,11,0.3)] hover:shadow-[0_12px_40px_rgba(245,158,11,0.4)] transition-all duration-300 backdrop-blur-md border-0"
                       >
                         {isAnalyzing ? (
@@ -359,18 +412,26 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
                   <div className="space-y-6">
                     {/* Main Recommendation */}
                     <Card className="bg-gray-800/70 backdrop-blur-xl border-gray-700/50 overflow-hidden shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_60px_rgba(245,158,11,0.15)] transition-all duration-500">
-                      <div className={`p-6 bg-gradient-to-r ${
-                        analysis.recommendation === 'accept'
-                          ? 'from-green-900/20 to-green-800/20'
-                          : analysis.recommendation === 'negotiate'
-                          ? 'from-yellow-900/20 to-yellow-800/20'
-                          : 'from-red-900/20 to-red-800/20'
-                      }`}>
+                      <div
+                        className={`p-6 bg-gradient-to-r ${
+                          analysis.recommendation === "accept"
+                            ? "from-green-900/20 to-green-800/20"
+                            : analysis.recommendation === "negotiate"
+                              ? "from-yellow-900/20 to-yellow-800/20"
+                              : "from-red-900/20 to-red-800/20"
+                        }`}
+                      >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-4">
                             {(() => {
-                              const Icon = getRecommendationIcon(analysis.recommendation)
-                              return <Icon className={`h-8 w-8 ${getRecommendationColor(analysis.recommendation)}`} />
+                              const Icon = getRecommendationIcon(
+                                analysis.recommendation,
+                              );
+                              return (
+                                <Icon
+                                  className={`h-8 w-8 ${getRecommendationColor(analysis.recommendation)}`}
+                                />
+                              );
                             })()}
                             <div>
                               <h3 className="text-2xl font-bold text-white capitalize">
@@ -385,16 +446,23 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
                             <div className="text-3xl font-bold text-white">
                               {analysis.fairnessScore}%
                             </div>
-                            <p className="text-sm text-gray-400">Fairness Score</p>
+                            <p className="text-sm text-gray-400">
+                              Fairness Score
+                            </p>
                           </div>
                         </div>
                       </div>
                       <CardContent className="pt-6">
-                        <Progress value={analysis.fairnessScore} className="h-3 mb-6" />
+                        <Progress
+                          value={analysis.fairnessScore}
+                          className="h-3 mb-6"
+                        />
 
                         {/* Key Reasoning */}
                         <div className="space-y-3">
-                          <h4 className="font-semibold text-white">Key Analysis Points:</h4>
+                          <h4 className="font-semibold text-white">
+                            Key Analysis Points:
+                          </h4>
                           {analysis.reasoning.map((reason, idx) => (
                             <div key={idx} className="flex items-start gap-2">
                               <CheckCircle className="h-4 w-4 text-blue-400 mt-0.5 flex-shrink-0" />
@@ -419,24 +487,38 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
                         <CardContent>
                           <div className="space-y-4">
                             {analysis.comparisons.map((comp, idx) => (
-                              <div key={idx} className="border-b border-gray-700 pb-4 last:border-0">
+                              <div
+                                key={idx}
+                                className="border-b border-gray-700 pb-4 last:border-0"
+                              >
                                 <div className="flex items-center justify-between mb-2">
-                                  <span className="font-medium text-gray-300">{comp.category}</span>
-                                  <span className={`text-sm ${
-                                    comp.difference > 0 ? 'text-green-400' : 'text-red-400'
-                                  }`}>
-                                    {comp.difference > 0 ? '+' : ''}{comp.difference}%
+                                  <span className="font-medium text-gray-300">
+                                    {comp.category}
+                                  </span>
+                                  <span
+                                    className={`text-sm ${
+                                      comp.difference > 0
+                                        ? "text-green-400"
+                                        : "text-red-400"
+                                    }`}
+                                  >
+                                    {comp.difference > 0 ? "+" : ""}
+                                    {comp.difference}%
                                   </span>
                                 </div>
                                 <div className="flex items-center gap-4 text-sm">
                                   <div>
-                                    <span className="text-gray-500">Your Case: </span>
+                                    <span className="text-gray-500">
+                                      Your Case:{" "}
+                                    </span>
                                     <span className="text-white font-medium">
                                       ${comp.yourCase.toLocaleString()}
                                     </span>
                                   </div>
                                   <div>
-                                    <span className="text-gray-500">Average: </span>
+                                    <span className="text-gray-500">
+                                      Average:{" "}
+                                    </span>
                                     <span className="text-white font-medium">
                                       ${comp.average.toLocaleString()}
                                     </span>
@@ -465,7 +547,9 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
                             {analysis.negotiationPoints.map((point, idx) => (
                               <li key={idx} className="flex items-start gap-2">
                                 <Scale className="h-4 w-4 text-yellow-400 mt-0.5 flex-shrink-0" />
-                                <span className="text-sm text-gray-300">{point}</span>
+                                <span className="text-sm text-gray-300">
+                                  {point}
+                                </span>
                               </li>
                             ))}
                           </ul>
@@ -484,12 +568,19 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
                           </CardHeader>
                           <CardContent>
                             <ul className="space-y-2">
-                              {analysis.strengthsOfOffer.map((strength, idx) => (
-                                <li key={idx} className="flex items-start gap-2">
-                                  <CheckCircle className="h-4 w-4 text-green-400 mt-0.5 flex-shrink-0" />
-                                  <span className="text-sm text-gray-300">{strength}</span>
-                                </li>
-                              ))}
+                              {analysis.strengthsOfOffer.map(
+                                (strength, idx) => (
+                                  <li
+                                    key={idx}
+                                    className="flex items-start gap-2"
+                                  >
+                                    <CheckCircle className="h-4 w-4 text-green-400 mt-0.5 flex-shrink-0" />
+                                    <span className="text-sm text-gray-300">
+                                      {strength}
+                                    </span>
+                                  </li>
+                                ),
+                              )}
                             </ul>
                           </CardContent>
                         </Card>
@@ -505,9 +596,14 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
                           <CardContent>
                             <ul className="space-y-2">
                               {analysis.redFlags.map((flag, idx) => (
-                                <li key={idx} className="flex items-start gap-2">
+                                <li
+                                  key={idx}
+                                  className="flex items-start gap-2"
+                                >
                                   <AlertTriangle className="h-4 w-4 text-red-400 mt-0.5 flex-shrink-0" />
-                                  <span className="text-sm text-gray-300">{flag}</span>
+                                  <span className="text-sm text-gray-300">
+                                    {flag}
+                                  </span>
                                 </li>
                               ))}
                             </ul>
@@ -528,7 +624,9 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
                     <Brain className="h-6 w-6 text-cyan-300 drop-shadow-[0_0_12px_rgba(6,182,212,0.7)]" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-white mb-2">Settlement Tips</h3>
+                    <h3 className="text-lg font-semibold text-white mb-2">
+                      Settlement Tips
+                    </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-300">
                       <ul className="space-y-1">
                         <li>• Never accept the first offer without analysis</li>
@@ -536,7 +634,9 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
                         <li>• Get contractor estimates before accepting</li>
                       </ul>
                       <ul className="space-y-1">
-                        <li>• Consider hiring a public adjuster for large claims</li>
+                        <li>
+                          • Consider hiring a public adjuster for large claims
+                        </li>
                         <li>• Review your policy limits and coverage</li>
                         <li>• Don't sign releases until you're satisfied</li>
                       </ul>
@@ -549,5 +649,5 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
         </div>
       </DashboardLayout>
     </ProtectedRoute>
-  )
+  );
 }

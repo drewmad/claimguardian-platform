@@ -9,7 +9,7 @@
  * @supabase-integration edge-functions
  */
 // Core client
-export { RealtimeClient } from './client'
+export { RealtimeClient } from "./client";
 
 // React hooks
 export {
@@ -20,18 +20,23 @@ export {
   useNotifications,
   usePresence,
   useBroadcast,
-  useTypingIndicator
-} from './hooks'
+  useTypingIndicator,
+} from "./hooks";
 
 // Channel utilities
-export { channels, channelConfigs, realtimeEvents, parseChannelName } from './channels'
+export {
+  channels,
+  channelConfigs,
+  realtimeEvents,
+  parseChannelName,
+} from "./channels";
 
 // Types
-export * from './types'
+export * from "./types";
 
 // Re-export Supabase realtime types for convenience
 export type {
   RealtimeChannel,
   RealtimePostgresChangesPayload,
-  RealtimePresenceState
-} from '@supabase/supabase-js'
+  RealtimePresenceState,
+} from "@supabase/supabase-js";

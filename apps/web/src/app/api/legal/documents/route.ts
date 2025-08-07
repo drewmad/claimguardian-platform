@@ -9,45 +9,52 @@
  * @status stable
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from "next/server";
 
-import { legalServiceServer } from '@/lib/legal/legal-service-server'
-import { logger } from '@/lib/logger'
+import { legalServiceServer } from "@/lib/legal/legal-service-server";
+import { logger } from "@/lib/logger";
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const userId = searchParams.get('userId')
-    const mode = searchParams.get('mode') // 'all' | 'needed'
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get("userId");
+    const mode = searchParams.get("mode"); // 'all' | 'needed'
 
-    let documents
+    let documents;
 
-    if (mode === 'needed' && userId) {
+    if (mode === "needed" && userId) {
       // Get documents that need user acceptance
-      documents = await legalServiceServer.getDocumentsNeedingAcceptance(userId)
+      documents =
+        await legalServiceServer.getDocumentsNeedingAcceptance(userId);
     } else {
       // Get all active documents (default)
-      documents = await legalServiceServer.getActiveLegalDocuments()
+      documents = await legalServiceServer.getActiveLegalDocuments();
     }
 
     // Add cache headers for better performance
     const response = NextResponse.json({
       data: documents,
       count: documents.length,
-      timestamp: new Date().toISOString()
-    })
+      timestamp: new Date().toISOString(),
+    });
 
     // Cache for 5 minutes
-    response.headers.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=60')
+    response.headers.set(
+      "Cache-Control",
+      "public, max-age=300, stale-while-revalidate=60",
+    );
 
-    return response
-
+    return response;
   } catch (error) {
-    logger.error('Failed to fetch legal documents', {}, error instanceof Error ? error : new Error(String(error)))
+    logger.error(
+      "Failed to fetch legal documents",
+      {},
+      error instanceof Error ? error : new Error(String(error)),
+    );
 
     return NextResponse.json(
-      { error: 'Failed to fetch legal documents' },
-      { status: 500 }
-    )
+      { error: "Failed to fetch legal documents" },
+      { status: 500 },
+    );
   }
 }

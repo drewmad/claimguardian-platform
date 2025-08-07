@@ -1,16 +1,28 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Progress } from '@/components/ui/progress'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { toast } from 'sonner'
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 import {
   LineChart,
   Line,
@@ -32,8 +44,8 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  ResponsiveContainer
-} from 'recharts'
+  ResponsiveContainer,
+} from "recharts";
 import {
   Brain,
   TrendingUp,
@@ -66,191 +78,285 @@ import {
   XCircle,
   RefreshCw,
   Sparkles,
-} from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
+} from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 interface PredictiveMetric {
-  id: string
-  name: string
-  value: number
-  change: number
-  trend: 'up' | 'down' | 'stable'
-  prediction: number
-  confidence: number
-  category: 'claims' | 'fraud' | 'customer' | 'financial' | 'operational'
-  impact: 'high' | 'medium' | 'low'
+  id: string;
+  name: string;
+  value: number;
+  change: number;
+  trend: "up" | "down" | "stable";
+  prediction: number;
+  confidence: number;
+  category: "claims" | "fraud" | "customer" | "financial" | "operational";
+  impact: "high" | "medium" | "low";
 }
 
 interface ClaimPrediction {
-  month: string
-  predicted: number
-  actual?: number
-  confidence: number
-  factors: string[]
+  month: string;
+  predicted: number;
+  actual?: number;
+  confidence: number;
+  factors: string[];
 }
 
 interface FraudAlert {
-  id: string
-  claimId: string
-  riskScore: number
-  indicators: string[]
-  status: 'active' | 'investigating' | 'resolved' | 'false_positive'
-  createdAt: Date
-  priority: 'high' | 'medium' | 'low'
+  id: string;
+  claimId: string;
+  riskScore: number;
+  indicators: string[];
+  status: "active" | "investigating" | "resolved" | "false_positive";
+  createdAt: Date;
+  priority: "high" | "medium" | "low";
 }
 
 interface CustomerSegment {
-  segment: string
-  count: number
-  avgClaimValue: number
-  churnProbability: number
-  lifetimeValue: number
-  satisfaction: number
+  segment: string;
+  count: number;
+  avgClaimValue: number;
+  churnProbability: number;
+  lifetimeValue: number;
+  satisfaction: number;
 }
 
 interface ModelPerformance {
-  modelName: string
-  accuracy: number
-  precision: number
-  recall: number
-  f1Score: number
-  lastTrained: Date
-  predictions: number
-  errors: number
+  modelName: string;
+  accuracy: number;
+  precision: number;
+  recall: number;
+  f1Score: number;
+  lastTrained: Date;
+  predictions: number;
+  errors: number;
 }
 
 export function PredictiveAnalyticsDashboard() {
-  const [timeRange, setTimeRange] = useState('30d')
-  const [selectedMetric, setSelectedMetric] = useState<string>('all')
-  const [loading, setLoading] = useState(false)
-  const [refreshing, setRefreshing] = useState(false)
+  const [timeRange, setTimeRange] = useState("30d");
+  const [selectedMetric, setSelectedMetric] = useState<string>("all");
+  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   // Mock data - in production would come from AI models and database
   const [metrics, setMetrics] = useState<PredictiveMetric[]>([
     {
-      id: '1',
-      name: 'Claim Volume',
+      id: "1",
+      name: "Claim Volume",
       value: 1247,
       change: 12.5,
-      trend: 'up',
+      trend: "up",
       prediction: 1389,
       confidence: 87,
-      category: 'claims',
-      impact: 'high'
+      category: "claims",
+      impact: "high",
     },
     {
-      id: '2',
-      name: 'Fraud Detection Rate',
+      id: "2",
+      name: "Fraud Detection Rate",
       value: 3.2,
       change: -0.8,
-      trend: 'down',
+      trend: "down",
       prediction: 2.9,
       confidence: 92,
-      category: 'fraud',
-      impact: 'high'
+      category: "fraud",
+      impact: "high",
     },
     {
-      id: '3',
-      name: 'Customer Satisfaction',
+      id: "3",
+      name: "Customer Satisfaction",
       value: 8.4,
       change: 0.3,
-      trend: 'up',
+      trend: "up",
       prediction: 8.6,
       confidence: 78,
-      category: 'customer',
-      impact: 'medium'
+      category: "customer",
+      impact: "medium",
     },
     {
-      id: '4',
-      name: 'Processing Time',
+      id: "4",
+      name: "Processing Time",
       value: 4.2,
       change: -0.7,
-      trend: 'down',
+      trend: "down",
       prediction: 3.8,
       confidence: 85,
-      category: 'operational',
-      impact: 'medium'
+      category: "operational",
+      impact: "medium",
     },
     {
-      id: '5',
-      name: 'Settlement Accuracy',
+      id: "5",
+      name: "Settlement Accuracy",
       value: 94.2,
       change: 2.1,
-      trend: 'up',
+      trend: "up",
       prediction: 95.8,
       confidence: 91,
-      category: 'financial',
-      impact: 'high'
-    }
-  ])
+      category: "financial",
+      impact: "high",
+    },
+  ]);
 
   const [claimPredictions, setClaimPredictions] = useState<ClaimPrediction[]>([
-    { month: 'Jan', predicted: 1200, actual: 1185, confidence: 89, factors: ['Weather', 'Seasonality'] },
-    { month: 'Feb', predicted: 1150, actual: 1162, confidence: 87, factors: ['Historical trend'] },
-    { month: 'Mar', predicted: 1300, actual: 1289, confidence: 91, factors: ['Spring storms'] },
-    { month: 'Apr', predicted: 1350, actual: 1347, confidence: 88, factors: ['Severe weather'] },
-    { month: 'May', predicted: 1400, confidence: 85, factors: ['Hurricane prep'] },
-    { month: 'Jun', predicted: 1550, confidence: 82, factors: ['Hurricane season'] }
-  ])
+    {
+      month: "Jan",
+      predicted: 1200,
+      actual: 1185,
+      confidence: 89,
+      factors: ["Weather", "Seasonality"],
+    },
+    {
+      month: "Feb",
+      predicted: 1150,
+      actual: 1162,
+      confidence: 87,
+      factors: ["Historical trend"],
+    },
+    {
+      month: "Mar",
+      predicted: 1300,
+      actual: 1289,
+      confidence: 91,
+      factors: ["Spring storms"],
+    },
+    {
+      month: "Apr",
+      predicted: 1350,
+      actual: 1347,
+      confidence: 88,
+      factors: ["Severe weather"],
+    },
+    {
+      month: "May",
+      predicted: 1400,
+      confidence: 85,
+      factors: ["Hurricane prep"],
+    },
+    {
+      month: "Jun",
+      predicted: 1550,
+      confidence: 82,
+      factors: ["Hurricane season"],
+    },
+  ]);
 
   const [fraudAlerts, setFraudAlerts] = useState<FraudAlert[]>([
     {
-      id: '1',
-      claimId: 'CLM-2024-001234',
+      id: "1",
+      claimId: "CLM-2024-001234",
       riskScore: 87,
-      indicators: ['Suspicious timing', 'Multiple claims', 'High claim amount'],
-      status: 'active',
+      indicators: ["Suspicious timing", "Multiple claims", "High claim amount"],
+      status: "active",
       createdAt: new Date(),
-      priority: 'high'
+      priority: "high",
     },
     {
-      id: '2',
-      claimId: 'CLM-2024-001235',
+      id: "2",
+      claimId: "CLM-2024-001235",
       riskScore: 73,
-      indicators: ['Document anomalies', 'Network connections'],
-      status: 'investigating',
+      indicators: ["Document anomalies", "Network connections"],
+      status: "investigating",
       createdAt: new Date(Date.now() - 3600000),
-      priority: 'medium'
-    }
-  ])
+      priority: "medium",
+    },
+  ]);
 
   const [customerSegments, setCustomerSegments] = useState<CustomerSegment[]>([
-    { segment: 'High Value', count: 342, avgClaimValue: 45000, churnProbability: 0.05, lifetimeValue: 125000, satisfaction: 9.2 },
-    { segment: 'Standard', count: 1847, avgClaimValue: 18000, churnProbability: 0.12, lifetimeValue: 45000, satisfaction: 8.1 },
-    { segment: 'At Risk', count: 234, avgClaimValue: 12000, churnProbability: 0.35, lifetimeValue: 15000, satisfaction: 6.8 },
-    { segment: 'New Customer', count: 156, avgClaimValue: 22000, churnProbability: 0.18, lifetimeValue: 35000, satisfaction: 7.9 }
-  ])
+    {
+      segment: "High Value",
+      count: 342,
+      avgClaimValue: 45000,
+      churnProbability: 0.05,
+      lifetimeValue: 125000,
+      satisfaction: 9.2,
+    },
+    {
+      segment: "Standard",
+      count: 1847,
+      avgClaimValue: 18000,
+      churnProbability: 0.12,
+      lifetimeValue: 45000,
+      satisfaction: 8.1,
+    },
+    {
+      segment: "At Risk",
+      count: 234,
+      avgClaimValue: 12000,
+      churnProbability: 0.35,
+      lifetimeValue: 15000,
+      satisfaction: 6.8,
+    },
+    {
+      segment: "New Customer",
+      count: 156,
+      avgClaimValue: 22000,
+      churnProbability: 0.18,
+      lifetimeValue: 35000,
+      satisfaction: 7.9,
+    },
+  ]);
 
   const [modelPerformance, setModelPerformance] = useState<ModelPerformance[]>([
-    { modelName: 'Fraud Detection', accuracy: 94.2, precision: 89.1, recall: 87.3, f1Score: 88.2, lastTrained: new Date(), predictions: 15432, errors: 896 },
-    { modelName: 'Claim Predictor', accuracy: 91.7, precision: 88.9, recall: 92.1, f1Score: 90.5, lastTrained: new Date(Date.now() - 86400000), predictions: 8765, errors: 726 },
-    { modelName: 'Sentiment Analyzer', accuracy: 87.3, precision: 84.2, recall: 89.7, f1Score: 86.9, lastTrained: new Date(Date.now() - 172800000), predictions: 23456, errors: 2987 }
-  ])
+    {
+      modelName: "Fraud Detection",
+      accuracy: 94.2,
+      precision: 89.1,
+      recall: 87.3,
+      f1Score: 88.2,
+      lastTrained: new Date(),
+      predictions: 15432,
+      errors: 896,
+    },
+    {
+      modelName: "Claim Predictor",
+      accuracy: 91.7,
+      precision: 88.9,
+      recall: 92.1,
+      f1Score: 90.5,
+      lastTrained: new Date(Date.now() - 86400000),
+      predictions: 8765,
+      errors: 726,
+    },
+    {
+      modelName: "Sentiment Analyzer",
+      accuracy: 87.3,
+      precision: 84.2,
+      recall: 89.7,
+      f1Score: 86.9,
+      lastTrained: new Date(Date.now() - 172800000),
+      predictions: 23456,
+      errors: 2987,
+    },
+  ]);
 
-  const supabase = createClient()
+  const supabase = createClient();
 
   const refreshData = async () => {
-    setRefreshing(true)
+    setRefreshing(true);
     try {
       // Simulate API calls to refresh predictive data
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
       // Update metrics with new predictions
-      setMetrics(prev => prev.map(metric => ({
-        ...metric,
-        value: metric.value + (Math.random() - 0.5) * 10,
-        change: (Math.random() - 0.5) * 5,
-        prediction: metric.prediction + (Math.random() - 0.5) * 15,
-        confidence: Math.max(70, Math.min(98, metric.confidence + (Math.random() - 0.5) * 10))
-      })))
+      setMetrics((prev) =>
+        prev.map((metric) => ({
+          ...metric,
+          value: metric.value + (Math.random() - 0.5) * 10,
+          change: (Math.random() - 0.5) * 5,
+          prediction: metric.prediction + (Math.random() - 0.5) * 15,
+          confidence: Math.max(
+            70,
+            Math.min(98, metric.confidence + (Math.random() - 0.5) * 10),
+          ),
+        })),
+      );
 
-      toast.success('Predictive models refreshed')
+      toast.success("Predictive models refreshed");
     } catch (error) {
-      toast.error('Failed to refresh data')
+      toast.error("Failed to refresh data");
     } finally {
-      setRefreshing(false)
+      setRefreshing(false);
     }
-  }
+  };
 
   const exportReport = () => {
     const report = {
@@ -258,48 +364,62 @@ export function PredictiveAnalyticsDashboard() {
       timeRange,
       metrics,
       claimPredictions,
-      fraudAlerts: fraudAlerts.filter(a => a.status === 'active'),
-      modelPerformance
-    }
+      fraudAlerts: fraudAlerts.filter((a) => a.status === "active"),
+      modelPerformance,
+    };
 
-    const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `predictive-analytics-${timeRange}-${Date.now()}.json`
-    a.click()
+    const blob = new Blob([JSON.stringify(report, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `predictive-analytics-${timeRange}-${Date.now()}.json`;
+    a.click();
 
-    toast.success('Analytics report exported')
-  }
+    toast.success("Analytics report exported");
+  };
 
   const getMetricIcon = (category: string) => {
     switch (category) {
-      case 'claims': return FileText
-      case 'fraud': return Shield
-      case 'customer': return Users
-      case 'financial': return DollarSign
-      case 'operational': return Activity
-      default: return BarChart3
+      case "claims":
+        return FileText;
+      case "fraud":
+        return Shield;
+      case "customer":
+        return Users;
+      case "financial":
+        return DollarSign;
+      case "operational":
+        return Activity;
+      default:
+        return BarChart3;
     }
-  }
+  };
 
   const getTrendColor = (trend: string) => {
     switch (trend) {
-      case 'up': return 'text-green-500'
-      case 'down': return 'text-red-500'
-      default: return 'text-gray-500'
+      case "up":
+        return "text-green-500";
+      case "down":
+        return "text-red-500";
+      default:
+        return "text-gray-500";
     }
-  }
+  };
 
   const getTrendIcon = (trend: string) => {
     switch (trend) {
-      case 'up': return TrendingUp
-      case 'down': return TrendingDown
-      default: return Activity
+      case "up":
+        return TrendingUp;
+      case "down":
+        return TrendingDown;
+      default:
+        return Activity;
     }
-  }
+  };
 
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8']
+  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8"];
 
   return (
     <div className="space-y-6">
@@ -309,9 +429,13 @@ export function PredictiveAnalyticsDashboard() {
           <h2 className="text-2xl font-bold flex items-center space-x-2">
             <Brain className="h-6 w-6" />
             <span>Predictive Analytics Dashboard</span>
-            <Badge variant="outline" className="ml-2">Admin Only</Badge>
+            <Badge variant="outline" className="ml-2">
+              Admin Only
+            </Badge>
           </h2>
-          <p className="text-gray-600">AI-powered insights and predictions for business intelligence</p>
+          <p className="text-gray-600">
+            AI-powered insights and predictions for business intelligence
+          </p>
         </div>
 
         <div className="flex gap-2">
@@ -328,7 +452,9 @@ export function PredictiveAnalyticsDashboard() {
           </Select>
 
           <Button onClick={refreshData} disabled={refreshing} variant="outline">
-            <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`h-4 w-4 mr-2 ${refreshing ? "animate-spin" : ""}`}
+            />
             Refresh
           </Button>
 
@@ -342,26 +468,39 @@ export function PredictiveAnalyticsDashboard() {
       {/* Key Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         {metrics.map((metric) => {
-          const Icon = getMetricIcon(metric.category)
-          const TrendIcon = getTrendIcon(metric.trend)
+          const Icon = getMetricIcon(metric.category);
+          const TrendIcon = getTrendIcon(metric.trend);
 
           return (
             <Card key={metric.id}>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-2">
                   <Icon className="h-5 w-5 text-gray-500" />
-                  <Badge variant={metric.impact === 'high' ? 'destructive' : metric.impact === 'medium' ? 'secondary' : 'outline'}>
+                  <Badge
+                    variant={
+                      metric.impact === "high"
+                        ? "destructive"
+                        : metric.impact === "medium"
+                          ? "secondary"
+                          : "outline"
+                    }
+                  >
                     {metric.impact} impact
                   </Badge>
                 </div>
 
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
-                    <p className="text-2xl font-bold">{metric.value.toLocaleString()}</p>
-                    <div className={`flex items-center ${getTrendColor(metric.trend)}`}>
+                    <p className="text-2xl font-bold">
+                      {metric.value.toLocaleString()}
+                    </p>
+                    <div
+                      className={`flex items-center ${getTrendColor(metric.trend)}`}
+                    >
                       <TrendIcon className="h-4 w-4" />
                       <span className="text-sm font-medium ml-1">
-                        {metric.change > 0 ? '+' : ''}{metric.change.toFixed(1)}%
+                        {metric.change > 0 ? "+" : ""}
+                        {metric.change.toFixed(1)}%
                       </span>
                     </div>
                   </div>
@@ -370,7 +509,9 @@ export function PredictiveAnalyticsDashboard() {
 
                   <div className="space-y-1">
                     <div className="flex justify-between text-xs">
-                      <span>Prediction: {metric.prediction.toLocaleString()}</span>
+                      <span>
+                        Prediction: {metric.prediction.toLocaleString()}
+                      </span>
                       <span>{metric.confidence}% confidence</span>
                     </div>
                     <Progress value={metric.confidence} className="h-1" />
@@ -378,7 +519,7 @@ export function PredictiveAnalyticsDashboard() {
                 </div>
               </CardContent>
             </Card>
-          )
+          );
         })}
       </div>
 
@@ -399,7 +540,8 @@ export function PredictiveAnalyticsDashboard() {
               <CardHeader>
                 <CardTitle>Claim Volume Predictions</CardTitle>
                 <CardDescription>
-                  AI predictions vs actual claim volumes with confidence intervals
+                  AI predictions vs actual claim volumes with confidence
+                  intervals
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -433,7 +575,9 @@ export function PredictiveAnalyticsDashboard() {
               <Card>
                 <CardHeader>
                   <CardTitle>Prediction Accuracy</CardTitle>
-                  <CardDescription>Model accuracy across different prediction types</CardDescription>
+                  <CardDescription>
+                    Model accuracy across different prediction types
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
@@ -472,7 +616,9 @@ export function PredictiveAnalyticsDashboard() {
               <Card>
                 <CardHeader>
                   <CardTitle>Prediction Factors</CardTitle>
-                  <CardDescription>Key factors influencing current predictions</CardDescription>
+                  <CardDescription>
+                    Key factors influencing current predictions
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
@@ -507,7 +653,12 @@ export function PredictiveAnalyticsDashboard() {
                   <div className="flex items-center justify-between">
                     <Shield className="h-8 w-8 text-red-500" />
                     <div className="text-right">
-                      <p className="text-2xl font-bold">{fraudAlerts.filter(a => a.status === 'active').length}</p>
+                      <p className="text-2xl font-bold">
+                        {
+                          fraudAlerts.filter((a) => a.status === "active")
+                            .length
+                        }
+                      </p>
                       <p className="text-sm text-gray-500">Active Alerts</p>
                     </div>
                   </div>
@@ -519,8 +670,16 @@ export function PredictiveAnalyticsDashboard() {
                   <div className="flex items-center justify-between">
                     <Eye className="h-8 w-8 text-orange-500" />
                     <div className="text-right">
-                      <p className="text-2xl font-bold">{fraudAlerts.filter(a => a.status === 'investigating').length}</p>
-                      <p className="text-sm text-gray-500">Under Investigation</p>
+                      <p className="text-2xl font-bold">
+                        {
+                          fraudAlerts.filter(
+                            (a) => a.status === "investigating",
+                          ).length
+                        }
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        Under Investigation
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -542,7 +701,9 @@ export function PredictiveAnalyticsDashboard() {
             <Card>
               <CardHeader>
                 <CardTitle>Fraud Alerts</CardTitle>
-                <CardDescription>AI-detected potential fraud cases requiring review</CardDescription>
+                <CardDescription>
+                  AI-detected potential fraud cases requiring review
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -552,33 +713,51 @@ export function PredictiveAnalyticsDashboard() {
                         <div>
                           <h4 className="font-semibold">{alert.claimId}</h4>
                           <p className="text-sm text-gray-500">
-                            Risk Score: {alert.riskScore}% • {alert.createdAt.toLocaleDateString()}
+                            Risk Score: {alert.riskScore}% •{" "}
+                            {alert.createdAt.toLocaleDateString()}
                           </p>
                         </div>
 
                         <div className="flex gap-2">
-                          <Badge variant={
-                            alert.priority === 'high' ? 'destructive' :
-                            alert.priority === 'medium' ? 'secondary' : 'outline'
-                          }>
+                          <Badge
+                            variant={
+                              alert.priority === "high"
+                                ? "destructive"
+                                : alert.priority === "medium"
+                                  ? "secondary"
+                                  : "outline"
+                            }
+                          >
                             {alert.priority} priority
                           </Badge>
 
-                          <Badge variant={
-                            alert.status === 'active' ? 'destructive' :
-                            alert.status === 'investigating' ? 'secondary' :
-                            alert.status === 'resolved' ? 'default' : 'outline'
-                          }>
+                          <Badge
+                            variant={
+                              alert.status === "active"
+                                ? "destructive"
+                                : alert.status === "investigating"
+                                  ? "secondary"
+                                  : alert.status === "resolved"
+                                    ? "default"
+                                    : "outline"
+                            }
+                          >
                             {alert.status}
                           </Badge>
                         </div>
                       </div>
 
                       <div className="mb-3">
-                        <p className="text-sm text-gray-600 mb-1">Fraud Indicators:</p>
+                        <p className="text-sm text-gray-600 mb-1">
+                          Fraud Indicators:
+                        </p>
                         <div className="flex flex-wrap gap-1">
                           {alert.indicators.map((indicator, idx) => (
-                            <Badge key={idx} variant="outline" className="text-xs">
+                            <Badge
+                              key={idx}
+                              variant="outline"
+                              className="text-xs"
+                            >
                               {indicator}
                             </Badge>
                           ))}
@@ -608,36 +787,53 @@ export function PredictiveAnalyticsDashboard() {
             <Card>
               <CardHeader>
                 <CardTitle>Customer Segmentation</CardTitle>
-                <CardDescription>AI-powered customer analysis and lifetime value predictions</CardDescription>
+                <CardDescription>
+                  AI-powered customer analysis and lifetime value predictions
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid gap-4">
                   {customerSegments.map((segment) => (
-                    <div key={segment.segment} className="border rounded-lg p-4">
+                    <div
+                      key={segment.segment}
+                      className="border rounded-lg p-4"
+                    >
                       <div className="grid grid-cols-6 gap-4 items-center">
                         <div>
                           <h4 className="font-semibold">{segment.segment}</h4>
-                          <p className="text-sm text-gray-500">{segment.count} customers</p>
+                          <p className="text-sm text-gray-500">
+                            {segment.count} customers
+                          </p>
                         </div>
 
                         <div className="text-center">
                           <p className="text-sm text-gray-500">Avg Claim</p>
-                          <p className="font-medium">${segment.avgClaimValue.toLocaleString()}</p>
+                          <p className="font-medium">
+                            ${segment.avgClaimValue.toLocaleString()}
+                          </p>
                         </div>
 
                         <div className="text-center">
                           <p className="text-sm text-gray-500">Churn Risk</p>
-                          <p className="font-medium">{(segment.churnProbability * 100).toFixed(1)}%</p>
+                          <p className="font-medium">
+                            {(segment.churnProbability * 100).toFixed(1)}%
+                          </p>
                         </div>
 
                         <div className="text-center">
-                          <p className="text-sm text-gray-500">Lifetime Value</p>
-                          <p className="font-medium">${segment.lifetimeValue.toLocaleString()}</p>
+                          <p className="text-sm text-gray-500">
+                            Lifetime Value
+                          </p>
+                          <p className="font-medium">
+                            ${segment.lifetimeValue.toLocaleString()}
+                          </p>
                         </div>
 
                         <div className="text-center">
                           <p className="text-sm text-gray-500">Satisfaction</p>
-                          <p className="font-medium">{segment.satisfaction}/10</p>
+                          <p className="font-medium">
+                            {segment.satisfaction}/10
+                          </p>
                         </div>
 
                         <div>
@@ -656,7 +852,9 @@ export function PredictiveAnalyticsDashboard() {
               <Card>
                 <CardHeader>
                   <CardTitle>Churn Prediction</CardTitle>
-                  <CardDescription>Customers at risk of leaving</CardDescription>
+                  <CardDescription>
+                    Customers at risk of leaving
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
@@ -670,7 +868,10 @@ export function PredictiveAnalyticsDashboard() {
                         nameKey="segment"
                       >
                         {customerSegments.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={COLORS[index % COLORS.length]}
+                          />
                         ))}
                       </Pie>
                       <Tooltip />
@@ -705,7 +906,9 @@ export function PredictiveAnalyticsDashboard() {
           <Card>
             <CardHeader>
               <CardTitle>AI Model Performance</CardTitle>
-              <CardDescription>Performance metrics for all deployed AI models</CardDescription>
+              <CardDescription>
+                Performance metrics for all deployed AI models
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
@@ -715,13 +918,21 @@ export function PredictiveAnalyticsDashboard() {
                       <div>
                         <h4 className="font-semibold">{model.modelName}</h4>
                         <p className="text-sm text-gray-500">
-                          Last trained: {model.lastTrained.toLocaleDateString()} •
-                          {model.predictions.toLocaleString()} predictions •
+                          Last trained: {model.lastTrained.toLocaleDateString()}{" "}
+                          •{model.predictions.toLocaleString()} predictions •
                           {model.errors.toLocaleString()} errors
                         </p>
                       </div>
 
-                      <Badge variant={model.accuracy > 90 ? 'default' : model.accuracy > 80 ? 'secondary' : 'destructive'}>
+                      <Badge
+                        variant={
+                          model.accuracy > 90
+                            ? "default"
+                            : model.accuracy > 80
+                              ? "secondary"
+                              : "destructive"
+                        }
+                      >
                         {model.accuracy}% accuracy
                       </Badge>
                     </div>
@@ -730,8 +941,13 @@ export function PredictiveAnalyticsDashboard() {
                       <div>
                         <p className="text-sm text-gray-500">Precision</p>
                         <div className="flex items-center space-x-2">
-                          <Progress value={model.precision} className="flex-1" />
-                          <span className="text-sm font-medium">{model.precision}%</span>
+                          <Progress
+                            value={model.precision}
+                            className="flex-1"
+                          />
+                          <span className="text-sm font-medium">
+                            {model.precision}%
+                          </span>
                         </div>
                       </div>
 
@@ -739,7 +955,9 @@ export function PredictiveAnalyticsDashboard() {
                         <p className="text-sm text-gray-500">Recall</p>
                         <div className="flex items-center space-x-2">
                           <Progress value={model.recall} className="flex-1" />
-                          <span className="text-sm font-medium">{model.recall}%</span>
+                          <span className="text-sm font-medium">
+                            {model.recall}%
+                          </span>
                         </div>
                       </div>
 
@@ -747,7 +965,9 @@ export function PredictiveAnalyticsDashboard() {
                         <p className="text-sm text-gray-500">F1 Score</p>
                         <div className="flex items-center space-x-2">
                           <Progress value={model.f1Score} className="flex-1" />
-                          <span className="text-sm font-medium">{model.f1Score}%</span>
+                          <span className="text-sm font-medium">
+                            {model.f1Score}%
+                          </span>
                         </div>
                       </div>
 
@@ -781,10 +1001,13 @@ export function PredictiveAnalyticsDashboard() {
                   <div className="flex items-start space-x-3">
                     <TrendingUp className="h-5 w-5 text-green-500 mt-1" />
                     <div>
-                      <h4 className="font-semibold">Claim Processing Efficiency</h4>
+                      <h4 className="font-semibold">
+                        Claim Processing Efficiency
+                      </h4>
                       <p className="text-sm text-gray-600">
-                        AI automation has reduced processing time by 32% while maintaining 94% accuracy.
-                        Recommend scaling AI-assisted reviews to handle predicted 15% increase in Q2 claims.
+                        AI automation has reduced processing time by 32% while
+                        maintaining 94% accuracy. Recommend scaling AI-assisted
+                        reviews to handle predicted 15% increase in Q2 claims.
                       </p>
                     </div>
                   </div>
@@ -796,10 +1019,14 @@ export function PredictiveAnalyticsDashboard() {
                   <div className="flex items-start space-x-3">
                     <Shield className="h-5 w-5 text-red-500 mt-1" />
                     <div>
-                      <h4 className="font-semibold">Fraud Detection Optimization</h4>
+                      <h4 className="font-semibold">
+                        Fraud Detection Optimization
+                      </h4>
                       <p className="text-sm text-gray-600">
-                        Current fraud model shows signs of drift. Recommend retraining with recent data to
-                        improve detection of emerging fraud patterns. Potential savings: $2.3M annually.
+                        Current fraud model shows signs of drift. Recommend
+                        retraining with recent data to improve detection of
+                        emerging fraud patterns. Potential savings: $2.3M
+                        annually.
                       </p>
                     </div>
                   </div>
@@ -811,10 +1038,13 @@ export function PredictiveAnalyticsDashboard() {
                   <div className="flex items-start space-x-3">
                     <Users className="h-5 w-5 text-blue-500 mt-1" />
                     <div>
-                      <h4 className="font-semibold">Customer Retention Opportunity</h4>
+                      <h4 className="font-semibold">
+                        Customer Retention Opportunity
+                      </h4>
                       <p className="text-sm text-gray-600">
-                        234 customers predicted to churn in next 90 days. Proactive engagement could
-                        retain 65-70% based on historical intervention success rates.
+                        234 customers predicted to churn in next 90 days.
+                        Proactive engagement could retain 65-70% based on
+                        historical intervention success rates.
                       </p>
                     </div>
                   </div>
@@ -828,15 +1058,16 @@ export function PredictiveAnalyticsDashboard() {
                     <div>
                       <h4 className="font-semibold">Seasonal Pattern Alert</h4>
                       <p className="text-sm text-gray-600">
-                        Hurricane season predictions suggest 40% higher claim volume than last year.
-                        Consider scaling customer service and adjustor capacity by early June.
+                        Hurricane season predictions suggest 40% higher claim
+                        volume than last year. Consider scaling customer service
+                        and adjustor capacity by early June.
                       </p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-              </div>
             </div>
+          </div>
         </TabsContent>
 
         <TabsContent value="alerts">
@@ -882,7 +1113,9 @@ export function PredictiveAnalyticsDashboard() {
             <Card>
               <CardHeader>
                 <CardTitle>Active System Alerts</CardTitle>
-                <CardDescription>Real-time alerts from AI monitoring systems</CardDescription>
+                <CardDescription>
+                  Real-time alerts from AI monitoring systems
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
@@ -890,7 +1123,8 @@ export function PredictiveAnalyticsDashboard() {
                     <AlertCircle className="h-4 w-4" />
                     <AlertTitle>Model Drift Detected</AlertTitle>
                     <AlertDescription>
-                      Fraud detection model accuracy dropped below 90%. Immediate retraining recommended.
+                      Fraud detection model accuracy dropped below 90%.
+                      Immediate retraining recommended.
                     </AlertDescription>
                   </Alert>
 
@@ -898,8 +1132,8 @@ export function PredictiveAnalyticsDashboard() {
                     <AlertTriangle className="h-4 w-4" />
                     <AlertTitle>High Processing Load</AlertTitle>
                     <AlertDescription>
-                      Document intelligence system processing 300% above normal capacity.
-                      Consider scaling resources.
+                      Document intelligence system processing 300% above normal
+                      capacity. Consider scaling resources.
                     </AlertDescription>
                   </Alert>
 
@@ -907,7 +1141,8 @@ export function PredictiveAnalyticsDashboard() {
                     <AlertTriangle className="h-4 w-4" />
                     <AlertTitle>Anomalous Pattern Detected</AlertTitle>
                     <AlertDescription>
-                      Unusual spike in claims from Miami-Dade county. Investigating potential weather event correlation.
+                      Unusual spike in claims from Miami-Dade county.
+                      Investigating potential weather event correlation.
                     </AlertDescription>
                   </Alert>
                 </div>
@@ -917,5 +1152,5 @@ export function PredictiveAnalyticsDashboard() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }

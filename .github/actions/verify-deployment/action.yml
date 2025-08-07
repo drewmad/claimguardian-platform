@@ -1,20 +1,20 @@
-name: 'Verify Deployment'
-description: 'Verify deployment health and performance'
+name: "Verify Deployment"
+description: "Verify deployment health and performance"
 inputs:
   deployment-url:
-    description: 'URL to verify'
+    description: "URL to verify"
     required: true
   environment:
-    description: 'Environment name (preview/production)'
+    description: "Environment name (preview/production)"
     required: true
-    default: 'preview'
+    default: "preview"
   max-wait-minutes:
-    description: 'Maximum time to wait for deployment'
+    description: "Maximum time to wait for deployment"
     required: false
-    default: '10'
+    default: "10"
 
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - name: Wait for deployment
       shell: bash

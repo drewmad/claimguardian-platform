@@ -6,23 +6,25 @@
  * @status stable
  */
 
-import { redirect } from 'next/navigation'
+import { redirect } from "next/navigation";
 
-import { getServerSession } from '@/lib/supabase/server-auth'
+import { getServerSession } from "@/lib/supabase/server-auth";
 
 interface ProtectedLayoutProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
-export default async function ProtectedLayout({ children }: ProtectedLayoutProps) {
+export default async function ProtectedLayout({
+  children,
+}: ProtectedLayoutProps) {
   // Validate session on server
-  const session = await getServerSession()
+  const session = await getServerSession();
 
   if (!session) {
     // No valid session, redirect to sign in
-    redirect('/auth/signin?message=Please sign in to continue')
+    redirect("/auth/signin?message=Please sign in to continue");
   }
 
   // User is authenticated, render protected content
-  return <>{children}</>
+  return <>{children}</>;
 }

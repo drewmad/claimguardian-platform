@@ -8,13 +8,13 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { createBrowserSupabaseClient } from '@claimguardian/db'
-import { useEffect, useState, useCallback } from 'react'
-import { logger } from "@/lib/logger/production-logger"
+import { createBrowserSupabaseClient } from "@claimguardian/db";
+import { useEffect, useState, useCallback } from "react";
+import { logger } from "@/lib/logger/production-logger";
 
-import { useFloridaDisclosures } from '@/components/compliance/florida-disclosures-context'
+import { useFloridaDisclosures } from "@/components/compliance/florida-disclosures-context";
 
 /**
  * Hook to check and handle Florida insurance compliance requirements
@@ -24,56 +24,66 @@ import { useFloridaDisclosures } from '@/components/compliance/florida-disclosur
  * 3. User is detected to be in Florida (via property address)
  */
 export function useFloridaCompliance() {
-  const supabase = createBrowserSupabaseClient()
-  const { showDisclosures, hasSeenDisclosures } = useFloridaDisclosures()
-  const [isLoading, setIsLoading] = useState(true)
-  const [needsDisclosures, setNeedsDisclosures] = useState(false)
+  const supabase = createBrowserSupabaseClient();
+  const { showDisclosures, hasSeenDisclosures } = useFloridaDisclosures();
+  const [isLoading, setIsLoading] = useState(true);
+  const [needsDisclosures, setNeedsDisclosures] = useState(false);
 
   const checkComplianceStatus = useCallback(async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
-        setIsLoading(false)
-        return
+        setIsLoading(false);
+        return;
       }
 
       // Check if user has already accepted Florida disclosures
       const { data: consents } = await supabase
-        .from('user_consents')
-        .select('consent_type')
-        .eq('user_id', user.id)
-        .in('consent_type', ['public_adjuster_notice', 'legal_advice_disclaimer', 'insurance_cooperation'])
+        .from("user_consents")
+        .select("consent_type")
+        .eq("user_id", user.id)
+        .in("consent_type", [
+          "public_adjuster_notice",
+          "legal_advice_disclaimer",
+          "insurance_cooperation",
+        ]);
 
-      const hasAllDisclosures = consents && consents.length === 3
-      setNeedsDisclosures(!hasAllDisclosures && !hasSeenDisclosures)
-      setIsLoading(false)
+      const hasAllDisclosures = consents && consents.length === 3;
+      setNeedsDisclosures(!hasAllDisclosures && !hasSeenDisclosures);
+      setIsLoading(false);
     } catch (error) {
-      logger.error('Error checking compliance status:', error)
-      setIsLoading(false)
+      logger.error("Error checking compliance status:", error);
+      setIsLoading(false);
     }
-  }, [supabase, hasSeenDisclosures])
+  }, [supabase, hasSeenDisclosures]);
 
   useEffect(() => {
-    checkComplianceStatus()
-  }, [checkComplianceStatus])
+    checkComplianceStatus();
+  }, [checkComplianceStatus]);
 
-  const triggerDisclosuresIfNeeded = async (context: 'policy_upload' | 'claim_creation' | 'florida_property') => {
-    if (!needsDisclosures || hasSeenDisclosures) return
+  const triggerDisclosuresIfNeeded = async (
+    context: "policy_upload" | "claim_creation" | "florida_property",
+  ) => {
+    if (!needsDisclosures || hasSeenDisclosures) return;
 
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
 
     // Log the context for analytics
-    logger.info(`Showing Florida disclosures for context: ${context}`)
+    logger.info(`Showing Florida disclosures for context: ${context}`);
 
-    showDisclosures(user.id)
-  }
+    showDisclosures(user.id);
+  };
 
   return {
     isLoading,
     needsDisclosures,
-    triggerDisclosuresIfNeeded
-  }
+    triggerDisclosuresIfNeeded,
+  };
 }
 
 /**

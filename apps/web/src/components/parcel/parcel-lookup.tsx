@@ -8,114 +8,118 @@
  * @insurance-context properties
  * @florida-specific true
  */
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { Search, MapPin, Home, AlertTriangle } from 'lucide-react'
-import { Button } from '@claimguardian/ui'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-import { searchParcels, assessPropertyRisk } from '@/actions/parcel-lookup'
+import { useState } from "react";
+import { Search, MapPin, Home, AlertTriangle } from "lucide-react";
+import { Button } from "@claimguardian/ui";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { searchParcels, assessPropertyRisk } from "@/actions/parcel-lookup";
 
 interface ParcelSearchParams {
-  address?: string
-  owner?: string
-  parcelId?: string
-  county?: string
+  address?: string;
+  owner?: string;
+  parcelId?: string;
+  county?: string;
 }
 
 interface ParcelData {
-  id: string
-  parcelId: string
-  address: string
-  owner: string
-  county: string
-  landUse: string
-  totalValue: number
-  buildingValue: number
-  landValue: number
-  yearBuilt?: number
-  squareFeet?: number
-  acreage?: number
-  floodZone?: string
-  hurricaneZone?: string
-  riskFactors?: string[]
+  id: string;
+  parcelId: string;
+  address: string;
+  owner: string;
+  county: string;
+  landUse: string;
+  totalValue: number;
+  buildingValue: number;
+  landValue: number;
+  yearBuilt?: number;
+  squareFeet?: number;
+  acreage?: number;
+  floodZone?: string;
+  hurricaneZone?: string;
+  riskFactors?: string[];
 }
 
 export function ParcelLookup() {
-  const [searchParams, setSearchParams] = useState<ParcelSearchParams>({})
-  const [results, setResults] = useState<ParcelData[]>([])
-  const [selectedParcel, setSelectedParcel] = useState<ParcelData | null>(null)
+  const [searchParams, setSearchParams] = useState<ParcelSearchParams>({});
+  const [results, setResults] = useState<ParcelData[]>([]);
+  const [selectedParcel, setSelectedParcel] = useState<ParcelData | null>(null);
   const [riskAssessment, setRiskAssessment] = useState<{
-    parcelId: string
+    parcelId: string;
     riskFactors: {
-      floodRisk: number
-      hurricaneRisk: number
-      ageRisk: number
-      valueRisk: number
-      locationRisk: number
-    }
-    overallRisk: number
-    recommendations: string[]
-  } | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+      floodRisk: number;
+      hurricaneRisk: number;
+      ageRisk: number;
+      valueRisk: number;
+      locationRisk: number;
+    };
+    overallRisk: number;
+    recommendations: string[];
+  } | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSearch = async () => {
-    if (!searchParams.address && !searchParams.owner && !searchParams.parcelId) {
-      setError('Please provide at least one search criteria')
-      return
+    if (
+      !searchParams.address &&
+      !searchParams.owner &&
+      !searchParams.parcelId
+    ) {
+      setError("Please provide at least one search criteria");
+      return;
     }
 
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
 
     try {
-      const result = await searchParcels(searchParams)
+      const result = await searchParcels(searchParams);
 
       if (result.error) {
-        setError(result.error.message)
-        return
+        setError(result.error.message);
+        return;
       }
 
-      setResults(result.data || [])
+      setResults(result.data || []);
     } catch (err) {
-      setError('Search failed. Please try again.')
+      setError("Search failed. Please try again.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleParcelSelect = async (parcel: ParcelData) => {
-    setSelectedParcel(parcel)
-    setLoading(true)
+    setSelectedParcel(parcel);
+    setLoading(true);
 
     try {
-      const riskResult = await assessPropertyRisk(parcel.parcelId)
+      const riskResult = await assessPropertyRisk(parcel.parcelId);
       if (riskResult.data) {
-        setRiskAssessment(riskResult.data)
+        setRiskAssessment(riskResult.data);
       }
     } catch (err) {
-      console.error('Risk assessment failed:', err)
+      console.error("Risk assessment failed:", err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const getRiskColor = (risk: number) => {
-    if (risk > 0.7) return 'bg-red-500'
-    if (risk > 0.5) return 'bg-yellow-500'
-    return 'bg-green-500'
-  }
+    if (risk > 0.7) return "bg-red-500";
+    if (risk > 0.5) return "bg-yellow-500";
+    return "bg-green-500";
+  };
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0
-    }).format(value || 0)
-  }
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 0,
+    }).format(value || 0);
+  };
 
   return (
     <div className="space-y-6">
@@ -136,8 +140,13 @@ export function ParcelLookup() {
               </label>
               <Input
                 placeholder="123 Main St"
-                value={searchParams.address || ''}
-                onChange={(e) => setSearchParams(prev => ({ ...prev, address: e.target.value }))}
+                value={searchParams.address || ""}
+                onChange={(e) =>
+                  setSearchParams((prev) => ({
+                    ...prev,
+                    address: e.target.value,
+                  }))
+                }
                 className="bg-gray-700 border-gray-600 text-white"
               />
             </div>
@@ -148,8 +157,13 @@ export function ParcelLookup() {
               </label>
               <Input
                 placeholder="Smith, John"
-                value={searchParams.owner || ''}
-                onChange={(e) => setSearchParams(prev => ({ ...prev, owner: e.target.value }))}
+                value={searchParams.owner || ""}
+                onChange={(e) =>
+                  setSearchParams((prev) => ({
+                    ...prev,
+                    owner: e.target.value,
+                  }))
+                }
                 className="bg-gray-700 border-gray-600 text-white"
               />
             </div>
@@ -160,8 +174,13 @@ export function ParcelLookup() {
               </label>
               <Input
                 placeholder="1234567890"
-                value={searchParams.parcelId || ''}
-                onChange={(e) => setSearchParams(prev => ({ ...prev, parcelId: e.target.value }))}
+                value={searchParams.parcelId || ""}
+                onChange={(e) =>
+                  setSearchParams((prev) => ({
+                    ...prev,
+                    parcelId: e.target.value,
+                  }))
+                }
                 className="bg-gray-700 border-gray-600 text-white"
               />
             </div>
@@ -173,16 +192,16 @@ export function ParcelLookup() {
               disabled={loading}
               className="bg-blue-600 hover:bg-blue-700"
             >
-              {loading ? 'Searching...' : 'Search Parcels'}
+              {loading ? "Searching..." : "Search Parcels"}
             </Button>
 
             <Button
               variant="secondary"
               onClick={() => {
-                setSearchParams({})
-                setResults([])
-                setSelectedParcel(null)
-                setRiskAssessment(null)
+                setSearchParams({});
+                setResults([]);
+                setSelectedParcel(null);
+                setRiskAssessment(null);
               }}
               className="border-gray-600 text-gray-300 hover:bg-gray-700"
             >
@@ -230,7 +249,7 @@ export function ParcelLookup() {
 
                       <div className="flex items-center gap-4 text-sm text-gray-400">
                         <span>Parcel: {parcel.parcelId}</span>
-                        <span>Built: {parcel.yearBuilt || 'Unknown'}</span>
+                        <span>Built: {parcel.yearBuilt || "Unknown"}</span>
                       </div>
                     </div>
 
@@ -238,9 +257,7 @@ export function ParcelLookup() {
                       <div className="text-white font-semibold">
                         {formatCurrency(parcel.totalValue)}
                       </div>
-                      <div className="text-sm text-gray-400">
-                        Total Value
-                      </div>
+                      <div className="text-sm text-gray-400">Total Value</div>
                     </div>
                   </div>
                 </div>
@@ -274,7 +291,9 @@ export function ParcelLookup() {
                 </div>
                 <div>
                   <span className="text-gray-400">Year Built:</span>
-                  <p className="text-white">{selectedParcel.yearBuilt || 'Unknown'}</p>
+                  <p className="text-white">
+                    {selectedParcel.yearBuilt || "Unknown"}
+                  </p>
                 </div>
                 <div>
                   <span className="text-gray-400">Land Use:</span>
@@ -282,19 +301,29 @@ export function ParcelLookup() {
                 </div>
                 <div>
                   <span className="text-gray-400">Living Area:</span>
-                  <p className="text-white">{selectedParcel.squareFeet ? `${selectedParcel.squareFeet.toLocaleString()} sqft` : 'N/A'}</p>
+                  <p className="text-white">
+                    {selectedParcel.squareFeet
+                      ? `${selectedParcel.squareFeet.toLocaleString()} sqft`
+                      : "N/A"}
+                  </p>
                 </div>
                 <div>
                   <span className="text-gray-400">Land Value:</span>
-                  <p className="text-white">{formatCurrency(selectedParcel.landValue)}</p>
+                  <p className="text-white">
+                    {formatCurrency(selectedParcel.landValue)}
+                  </p>
                 </div>
                 <div>
                   <span className="text-gray-400">Building Value:</span>
-                  <p className="text-white">{formatCurrency(selectedParcel.buildingValue)}</p>
+                  <p className="text-white">
+                    {formatCurrency(selectedParcel.buildingValue)}
+                  </p>
                 </div>
                 <div>
                   <span className="text-gray-400">Total Value:</span>
-                  <p className="text-white font-semibold">{formatCurrency(selectedParcel.totalValue)}</p>
+                  <p className="text-white font-semibold">
+                    {formatCurrency(selectedParcel.totalValue)}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -318,36 +347,48 @@ export function ParcelLookup() {
                 </div>
 
                 <div className="space-y-3">
-                  {Object.entries(riskAssessment.riskFactors).map(([key, value]) => (
-                    <div key={key} className="flex items-center justify-between">
-                      <span className="text-gray-300 capitalize">
-                        {key.replace(/([A-Z])/g, ' $1').trim()}
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <div className="w-20 bg-gray-700 rounded-full h-2">
-                          <div
-                            className={`h-2 rounded-full ${getRiskColor(value as number)}`}
-                            style={{ width: `${(value as number) * 100}%` }}
-                          />
-                        </div>
-                        <span className="text-white text-sm w-12">
-                          {((value as number) * 100).toFixed(0)}%
+                  {Object.entries(riskAssessment.riskFactors).map(
+                    ([key, value]) => (
+                      <div
+                        key={key}
+                        className="flex items-center justify-between"
+                      >
+                        <span className="text-gray-300 capitalize">
+                          {key.replace(/([A-Z])/g, " $1").trim()}
                         </span>
+                        <div className="flex items-center gap-2">
+                          <div className="w-20 bg-gray-700 rounded-full h-2">
+                            <div
+                              className={`h-2 rounded-full ${getRiskColor(value as number)}`}
+                              style={{ width: `${(value as number) * 100}%` }}
+                            />
+                          </div>
+                          <span className="text-white text-sm w-12">
+                            {((value as number) * 100).toFixed(0)}%
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ),
+                  )}
                 </div>
 
                 {riskAssessment.recommendations.length > 0 && (
                   <div>
-                    <h4 className="text-white font-medium mb-2">Recommendations:</h4>
+                    <h4 className="text-white font-medium mb-2">
+                      Recommendations:
+                    </h4>
                     <ul className="space-y-1">
-                      {riskAssessment.recommendations.map((rec: string, index: number) => (
-                        <li key={index} className="text-sm text-gray-400 flex items-start gap-2">
-                          <span className="text-blue-400 mt-1">•</span>
-                          {rec}
-                        </li>
-                      ))}
+                      {riskAssessment.recommendations.map(
+                        (rec: string, index: number) => (
+                          <li
+                            key={index}
+                            className="text-sm text-gray-400 flex items-start gap-2"
+                          >
+                            <span className="text-blue-400 mt-1">•</span>
+                            {rec}
+                          </li>
+                        ),
+                      )}
                     </ul>
                   </div>
                 )}
@@ -357,5 +398,5 @@ export function ParcelLookup() {
         </div>
       )}
     </div>
-  )
+  );
 }

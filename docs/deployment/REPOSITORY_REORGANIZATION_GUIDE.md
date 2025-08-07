@@ -9,6 +9,7 @@ The ClaimGuardian repository has been comprehensively reorganized to improve mai
 ### Before vs After
 
 **Before (Old Structure):**
+
 ```
 ClaimGuardian/
 ├── many scattered files in root/
@@ -21,6 +22,7 @@ ClaimGuardian/
 ```
 
 **After (New Structure):**
+
 ```
 ClaimGuardian/
 ├── services/              # External services
@@ -36,32 +38,39 @@ ClaimGuardian/
 ## 🚀 Key Changes
 
 ### 1. Services Organization
+
 - **Moved**: `scraper/` → `services/scraper/`
 - **Moved**: `data_integrations/` → `services/integrations/`
 - **Archived**: `edge_functions/` → `archives/legacy/edge_functions/` (now in `supabase/functions/`)
 
 ### 2. Script Simplification
+
 **New Core Scripts:**
+
 - `./scripts/dev.sh` - Development utilities (setup, clean, lint)
 - `./scripts/build.sh` - Build operations (all, web, packages)
 - `./scripts/data.sh` - Data management (import, verify, clean)
 - `./scripts/db.sh` - Database operations (schema, backup, migrate)
 
 **Complex Scripts Moved:**
+
 - All automation, data-import, and database scripts moved to `scripts/utils/`
 
 ### 3. Configuration Centralization
+
 - **Created**: `config/` directory
 - **Moved**: Environment examples to `config/environments/`
 - **Moved**: CI/CD configs to `config/ci/`
 - **Added**: Central environment loader (`config/load-env.js`)
 
 ### 4. Data Organization
+
 - **Created**: `data/` structure with `samples/`, `schemas/`, `florida/`
 - **Archived**: Large datasets moved to `archives/data/large_datasets/`
 - **Moved**: Sample data to appropriate locations
 
 ### 5. Archive System
+
 - **Created**: Comprehensive `archives/` structure
 - **Archived**: Historical migrations, old scripts, legacy configs
 - **Preserved**: All functionality while reducing active directory clutter
@@ -87,6 +96,7 @@ python ./scripts/utils/data-import/analyze_cadastral_gdb.py
 ```
 
 **Development Commands:**
+
 ```bash
 # Quick development operations
 ./scripts/dev.sh setup      # Setup environment
@@ -107,16 +117,19 @@ python ./scripts/utils/data-import/analyze_cadastral_gdb.py
 ### Path Updates
 
 **Import Paths (if any):**
+
 - Services moved: Update any references to `scraper/` or `data_integrations/`
 - Scripts moved: Update any references to direct script paths
 
 **Configuration:**
+
 - Environment files now in `config/environments/`
 - Use `config/load-env.js` for centralized environment loading
 
 ## 🛠️ Development Workflow Changes
 
 ### 1. Working with Scripts
+
 ```bash
 # Use core scripts for common operations
 ./scripts/dev.sh setup  # Instead of multiple setup commands
@@ -129,6 +142,7 @@ python ./scripts/utils/data-import/analyze_cadastral_gdb.py
 ```
 
 ### 2. Configuration Management
+
 ```bash
 # Environment variables
 cp config/environments/.env.example .env.local
@@ -138,6 +152,7 @@ const env = require('./config/load-env');
 ```
 
 ### 3. Data Management
+
 ```bash
 # Sample data is organized
 ls data/samples/           # Development datasets
@@ -151,11 +166,13 @@ ls archives/data/large_datasets/
 ## 📚 Documentation Updates
 
 ### Updated Files
+
 - `CLAUDE.md` - Updated with new structure and commands
 - `README.md` - Updated with new workflow
 - Individual package `README.md` files - Standardized documentation
 
 ### New Documentation
+
 - `supabase/README.md` - Comprehensive Supabase architecture guide
 - `data/README.md` - Data organization guide
 - Service-specific READMEs in services directories
@@ -165,6 +182,7 @@ ls archives/data/large_datasets/
 ### Common Issues After Reorganization
 
 **1. Script Not Found**
+
 ```bash
 # Error: ./scripts/some-script.sh not found
 # Solution: Check if it's in utils or archives
@@ -173,36 +191,42 @@ find archives -name "*some-script*"
 ```
 
 **2. Import Path Issues**
+
 ```bash
 # Run the path migration script
 node scripts/migrate-paths.js
 ```
 
 **3. Environment Variables**
+
 ```bash
 # Use the new centralized loader
 const env = require('./config/load-env');
 ```
 
 **4. CI/CD Pipeline Issues**
+
 - CI configs moved to `config/ci/`
 - Workflows automatically symlinked to `.github/workflows/`
 
 ## 🎉 Benefits of New Structure
 
 ### For Developers
+
 - **Cleaner Navigation**: Intuitive directory structure
 - **Faster Operations**: Simplified core scripts
 - **Better Organization**: Clear separation of concerns
 - **Reduced Confusion**: Less root directory clutter
 
 ### For Maintenance
+
 - **Easier Updates**: Centralized configuration
 - **Better History**: Archived historical files without losing them
 - **Cleaner Git**: Organized structure for future development
 - **Improved Testing**: Clear separation of test environments
 
 ### For New Team Members
+
 - **Intuitive Structure**: Easy to understand organization
 - **Clear Documentation**: Comprehensive guides for each area
 - **Standard Patterns**: Consistent organization throughout
@@ -226,6 +250,7 @@ If you encounter issues with the new structure:
 ---
 
 **Next Steps:**
+
 1. Pull the latest changes: `git pull origin main`
 2. Run setup: `./scripts/dev.sh setup`
 3. Test your workflow with new commands

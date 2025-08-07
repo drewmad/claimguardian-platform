@@ -1,7 +1,8 @@
 # Scripts Directory Guide
 
 ## Structure Overview
-```
+
+````
 scripts/
 ├── core/                   # Core development scripts
 │   ├── dev.sh             # Development environment setup
@@ -67,7 +68,7 @@ scripts/
 
 # Backup database
 ./scripts/db.sh backup
-```
+````
 
 ## Best Practices
 
@@ -80,6 +81,7 @@ scripts/
 ## Environment Variables
 
 Most scripts expect these environment variables:
+
 - `SUPABASE_URL` - Supabase project URL
 - `SUPABASE_SERVICE_ROLE_KEY` - Service role key for admin operations
 - `DATABASE_URL` - Direct database connection string

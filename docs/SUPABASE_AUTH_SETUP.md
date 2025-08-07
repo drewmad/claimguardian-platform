@@ -24,7 +24,6 @@ NEXT_PUBLIC_DEBUG_AUTH=true
 1. **Go to your Supabase project dashboard**
 2. **Navigate to Authentication > URL Configuration**
 3. **Set the following:**
-
    - **Site URL**: `https://claimguardianai.com`
 
    - **Redirect URLs** (add all of these):
@@ -50,6 +49,7 @@ If you're seeing CORS errors, add these to your Supabase project:
 ### 4. Testing Authentication
 
 1. **Enable debug mode temporarily**:
+
    ```bash
    NEXT_PUBLIC_DEBUG_AUTH=true
    ```
@@ -78,6 +78,7 @@ If you're seeing CORS errors, add these to your Supabase project:
 If login is still failing, check these in order:
 
 1. **Browser Console** - Look for:
+
    ```
    [ClaimGuardian Auth] Sign in attempt:
    [ClaimGuardian Auth Error]
@@ -116,6 +117,7 @@ If you need to bypass auth temporarily for debugging:
 ## Contact Support
 
 If issues persist after following this guide:
+
 1. Check Supabase status page
 2. Contact Supabase support with your project ID
 3. Include browser console logs and network traces

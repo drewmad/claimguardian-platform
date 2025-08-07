@@ -1,4 +1,3 @@
-
 # Privacy Policy for ClaimGuardian
 
 **Effective Date:** July 31, 2025
@@ -35,6 +34,7 @@ Our Service may involve scraping data from public websites or other sources. Thi
 Having accurate information about you permits us to provide you with a smooth, efficient, and customized experience. ClaimGuardian operates independently without insurance company partnerships or third-party vendor relationships that could influence our advocacy for you.
 
 Specifically, we may use information collected about you via the Service to:
+
 - Create and manage your account.
 - Provide, operate, and maintain the Service.
 - Improve, personalize, and expand the Service.
@@ -73,6 +73,7 @@ We will retain your personal information only for as long as is necessary for th
 ### 6. Your Data Protection Rights
 
 Depending on your location, you may have the following rights regarding your personal data:
+
 - **The right to access** – You have the right to request copies of your personal data.
 - **The right to rectification** – You have the right to request that we correct any information you believe is inaccurate.
 - **The right to erasure** – You have the right to request that we erase your personal data, under certain conditions.

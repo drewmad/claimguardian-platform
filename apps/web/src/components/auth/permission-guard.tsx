@@ -6,23 +6,27 @@
  * @status stable
  */
 
-'use client'
+"use client";
 
-import { ReactNode } from 'react'
-import { Loader2, Lock, AlertCircle } from 'lucide-react'
-import { usePermission, useHasAnyPermission, useHasAllPermissions } from '@/hooks/use-permissions'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import Link from 'next/link'
+import { ReactNode } from "react";
+import { Loader2, Lock, AlertCircle } from "lucide-react";
+import {
+  usePermission,
+  useHasAnyPermission,
+  useHasAllPermissions,
+} from "@/hooks/use-permissions";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import Link from "next/link";
 
 interface PermissionGuardProps {
-  permission?: string
-  permissions?: string[]
-  requireAll?: boolean // If true, requires all permissions. If false, requires any permission
-  children: ReactNode
-  fallback?: ReactNode
-  showUpgradePrompt?: boolean
-  featureName?: string
+  permission?: string;
+  permissions?: string[];
+  requireAll?: boolean; // If true, requires all permissions. If false, requires any permission
+  children: ReactNode;
+  fallback?: ReactNode;
+  showUpgradePrompt?: boolean;
+  featureName?: string;
 }
 
 export function PermissionGuard({
@@ -32,33 +36,33 @@ export function PermissionGuard({
   children,
   fallback,
   showUpgradePrompt = true,
-  featureName = 'This feature'
+  featureName = "This feature",
 }: PermissionGuardProps) {
   // Handle single permission
-  const singlePermissionCheck = usePermission(permission || '')
+  const singlePermissionCheck = usePermission(permission || "");
 
   // Handle multiple permissions
-  const anyPermissionCheck = useHasAnyPermission(permissions)
-  const allPermissionsCheck = useHasAllPermissions(permissions)
+  const anyPermissionCheck = useHasAnyPermission(permissions);
+  const allPermissionsCheck = useHasAllPermissions(permissions);
 
   // Determine which check to use
-  let hasPermission = false
-  let isLoading = false
+  let hasPermission = false;
+  let isLoading = false;
 
   if (permission) {
-    hasPermission = singlePermissionCheck.hasPermission
-    isLoading = singlePermissionCheck.isLoading
+    hasPermission = singlePermissionCheck.hasPermission;
+    isLoading = singlePermissionCheck.isLoading;
   } else if (permissions.length > 0) {
     if (requireAll) {
-      hasPermission = allPermissionsCheck.hasAllPermissions
-      isLoading = allPermissionsCheck.isLoading
+      hasPermission = allPermissionsCheck.hasAllPermissions;
+      isLoading = allPermissionsCheck.isLoading;
     } else {
-      hasPermission = anyPermissionCheck.hasAnyPermission
-      isLoading = anyPermissionCheck.isLoading
+      hasPermission = anyPermissionCheck.hasAnyPermission;
+      isLoading = anyPermissionCheck.isLoading;
     }
   } else {
     // No permissions specified, allow access
-    hasPermission = true
+    hasPermission = true;
   }
 
   if (isLoading) {
@@ -66,12 +70,12 @@ export function PermissionGuard({
       <div className="flex items-center justify-center p-8">
         <Loader2 className="w-8 h-8 text-cyan-400 animate-spin" />
       </div>
-    )
+    );
   }
 
   if (!hasPermission) {
     if (fallback) {
-      return <>{fallback}</>
+      return <>{fallback}</>;
     }
 
     if (showUpgradePrompt) {
@@ -84,7 +88,8 @@ export function PermissionGuard({
                 Upgrade Required
               </h3>
               <p className="text-gray-400 mb-6">
-                {featureName} requires a higher subscription tier. Upgrade your plan to unlock this and many other premium features.
+                {featureName} requires a higher subscription tier. Upgrade your
+                plan to unlock this and many other premium features.
               </p>
               <div className="flex gap-3 justify-center">
                 <Link href="/pricing">
@@ -93,7 +98,10 @@ export function PermissionGuard({
                   </Button>
                 </Link>
                 <Link href="/dashboard">
-                  <Button variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-700">
+                  <Button
+                    variant="outline"
+                    className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                  >
                     Go Back
                   </Button>
                 </Link>
@@ -101,22 +109,22 @@ export function PermissionGuard({
             </div>
           </CardContent>
         </Card>
-      )
+      );
     }
 
-    return null
+    return null;
   }
 
-  return <>{children}</>
+  return <>{children}</>;
 }
 
 // Inline permission check component
 interface InlinePermissionProps {
-  permission?: string
-  permissions?: string[]
-  requireAll?: boolean
-  children: ReactNode
-  fallback?: ReactNode
+  permission?: string;
+  permissions?: string[];
+  requireAll?: boolean;
+  children: ReactNode;
+  fallback?: ReactNode;
 }
 
 export function InlinePermission({
@@ -124,7 +132,7 @@ export function InlinePermission({
   permissions = [],
   requireAll = false,
   children,
-  fallback = null
+  fallback = null,
 }: InlinePermissionProps) {
   return (
     <PermissionGuard
@@ -136,41 +144,44 @@ export function InlinePermission({
     >
       {children}
     </PermissionGuard>
-  )
+  );
 }
 
 // Feature lock overlay component
 interface FeatureLockProps {
-  isLocked: boolean
-  featureName?: string
-  children: ReactNode
+  isLocked: boolean;
+  featureName?: string;
+  children: ReactNode;
 }
 
 export function FeatureLock({
   isLocked,
-  featureName = 'This feature',
-  children
+  featureName = "This feature",
+  children,
 }: FeatureLockProps) {
   if (!isLocked) {
-    return <>{children}</>
+    return <>{children}</>;
   }
 
   return (
     <div className="relative">
-      <div className="opacity-50 pointer-events-none">
-        {children}
-      </div>
+      <div className="opacity-50 pointer-events-none">{children}</div>
       <div className="absolute inset-0 bg-gray-900/80 backdrop-blur-sm flex items-center justify-center rounded-lg">
         <div className="text-center p-4">
           <Lock className="w-8 h-8 text-yellow-500 mx-auto mb-2" />
-          <p className="text-sm font-medium text-white mb-2">{featureName} Locked</p>
+          <p className="text-sm font-medium text-white mb-2">
+            {featureName} Locked
+          </p>
           <Link href="/pricing">
-            <Button size="sm" className="bg-cyan-600 hover:bg-cyan-700 text-white">
+            <Button
+              size="sm"
+              className="bg-cyan-600 hover:bg-cyan-700 text-white"
+            >
               Upgrade to Unlock
             </Button>
           </Link>
         </div>
       </div>
     </div>
-  )
+  );
 }

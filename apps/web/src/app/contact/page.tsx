@@ -16,7 +16,7 @@
  * @status stable
  */
 
-import { Mail, MapPin, Clock, Users } from 'lucide-react'
+import { Mail, MapPin, Clock, Users } from "lucide-react";
 
 export default function ContactPage() {
   return (
@@ -32,14 +32,17 @@ export default function ContactPage() {
             </h1>
 
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-              Built by a Florida family team, we're always ready to support your property intelligence journey.
+              Built by a Florida family team, we're always ready to support your
+              property intelligence journey.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
             {/* Contact Information */}
             <div className="bg-gray-800/50 rounded-xl p-8 border border-gray-700">
-              <h2 className="text-2xl font-semibold mb-6">Contact Information</h2>
+              <h2 className="text-2xl font-semibold mb-6">
+                Contact Information
+              </h2>
 
               <div className="space-y-4">
                 <div className="flex items-center gap-4">
@@ -83,7 +86,9 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold">Our Team</h3>
-                    <p className="text-gray-400">Family team of five with one developer</p>
+                    <p className="text-gray-400">
+                      Family team of five with one developer
+                    </p>
                   </div>
                 </div>
               </div>
@@ -91,29 +96,41 @@ export default function ContactPage() {
 
             {/* About Our Support */}
             <div className="bg-gray-800/50 rounded-xl p-8 border border-gray-700">
-              <h2 className="text-2xl font-semibold mb-6">Our Support Philosophy</h2>
+              <h2 className="text-2xl font-semibold mb-6">
+                Our Support Philosophy
+              </h2>
 
               <div className="space-y-4 text-gray-300">
                 <p>
-                  <strong className="text-white">Built by those who've been there.</strong> We're not a
-                  faceless corporation - we're a Florida family who survived Hurricane Ian and built what we needed.
+                  <strong className="text-white">
+                    Built by those who've been there.
+                  </strong>{" "}
+                  We're not a faceless corporation - we're a Florida family who
+                  survived Hurricane Ian and built what we needed.
                 </p>
 
                 <p>
-                  <strong className="text-white">Real people, real responses.</strong> When you email us,
-                  you're talking directly to the team building ClaimGuardian, not a call center.
+                  <strong className="text-white">
+                    Real people, real responses.
+                  </strong>{" "}
+                  When you email us, you're talking directly to the team
+                  building ClaimGuardian, not a call center.
                 </p>
 
                 <p>
-                  <strong className="text-white">Community-focused.</strong> We believe in helping neighbors
-                  succeed. Your questions help us build better features for everyone.
+                  <strong className="text-white">Community-focused.</strong> We
+                  believe in helping neighbors succeed. Your questions help us
+                  build better features for everyone.
                 </p>
 
                 <div className="mt-6 p-4 bg-green-400/10 rounded-lg border border-green-400/20">
-                  <h3 className="font-semibold text-green-400 mb-2">We're actively building</h3>
+                  <h3 className="font-semibold text-green-400 mb-2">
+                    We're actively building
+                  </h3>
                   <p className="text-sm text-gray-400">
-                    As a small family team, we're continuously improving based on user feedback.
-                    Your input directly shapes our development priorities.
+                    As a small family team, we're continuously improving based
+                    on user feedback. Your input directly shapes our development
+                    priorities.
                   </p>
                 </div>
               </div>
@@ -147,5 +164,5 @@ export default function ContactPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

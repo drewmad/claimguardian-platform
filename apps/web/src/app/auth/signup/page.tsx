@@ -6,8 +6,8 @@
  * @status stable
  */
 
-import { MultiStepSignupForm } from './multi-step-signup-form'
+import { MultiStepSignupForm } from "./multi-step-signup-form";
 
 export default function SignupPage() {
-  return <MultiStepSignupForm />
+  return <MultiStepSignupForm />;
 }

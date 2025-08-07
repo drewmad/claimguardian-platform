@@ -3,12 +3,12 @@ name: Legal Documents Management
 on:
   push:
     paths:
-      - 'legal/**'
+      - "legal/**"
     branches:
       - main
   pull_request:
     paths:
-      - 'legal/**'
+      - "legal/**"
 
 jobs:
   validate-legal-docs:
@@ -19,12 +19,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2  # Need previous commit for diff
+          fetch-depth: 2 # Need previous commit for diff
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: "18"
 
       - name: Install dependencies
         run: |
@@ -68,7 +68,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: "18"
 
       - name: Install Supabase CLI
         run: |

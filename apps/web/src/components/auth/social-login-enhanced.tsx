@@ -8,10 +8,10 @@
  * @tags ["auth", "social-login", "oauth", "enhanced"]
  * @status stable
  */
-'use client'
+"use client";
 
-import { useState, useEffect, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Chrome,
   Linkedin,
@@ -27,261 +27,313 @@ import {
   Mail,
   Eye,
   EyeOff,
-  ExternalLink
-} from 'lucide-react'
+  ExternalLink,
+} from "lucide-react";
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { useToast } from '@/components/notifications/toast-system'
-import { useNotifications } from '@/components/notifications/notification-center'
-import { cn } from '@/lib/utils'
-import { logger } from '@/lib/logger'
-import { createClient } from '@/lib/supabase/client'
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/notifications/toast-system";
+import { useNotifications } from "@/components/notifications/notification-center";
+import { cn } from "@/lib/utils";
+import { logger } from "@/lib/logger";
+import { createClient } from "@/lib/supabase/client";
 
-export type SocialProvider = 'google' | 'azure' | 'linkedin'
+export type SocialProvider = "google" | "azure" | "linkedin";
 
 export interface SocialAccount {
-  provider: SocialProvider
-  email: string
-  name: string
-  picture?: string
-  isConnected: boolean
-  linkedAt?: Date
-  lastUsed?: Date
+  provider: SocialProvider;
+  email: string;
+  name: string;
+  picture?: string;
+  isConnected: boolean;
+  linkedAt?: Date;
+  lastUsed?: Date;
 }
 
 export interface SocialLoginState {
-  isLoading: boolean
-  loadingProvider?: SocialProvider
-  error: string | null
-  connectedAccounts: SocialAccount[]
-  showAccountMerge: boolean
-  pendingConnection?: SocialAccount
+  isLoading: boolean;
+  loadingProvider?: SocialProvider;
+  error: string | null;
+  connectedAccounts: SocialAccount[];
+  showAccountMerge: boolean;
+  pendingConnection?: SocialAccount;
 }
 
 interface SocialLoginPanelProps {
-  mode?: 'login' | 'signup' | 'connect'
-  onSuccess?: (provider: SocialProvider, user: any) => void
-  onError?: (error: string) => void
-  showConnectedAccounts?: boolean
-  className?: string
+  mode?: "login" | "signup" | "connect";
+  onSuccess?: (provider: SocialProvider, user: any) => void;
+  onError?: (error: string) => void;
+  showConnectedAccounts?: boolean;
+  className?: string;
 }
 
 export function SocialLoginPanel({
-  mode = 'login',
+  mode = "login",
   onSuccess,
   onError,
   showConnectedAccounts = false,
-  className
+  className,
 }: SocialLoginPanelProps) {
   const [state, setState] = useState<SocialLoginState>({
     isLoading: false,
     error: null,
     connectedAccounts: [],
-    showAccountMerge: false
-  })
+    showAccountMerge: false,
+  });
 
-  const { success, error, info, loading } = useToast()
-  const { addNotification } = useNotifications()
+  const { success, error, info, loading } = useToast();
+  const { addNotification } = useNotifications();
 
   // Load connected accounts on mount
   useEffect(() => {
     if (showConnectedAccounts) {
-      loadConnectedAccounts()
+      loadConnectedAccounts();
     }
-  }, [showConnectedAccounts])
+  }, [showConnectedAccounts]);
 
   const loadConnectedAccounts = async () => {
     try {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-      if (!user) return
+      if (!user) return;
 
       // Get connected social accounts from user metadata
-      const connectedProviders = user.app_metadata?.providers || []
-      const identities = user.identities || []
+      const connectedProviders = user.app_metadata?.providers || [];
+      const identities = user.identities || [];
 
       const accounts: SocialAccount[] = identities
-        .filter(identity => ['google', 'microsoft', 'linkedin'].includes(identity.provider))
-        .map(identity => ({
+        .filter((identity) =>
+          ["google", "microsoft", "linkedin"].includes(identity.provider),
+        )
+        .map((identity) => ({
           provider: identity.provider as SocialProvider,
-          email: identity.identity_data?.email || '',
-          name: identity.identity_data?.full_name || identity.identity_data?.name || '',
-          picture: identity.identity_data?.picture || identity.identity_data?.avatar_url,
+          email: identity.identity_data?.email || "",
+          name:
+            identity.identity_data?.full_name ||
+            identity.identity_data?.name ||
+            "",
+          picture:
+            identity.identity_data?.picture ||
+            identity.identity_data?.avatar_url,
           isConnected: true,
-          linkedAt: identity.created_at ? new Date(identity.created_at) : new Date(),
-          lastUsed: new Date(identity.last_sign_in_at || identity.created_at || new Date().toISOString())
-        }))
+          linkedAt: identity.created_at
+            ? new Date(identity.created_at)
+            : new Date(),
+          lastUsed: new Date(
+            identity.last_sign_in_at ||
+              identity.created_at ||
+              new Date().toISOString(),
+          ),
+        }));
 
-      setState(prev => ({ ...prev, connectedAccounts: accounts }))
+      setState((prev) => ({ ...prev, connectedAccounts: accounts }));
     } catch (err) {
-      logger.error('Failed to load connected accounts', {}, err as Error)
+      logger.error("Failed to load connected accounts", {}, err as Error);
     }
-  }
+  };
 
   const handleSocialLogin = async (provider: SocialProvider) => {
-    setState(prev => ({ ...prev, isLoading: true, loadingProvider: provider, error: null }))
+    setState((prev) => ({
+      ...prev,
+      isLoading: true,
+      loadingProvider: provider,
+      error: null,
+    }));
 
     try {
-      const supabase = createClient()
-      const redirectTo = `${window.location.origin}/auth/callback`
+      const supabase = createClient();
+      const redirectTo = `${window.location.origin}/auth/callback`;
 
       // Configure provider-specific options
       const options = {
         redirectTo,
         scopes: getProviderScopes(provider),
-        queryParams: getProviderParams(provider)
-      }
+        queryParams: getProviderParams(provider),
+      };
 
       const { data, error: authError } = await supabase.auth.signInWithOAuth({
         provider,
-        options
-      })
+        options,
+      });
 
       if (authError) {
-        throw authError
+        throw authError;
       }
 
       // Track social login attempt
-      logger.track('social_login_initiated', {
+      logger.track("social_login_initiated", {
         provider,
         mode,
-        hasRedirect: !!data?.url
-      })
+        hasRedirect: !!data?.url,
+      });
 
       // Success notification
       info(`Redirecting to ${getProviderName(provider)}...`, {
-        subtitle: 'You will be redirected back after authentication',
-        actions: [{
-          label: 'Cancel',
-          onClick: () => {
-            setState(prev => ({ ...prev, isLoading: false, loadingProvider: undefined }))
-          }
-        }]
-      })
-
+        subtitle: "You will be redirected back after authentication",
+        actions: [
+          {
+            label: "Cancel",
+            onClick: () => {
+              setState((prev) => ({
+                ...prev,
+                isLoading: false,
+                loadingProvider: undefined,
+              }));
+            },
+          },
+        ],
+      });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Social login failed'
-      setState(prev => ({
+      const errorMessage =
+        err instanceof Error ? err.message : "Social login failed";
+      setState((prev) => ({
         ...prev,
         isLoading: false,
         loadingProvider: undefined,
-        error: errorMessage
-      }))
+        error: errorMessage,
+      }));
 
-      error('Social login failed', {
+      error("Social login failed", {
         subtitle: errorMessage,
-        actions: [{
-          label: 'Try Again',
-          onClick: () => handleSocialLogin(provider)
-        }]
-      })
+        actions: [
+          {
+            label: "Try Again",
+            onClick: () => handleSocialLogin(provider),
+          },
+        ],
+      });
 
-      logger.error('Social login failed', { provider, mode }, err as Error)
-      onError?.(errorMessage)
+      logger.error("Social login failed", { provider, mode }, err as Error);
+      onError?.(errorMessage);
     }
-  }
+  };
 
   const handleSocialDisconnect = async (provider: SocialProvider) => {
-    setState(prev => ({ ...prev, isLoading: true }))
+    setState((prev) => ({ ...prev, isLoading: true }));
 
     try {
-      const supabase = createClient()
+      const supabase = createClient();
 
       // Note: Supabase doesn't have direct unlink functionality
       // This would typically be handled by a server-side endpoint
       // For now, we'll show a warning about manual disconnect
 
-      info('Account disconnection', {
-        subtitle: 'Social account disconnection requires contacting support for security reasons',
-        actions: [{
-          label: 'Contact Support',
-          onClick: () => { window.open('mailto:support@claimguardianai.com?subject=Social Account Disconnect Request', '_blank') }
-        }]
-      })
+      info("Account disconnection", {
+        subtitle:
+          "Social account disconnection requires contacting support for security reasons",
+        actions: [
+          {
+            label: "Contact Support",
+            onClick: () => {
+              window.open(
+                "mailto:support@claimguardianai.com?subject=Social Account Disconnect Request",
+                "_blank",
+              );
+            },
+          },
+        ],
+      });
 
-      logger.track('social_disconnect_requested', { provider })
-
+      logger.track("social_disconnect_requested", { provider });
     } catch (err) {
-      error('Failed to disconnect account')
-      logger.error('Social disconnect failed', { provider }, err as Error)
+      error("Failed to disconnect account");
+      logger.error("Social disconnect failed", { provider }, err as Error);
     } finally {
-      setState(prev => ({ ...prev, isLoading: false }))
+      setState((prev) => ({ ...prev, isLoading: false }));
     }
-  }
+  };
 
   const getProviderName = (provider: SocialProvider): string => {
     switch (provider) {
-      case 'google': return 'Google'
-      case 'azure': return 'Microsoft'
-      case 'linkedin': return 'LinkedIn'
+      case "google":
+        return "Google";
+      case "azure":
+        return "Microsoft";
+      case "linkedin":
+        return "LinkedIn";
     }
-  }
+  };
 
   const getProviderIcon = (provider: SocialProvider) => {
     switch (provider) {
-      case 'google': return Chrome
-      case 'azure': return Building2
-      case 'linkedin': return Linkedin
-      default: return Building2  // Default fallback icon
+      case "google":
+        return Chrome;
+      case "azure":
+        return Building2;
+      case "linkedin":
+        return Linkedin;
+      default:
+        return Building2; // Default fallback icon
     }
-  }
+  };
 
   const getProviderColor = (provider: SocialProvider): string => {
     switch (provider) {
-      case 'google': return 'bg-red-500 hover:bg-red-600'
-      case 'azure': return 'bg-blue-600 hover:bg-blue-700'
-      case 'linkedin': return 'bg-blue-700 hover:bg-blue-800'
+      case "google":
+        return "bg-red-500 hover:bg-red-600";
+      case "azure":
+        return "bg-blue-600 hover:bg-blue-700";
+      case "linkedin":
+        return "bg-blue-700 hover:bg-blue-800";
     }
-  }
+  };
 
   const getProviderScopes = (provider: SocialProvider): string => {
     switch (provider) {
-      case 'google': return 'openid email profile'
-      case 'azure': return 'email'  // Azure requires email scope specifically
-      case 'linkedin': return 'openid email profile'
+      case "google":
+        return "openid email profile";
+      case "azure":
+        return "email"; // Azure requires email scope specifically
+      case "linkedin":
+        return "openid email profile";
     }
-  }
+  };
 
-  const getProviderParams = (provider: SocialProvider): { [key: string]: string } | undefined => {
+  const getProviderParams = (
+    provider: SocialProvider,
+  ): { [key: string]: string } | undefined => {
     switch (provider) {
-      case 'google':
-        return { access_type: 'offline', prompt: 'consent' }
-      case 'azure':
-        return { prompt: 'select_account' }
-      case 'linkedin':
-        return { prompt: 'consent' }
+      case "google":
+        return { access_type: "offline", prompt: "consent" };
+      case "azure":
+        return { prompt: "select_account" };
+      case "linkedin":
+        return { prompt: "consent" };
       default:
-        return undefined
+        return undefined;
     }
-  }
+  };
 
   return (
     <div className={cn("space-y-6", className)}>
       {/* Main Social Login Buttons */}
       <div className="space-y-3">
         <h3 className="text-lg font-medium text-center mb-4">
-          {mode === 'signup' && 'Sign up with'}
-          {mode === 'login' && 'Sign in with'}
-          {mode === 'connect' && 'Connect your account'}
+          {mode === "signup" && "Sign up with"}
+          {mode === "login" && "Sign in with"}
+          {mode === "connect" && "Connect your account"}
         </h3>
 
-        {(['google', 'azure', 'linkedin'] as SocialProvider[]).map((provider) => (
-          <SocialLoginButton
-            key={provider}
-            provider={provider}
-            isLoading={state.isLoading && state.loadingProvider === provider}
-            disabled={state.isLoading}
-            onClick={() => handleSocialLogin(provider)}
-            mode={mode}
-            className="w-full"
-          />
-        ))}
+        {(["google", "azure", "linkedin"] as SocialProvider[]).map(
+          (provider) => (
+            <SocialLoginButton
+              key={provider}
+              provider={provider}
+              isLoading={state.isLoading && state.loadingProvider === provider}
+              disabled={state.isLoading}
+              onClick={() => handleSocialLogin(provider)}
+              mode={mode}
+              className="w-full"
+            />
+          ),
+        )}
       </div>
 
       {/* Error Display */}
@@ -318,20 +370,21 @@ export function SocialLoginPanel({
       <Alert>
         <Shield className="w-4 h-4" />
         <AlertDescription>
-          Social login uses industry-standard OAuth 2.0 security. Your login credentials are never shared with ClaimGuardian.
+          Social login uses industry-standard OAuth 2.0 security. Your login
+          credentials are never shared with ClaimGuardian.
         </AlertDescription>
       </Alert>
     </div>
-  )
+  );
 }
 
 interface SocialLoginButtonProps {
-  provider: SocialProvider
-  isLoading?: boolean
-  disabled?: boolean
-  onClick: () => void
-  mode: 'login' | 'signup' | 'connect'
-  className?: string
+  provider: SocialProvider;
+  isLoading?: boolean;
+  disabled?: boolean;
+  onClick: () => void;
+  mode: "login" | "signup" | "connect";
+  className?: string;
 }
 
 export function SocialLoginButton({
@@ -340,19 +393,22 @@ export function SocialLoginButton({
   disabled = false,
   onClick,
   mode,
-  className
+  className,
 }: SocialLoginButtonProps) {
-  const Icon = getProviderIcon(provider)
-  const providerName = getProviderName(provider)
-  const colorClass = getProviderColor(provider)
+  const Icon = getProviderIcon(provider);
+  const providerName = getProviderName(provider);
+  const colorClass = getProviderColor(provider);
 
   const getButtonText = () => {
     switch (mode) {
-      case 'signup': return `Sign up with ${providerName}`
-      case 'login': return `Sign in with ${providerName}`
-      case 'connect': return `Connect ${providerName}`
+      case "signup":
+        return `Sign up with ${providerName}`;
+      case "login":
+        return `Sign in with ${providerName}`;
+      case "connect":
+        return `Connect ${providerName}`;
     }
-  }
+  };
 
   return (
     <Button
@@ -364,7 +420,7 @@ export function SocialLoginButton({
         "text-white font-medium py-3 h-auto",
         "hover:scale-[1.02] hover:shadow-lg",
         "disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none",
-        className
+        className,
       )}
     >
       <div className="flex items-center justify-center gap-3">
@@ -373,25 +429,25 @@ export function SocialLoginButton({
         ) : (
           <Icon className="w-5 h-5" />
         )}
-        <span>{isLoading ? 'Connecting...' : getButtonText()}</span>
+        <span>{isLoading ? "Connecting..." : getButtonText()}</span>
       </div>
     </Button>
-  )
+  );
 }
 
 interface ConnectedAccountItemProps {
-  account: SocialAccount
-  onDisconnect: () => void
-  isLoading: boolean
+  account: SocialAccount;
+  onDisconnect: () => void;
+  isLoading: boolean;
 }
 
 function ConnectedAccountItem({
   account,
   onDisconnect,
-  isLoading
+  isLoading,
 }: ConnectedAccountItemProps) {
-  const Icon = getProviderIcon(account.provider)
-  const providerName = getProviderName(account.provider)
+  const Icon = getProviderIcon(account.provider);
+  const providerName = getProviderName(account.provider);
 
   return (
     <motion.div
@@ -415,7 +471,10 @@ function ConnectedAccountItem({
       </div>
 
       <div className="flex items-center gap-2">
-        <Badge variant="outline" className="bg-green-500/10 text-green-400 border-green-500/20">
+        <Badge
+          variant="outline"
+          className="bg-green-500/10 text-green-400 border-green-500/20"
+        >
           <CheckCircle className="w-3 h-3 mr-1" />
           Connected
         </Badge>
@@ -430,44 +489,56 @@ function ConnectedAccountItem({
         </Button>
       </div>
     </motion.div>
-  )
+  );
 }
 
 // Helper functions (moved outside component for better performance)
 function getProviderName(provider: SocialProvider): string {
   switch (provider) {
-    case 'google': return 'Google'
-    case 'azure': return 'Microsoft'
-    case 'linkedin': return 'LinkedIn'
-    default: return 'Unknown'
+    case "google":
+      return "Google";
+    case "azure":
+      return "Microsoft";
+    case "linkedin":
+      return "LinkedIn";
+    default:
+      return "Unknown";
   }
 }
 
 function getProviderIcon(provider: SocialProvider) {
   switch (provider) {
-    case 'google': return Chrome
-    case 'azure': return Building2
-    case 'linkedin': return Linkedin
-    default: return Building2
+    case "google":
+      return Chrome;
+    case "azure":
+      return Building2;
+    case "linkedin":
+      return Linkedin;
+    default:
+      return Building2;
   }
 }
 
 function getProviderColor(provider: SocialProvider): string {
   switch (provider) {
-    case 'google': return 'bg-red-500 hover:bg-red-600'
-    case 'azure': return 'bg-blue-600 hover:bg-blue-700'
-    case 'linkedin': return 'bg-blue-700 hover:bg-blue-800'
-    default: return 'bg-gray-600 hover:bg-gray-700'
+    case "google":
+      return "bg-red-500 hover:bg-red-600";
+    case "azure":
+      return "bg-blue-600 hover:bg-blue-700";
+    case "linkedin":
+      return "bg-blue-700 hover:bg-blue-800";
+    default:
+      return "bg-gray-600 hover:bg-gray-700";
   }
 }
 
 // Account Merge Component for handling conflicting accounts
 interface AccountMergeModalProps {
-  isOpen: boolean
-  existingAccount: SocialAccount
-  newAccount: SocialAccount
-  onMerge: (keepExisting: boolean) => void
-  onCancel: () => void
+  isOpen: boolean;
+  existingAccount: SocialAccount;
+  newAccount: SocialAccount;
+  onMerge: (keepExisting: boolean) => void;
+  onCancel: () => void;
 }
 
 export function AccountMergeModal({
@@ -475,13 +546,16 @@ export function AccountMergeModal({
   existingAccount,
   newAccount,
   onMerge,
-  onCancel
+  onCancel,
 }: AccountMergeModalProps) {
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onCancel} />
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onCancel}
+      />
 
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
@@ -495,7 +569,8 @@ export function AccountMergeModal({
               Account Already Connected
             </CardTitle>
             <p className="text-sm text-gray-400 text-center">
-              You already have an account with this email address. How would you like to proceed?
+              You already have an account with this email address. How would you
+              like to proceed?
             </p>
           </CardHeader>
 
@@ -521,7 +596,8 @@ export function AccountMergeModal({
             <Alert>
               <Shield className="w-4 h-4" />
               <AlertDescription>
-                Linking accounts will combine your data and preferences. This cannot be undone.
+                Linking accounts will combine your data and preferences. This
+                cannot be undone.
               </AlertDescription>
             </Alert>
 
@@ -541,5 +617,5 @@ export function AccountMergeModal({
         </Card>
       </motion.div>
     </div>
-  )
+  );
 }

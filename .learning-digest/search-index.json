@@ -4,61 +4,37 @@
       {
         "issue": "Module './schema' was exporting LegalDocument which was already exported from './types/legal-compliance'",
         "solution": "Removed the duplicate export from db/src/index.ts (line 3: `export * from './schema'`)",
-        "tags": [
-          "export",
-          "type",
-          "duplicate-export"
-        ]
+        "tags": ["export", "type", "duplicate-export"]
       },
       {
         "issue": "Client-side legal service was trying to call server-side method getClientMetadata",
         "solution": "Created server action `/actions/legal.ts` to handle legal acceptances server-side",
-        "tags": [
-          "server-client"
-        ]
+        "tags": ["server-client"]
       },
       {
         "issue": "Importing 'Print' from lucide-react, but the correct icon name is 'Printer'",
         "solution": "Changed import from Print to Printer",
-        "tags": [
-          "react",
-          "import"
-        ]
+        "tags": ["react", "import"]
       },
       {
         "issue": "Import was looking for SignUpData with capital 'U' but type was SignupData",
         "solution": "Fixed casing to match the actual exported type",
-        "tags": [
-          "typescript",
-          "api",
-          "import",
-          "export",
-          "type"
-        ]
+        "tags": ["typescript", "api", "import", "export", "type"]
       },
       {
         "issue": "Code expected signUp to return user object but it returns boolean",
         "solution": "Removed separate consent recording as it's handled server-side during signup",
-        "tags": [
-          "type"
-        ]
+        "tags": ["type"]
       },
       {
         "issue": "UserLegalAcceptance was not exported from @claimguardian/db",
         "solution": "Changed to use UserConsent which is the correct exported type",
-        "tags": [
-          "import",
-          "export",
-          "type"
-        ]
+        "tags": ["import", "export", "type"]
       },
       {
         "issue": "Mixing server-side and client-side service methods",
         "solution": "Keep server-side operations in server actions or API routes",
-        "tags": [
-          "api",
-          "server-client"
-        ]
+        "tags": ["api", "server-client"]
       },
       {
         "issue": "logger.warn() was called with 3 arguments but only accepts 2",

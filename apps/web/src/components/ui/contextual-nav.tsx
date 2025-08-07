@@ -5,32 +5,40 @@
  * @dependencies ["react", "next", "lucide-react"]
  * @status stable
  */
-'use client'
+"use client";
 
-import { useRouter } from 'next/navigation'
-import { ChevronLeft, ChevronRight, Home, Shield, FileText, AlertTriangle, Package } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import React from 'react'
+import { useRouter } from "next/navigation";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Home,
+  Shield,
+  FileText,
+  AlertTriangle,
+  Package,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import React from "react";
 
 interface NavItem {
-  id: string
-  label: string
-  href: string
-  icon?: React.ComponentType<{ className?: string }>
-  badge?: string | number
+  id: string;
+  label: string;
+  href: string;
+  icon?: React.ComponentType<{ className?: string }>;
+  badge?: string | number;
 }
 
 interface ContextualNavProps {
-  currentItem: NavItem
-  previousItem?: NavItem
-  nextItem?: NavItem
+  currentItem: NavItem;
+  previousItem?: NavItem;
+  nextItem?: NavItem;
   relatedItems?: {
-    properties?: NavItem[]
-    policies?: NavItem[]
-    claims?: NavItem[]
-    items?: NavItem[]
-  }
-  className?: string
+    properties?: NavItem[];
+    policies?: NavItem[];
+    claims?: NavItem[];
+    items?: NavItem[];
+  };
+  className?: string;
 }
 
 export function ContextualNav({
@@ -38,12 +46,17 @@ export function ContextualNav({
   previousItem,
   nextItem,
   relatedItems,
-  className
+  className,
 }: ContextualNavProps) {
-  const router = useRouter()
+  const router = useRouter();
 
   return (
-    <div className={cn('flex items-center justify-between py-3 px-4 bg-gray-800/50 rounded-lg border border-gray-700/50', className)}>
+    <div
+      className={cn(
+        "flex items-center justify-between py-3 px-4 bg-gray-800/50 rounded-lg border border-gray-700/50",
+        className,
+      )}
+    >
       {/* Previous/Next Navigation */}
       <div className="flex items-center gap-2">
         {previousItem && (
@@ -116,20 +129,20 @@ export function ContextualNav({
         </div>
       )}
     </div>
-  )
+  );
 }
 
 function RelatedItemsDropdown({
   title,
   icon: Icon,
-  items
+  items,
 }: {
-  title: string
-  icon: React.ComponentType<{ className?: string }>
-  items: NavItem[]
+  title: string;
+  icon: React.ComponentType<{ className?: string }>;
+  items: NavItem[];
 }) {
-  const router = useRouter()
-  const [isOpen, setIsOpen] = React.useState(false)
+  const router = useRouter();
+  const [isOpen, setIsOpen] = React.useState(false);
 
   return (
     <div className="relative">
@@ -162,8 +175,8 @@ function RelatedItemsDropdown({
                 <button
                   key={item.id}
                   onClick={() => {
-                    router.push(item.href)
-                    setIsOpen(false)
+                    router.push(item.href);
+                    setIsOpen(false);
                   }}
                   className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-gray-700 rounded transition-colors text-left"
                 >
@@ -181,5 +194,5 @@ function RelatedItemsDropdown({
         </>
       )}
     </div>
-  )
+  );
 }

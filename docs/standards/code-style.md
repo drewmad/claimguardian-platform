@@ -3,6 +3,7 @@
 Consistent style for readability and AI delegation, per Agent OS standards.
 
 ## General
+
 - **Indentation**: 2 spaces for TS/JS; 4 for Python.
 - **Line Length**: 80 chars max.
 - **Naming**: camelCase for variables/functions; PascalCase for components.
@@ -10,15 +11,17 @@ Consistent style for readability and AI delegation, per Agent OS standards.
 - **Semicolons**: Always in TS.
 
 ## TypeScript/Next.js
+
 - Imports: Group external/internal; alphabetical.
 - Components: Export from root index.
 - Server Actions: Use object params; return {data, error}.
 - JSDoc: For all functions; include @param, @returns.
 
 Example:
+
 ```typescript
 // Consistent import
-import { Button } from '@claimguardian/ui';
+import { Button } from "@claimguardian/ui";
 
 // Function with JSDoc
 /**
@@ -31,6 +34,7 @@ function upper(input: string): string {
 ```
 
 ## Python (for scripts/agents)
+
 - PEP8: 4-space indent, no trailing whitespace.
 - Docstrings: Triple-quoted with args/returns.
 

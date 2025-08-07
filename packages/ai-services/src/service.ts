@@ -8,14 +8,18 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-import { CacheManager } from './cache/cache.manager';
-import { SemanticCache } from './cache/semantic-cache';
-import { CostTracker } from './monitoring/cost-tracker';
-import { AIMonitoringDashboard } from './monitoring/dashboard';
-import { AIOrchestrator } from './orchestrator/orchestrator';
-import { GeminiProvider } from './providers/gemini.provider';
-import { BaseAIProvider } from './providers/base.provider';
-import type { AIRequest, ChatRequest, ImageAnalysisRequest } from './types/index';
+import { CacheManager } from "./cache/cache.manager";
+import { SemanticCache } from "./cache/semantic-cache";
+import { CostTracker } from "./monitoring/cost-tracker";
+import { AIMonitoringDashboard } from "./monitoring/dashboard";
+import { AIOrchestrator } from "./orchestrator/orchestrator";
+import { GeminiProvider } from "./providers/gemini.provider";
+import { BaseAIProvider } from "./providers/base.provider";
+import type {
+  AIRequest,
+  ChatRequest,
+  ImageAnalysisRequest,
+} from "./types/index";
 
 // Singleton instance
 let aiServiceInstance: AIService | null = null;
@@ -30,13 +34,13 @@ export class AIService {
     // Initialize cache
     this.cache = new SemanticCache(
       process.env.REDIS_URL,
-      process.env.AI_CACHE_ENABLED !== 'false'
+      process.env.AI_CACHE_ENABLED !== "false",
     );
 
     // Initialize cost tracking
     this.costTracker = new CostTracker(
       process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY
+      process.env.SUPABASE_SERVICE_ROLE_KEY,
     );
 
     // Initialize providers
@@ -45,7 +49,7 @@ export class AIService {
     // Add Gemini if configured
     if (process.env.GEMINI_API_KEY) {
       providers.gemini = new GeminiProvider({
-        apiKey: process.env.GEMINI_API_KEY
+        apiKey: process.env.GEMINI_API_KEY,
       });
     }
 
@@ -68,17 +72,17 @@ export class AIService {
       providers,
       cache: this.cache,
       costTracker: this.costTracker,
-      useSemanticCache: process.env.AI_SEMANTIC_CACHE === 'true',
-      defaultProvider: process.env.AI_DEFAULT_PROVIDER || 'gemini'
+      useSemanticCache: process.env.AI_SEMANTIC_CACHE === "true",
+      defaultProvider: process.env.AI_DEFAULT_PROVIDER || "gemini",
     });
 
     // Initialize monitoring
-    this.monitoring = new AIMonitoringDashboard(
-      this.costTracker,
-      this.cache
-    );
+    this.monitoring = new AIMonitoringDashboard(this.costTracker, this.cache);
 
-    console.log('[AIService] Initialized with providers:', Object.keys(providers));
+    console.log(
+      "[AIService] Initialized with providers:",
+      Object.keys(providers),
+    );
   }
 
   // Delegate all methods to orchestrator
@@ -111,7 +115,7 @@ export class AIService {
     return this.orchestrator.getProviderStatus();
   }
 
-  async getUserCosts(userId: string, period: 'day' | 'week' | 'month' = 'day') {
+  async getUserCosts(userId: string, period: "day" | "week" | "month" = "day") {
     return this.costTracker.getUserCosts(userId, period);
   }
 

@@ -61,13 +61,13 @@ scrape_configs:
           - name: label
             values: ["claimguardian.logging=enabled"]
     relabel_configs:
-      - source_labels: ['__meta_docker_container_name']
-        regex: '/(.*)'
-        target_label: 'container'
-      - source_labels: ['__meta_docker_container_log_stream']
-        target_label: 'logstream'
-      - source_labels: ['__meta_docker_container_label_claimguardian_service']
-        target_label: 'service'
+      - source_labels: ["__meta_docker_container_name"]
+        regex: "/(.*)"
+        target_label: "container"
+      - source_labels: ["__meta_docker_container_log_stream"]
+        target_label: "logstream"
+      - source_labels: ["__meta_docker_container_label_claimguardian_service"]
+        target_label: "service"
     pipeline_stages:
       # Parse JSON logs from the web application
       - json:
@@ -120,7 +120,7 @@ scrape_configs:
           status:
       - template:
           source: message
-          template: '{{ .method }} {{ .uri }} {{ .status }} {{ .request_time }}s'
+          template: "{{ .method }} {{ .uri }} {{ .status }} {{ .request_time }}s"
 
   # Nginx error logs
   - job_name: nginx-error
@@ -134,7 +134,7 @@ scrape_configs:
       - regex:
           expression: '^(?P<timestamp>\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}) \[(?P<level>\w+)\] (?P<message>.*)'
       - timestamp:
-          format: '2006/01/02 15:04:05'
+          format: "2006/01/02 15:04:05"
           source: timestamp
       - labels:
           level:
@@ -151,7 +151,7 @@ scrape_configs:
       - regex:
           expression: '^(?P<pid>\d+):(?P<role>\w+) (?P<timestamp>\d{2} \w{3} \d{4} \d{2}:\d{2}:\d{2}\.\d{3}) (?P<level>.) (?P<message>.*)'
       - timestamp:
-          format: '02 Jan 2006 15:04:05.000'
+          format: "02 Jan 2006 15:04:05.000"
           source: timestamp
       - labels:
           level:
@@ -166,9 +166,9 @@ scrape_configs:
           - name: label
             values: ["claimguardian.service=web"]
     relabel_configs:
-      - source_labels: ['__meta_docker_container_name']
-        regex: '/(.*)'
-        target_label: 'container'
+      - source_labels: ["__meta_docker_container_name"]
+        regex: "/(.*)"
+        target_label: "container"
     pipeline_stages:
       - json:
           expressions:
@@ -188,7 +188,7 @@ scrape_configs:
                 ai_model:
             - template:
                 source: message
-                template: 'AI Cost: ${{ .ai_cost }} ({{ .ai_provider }}/{{ .ai_model }}) - {{ .ai_tokens }} tokens'
+                template: "AI Cost: ${{ .ai_cost }} ({{ .ai_provider }}/{{ .ai_model }}) - {{ .ai_tokens }} tokens"
 
   # Security logs
   - job_name: security
@@ -199,9 +199,9 @@ scrape_configs:
           - name: label
             values: ["claimguardian.service=web"]
     relabel_configs:
-      - source_labels: ['__meta_docker_container_name']
-        regex: '/(.*)'
-        target_label: 'container'
+      - source_labels: ["__meta_docker_container_name"]
+        regex: "/(.*)"
+        target_label: "container"
     pipeline_stages:
       - json:
           expressions:
@@ -220,7 +220,7 @@ scrape_configs:
                 level:
             - template:
                 source: message
-                template: 'Security Event: {{ .event_type }} from {{ .ip_address }} - {{ .message }}'
+                template: "Security Event: {{ .event_type }} from {{ .ip_address }} - {{ .message }}"
 
   # WebSocket logs
   - job_name: websocket
@@ -231,9 +231,9 @@ scrape_configs:
           - name: label
             values: ["claimguardian.service=web"]
     relabel_configs:
-      - source_labels: ['__meta_docker_container_name']
-        regex: '/(.*)'
-        target_label: 'container'
+      - source_labels: ["__meta_docker_container_name"]
+        regex: "/(.*)"
+        target_label: "container"
     pipeline_stages:
       - json:
           expressions:
@@ -250,4 +250,4 @@ scrape_configs:
                 event_type:
             - template:
                 source: message
-                template: 'WebSocket {{ .event_type }}: {{ .connection_id }} - {{ .message }}'
+                template: "WebSocket {{ .event_type }}: {{ .connection_id }} - {{ .message }}"

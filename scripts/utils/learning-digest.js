@@ -5,18 +5,18 @@
  * Transforms learnings.md into actionable insights and quick references
  */
 
-import { promises as fs } from 'fs';
-import path from 'path';
-import crypto from 'crypto';
-import { fileURLToPath } from 'url';
+import { promises as fs } from "fs";
+import path from "path";
+import crypto from "crypto";
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 class LearningDigest {
   constructor() {
-    this.learningsPath = path.join(__dirname, '../../learnings.md');
-    this.outputDir = path.join(__dirname, '../../.learning-digest');
+    this.learningsPath = path.join(__dirname, "../../learnings.md");
+    this.outputDir = path.join(__dirname, "../../.learning-digest");
     this.categories = new Map();
     this.patterns = new Map();
     this.solutions = new Map();
@@ -28,11 +28,11 @@ class LearningDigest {
   }
 
   async parseLearnins() {
-    const content = await fs.readFile(this.learningsPath, 'utf-8');
-    const lines = content.split('\n');
+    const content = await fs.readFile(this.learningsPath, "utf-8");
+    const lines = content.split("\n");
 
-    let currentSection = '';
-    let currentCategory = '';
+    let currentSection = "";
+    let currentCategory = "";
     let currentIssue = null;
     let inCodeBlock = false;
     let issueList = false;
@@ -41,7 +41,7 @@ class LearningDigest {
       const line = lines[i];
 
       // Track code blocks
-      if (line.trim().startsWith('```')) {
+      if (line.trim().startsWith("```")) {
         inCodeBlock = !inCodeBlock;
         continue;
       }
@@ -49,9 +49,9 @@ class LearningDigest {
       if (inCodeBlock) continue;
 
       // Parse headers
-      if (line.startsWith('#')) {
+      if (line.startsWith("#")) {
         const level = line.match(/^#+/)[0].length;
-        const header = line.replace(/^#+\s*/, '').trim();
+        const header = line.replace(/^#+\s*/, "").trim();
 
         if (level === 2) {
           currentSection = header;
@@ -65,7 +65,7 @@ class LearningDigest {
             category: currentCategory,
             content: [],
             solution: null,
-            tags: []
+            tags: [],
           };
           issueList = true;
         }
@@ -82,7 +82,7 @@ class LearningDigest {
             issue: null,
             solution: null,
             learning: null,
-            tags: []
+            tags: [],
           };
 
           // Check if issue description is on same line
@@ -94,14 +94,27 @@ class LearningDigest {
       }
       // Parse issue details (indented lines)
       else if (currentIssue && line.match(/^\s+-\s+/)) {
-        const content = line.replace(/^\s+-\s+/, '').trim();
+        const content = line.replace(/^\s+-\s+/, "").trim();
 
-        if (content.startsWith('**Issue**:') || content.startsWith('**Issue:**')) {
-          currentIssue.issue = content.replace(/\*\*Issue\*\*:\s*/, '').trim();
-        } else if (content.startsWith('**Solution**:') || content.startsWith('**Solution:**')) {
-          currentIssue.solution = content.replace(/\*\*Solution\*\*:\s*/, '').trim();
-        } else if (content.startsWith('**Learning**:') || content.startsWith('**Learning:**')) {
-          currentIssue.learning = content.replace(/\*\*Learning\*\*:\s*/, '').trim();
+        if (
+          content.startsWith("**Issue**:") ||
+          content.startsWith("**Issue:**")
+        ) {
+          currentIssue.issue = content.replace(/\*\*Issue\*\*:\s*/, "").trim();
+        } else if (
+          content.startsWith("**Solution**:") ||
+          content.startsWith("**Solution:**")
+        ) {
+          currentIssue.solution = content
+            .replace(/\*\*Solution\*\*:\s*/, "")
+            .trim();
+        } else if (
+          content.startsWith("**Learning**:") ||
+          content.startsWith("**Learning:**")
+        ) {
+          currentIssue.learning = content
+            .replace(/\*\*Learning\*\*:\s*/, "")
+            .trim();
           // Process the complete issue
           if (currentIssue.issue && currentIssue.solution) {
             this.processLearning(currentIssue);
@@ -113,23 +126,23 @@ class LearningDigest {
 
   categorizeSection(header) {
     const categories = {
-      'build': ['build', 'compile', 'typescript', 'error'],
-      'api': ['api', 'endpoint', 'route', 'edge function'],
-      'database': ['database', 'supabase', 'migration', 'sql'],
-      'ui': ['component', 'react', 'ui', 'frontend'],
-      'auth': ['auth', 'authentication', 'user', 'session'],
-      'ai': ['ai', 'llm', 'gpt', 'gemini', 'claude'],
-      'performance': ['performance', 'optimization', 'cache', 'speed'],
-      'security': ['security', 'vulnerability', 'protection', 'safe']
+      build: ["build", "compile", "typescript", "error"],
+      api: ["api", "endpoint", "route", "edge function"],
+      database: ["database", "supabase", "migration", "sql"],
+      ui: ["component", "react", "ui", "frontend"],
+      auth: ["auth", "authentication", "user", "session"],
+      ai: ["ai", "llm", "gpt", "gemini", "claude"],
+      performance: ["performance", "optimization", "cache", "speed"],
+      security: ["security", "vulnerability", "protection", "safe"],
     };
 
     const lowerHeader = header.toLowerCase();
     for (const [category, keywords] of Object.entries(categories)) {
-      if (keywords.some(keyword => lowerHeader.includes(keyword))) {
+      if (keywords.some((keyword) => lowerHeader.includes(keyword))) {
         return category;
       }
     }
-    return 'general';
+    return "general";
   }
 
   processLearning(issue) {
@@ -155,37 +168,50 @@ class LearningDigest {
 
   extractTags(issue) {
     const tags = new Set();
-    const content = `${issue.issue} ${issue.solution} ${issue.learning}`.toLowerCase();
+    const content =
+      `${issue.issue} ${issue.solution} ${issue.learning}`.toLowerCase();
 
     // Technology tags
     const techKeywords = [
-      'typescript', 'react', 'nextjs', 'supabase', 'edge function',
-      'api', 'database', 'import', 'export', 'type', 'interface'
+      "typescript",
+      "react",
+      "nextjs",
+      "supabase",
+      "edge function",
+      "api",
+      "database",
+      "import",
+      "export",
+      "type",
+      "interface",
     ];
 
-    techKeywords.forEach(keyword => {
+    techKeywords.forEach((keyword) => {
       if (content.includes(keyword)) {
-        tags.add(keyword.replace(' ', '-'));
+        tags.add(keyword.replace(" ", "-"));
       }
     });
 
     // Error type tags
-    if (content.includes('missing')) tags.add('missing-import');
-    if (content.includes('duplicate')) tags.add('duplicate-export');
-    if (content.includes('type') && content.includes('mismatch')) tags.add('type-mismatch');
-    if (content.includes('server') && content.includes('client')) tags.add('server-client');
+    if (content.includes("missing")) tags.add("missing-import");
+    if (content.includes("duplicate")) tags.add("duplicate-export");
+    if (content.includes("type") && content.includes("mismatch"))
+      tags.add("type-mismatch");
+    if (content.includes("server") && content.includes("client"))
+      tags.add("server-client");
 
     return Array.from(tags);
   }
 
   generateSolutionKey(issue) {
     // Create a searchable key from the issue
-    return issue.toLowerCase()
-      .replace(/[^a-z0-9\s]/g, '')
+    return issue
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, "")
       .split(/\s+/)
-      .filter(word => word.length > 3)
+      .filter((word) => word.length > 3)
       .sort()
-      .join('-');
+      .join("-");
   }
 
   detectPatterns(issue) {
@@ -193,24 +219,24 @@ class LearningDigest {
     const patterns = [
       {
         pattern: /duplicate.*export/i,
-        type: 'duplicate-export',
-        preventionTip: 'Use barrel exports carefully and check for conflicts'
+        type: "duplicate-export",
+        preventionTip: "Use barrel exports carefully and check for conflicts",
       },
       {
         pattern: /missing.*import|cannot find.*module/i,
-        type: 'missing-import',
-        preventionTip: 'Verify exact export names and paths'
+        type: "missing-import",
+        preventionTip: "Verify exact export names and paths",
       },
       {
         pattern: /type.*mismatch|expected.*but.*got/i,
-        type: 'type-mismatch',
-        preventionTip: 'Check function signatures and return types'
+        type: "type-mismatch",
+        preventionTip: "Check function signatures and return types",
       },
       {
         pattern: /server.*client|client.*server/i,
-        type: 'server-client-mix',
-        preventionTip: 'Keep server operations in server components/actions'
-      }
+        type: "server-client-mix",
+        preventionTip: "Keep server operations in server components/actions",
+      },
     ];
 
     patterns.forEach(({ pattern, type, preventionTip }) => {
@@ -219,7 +245,7 @@ class LearningDigest {
           this.patterns.set(type, {
             count: 0,
             examples: [],
-            preventionTip
+            preventionTip,
           });
         }
         const patternData = this.patterns.get(type);
@@ -233,15 +259,15 @@ class LearningDigest {
     // 1. Quick Reference Guide
     const quickRef = this.generateQuickReference();
     await fs.writeFile(
-      path.join(this.outputDir, 'quick-reference.md'),
-      quickRef
+      path.join(this.outputDir, "quick-reference.md"),
+      quickRef,
     );
 
     // 2. Error Pattern Guide
     const errorGuide = this.generateErrorPatternGuide();
     await fs.writeFile(
-      path.join(this.outputDir, 'error-patterns.md'),
-      errorGuide
+      path.join(this.outputDir, "error-patterns.md"),
+      errorGuide,
     );
 
     // 3. Category-based Guides
@@ -249,15 +275,15 @@ class LearningDigest {
       const guide = this.generateCategoryGuide(category, issues);
       await fs.writeFile(
         path.join(this.outputDir, `${category}-guide.md`),
-        guide
+        guide,
       );
     }
 
     // 4. Searchable JSON Index
     const searchIndex = this.generateSearchIndex();
     await fs.writeFile(
-      path.join(this.outputDir, 'search-index.json'),
-      JSON.stringify(searchIndex, null, 2)
+      path.join(this.outputDir, "search-index.json"),
+      JSON.stringify(searchIndex, null, 2),
     );
 
     // 5. Git Hooks Integration
@@ -270,11 +296,11 @@ class LearningDigest {
   }
 
   generateQuickReference() {
-    let content = '# Quick Reference Guide\n\n';
-    content += 'Auto-generated from learnings.md\n\n';
+    let content = "# Quick Reference Guide\n\n";
+    content += "Auto-generated from learnings.md\n\n";
 
     // Most common issues
-    content += '## 🔥 Most Common Issues\n\n';
+    content += "## 🔥 Most Common Issues\n\n";
     const sortedPatterns = Array.from(this.patterns.entries())
       .sort((a, b) => b[1].count - a[1].count)
       .slice(0, 5);
@@ -285,9 +311,9 @@ class LearningDigest {
     });
 
     // Quick solutions
-    content += '## ⚡ Quick Solutions\n\n';
+    content += "## ⚡ Quick Solutions\n\n";
     const recentSolutions = Array.from(this.solutions.values()).slice(-10);
-    recentSolutions.forEach(issue => {
+    recentSolutions.forEach((issue) => {
       content += `**Issue:** ${issue.issue}\n`;
       content += `**Fix:** ${issue.solution}\n\n`;
     });
@@ -296,19 +322,19 @@ class LearningDigest {
   }
 
   generateErrorPatternGuide() {
-    let content = '# Error Pattern Guide\n\n';
+    let content = "# Error Pattern Guide\n\n";
 
     for (const [pattern, data] of this.patterns) {
       content += `## ${pattern}\n\n`;
       content += `**Occurrences:** ${data.count}\n`;
       content += `**Prevention:** ${data.preventionTip}\n\n`;
 
-      content += '### Examples:\n';
-      data.examples.slice(0, 3).forEach(example => {
+      content += "### Examples:\n";
+      data.examples.slice(0, 3).forEach((example) => {
         content += `- ${example.issue}\n`;
         content += `  - **Fix:** ${example.solution}\n`;
       });
-      content += '\n';
+      content += "\n";
     }
 
     return content;
@@ -319,19 +345,19 @@ class LearningDigest {
 
     // Group by subcategory
     const grouped = {};
-    issues.forEach(issue => {
-      const subcat = issue.title || 'General';
+    issues.forEach((issue) => {
+      const subcat = issue.title || "General";
       if (!grouped[subcat]) grouped[subcat] = [];
       grouped[subcat].push(issue);
     });
 
     Object.entries(grouped).forEach(([subcat, subIssues]) => {
       content += `## ${subcat}\n\n`;
-      subIssues.forEach(issue => {
+      subIssues.forEach((issue) => {
         if (issue.issue) content += `**Problem:** ${issue.issue}\n`;
         if (issue.solution) content += `**Solution:** ${issue.solution}\n`;
         if (issue.learning) content += `**Key Learning:** ${issue.learning}\n`;
-        content += '\n';
+        content += "\n";
       });
     });
 
@@ -343,27 +369,27 @@ class LearningDigest {
       categories: {},
       tags: {},
       solutions: [],
-      patterns: {}
+      patterns: {},
     };
 
     // Index by category
     for (const [category, issues] of this.categories) {
-      index.categories[category] = issues.map(i => ({
+      index.categories[category] = issues.map((i) => ({
         issue: i.issue,
         solution: i.solution,
-        tags: i.tags
+        tags: i.tags,
       }));
     }
 
     // Index by tags
     for (const [category, issues] of this.categories) {
-      issues.forEach(issue => {
-        issue.tags.forEach(tag => {
+      issues.forEach((issue) => {
+        issue.tags.forEach((tag) => {
           if (!index.tags[tag]) index.tags[tag] = [];
           index.tags[tag].push({
             category,
             issue: issue.issue,
-            solution: issue.solution
+            solution: issue.solution,
           });
         });
       });
@@ -375,7 +401,7 @@ class LearningDigest {
         key,
         issue: issue.issue,
         solution: issue.solution,
-        category: issue.category
+        category: issue.category,
       });
     }
 
@@ -404,9 +430,9 @@ done
 `;
 
     await fs.writeFile(
-      path.join(this.outputDir, 'pre-commit-check'),
+      path.join(this.outputDir, "pre-commit-check"),
       hookContent,
-      { mode: 0o755 }
+      { mode: 0o755 },
     );
   }
 
@@ -419,9 +445,9 @@ done
           "// 1. Check exact export name (case-sensitive)",
           "// 2. Verify path is correct",
           "// 3. Ensure module exports what you're importing",
-          "import { ${1:ExactName} } from '${2:@package/name}'"
+          "import { ${1:ExactName} } from '${2:@package/name}'",
         ],
-        description: "Fix common import issues"
+        description: "Fix common import issues",
       },
       "Server Action Template": {
         prefix: "serverAction",
@@ -440,15 +466,15 @@ done
           "    logger.error('${1:actionName} failed', { ${2:params} }, error as Error)",
           "    return { success: false, error: error.message }",
           "  }",
-          "}"
+          "}",
         ],
-        description: "Create server action with proper error handling"
-      }
+        description: "Create server action with proper error handling",
+      },
     };
 
     await fs.writeFile(
-      path.join(this.outputDir, 'claimguardian.code-snippets'),
-      JSON.stringify(snippets, null, 2)
+      path.join(this.outputDir, "claimguardian.code-snippets"),
+      JSON.stringify(snippets, null, 2),
     );
   }
 

@@ -1,7 +1,7 @@
-import { createClient } from '@supabase/supabase-js';
-import axios, { AxiosInstance } from 'axios';
-import pLimit from 'p-limit';
-import { logger } from '@/lib/logger';
+import { createClient } from "@supabase/supabase-js";
+import axios, { AxiosInstance } from "axios";
+import pLimit from "p-limit";
+import { logger } from "@/lib/logger";
 
 interface FEMADisasterDeclaration {
   disasterNumber: number;
@@ -68,16 +68,16 @@ export class FEMAIngestionService {
   constructor() {
     this.supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
     );
 
     this.femaClient = axios.create({
-      baseURL: 'https://www.fema.gov/api/open',
+      baseURL: "https://www.fema.gov/api/open",
       headers: {
-        'Accept': 'application/json',
-        'User-Agent': 'ClaimGuardian/1.0 (claimguardianai.com)'
+        Accept: "application/json",
+        "User-Agent": "ClaimGuardian/1.0 (claimguardianai.com)",
       },
-      timeout: 60000
+      timeout: 60000,
     });
   }
 
@@ -88,12 +88,16 @@ export class FEMAIngestionService {
   async syncDisasterDeclarations(
     state?: string,
     startDate?: Date,
-    fullSync: boolean = false
+    fullSync: boolean = false,
   ): Promise<void> {
     try {
-      logger.info('Starting disaster declarations sync', { state, startDate, fullSync });
+      logger.info("Starting disaster declarations sync", {
+        state,
+        startDate,
+        fullSync,
+      });
 
-      let filter = '';
+      let filter = "";
       const filters: string[] = [];
 
       if (state) {
@@ -110,12 +114,12 @@ export class FEMAIngestionService {
       }
 
       if (filters.length > 0) {
-        filter = filters.join(' and ');
+        filter = filters.join(" and ");
       }
 
       const declarations = await this.fetchAllRecords(
-        '/v2/DisasterDeclarationsSummaries',
-        filter
+        "/v2/DisasterDeclarationsSummaries",
+        filter,
       );
 
       logger.info(`Fetched ${declarations.length} disaster declarations`);
@@ -124,7 +128,10 @@ export class FEMAIngestionService {
       const declarationData = declarations.map((dec: any) => ({
         disaster_number: dec.disasterNumber,
         state: dec.state,
-        county_fips: this.extractCountyFips(dec.fipsStateCode, dec.fipsCountyCode),
+        county_fips: this.extractCountyFips(
+          dec.fipsStateCode,
+          dec.fipsCountyCode,
+        ),
         declaration_date: dec.declarationDate,
         fiscal_year: dec.fyDeclared,
         disaster_type: dec.disasterType,
@@ -143,7 +150,7 @@ export class FEMAIngestionService {
         ih_program_declared: dec.ihProgramDeclared,
         tribal_request: dec.tribalRequest,
         hash: dec.hash,
-        last_refresh: dec.lastRefresh || new Date().toISOString()
+        last_refresh: dec.lastRefresh || new Date().toISOString(),
       }));
 
       // Batch insert
@@ -151,10 +158,10 @@ export class FEMAIngestionService {
         const batch = declarationData.slice(i, i + this.BATCH_SIZE);
 
         const { error } = await this.supabase
-          .from('fema.disaster_declarations')
+          .from("fema.disaster_declarations")
           .upsert(batch, {
-            onConflict: 'disaster_number,place_code,declaration_date',
-            ignoreDuplicates: false
+            onConflict: "disaster_number,place_code,declaration_date",
+            ignoreDuplicates: false,
           });
 
         if (error) {
@@ -162,14 +169,16 @@ export class FEMAIngestionService {
           throw error;
         }
 
-        logger.info(`Inserted batch ${i / this.BATCH_SIZE + 1} of ${Math.ceil(declarationData.length / this.BATCH_SIZE)}`);
+        logger.info(
+          `Inserted batch ${i / this.BATCH_SIZE + 1} of ${Math.ceil(declarationData.length / this.BATCH_SIZE)}`,
+        );
       }
 
-      await this.updateSyncStatus('disaster_declarations', 'completed');
-      logger.info('Disaster declarations sync completed');
+      await this.updateSyncStatus("disaster_declarations", "completed");
+      logger.info("Disaster declarations sync completed");
     } catch (error) {
-      logger.error('Disaster declarations sync failed', error);
-      await this.updateSyncStatus('disaster_declarations', 'error', error);
+      logger.error("Disaster declarations sync failed", error);
+      await this.updateSyncStatus("disaster_declarations", "error", error);
       throw error;
     }
   }
@@ -178,14 +187,11 @@ export class FEMAIngestionService {
   // IPAWS ALERTS
   // =====================================================
 
-  async syncIPAWSAlerts(
-    startDate?: Date,
-    endDate?: Date
-  ): Promise<void> {
+  async syncIPAWSAlerts(startDate?: Date, endDate?: Date): Promise<void> {
     try {
-      logger.info('Starting IPAWS alerts sync', { startDate, endDate });
+      logger.info("Starting IPAWS alerts sync", { startDate, endDate });
 
-      let filter = '';
+      let filter = "";
       const filters: string[] = [];
 
       if (startDate) {
@@ -202,12 +208,12 @@ export class FEMAIngestionService {
       }
 
       if (filters.length > 0) {
-        filter = filters.join(' and ');
+        filter = filters.join(" and ");
       }
 
       const alerts = await this.fetchAllRecords(
-        '/v1/IpawsArchivedAlerts',
-        filter
+        "/v1/IpawsArchivedAlerts",
+        filter,
       );
 
       logger.info(`Fetched ${alerts.length} IPAWS alerts`);
@@ -256,7 +262,7 @@ export class FEMAIngestionService {
         ceiling: alert.info?.[0]?.area?.[0]?.ceiling,
         cap_raw_message: alert.rawMessage,
         hash: alert.hash,
-        last_refresh: alert.lastRefresh || new Date().toISOString()
+        last_refresh: alert.lastRefresh || new Date().toISOString(),
       }));
 
       // Batch insert
@@ -264,23 +270,26 @@ export class FEMAIngestionService {
         const batch = alertData.slice(i, i + this.BATCH_SIZE);
 
         const { error } = await this.supabase
-          .from('fema.ipaws_alerts')
+          .from("fema.ipaws_alerts")
           .upsert(batch, {
-            onConflict: 'alert_id',
-            ignoreDuplicates: false
+            onConflict: "alert_id",
+            ignoreDuplicates: false,
           });
 
         if (error) {
-          logger.error(`Failed to insert alert batch ${i / this.BATCH_SIZE}`, error);
+          logger.error(
+            `Failed to insert alert batch ${i / this.BATCH_SIZE}`,
+            error,
+          );
           throw error;
         }
       }
 
-      await this.updateSyncStatus('ipaws_alerts', 'completed');
-      logger.info('IPAWS alerts sync completed');
+      await this.updateSyncStatus("ipaws_alerts", "completed");
+      logger.info("IPAWS alerts sync completed");
     } catch (error) {
-      logger.error('IPAWS alerts sync failed', error);
-      await this.updateSyncStatus('ipaws_alerts', 'error', error);
+      logger.error("IPAWS alerts sync failed", error);
+      await this.updateSyncStatus("ipaws_alerts", "error", error);
       throw error;
     }
   }
@@ -291,10 +300,13 @@ export class FEMAIngestionService {
 
   async syncPublicAssistanceProjects(
     disasterNumber?: number,
-    state?: string
+    state?: string,
   ): Promise<void> {
     try {
-      logger.info('Starting public assistance projects sync', { disasterNumber, state });
+      logger.info("Starting public assistance projects sync", {
+        disasterNumber,
+        state,
+      });
 
       const filters: string[] = [];
 
@@ -313,10 +325,10 @@ export class FEMAIngestionService {
         filters.push(`lastRefresh ge '${thirtyDaysAgo.toISOString()}'`);
       }
 
-      const filter = filters.join(' and ');
+      const filter = filters.join(" and ");
       const projects = await this.fetchAllRecords(
-        '/v1/PublicAssistanceFundedProjectsDetails',
-        filter
+        "/v1/PublicAssistanceFundedProjectsDetails",
+        filter,
       );
 
       logger.info(`Fetched ${projects.length} PA projects`);
@@ -332,7 +344,10 @@ export class FEMAIngestionService {
         project_size: project.projectSize,
         state: project.state,
         county: project.county,
-        county_fips: this.extractCountyFips(project.stateCode, project.countyCode),
+        county_fips: this.extractCountyFips(
+          project.stateCode,
+          project.countyCode,
+        ),
         applicant_name: project.applicantName,
         applicant_type: project.applicantType,
         date_approved: project.dateApproved,
@@ -341,12 +356,14 @@ export class FEMAIngestionService {
         total_obligated: project.totalObligated,
         total_cost: project.totalProjectCost,
         project_amount: project.projectAmount,
-        location: project.latitude && project.longitude ?
-          `POINT(${project.longitude} ${project.latitude})` : null,
+        location:
+          project.latitude && project.longitude
+            ? `POINT(${project.longitude} ${project.latitude})`
+            : null,
         status: project.status,
         completion_percentage: project.completionPercentage,
         hash: project.hash,
-        last_refresh: project.lastRefresh || new Date().toISOString()
+        last_refresh: project.lastRefresh || new Date().toISOString(),
       }));
 
       // Batch insert
@@ -354,23 +371,26 @@ export class FEMAIngestionService {
         const batch = projectData.slice(i, i + this.BATCH_SIZE);
 
         const { error } = await this.supabase
-          .from('fema.public_assistance_projects')
+          .from("fema.public_assistance_projects")
           .upsert(batch, {
-            onConflict: 'disaster_number,pa_project_number,date_approved',
-            ignoreDuplicates: false
+            onConflict: "disaster_number,pa_project_number,date_approved",
+            ignoreDuplicates: false,
           });
 
         if (error) {
-          logger.error(`Failed to insert PA batch ${i / this.BATCH_SIZE}`, error);
+          logger.error(
+            `Failed to insert PA batch ${i / this.BATCH_SIZE}`,
+            error,
+          );
           throw error;
         }
       }
 
-      await this.updateSyncStatus('public_assistance', 'completed');
-      logger.info('Public assistance projects sync completed');
+      await this.updateSyncStatus("public_assistance", "completed");
+      logger.info("Public assistance projects sync completed");
     } catch (error) {
-      logger.error('Public assistance sync failed', error);
-      await this.updateSyncStatus('public_assistance', 'error', error);
+      logger.error("Public assistance sync failed", error);
+      await this.updateSyncStatus("public_assistance", "error", error);
       throw error;
     }
   }
@@ -381,10 +401,13 @@ export class FEMAIngestionService {
 
   async syncHazardMitigationProjects(
     state?: string,
-    programArea?: string
+    programArea?: string,
   ): Promise<void> {
     try {
-      logger.info('Starting hazard mitigation projects sync', { state, programArea });
+      logger.info("Starting hazard mitigation projects sync", {
+        state,
+        programArea,
+      });
 
       const filters: string[] = [];
 
@@ -396,10 +419,10 @@ export class FEMAIngestionService {
         filters.push(`programArea eq '${programArea}'`);
       }
 
-      const filter = filters.join(' and ');
+      const filter = filters.join(" and ");
       const projects = await this.fetchAllRecords(
-        '/v1/HazardMitigationAssistanceProjects',
-        filter
+        "/v1/HazardMitigationAssistanceProjects",
+        filter,
       );
 
       logger.info(`Fetched ${projects.length} HM projects`);
@@ -410,7 +433,10 @@ export class FEMAIngestionService {
         disaster_number: project.disasterNumber,
         state: project.state,
         county: project.county,
-        county_fips: this.extractCountyFips(project.stateCode, project.countyCode),
+        county_fips: this.extractCountyFips(
+          project.stateCode,
+          project.countyCode,
+        ),
         project_title: project.projectTitle,
         project_type: project.projectType,
         project_status: project.status,
@@ -422,10 +448,12 @@ export class FEMAIngestionService {
         benefit_cost_ratio: project.benefitCostRatio,
         properties_protected: project.propertiesProtected,
         project_description: project.projectDescription,
-        location: project.latitude && project.longitude ?
-          `POINT(${project.longitude} ${project.latitude})` : null,
+        location:
+          project.latitude && project.longitude
+            ? `POINT(${project.longitude} ${project.latitude})`
+            : null,
         hash: project.hash,
-        last_refresh: project.lastRefresh || new Date().toISOString()
+        last_refresh: project.lastRefresh || new Date().toISOString(),
       }));
 
       // Batch insert
@@ -433,23 +461,26 @@ export class FEMAIngestionService {
         const batch = projectData.slice(i, i + this.BATCH_SIZE);
 
         const { error } = await this.supabase
-          .from('fema.hazard_mitigation_projects')
+          .from("fema.hazard_mitigation_projects")
           .upsert(batch, {
-            onConflict: 'project_id',
-            ignoreDuplicates: false
+            onConflict: "project_id",
+            ignoreDuplicates: false,
           });
 
         if (error) {
-          logger.error(`Failed to insert HM batch ${i / this.BATCH_SIZE}`, error);
+          logger.error(
+            `Failed to insert HM batch ${i / this.BATCH_SIZE}`,
+            error,
+          );
           throw error;
         }
       }
 
-      await this.updateSyncStatus('hazard_mitigation', 'completed');
-      logger.info('Hazard mitigation projects sync completed');
+      await this.updateSyncStatus("hazard_mitigation", "completed");
+      logger.info("Hazard mitigation projects sync completed");
     } catch (error) {
-      logger.error('Hazard mitigation sync failed', error);
-      await this.updateSyncStatus('hazard_mitigation', 'error', error);
+      logger.error("Hazard mitigation sync failed", error);
+      await this.updateSyncStatus("hazard_mitigation", "error", error);
       throw error;
     }
   }
@@ -461,7 +492,7 @@ export class FEMAIngestionService {
   private async fetchAllRecords(
     endpoint: string,
     filter?: string,
-    select?: string
+    select?: string,
   ): Promise<any[]> {
     const allRecords: any[] = [];
     let skip = 0;
@@ -469,17 +500,17 @@ export class FEMAIngestionService {
 
     while (hasMore && allRecords.length < this.MAX_RECORDS * 10) {
       const params: any = {
-        '$top': this.MAX_RECORDS,
-        '$skip': skip,
-        '$count': 'true'
+        $top: this.MAX_RECORDS,
+        $skip: skip,
+        $count: "true",
       };
 
       if (filter) {
-        params['$filter'] = filter;
+        params["$filter"] = filter;
       }
 
       if (select) {
-        params['$select'] = select;
+        params["$select"] = select;
       }
 
       try {
@@ -496,7 +527,9 @@ export class FEMAIngestionService {
           hasMore = allRecords.length < totalCount;
         } else if (data && data.metadata) {
           // Handle other wrapped formats
-          const records = Object.values(data).find(v => Array.isArray(v)) as any[];
+          const records = Object.values(data).find((v) =>
+            Array.isArray(v),
+          ) as any[];
           if (records) {
             allRecords.push(...records);
             const totalCount = data.metadata.count || 0;
@@ -511,7 +544,7 @@ export class FEMAIngestionService {
         skip += this.MAX_RECORDS;
 
         // Rate limiting
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 100));
       } catch (error) {
         logger.error(`Failed to fetch records from ${endpoint}`, error);
         throw error;
@@ -521,12 +554,15 @@ export class FEMAIngestionService {
     return allRecords;
   }
 
-  private extractCountyFips(stateCode?: string, countyCode?: string): string | null {
+  private extractCountyFips(
+    stateCode?: string,
+    countyCode?: string,
+  ): string | null {
     if (!stateCode || !countyCode) return null;
 
     // Ensure state code is 2 digits and county code is 3 digits
-    const state = String(stateCode).padStart(2, '0');
-    const county = String(countyCode).padStart(3, '0');
+    const state = String(stateCode).padStart(2, "0");
+    const county = String(countyCode).padStart(3, "0");
 
     return `${state}${county}`;
   }
@@ -536,18 +572,21 @@ export class FEMAIngestionService {
       // Check for polygon in area
       if (alert.info?.[0]?.area?.[0]?.polygon) {
         const polygonStr = alert.info[0].area[0].polygon;
-        const coords = polygonStr.split(' ').map((pair: string) => {
-          const [lat, lon] = pair.split(',');
-          return `${lon} ${lat}`;
-        }).join(',');
+        const coords = polygonStr
+          .split(" ")
+          .map((pair: string) => {
+            const [lat, lon] = pair.split(",");
+            return `${lon} ${lat}`;
+          })
+          .join(",");
         return `SRID=4326;POLYGON((${coords}))`;
       }
 
       // Check for circle
       if (alert.info?.[0]?.area?.[0]?.circle) {
         const circleStr = alert.info[0].area[0].circle;
-        const [center, radius] = circleStr.split(' ');
-        const [lat, lon] = center.split(',');
+        const [center, radius] = circleStr.split(" ");
+        const [lat, lon] = center.split(",");
         // Store as point with radius in metadata
         return `SRID=4326;POINT(${lon} ${lat})`;
       }
@@ -560,7 +599,7 @@ export class FEMAIngestionService {
 
       return null;
     } catch (error) {
-      logger.error('Failed to process IPAWS geometry', error);
+      logger.error("Failed to process IPAWS geometry", error);
       return null;
     }
   }
@@ -568,19 +607,17 @@ export class FEMAIngestionService {
   private async updateSyncStatus(
     dataType: string,
     status: string,
-    error?: any
+    error?: any,
   ): Promise<void> {
     const record = {
       data_type: dataType,
       last_sync_at: new Date().toISOString(),
       status,
       error_message: error ? error.message : null,
-      records_synced: status === 'completed' ? 1 : 0
+      records_synced: status === "completed" ? 1 : 0,
     };
 
-    await this.supabase
-      .from('sync_logs')
-      .insert(record);
+    await this.supabase.from("sync_logs").insert(record);
   }
 
   // =====================================================
@@ -588,7 +625,7 @@ export class FEMAIngestionService {
   // =====================================================
 
   async performScheduledSync(): Promise<void> {
-    logger.info('Starting scheduled FEMA data sync');
+    logger.info("Starting scheduled FEMA data sync");
 
     try {
       // Sync disaster declarations for all states
@@ -601,11 +638,11 @@ export class FEMAIngestionService {
       await this.syncPublicAssistanceProjects();
 
       // Sync HM projects for Florida
-      await this.syncHazardMitigationProjects('FL');
+      await this.syncHazardMitigationProjects("FL");
 
-      logger.info('Scheduled FEMA sync completed successfully');
+      logger.info("Scheduled FEMA sync completed successfully");
     } catch (error) {
-      logger.error('Scheduled FEMA sync failed', error);
+      logger.error("Scheduled FEMA sync failed", error);
       throw error;
     }
   }

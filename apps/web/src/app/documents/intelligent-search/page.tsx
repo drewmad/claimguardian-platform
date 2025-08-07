@@ -9,14 +9,15 @@
  * @status stable
  */
 
-import { Metadata } from 'next'
-import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { IntelligentDocumentSearchComponent } from '@/components/documents/intelligent-document-search'
+import { Metadata } from "next";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import { IntelligentDocumentSearchComponent } from "@/components/documents/intelligent-document-search";
 
 export const metadata: Metadata = {
-  title: 'Intelligent Document Search - ClaimGuardian',
-  description: 'AI-powered search across all your insurance documents with natural language queries and semantic understanding.',
-}
+  title: "Intelligent Document Search - ClaimGuardian",
+  description:
+    "AI-powered search across all your insurance documents with natural language queries and semantic understanding.",
+};
 
 export default function IntelligentDocumentSearchPage() {
   return (
@@ -25,5 +26,5 @@ export default function IntelligentDocumentSearchPage() {
         <IntelligentDocumentSearchComponent />
       </div>
     </DashboardLayout>
-  )
+  );
 }

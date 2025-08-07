@@ -13,7 +13,7 @@
  * Checks if error is an Error instance and returns typed error
  */
 export function isError(error: unknown): error is Error {
-  return error instanceof Error
+  return error instanceof Error;
 }
 
 /**
@@ -21,15 +21,15 @@ export function isError(error: unknown): error is Error {
  */
 export function getErrorMessage(error: unknown): string {
   if (isError(error)) {
-    return error.message
+    return error.message;
   }
-  if (typeof error === 'string') {
-    return error
+  if (typeof error === "string") {
+    return error;
   }
-  if (error && typeof error === 'object' && 'message' in error) {
-    return String(error.message)
+  if (error && typeof error === "object" && "message" in error) {
+    return String(error.message);
   }
-  return 'Unknown error occurred'
+  return "Unknown error occurred";
 }
 
 /**
@@ -37,65 +37,71 @@ export function getErrorMessage(error: unknown): string {
  */
 export function hasProperty<T extends string>(
   obj: unknown,
-  prop: T
+  prop: T,
 ): obj is Record<T, unknown> {
-  return obj !== null && typeof obj === 'object' && prop in obj
+  return obj !== null && typeof obj === "object" && prop in obj;
 }
 
 /**
  * Type guard for checking if object has confidence property
  */
 export function hasConfidence(obj: unknown): obj is { confidence: number } {
-  return hasProperty(obj, 'confidence') && typeof obj.confidence === 'number'
+  return hasProperty(obj, "confidence") && typeof obj.confidence === "number";
 }
 
 /**
  * Type guard for checking if object has choices property (OpenAI response)
  */
 export function hasChoices(obj: unknown): obj is { choices: unknown[] } {
-  return hasProperty(obj, 'choices') && Array.isArray(obj.choices)
+  return hasProperty(obj, "choices") && Array.isArray(obj.choices);
 }
 
 /**
  * Type guard for checking if object looks like OpenAI message
  */
-export function isOpenAIMessage(msg: unknown): msg is { role: string; content: string } {
+export function isOpenAIMessage(
+  msg: unknown,
+): msg is { role: string; content: string } {
   return (
-    hasProperty(msg, 'role') &&
-    hasProperty(msg, 'content') &&
-    typeof msg.role === 'string' &&
-    typeof msg.content === 'string'
-  )
+    hasProperty(msg, "role") &&
+    hasProperty(msg, "content") &&
+    typeof msg.role === "string" &&
+    typeof msg.content === "string"
+  );
 }
 
 /**
  * Type guard for checking if array contains OpenAI messages
  */
-export function isOpenAIMessageArray(messages: unknown): messages is Array<{ role: string; content: string }> {
-  return Array.isArray(messages) && messages.every(isOpenAIMessage)
+export function isOpenAIMessageArray(
+  messages: unknown,
+): messages is Array<{ role: string; content: string }> {
+  return Array.isArray(messages) && messages.every(isOpenAIMessage);
 }
 
 /**
  * Type guard for checking if object looks like Gemini content
  */
-export function isGeminiContent(content: unknown): content is { parts: Array<{ text: string }> } {
+export function isGeminiContent(
+  content: unknown,
+): content is { parts: Array<{ text: string }> } {
   return (
-    hasProperty(content, 'parts') &&
+    hasProperty(content, "parts") &&
     Array.isArray(content.parts) &&
-    content.parts.every(part =>
-      hasProperty(part, 'text') && typeof part.text === 'string'
+    content.parts.every(
+      (part) => hasProperty(part, "text") && typeof part.text === "string",
     )
-  )
+  );
 }
 
 /**
  * Safely extract data from unknown response
  */
 export function extractData<T>(response: unknown, fallback: T): T {
-  if (response && typeof response === 'object' && 'data' in response) {
-    return (response.data as T) || fallback
+  if (response && typeof response === "object" && "data" in response) {
+    return (response.data as T) || fallback;
   }
-  return fallback
+  return fallback;
 }
 
 /**
@@ -104,10 +110,10 @@ export function extractData<T>(response: unknown, fallback: T): T {
 export function assertType<T>(
   value: unknown,
   guard: (v: unknown) => v is T,
-  errorMessage: string
+  errorMessage: string,
 ): T {
   if (guard(value)) {
-    return value
+    return value;
   }
-  throw new Error(errorMessage)
+  throw new Error(errorMessage);
 }

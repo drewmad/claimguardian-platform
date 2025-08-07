@@ -6,14 +6,14 @@
  * @status stable
  */
 
-'use client'
+"use client";
 
-import { useEffect, useState, useCallback } from 'react'
-import { useParams } from 'next/navigation'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { PropertyLocationMap } from '@/components/maps'
+import { useEffect, useState, useCallback } from "react";
+import { useParams } from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { PropertyLocationMap } from "@/components/maps";
 import {
   MapPin,
   Home,
@@ -27,72 +27,75 @@ import {
   CheckCircle2,
   ArrowLeft,
   Save,
-  X
-} from 'lucide-react'
-import Link from 'next/link'
-import { toast } from 'sonner'
-import { createClient } from '@/lib/supabase/client'
-import { logger } from '@/lib/logger/production-logger'
+  X,
+} from "lucide-react";
+import Link from "next/link";
+import { toast } from "sonner";
+import { createClient } from "@/lib/supabase/client";
+import { logger } from "@/lib/logger/production-logger";
 
 interface Property {
-  id: string
-  street_address: string
-  city: string
-  state: string
-  zip_code: string
-  county_name?: string
-  full_address: string
-  location?: { coordinates?: [number, number] } | null
-  property_type: string
-  occupancy_status?: string
-  year_built?: number
-  square_footage?: number
-  lot_size_acres?: number
-  bedrooms?: number
-  bathrooms?: number
-  stories: number
-  garage_spaces: number
-  pool: boolean
-  current_value?: number
-  purchase_price?: number
-  purchase_date?: string
-  metadata: Record<string, unknown>
-  version: number
-  created_at: string
-  updated_at: string
+  id: string;
+  street_address: string;
+  city: string;
+  state: string;
+  zip_code: string;
+  county_name?: string;
+  full_address: string;
+  location?: { coordinates?: [number, number] } | null;
+  property_type: string;
+  occupancy_status?: string;
+  year_built?: number;
+  square_footage?: number;
+  lot_size_acres?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  stories: number;
+  garage_spaces: number;
+  pool: boolean;
+  current_value?: number;
+  purchase_price?: number;
+  purchase_date?: string;
+  metadata: Record<string, unknown>;
+  version: number;
+  created_at: string;
+  updated_at: string;
   enrichment?: {
-    version?: number
-    enriched_at?: string
-    flood_zone?: string
-    elevation_meters?: number
-    hurricane_evacuation_zone?: string
-  }
+    version?: number;
+    enriched_at?: string;
+    flood_zone?: string;
+    elevation_meters?: number;
+    hurricane_evacuation_zone?: string;
+  };
 }
 
 export default function PropertyDetailPage() {
-  const params = useParams()
-  const propertyId = params.id as string
+  const params = useParams();
+  const propertyId = params.id as string;
 
-  const [property, setProperty] = useState<Property | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [isEditingLocation, setIsEditingLocation] = useState(false)
-  const [saving, setSaving] = useState(false)
+  const [property, setProperty] = useState<Property | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isEditingLocation, setIsEditingLocation] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  const supabase = createClient()
+  const supabase = createClient();
 
   const fetchProperty = useCallback(async () => {
-    if (!propertyId) return
+    if (!propertyId) return;
 
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
-        toast.error('Please sign in to view property details')
-        return
+        toast.error("Please sign in to view property details");
+        return;
       }
 
       const { data, error } = await supabase
-        .from('properties')
-        .select(`
+        .from("properties")
+        .select(
+          `
           *,
           enrichment:property_enrichments(
             version,
@@ -101,79 +104,85 @@ export default function PropertyDetailPage() {
             elevation_meters,
             hurricane_evacuation_zone
           )
-        `)
-        .eq('id', propertyId)
-        .eq('user_id', user.id)
-        .eq('is_current', true)
-        .eq('property_enrichments.is_current', true)
-        .single()
+        `,
+        )
+        .eq("id", propertyId)
+        .eq("user_id", user.id)
+        .eq("is_current", true)
+        .eq("property_enrichments.is_current", true)
+        .single();
 
       if (error) {
-        logger.error('Error fetching property:', error)
-        toast.error('Failed to load property details')
-        return
+        logger.error("Error fetching property:", error);
+        toast.error("Failed to load property details");
+        return;
       }
 
       if (data) {
         setProperty({
           ...data,
-          enrichment: data.enrichment?.[0] || null
-        })
+          enrichment: data.enrichment?.[0] || null,
+        });
       }
     } catch (error) {
-      logger.error('Error:', error)
-      toast.error('An error occurred while loading property details')
+      logger.error("Error:", error);
+      toast.error("An error occurred while loading property details");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [propertyId, supabase])
+  }, [propertyId, supabase]);
 
   useEffect(() => {
-    fetchProperty()
-  }, [fetchProperty])
+    fetchProperty();
+  }, [fetchProperty]);
 
   const handleLocationConfirm = async (coordinates: [number, number]) => {
-    if (!property) return
+    if (!property) return;
 
-    setSaving(true)
+    setSaving(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('User not authenticated')
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("User not authenticated");
 
       // Update the property location
       const { error } = await supabase
-        .from('properties')
+        .from("properties")
         .update({
           location: {
-            type: 'Point',
-            coordinates: coordinates
-          }
+            type: "Point",
+            coordinates: coordinates,
+          },
         })
-        .eq('id', property.id)
-        .eq('user_id', user.id)
+        .eq("id", property.id)
+        .eq("user_id", user.id);
 
-      if (error) throw error
+      if (error) throw error;
 
       // Update local state
-      setProperty(prev => prev ? {
-        ...prev,
-        location: { coordinates }
-      } : null)
+      setProperty((prev) =>
+        prev
+          ? {
+              ...prev,
+              location: { coordinates },
+            }
+          : null,
+      );
 
-      setIsEditingLocation(false)
-      toast.success('Property location confirmed successfully')
-
+      setIsEditingLocation(false);
+      toast.success("Property location confirmed successfully");
     } catch (error) {
-      logger.error('Error updating location:', error)
-      toast.error('Failed to update property location')
+      logger.error("Error updating location:", error);
+      toast.error("Failed to update property location");
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   const handleLocationEdit = () => {
-    setIsEditingLocation(true)
-  }
+    setIsEditingLocation(true);
+  };
 
   if (loading) {
     return (
@@ -187,7 +196,7 @@ export default function PropertyDetailPage() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   if (!property) {
@@ -198,7 +207,8 @@ export default function PropertyDetailPage() {
             <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
             <h3 className="text-lg font-medium mb-2">Property Not Found</h3>
             <p className="text-gray-600 mb-4">
-              The property you're looking for doesn't exist or you don't have access to it.
+              The property you're looking for doesn't exist or you don't have
+              access to it.
             </p>
             <Link href="/dashboard/properties">
               <Button>
@@ -209,11 +219,14 @@ export default function PropertyDetailPage() {
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
-  const propertyName = (property.metadata as { name?: string })?.name || 'Property Details'
-  const coordinates = property.location?.coordinates as [number, number] | undefined
+  const propertyName =
+    (property.metadata as { name?: string })?.name || "Property Details";
+  const coordinates = property.location?.coordinates as
+    | [number, number]
+    | undefined;
 
   return (
     <div className="container mx-auto p-6">
@@ -230,7 +243,10 @@ export default function PropertyDetailPage() {
             <h1 className="text-3xl font-bold">{propertyName}</h1>
             <div className="flex items-center gap-2 text-gray-600 mt-1">
               <MapPin className="h-4 w-4" />
-              <span>{property.street_address}, {property.city}, {property.state} {property.zip_code}</span>
+              <span>
+                {property.street_address}, {property.city}, {property.state}{" "}
+                {property.zip_code}
+              </span>
             </div>
           </div>
         </div>
@@ -238,12 +254,18 @@ export default function PropertyDetailPage() {
         {/* Location Status */}
         <div className="flex items-center gap-2">
           {coordinates ? (
-            <Badge variant="outline" className="text-green-600 border-green-600">
+            <Badge
+              variant="outline"
+              className="text-green-600 border-green-600"
+            >
               <CheckCircle2 className="mr-1 h-3 w-3" />
               Location Confirmed
             </Badge>
           ) : (
-            <Badge variant="secondary" className="text-orange-600 border-orange-600">
+            <Badge
+              variant="secondary"
+              className="text-orange-600 border-orange-600"
+            >
               <AlertCircle className="mr-1 h-3 w-3" />
               Location Estimated
             </Badge>
@@ -273,7 +295,7 @@ export default function PropertyDetailPage() {
                 disabled={saving}
               >
                 <Edit className="mr-2 h-4 w-4" />
-                {coordinates ? 'Edit Location' : 'Confirm Location'}
+                {coordinates ? "Edit Location" : "Confirm Location"}
               </Button>
             )}
             {isEditingLocation && (
@@ -297,8 +319,8 @@ export default function PropertyDetailPage() {
               coordinates: coordinates,
               type: property.property_type,
               value: property.current_value || 0,
-              insuranceStatus: 'active',
-              lastUpdated: new Date(property.updated_at)
+              insuranceStatus: "active",
+              lastUpdated: new Date(property.updated_at),
             }}
             isEditing={isEditingLocation}
             onLocationConfirm={handleLocationConfirm}
@@ -324,7 +346,7 @@ export default function PropertyDetailPage() {
               <div className="flex justify-between">
                 <span className="text-gray-600">Property Type:</span>
                 <span className="font-medium capitalize">
-                  {property.property_type.replace(/_/g, ' ')}
+                  {property.property_type.replace(/_/g, " ")}
                 </span>
               </div>
 
@@ -338,14 +360,18 @@ export default function PropertyDetailPage() {
               {property.square_footage && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">Square Footage:</span>
-                  <span className="font-medium">{property.square_footage.toLocaleString()} sq ft</span>
+                  <span className="font-medium">
+                    {property.square_footage.toLocaleString()} sq ft
+                  </span>
                 </div>
               )}
 
               {property.lot_size_acres && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">Lot Size:</span>
-                  <span className="font-medium">{property.lot_size_acres} acres</span>
+                  <span className="font-medium">
+                    {property.lot_size_acres} acres
+                  </span>
                 </div>
               )}
 
@@ -375,7 +401,9 @@ export default function PropertyDetailPage() {
 
               <div className="flex justify-between">
                 <span className="text-gray-600">Pool:</span>
-                <span className="font-medium">{property.pool ? 'Yes' : 'No'}</span>
+                <span className="font-medium">
+                  {property.pool ? "Yes" : "No"}
+                </span>
               </div>
             </div>
           </CardContent>
@@ -394,14 +422,18 @@ export default function PropertyDetailPage() {
               {property.current_value && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">Current Value:</span>
-                  <span className="font-medium">${property.current_value.toLocaleString()}</span>
+                  <span className="font-medium">
+                    ${property.current_value.toLocaleString()}
+                  </span>
                 </div>
               )}
 
               {property.purchase_price && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">Purchase Price:</span>
-                  <span className="font-medium">${property.purchase_price.toLocaleString()}</span>
+                  <span className="font-medium">
+                    ${property.purchase_price.toLocaleString()}
+                  </span>
                 </div>
               )}
 
@@ -445,21 +477,29 @@ export default function PropertyDetailPage() {
                 {property.enrichment.flood_zone && (
                   <div>
                     <div className="text-sm text-gray-600 mb-1">Flood Zone</div>
-                    <div className="font-medium">{property.enrichment.flood_zone}</div>
+                    <div className="font-medium">
+                      {property.enrichment.flood_zone}
+                    </div>
                   </div>
                 )}
 
                 {property.enrichment.elevation_meters && (
                   <div>
                     <div className="text-sm text-gray-600 mb-1">Elevation</div>
-                    <div className="font-medium">{property.enrichment.elevation_meters}m</div>
+                    <div className="font-medium">
+                      {property.enrichment.elevation_meters}m
+                    </div>
                   </div>
                 )}
 
                 {property.enrichment.hurricane_evacuation_zone && (
                   <div>
-                    <div className="text-sm text-gray-600 mb-1">Hurricane Zone</div>
-                    <div className="font-medium">{property.enrichment.hurricane_evacuation_zone}</div>
+                    <div className="text-sm text-gray-600 mb-1">
+                      Hurricane Zone
+                    </div>
+                    <div className="font-medium">
+                      {property.enrichment.hurricane_evacuation_zone}
+                    </div>
                   </div>
                 )}
               </div>
@@ -467,7 +507,10 @@ export default function PropertyDetailPage() {
               {property.enrichment.enriched_at && (
                 <div className="mt-4 pt-4 border-t border-gray-200">
                   <div className="text-sm text-gray-600">
-                    Analysis completed on {new Date(property.enrichment.enriched_at).toLocaleDateString()}
+                    Analysis completed on{" "}
+                    {new Date(
+                      property.enrichment.enriched_at,
+                    ).toLocaleDateString()}
                   </div>
                 </div>
               )}
@@ -476,5 +519,5 @@ export default function PropertyDetailPage() {
         )}
       </div>
     </div>
-  )
+  );
 }

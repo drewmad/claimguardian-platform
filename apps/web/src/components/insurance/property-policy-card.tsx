@@ -5,60 +5,62 @@
  * @dependencies ["react", "next", "lucide-react"]
  * @status stable
  */
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { ChevronRight, Shield, AlertTriangle, Plus } from 'lucide-react'
-import { Card, CardContent, CardHeader } from '@/components/ui/card-variants'
-import { PropertyImage } from '@/components/ui/property-image'
-import { cn } from '@/lib/utils'
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { ChevronRight, Shield, AlertTriangle, Plus } from "lucide-react";
+import { Card, CardContent, CardHeader } from "@/components/ui/card-variants";
+import { PropertyImage } from "@/components/ui/property-image";
+import { cn } from "@/lib/utils";
 
 interface Policy {
-  id: string
-  type: string
-  carrier: string
-  policyNumber: string
-  premium: number
-  deductible: number
-  coverage: number
-  status: 'active' | 'pending' | 'expired'
-  expirationDate: string
+  id: string;
+  type: string;
+  carrier: string;
+  policyNumber: string;
+  premium: number;
+  deductible: number;
+  coverage: number;
+  status: "active" | "pending" | "expired";
+  expirationDate: string;
 }
 
 interface Property {
-  id: string
-  name: string
-  address: string
-  type: 'single-family' | 'condo' | 'townhouse' | 'multi-family' | 'commercial'
-  policies: string[]
+  id: string;
+  name: string;
+  address: string;
+  type: "single-family" | "condo" | "townhouse" | "multi-family" | "commercial";
+  policies: string[];
 }
 
 interface PropertyPolicyCardProps {
-  property: Property
-  policies: Policy[]
-  isExpanded: boolean
-  onToggle: () => void
+  property: Property;
+  policies: Policy[];
+  isExpanded: boolean;
+  onToggle: () => void;
 }
 
 export function PropertyPolicyCard({
   property,
   policies,
   isExpanded,
-  onToggle
+  onToggle,
 }: PropertyPolicyCardProps) {
-  const router = useRouter()
+  const router = useRouter();
 
-  const propertyPolicies = policies.filter(p => property.policies.includes(p.id))
+  const propertyPolicies = policies.filter((p) =>
+    property.policies.includes(p.id),
+  );
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(amount)
-  }
+    }).format(amount);
+  };
 
   return (
     <Card variant="property" className="overflow-hidden">
@@ -77,14 +79,20 @@ export function PropertyPolicyCard({
               />
             </div>
             <div>
-              <h3 className="text-xl font-semibold text-white">{property.name}</h3>
-              <p className="text-sm text-gray-400">{propertyPolicies.length} Policies</p>
+              <h3 className="text-xl font-semibold text-white">
+                {property.name}
+              </h3>
+              <p className="text-sm text-gray-400">
+                {propertyPolicies.length} Policies
+              </p>
             </div>
           </div>
-          <ChevronRight className={cn(
-            'w-5 h-5 text-gray-400 transition-transform',
-            isExpanded && 'rotate-90'
-          )} />
+          <ChevronRight
+            className={cn(
+              "w-5 h-5 text-gray-400 transition-transform",
+              isExpanded && "rotate-90",
+            )}
+          />
         </div>
       </CardHeader>
 
@@ -94,7 +102,9 @@ export function PropertyPolicyCard({
             <PolicyListItem
               key={policy.id}
               policy={policy}
-              onClick={() => router.push(`/dashboard/insurance/policy/${policy.id}`)}
+              onClick={() =>
+                router.push(`/dashboard/insurance/policy/${policy.id}`)
+              }
             />
           ))}
 
@@ -110,21 +120,29 @@ export function PropertyPolicyCard({
         </CardContent>
       )}
     </Card>
-  )
+  );
 }
 
-function PolicyListItem({ policy, onClick }: { policy: Policy; onClick: () => void }) {
+function PolicyListItem({
+  policy,
+  onClick,
+}: {
+  policy: Policy;
+  onClick: () => void;
+}) {
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(amount)
-  }
+    }).format(amount);
+  };
 
-  const isWindstorm = policy.type.toLowerCase() === 'windstorm'
-  const windDeductible = isWindstorm ? `2% ($${(policy.coverage * 0.02 / 1000).toFixed(0)},000)` : null
+  const isWindstorm = policy.type.toLowerCase() === "windstorm";
+  const windDeductible = isWindstorm
+    ? `2% ($${((policy.coverage * 0.02) / 1000).toFixed(0)},000)`
+    : null;
 
   return (
     <div
@@ -137,7 +155,9 @@ function PolicyListItem({ policy, onClick }: { policy: Policy; onClick: () => vo
           <p className="text-sm text-gray-400">#{policy.policyNumber}</p>
         </div>
         <div className="text-right">
-          <p className="text-xl font-bold text-white">{formatCurrency(policy.coverage)}</p>
+          <p className="text-xl font-bold text-white">
+            {formatCurrency(policy.coverage)}
+          </p>
           <p className="text-sm text-gray-400">Dwelling Coverage</p>
         </div>
       </div>
@@ -145,7 +165,9 @@ function PolicyListItem({ policy, onClick }: { policy: Policy; onClick: () => vo
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
         <div>
           <p className="text-gray-400 mb-1">Deductible</p>
-          <p className="text-white font-medium">{formatCurrency(policy.deductible)}</p>
+          <p className="text-white font-medium">
+            {formatCurrency(policy.deductible)}
+          </p>
         </div>
         {windDeductible ? (
           <div>
@@ -168,14 +190,14 @@ function PolicyListItem({ policy, onClick }: { policy: Policy; onClick: () => vo
         <div>
           <p className="text-gray-400 mb-1">Expires</p>
           <p className="text-white font-medium">
-            {new Date(policy.expirationDate).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: '2-digit',
-              day: '2-digit'
+            {new Date(policy.expirationDate).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
             })}
           </p>
         </div>
       </div>
     </div>
-  )
+  );
 }

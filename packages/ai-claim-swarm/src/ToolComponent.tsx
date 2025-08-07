@@ -8,11 +8,11 @@
  * @status stable
  */
 
-import { Card, CardHeader, CardContent, Button } from '@claimguardian/ui'
-import { CameraCapture } from '@claimguardian/ui'
-import React from 'react'
+import { Card, CardHeader, CardContent, Button } from "@claimguardian/ui";
+import { CameraCapture } from "@claimguardian/ui";
+import React from "react";
 
-import { useClaimSwarm } from './useClaimSwarm'
+import { useClaimSwarm } from "./useClaimSwarm";
 
 export function ToolComponent() {
   const {
@@ -23,7 +23,7 @@ export function ToolComponent() {
     submitMedia,
     consensus,
     loading,
-  } = useClaimSwarm()
+  } = useClaimSwarm();
 
   return (
     <Card className="bg-gray-800 border-gray-700 w-full max-w-5xl mx-auto">
@@ -39,12 +39,8 @@ export function ToolComponent() {
             onCapture={captureImage}
             className="rounded-md border border-gray-700"
           />
-          <Button
-            onClick={submitMedia}
-            disabled={loading}
-            className="w-full"
-          >
-            {loading ? 'Processing Analysis...' : 'Submit for Swarm Analysis'}
+          <Button onClick={submitMedia} disabled={loading} className="w-full">
+            {loading ? "Processing Analysis..." : "Submit for Swarm Analysis"}
           </Button>
         </div>
 
@@ -52,7 +48,9 @@ export function ToolComponent() {
           <div className="space-y-2">
             <h3 className="font-medium text-white">Live AI Analysis</h3>
             <div className="bg-gray-900 p-4 rounded-md">
-              <pre className="whitespace-pre-wrap text-sm text-gray-300">{analysis}</pre>
+              <pre className="whitespace-pre-wrap text-sm text-gray-300">
+                {analysis}
+              </pre>
             </div>
           </div>
         )}
@@ -61,7 +59,9 @@ export function ToolComponent() {
           <div className="space-y-2">
             <h3 className="font-medium text-white">Swarm Consensus</h3>
             <div className="bg-green-900/20 border border-green-700 p-4 rounded-md">
-              <pre className="whitespace-pre-wrap text-sm text-green-300">{consensus}</pre>
+              <pre className="whitespace-pre-wrap text-sm text-green-300">
+                {consensus}
+              </pre>
             </div>
           </div>
         )}
@@ -71,8 +71,13 @@ export function ToolComponent() {
             <h3 className="font-medium text-white">Active Collaborators</h3>
             <div className="flex flex-wrap gap-2">
               {swarmMembers.map((member, index) => (
-                <div key={index} className="bg-blue-900/20 border border-blue-700 px-3 py-1 rounded-full">
-                  <span className="text-sm text-blue-300">User {index + 1}</span>
+                <div
+                  key={index}
+                  className="bg-blue-900/20 border border-blue-700 px-3 py-1 rounded-full"
+                >
+                  <span className="text-sm text-blue-300">
+                    User {index + 1}
+                  </span>
                 </div>
               ))}
             </div>
@@ -80,5 +85,5 @@ export function ToolComponent() {
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

@@ -1,13 +1,19 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { createClient } from '@/lib/supabase/client';
-import { toast } from 'sonner';
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
 import {
   Bell,
   Mail,
@@ -17,8 +23,8 @@ import {
   AlertTriangle,
   Users,
   Calendar,
-  Zap
-} from 'lucide-react';
+  Zap,
+} from "lucide-react";
 
 interface NotificationChannel {
   email: boolean;
@@ -46,22 +52,63 @@ const defaultPreferences: NotificationPreference = {
   communityAlerts: { email: false, sms: false, push: true, inApp: true },
   maintenanceReminders: { email: true, sms: false, push: true, inApp: true },
   policyChanges: { email: true, sms: false, push: true, inApp: true },
-  marketInsights: { email: true, sms: false, push: false, inApp: true }
+  marketInsights: { email: true, sms: false, push: false, inApp: true },
 };
 
 const notificationTypes = [
-  { key: 'claimUpdates', label: 'Claim Updates', icon: Shield, description: 'Updates about your insurance claims' },
-  { key: 'securityAlerts', label: 'Security Alerts', icon: AlertTriangle, description: 'Important security notifications' },
-  { key: 'paymentReminders', label: 'Payment Reminders', icon: DollarSign, description: 'Premium and payment notifications' },
-  { key: 'weatherAlerts', label: 'Weather Alerts', icon: Zap, description: 'Severe weather and disaster alerts' },
-  { key: 'communityAlerts', label: 'Community Alerts', icon: Users, description: 'Neighborhood and community updates' },
-  { key: 'maintenanceReminders', label: 'Maintenance', icon: Calendar, description: 'Home maintenance reminders' },
-  { key: 'policyChanges', label: 'Policy Changes', icon: Bell, description: 'Insurance policy updates' },
-  { key: 'marketInsights', label: 'Market Insights', icon: MessageSquare, description: 'Insurance market trends and tips' }
+  {
+    key: "claimUpdates",
+    label: "Claim Updates",
+    icon: Shield,
+    description: "Updates about your insurance claims",
+  },
+  {
+    key: "securityAlerts",
+    label: "Security Alerts",
+    icon: AlertTriangle,
+    description: "Important security notifications",
+  },
+  {
+    key: "paymentReminders",
+    label: "Payment Reminders",
+    icon: DollarSign,
+    description: "Premium and payment notifications",
+  },
+  {
+    key: "weatherAlerts",
+    label: "Weather Alerts",
+    icon: Zap,
+    description: "Severe weather and disaster alerts",
+  },
+  {
+    key: "communityAlerts",
+    label: "Community Alerts",
+    icon: Users,
+    description: "Neighborhood and community updates",
+  },
+  {
+    key: "maintenanceReminders",
+    label: "Maintenance",
+    icon: Calendar,
+    description: "Home maintenance reminders",
+  },
+  {
+    key: "policyChanges",
+    label: "Policy Changes",
+    icon: Bell,
+    description: "Insurance policy updates",
+  },
+  {
+    key: "marketInsights",
+    label: "Market Insights",
+    icon: MessageSquare,
+    description: "Insurance market trends and tips",
+  },
 ];
 
 export function NotificationPreferences() {
-  const [preferences, setPreferences] = useState<NotificationPreference>(defaultPreferences);
+  const [preferences, setPreferences] =
+    useState<NotificationPreference>(defaultPreferences);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const supabase = createClient();
@@ -73,20 +120,22 @@ export function NotificationPreferences() {
   const loadPreferences = async () => {
     setLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
       const { data, error } = await supabase
-        .from('user_preferences')
-        .select('notification_preferences')
-        .eq('user_id', user.id)
+        .from("user_preferences")
+        .select("notification_preferences")
+        .eq("user_id", user.id)
         .single();
 
       if (data?.notification_preferences) {
         setPreferences(data.notification_preferences as NotificationPreference);
       }
     } catch (error) {
-      console.error('Error loading preferences:', error);
+      console.error("Error loading preferences:", error);
     } finally {
       setLoading(false);
     }
@@ -95,48 +144,57 @@ export function NotificationPreferences() {
   const savePreferences = async () => {
     setSaving(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
 
-      const { error } = await supabase
-        .from('user_preferences')
-        .upsert({
+      const { error } = await supabase.from("user_preferences").upsert(
+        {
           user_id: user.id,
           notification_preferences: preferences,
-          updated_at: new Date().toISOString()
-        }, {
-          onConflict: 'user_id'
-        });
+          updated_at: new Date().toISOString(),
+        },
+        {
+          onConflict: "user_id",
+        },
+      );
 
       if (error) throw error;
-      toast.success('Notification preferences saved');
+      toast.success("Notification preferences saved");
     } catch (error) {
-      console.error('Error saving preferences:', error);
-      toast.error('Failed to save preferences');
+      console.error("Error saving preferences:", error);
+      toast.error("Failed to save preferences");
     } finally {
       setSaving(false);
     }
   };
 
-  const toggleChannel = (type: keyof NotificationPreference, channel: keyof NotificationChannel) => {
-    setPreferences(prev => ({
+  const toggleChannel = (
+    type: keyof NotificationPreference,
+    channel: keyof NotificationChannel,
+  ) => {
+    setPreferences((prev) => ({
       ...prev,
       [type]: {
         ...prev[type],
-        [channel]: !prev[type][channel]
-      }
+        [channel]: !prev[type][channel],
+      },
     }));
   };
 
-  const toggleAllChannels = (type: keyof NotificationPreference, enabled: boolean) => {
-    setPreferences(prev => ({
+  const toggleAllChannels = (
+    type: keyof NotificationPreference,
+    enabled: boolean,
+  ) => {
+    setPreferences((prev) => ({
       ...prev,
       [type]: {
         email: enabled,
         sms: enabled,
         push: enabled,
-        inApp: enabled
-      }
+        inApp: enabled,
+      },
     }));
   };
 
@@ -156,7 +214,8 @@ export function NotificationPreferences() {
         <CardHeader>
           <CardTitle>Notification Preferences</CardTitle>
           <CardDescription>
-            Choose how you want to receive notifications about your properties and claims
+            Choose how you want to receive notifications about your properties
+            and claims
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -172,8 +231,10 @@ export function NotificationPreferences() {
             <TabsContent value="all" className="space-y-4 mt-6">
               {notificationTypes.map((type) => {
                 const Icon = type.icon;
-                const pref = preferences[type.key as keyof NotificationPreference];
-                const allEnabled = pref.email && pref.sms && pref.push && pref.inApp;
+                const pref =
+                  preferences[type.key as keyof NotificationPreference];
+                const allEnabled =
+                  pref.email && pref.sms && pref.push && pref.inApp;
 
                 return (
                   <div key={type.key} className="border rounded-lg p-4">
@@ -183,11 +244,18 @@ export function NotificationPreferences() {
                         <div className="flex items-center justify-between">
                           <div>
                             <h4 className="font-medium">{type.label}</h4>
-                            <p className="text-sm text-gray-500">{type.description}</p>
+                            <p className="text-sm text-gray-500">
+                              {type.description}
+                            </p>
                           </div>
                           <Switch
                             checked={allEnabled}
-                            onCheckedChange={(checked) => toggleAllChannels(type.key as keyof NotificationPreference, checked)}
+                            onCheckedChange={(checked) =>
+                              toggleAllChannels(
+                                type.key as keyof NotificationPreference,
+                                checked,
+                              )
+                            }
                           />
                         </div>
 
@@ -195,7 +263,12 @@ export function NotificationPreferences() {
                           <Label className="flex items-center space-x-2">
                             <Switch
                               checked={pref.email}
-                              onCheckedChange={() => toggleChannel(type.key as keyof NotificationPreference, 'email')}
+                              onCheckedChange={() =>
+                                toggleChannel(
+                                  type.key as keyof NotificationPreference,
+                                  "email",
+                                )
+                              }
                             />
                             <Mail className="h-4 w-4" />
                             <span className="text-xs">Email</span>
@@ -204,7 +277,12 @@ export function NotificationPreferences() {
                           <Label className="flex items-center space-x-2">
                             <Switch
                               checked={pref.sms}
-                              onCheckedChange={() => toggleChannel(type.key as keyof NotificationPreference, 'sms')}
+                              onCheckedChange={() =>
+                                toggleChannel(
+                                  type.key as keyof NotificationPreference,
+                                  "sms",
+                                )
+                              }
                             />
                             <MessageSquare className="h-4 w-4" />
                             <span className="text-xs">SMS</span>
@@ -213,7 +291,12 @@ export function NotificationPreferences() {
                           <Label className="flex items-center space-x-2">
                             <Switch
                               checked={pref.push}
-                              onCheckedChange={() => toggleChannel(type.key as keyof NotificationPreference, 'push')}
+                              onCheckedChange={() =>
+                                toggleChannel(
+                                  type.key as keyof NotificationPreference,
+                                  "push",
+                                )
+                              }
                             />
                             <Bell className="h-4 w-4" />
                             <span className="text-xs">Push</span>
@@ -222,7 +305,12 @@ export function NotificationPreferences() {
                           <Label className="flex items-center space-x-2">
                             <Switch
                               checked={pref.inApp}
-                              onCheckedChange={() => toggleChannel(type.key as keyof NotificationPreference, 'inApp')}
+                              onCheckedChange={() =>
+                                toggleChannel(
+                                  type.key as keyof NotificationPreference,
+                                  "inApp",
+                                )
+                              }
                             />
                             <Bell className="h-4 w-4" />
                             <span className="text-xs">In-App</span>
@@ -235,24 +323,39 @@ export function NotificationPreferences() {
               })}
             </TabsContent>
 
-            {['email', 'sms', 'push', 'inApp'].map((channel) => (
-              <TabsContent key={channel} value={channel} className="space-y-4 mt-6">
+            {["email", "sms", "push", "inApp"].map((channel) => (
+              <TabsContent
+                key={channel}
+                value={channel}
+                className="space-y-4 mt-6"
+              >
                 {notificationTypes.map((type) => {
-                  const pref = preferences[type.key as keyof NotificationPreference];
+                  const pref =
+                    preferences[type.key as keyof NotificationPreference];
                   const Icon = type.icon;
 
                   return (
-                    <div key={type.key} className="flex items-center justify-between py-3 border-b last:border-0">
+                    <div
+                      key={type.key}
+                      className="flex items-center justify-between py-3 border-b last:border-0"
+                    >
                       <div className="flex items-center space-x-3">
                         <Icon className="h-5 w-5 text-gray-500" />
                         <div>
                           <p className="font-medium">{type.label}</p>
-                          <p className="text-sm text-gray-500">{type.description}</p>
+                          <p className="text-sm text-gray-500">
+                            {type.description}
+                          </p>
                         </div>
                       </div>
                       <Switch
                         checked={pref[channel as keyof NotificationChannel]}
-                        onCheckedChange={() => toggleChannel(type.key as keyof NotificationPreference, channel as keyof NotificationChannel)}
+                        onCheckedChange={() =>
+                          toggleChannel(
+                            type.key as keyof NotificationPreference,
+                            channel as keyof NotificationChannel,
+                          )
+                        }
                       />
                     </div>
                   );
@@ -263,7 +366,7 @@ export function NotificationPreferences() {
 
           <div className="flex justify-end mt-6">
             <Button onClick={savePreferences} disabled={saving}>
-              {saving ? 'Saving...' : 'Save Preferences'}
+              {saving ? "Saving..." : "Save Preferences"}
             </Button>
           </div>
         </CardContent>

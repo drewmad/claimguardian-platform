@@ -1,9 +1,11 @@
 # UI Package - Claude.md
 
 ## Overview
+
 The `@claimguardian/ui` package provides a centralized design system built on Radix UI primitives with Tailwind CSS styling and liquid glass effects.
 
 ## Architecture
+
 - **Radix UI Primitives**: Accessible, unstyled components
 - **Tailwind CSS**: Utility-first styling
 - **Liquid Glass Design**: Premium visual effects with glassmorphism
@@ -14,6 +16,7 @@ The `@claimguardian/ui` package provides a centralized design system built on Ra
 ## Design System
 
 ### Liquid Glass Theme
+
 ```css
 /* Core liquid glass effects */
 .liquid-glass {
@@ -24,34 +27,38 @@ The `@claimguardian/ui` package provides a centralized design system built on Ra
 }
 
 .liquid-glass-accent {
-  background: linear-gradient(135deg,
+  background: linear-gradient(
+    135deg,
     rgba(59, 130, 246, 0.15) 0%,
-    rgba(147, 51, 234, 0.15) 100%);
+    rgba(147, 51, 234, 0.15) 100%
+  );
 }
 ```
 
 ### Color Palette
+
 ```typescript
 const colors = {
   primary: {
-    50: '#eff6ff',
-    500: '#3b82f6', // Blue
-    900: '#1e3a8a'
+    50: "#eff6ff",
+    500: "#3b82f6", // Blue
+    900: "#1e3a8a",
   },
   accent: {
-    50: '#faf5ff',
-    500: '#9333ea', // Purple
-    900: '#581c87'
+    50: "#faf5ff",
+    500: "#9333ea", // Purple
+    900: "#581c87",
   },
-  success: '#10b981',
-  warning: '#f59e0b',
-  error: '#ef4444'
-}
+  success: "#10b981",
+  warning: "#f59e0b",
+  error: "#ef4444",
+};
 ```
 
 ## Component Categories
 
 ### Form Components
+
 ```typescript
 // Always import from package root
 import {
@@ -72,6 +79,7 @@ import {
 ```
 
 ### Layout Components
+
 ```typescript
 import {
   Card, CardContent, CardHeader, CardTitle,
@@ -91,6 +99,7 @@ import {
 ```
 
 ### Navigation Components
+
 ```typescript
 import {
   NavigationMenu, NavigationMenuContent, NavigationMenuItem,
@@ -108,6 +117,7 @@ import {
 ```
 
 ### Feedback Components
+
 ```typescript
 import {
   Alert, AlertDescription,
@@ -127,28 +137,34 @@ import {
 ## Import Patterns
 
 ### ✅ Always Import from Root
+
 ```typescript
 // Correct - tree-shakable, optimized
-import { Button, Card, Input } from '@claimguardian/ui'
+import { Button, Card, Input } from "@claimguardian/ui";
 
 // Also correct - named imports
 import {
   Button,
-  Card, CardContent, CardHeader,
-  Input, Label
-} from '@claimguardian/ui'
+  Card,
+  CardContent,
+  CardHeader,
+  Input,
+  Label,
+} from "@claimguardian/ui";
 ```
 
 ### ❌ Never Import from Subpaths
+
 ```typescript
 // Wrong - breaks tree shaking, causes bundle bloat
-import { Button } from '@claimguardian/ui/button'
-import { Card } from '@claimguardian/ui/card'
+import { Button } from "@claimguardian/ui/button";
+import { Card } from "@claimguardian/ui/card";
 ```
 
 ## Component Customization
 
 ### Variant System
+
 ```typescript
 // Button variants
 <Button variant="default">Default</Button>
@@ -178,6 +194,7 @@ import { Card } from '@claimguardian/ui/card'
 ```
 
 ### Custom Styling with Tailwind
+
 ```typescript
 // Extend component styles with className
 <Button
@@ -196,6 +213,7 @@ import { Card } from '@claimguardian/ui/card'
 ```
 
 ### Dark Theme Support
+
 ```typescript
 // All components support dark theme by default
 <div className="min-h-screen bg-slate-950 text-white">
@@ -213,6 +231,7 @@ import { Card } from '@claimguardian/ui/card'
 ## Liquid Glass Implementation
 
 ### Base Effects
+
 ```typescript
 // Apply liquid glass to containers
 <div className="liquid-glass p-6 rounded-lg">
@@ -229,6 +248,7 @@ import { Card } from '@claimguardian/ui/card'
 ```
 
 ### Interactive Effects
+
 ```typescript
 // Hover animations
 <Button className="liquid-glass hover:liquid-glass-accent transition-all duration-300">
@@ -242,6 +262,7 @@ import { Card } from '@claimguardian/ui/card'
 ## Component Composition
 
 ### Form Compositions
+
 ```typescript
 // Complete form example
 <Card className="bg-gray-800 border-gray-700 liquid-glass">
@@ -276,6 +297,7 @@ import { Card } from '@claimguardian/ui/card'
 ```
 
 ### Dialog Compositions
+
 ```typescript
 <Dialog open={isOpen} onOpenChange={setIsOpen}>
   <DialogContent className="bg-gray-800 border-gray-700 liquid-glass">
@@ -305,11 +327,13 @@ import { Card } from '@claimguardian/ui/card'
 ## Accessibility
 
 ### Keyboard Navigation
+
 - All components support keyboard navigation
 - Focus management handled automatically
 - Tab order follows logical flow
 
 ### Screen Reader Support
+
 ```typescript
 // Use proper ARIA labels
 <Button aria-label="Close dialog">
@@ -327,6 +351,7 @@ import { Card } from '@claimguardian/ui/card'
 ```
 
 ### Color Contrast
+
 - All components meet WCAG AA standards
 - High contrast ratios for text and backgrounds
 - Focus indicators clearly visible
@@ -334,17 +359,21 @@ import { Card } from '@claimguardian/ui/card'
 ## Performance Considerations
 
 ### Bundle Optimization
+
 ```typescript
 // Tree shaking works automatically with root imports
-import { Button, Card } from '@claimguardian/ui' // Only these are bundled
+import { Button, Card } from "@claimguardian/ui"; // Only these are bundled
 
 // Dynamic imports for large components
-const DataTable = lazy(() => import('@claimguardian/ui').then(mod => ({
-  default: mod.DataTable
-})))
+const DataTable = lazy(() =>
+  import("@claimguardian/ui").then((mod) => ({
+    default: mod.DataTable,
+  })),
+);
 ```
 
 ### CSS Optimization
+
 - Tailwind CSS purges unused styles
 - Component styles are minimal and focused
 - Liquid glass effects use efficient CSS filters
@@ -352,6 +381,7 @@ const DataTable = lazy(() => import('@claimguardian/ui').then(mod => ({
 ## Testing Components
 
 ### Unit Tests
+
 ```typescript
 import { render, screen } from '@testing-library/react'
 import { Button } from '@claimguardian/ui'
@@ -369,6 +399,7 @@ test('applies variant classes correctly', () => {
 ```
 
 ### Storybook Integration
+
 ```typescript
 // Component stories for documentation
 export default {
@@ -389,6 +420,7 @@ export const Variants = () => (
 ## Build Configuration
 
 ### Package.json
+
 ```json
 {
   "name": "@claimguardian/ui",
@@ -407,33 +439,38 @@ export const Variants = () => (
 ```
 
 ### TSUp Configuration
+
 ```typescript
 // Optimized build for tree shaking
 export default {
-  entry: ['src/index.tsx'],
-  format: ['cjs', 'esm'],
+  entry: ["src/index.tsx"],
+  format: ["cjs", "esm"],
   dts: true,
   sourcemap: true,
   clean: true,
-  external: ['react', 'react-dom'],
-  treeshake: true
-}
+  external: ["react", "react-dom"],
+  treeshake: true,
+};
 ```
 
 ## Common Issues & Solutions
 
 ### Missing Component Exports
+
 - **Issue**: Component not found when importing
 - **Fix**: Add export to `src/index.tsx`
 
 ### Styling Not Applied
+
 - **Issue**: Tailwind classes not working
 - **Fix**: Ensure component is wrapped with proper class names
 
 ### Bundle Size Issues
+
 - **Issue**: Large bundle size
 - **Fix**: Use root imports, check for duplicate dependencies
 
 ### TypeScript Errors
+
 - **Issue**: Type conflicts with Radix UI
 - **Fix**: Update @types/react, ensure compatible versions

@@ -8,15 +8,15 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { ProtectedRoute } from '@/components/auth/protected-route'
-import { ClaimCreationWizard } from '@/components/claims/claim-creation-wizard'
+import { ProtectedRoute } from "@/components/auth/protected-route";
+import { ClaimCreationWizard } from "@/components/claims/claim-creation-wizard";
 
 export default function NewClaimPage() {
   return (
     <ProtectedRoute>
       <ClaimCreationWizard />
     </ProtectedRoute>
-  )
+  );
 }

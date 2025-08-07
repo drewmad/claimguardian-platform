@@ -11,12 +11,12 @@
  * @lastModifiedDate 2025-08-04T20:25:00Z
  */
 
-import { defineConfig } from 'vitest/config'
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    environment: 'node',
+    environment: "node",
     globals: true,
-    include: ['src/**/*.{test,spec}.{js,ts}']
-  }
-})
+    include: ["src/**/*.{test,spec}.{js,ts}"],
+  },
+});

@@ -7,31 +7,37 @@ This repository uses GitHub Actions for continuous integration and deployment. H
 Set these secrets in your GitHub repository settings (Settings → Secrets and variables → Actions):
 
 ### Core Application Secrets
+
 - `NEXT_PUBLIC_SUPABASE_URL` - Your Supabase project URL
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Your Supabase anonymous key
 - `SUPABASE_SERVICE_ROLE_KEY` - Your Supabase service role key (for migrations)
 
 ### AI API Keys
+
 - `GEMINI_API_KEY` - Google Gemini API key (for AI features)
 - `OPENAI_API_KEY` - OpenAI API key (optional, for AI features)
 
 ### Deployment Secrets (Vercel)
+
 - `VERCEL_TOKEN` - Your Vercel API token
 - `VERCEL_ORG_ID` - Your Vercel organization ID
 - `VERCEL_PROJECT_ID` - Your Vercel project ID
 
 ### Monitoring & Analytics
+
 - `SENTRY_AUTH_TOKEN` - Sentry authentication token
 - `SENTRY_ORG` - Your Sentry organization slug
 - `SENTRY_PROJECT` - Your Sentry project slug
 - `NEXT_PUBLIC_SENTRY_DSN` - Your Sentry DSN
 
 ### Notifications (Optional)
+
 - `SLACK_WEBHOOK` - Slack webhook URL for deployment notifications
 
 ## Workflows
 
 ### Main CI/CD Pipeline (`main.yml`)
+
 - **Triggers**: Push to main/develop, Pull requests
 - **Jobs**:
   1. Lint & Type Check
@@ -45,6 +51,7 @@ Set these secrets in your GitHub repository settings (Settings → Secrets and v
   9. E2E Tests (after preview deploy)
 
 ### Other Workflows
+
 - `lockfile-check.yml` - Validates pnpm lockfile integrity
 - `type-check.yml` - Runs TypeScript type checking
 - `lint-fix.yml` - Auto-fixes linting issues on PRs

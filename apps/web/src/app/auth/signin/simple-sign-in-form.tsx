@@ -8,70 +8,71 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { createBrowserSupabaseClient } from '@claimguardian/db'
-import { Shield, ArrowLeft, Loader2, AlertCircle } from 'lucide-react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import { logger } from "@/lib/logger/production-logger"
+import { createBrowserSupabaseClient } from "@claimguardian/db";
+import { Shield, ArrowLeft, Loader2, AlertCircle } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { logger } from "@/lib/logger/production-logger";
 
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { SocialLoginPanel } from '@/components/auth/social-login-enhanced'
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { SocialLoginPanel } from "@/components/auth/social-login-enhanced";
 
 interface SimpleSignInFormProps {
-  message?: string
+  message?: string;
 }
 
 export function SimpleSignInForm({ message }: SimpleSignInFormProps) {
-  const router = useRouter()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(message || null)
-  const supabase = createBrowserSupabaseClient()
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(message || null);
+  const supabase = createBrowserSupabaseClient();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
 
     // Clear any existing errors
-    setError(null)
+    setError(null);
 
     // Basic validation
     if (!email || !password) {
-      setError('Please enter both email and password')
-      return
+      setError("Please enter both email and password");
+      return;
     }
 
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
+      const { data, error: signInError } =
+        await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
 
       if (signInError) {
-        setError(signInError.message)
-        setIsLoading(false)
-        return
+        setError(signInError.message);
+        setIsLoading(false);
+        return;
       }
 
       if (data?.user) {
         // Successful sign in - redirect to dashboard
-        router.push('/dashboard')
-        router.refresh()
+        router.push("/dashboard");
+        router.refresh();
       }
     } catch (error) {
-      logger.error('Sign in error:', error)
-      setError('An unexpected error occurred. Please try again.')
-      setIsLoading(false)
+      logger.error("Sign in error:", error);
+      setError("An unexpected error occurred. Please try again.");
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 flex items-center justify-center p-4">
@@ -81,7 +82,9 @@ export function SimpleSignInForm({ message }: SimpleSignInFormProps) {
           <div className="text-center mb-8">
             <div className="flex items-center justify-center space-x-2 mb-4">
               <Shield className="h-8 w-8 text-blue-400" />
-              <span className="text-2xl font-bold text-white">ClaimGuardian</span>
+              <span className="text-2xl font-bold text-white">
+                ClaimGuardian
+              </span>
             </div>
             <h1 className="text-2xl font-bold text-white mb-2">Sign In</h1>
             <p className="text-slate-400">Sign in to your account</p>
@@ -99,7 +102,7 @@ export function SimpleSignInForm({ message }: SimpleSignInFormProps) {
           <div className="mb-8">
             <SocialLoginPanel
               mode="login"
-              onSuccess={() => router.push('/dashboard')}
+              onSuccess={() => router.push("/dashboard")}
               onError={(error) => setError(error)}
             />
           </div>
@@ -110,7 +113,9 @@ export function SimpleSignInForm({ message }: SimpleSignInFormProps) {
               <div className="w-full border-t border-slate-700"></div>
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-slate-900/50 px-2 text-slate-400">Or continue with email</span>
+              <span className="bg-slate-900/50 px-2 text-slate-400">
+                Or continue with email
+              </span>
             </div>
           </div>
 
@@ -163,7 +168,7 @@ export function SimpleSignInForm({ message }: SimpleSignInFormProps) {
                   Signing in...
                 </>
               ) : (
-                'Sign In'
+                "Sign In"
               )}
             </Button>
           </form>
@@ -171,7 +176,7 @@ export function SimpleSignInForm({ message }: SimpleSignInFormProps) {
           {/* Sign Up Link */}
           <div className="mt-6 text-center">
             <p className="text-slate-400">
-              Don't have an account?{' '}
+              Don't have an account?{" "}
               <Link
                 href="/auth/signup"
                 className="text-blue-400 hover:text-blue-300 font-medium"
@@ -194,5 +199,5 @@ export function SimpleSignInForm({ message }: SimpleSignInFormProps) {
         </div>
       </Card>
     </div>
-  )
+  );
 }

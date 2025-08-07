@@ -8,10 +8,10 @@
  * @status stable
  */
 
-import '@testing-library/jest-dom' // Re-enabled for runtime testing
+import "@testing-library/jest-dom"; // Re-enabled for runtime testing
 
 // Mock Next.js router
-jest.mock('next/navigation', () => ({
+jest.mock("next/navigation", () => ({
   useRouter: () => ({
     push: jest.fn(),
     replace: jest.fn(),
@@ -29,23 +29,29 @@ jest.mock('next/navigation', () => ({
     entries: jest.fn(),
     toString: jest.fn(),
   }),
-  usePathname: () => '/mock-path',
+  usePathname: () => "/mock-path",
   notFound: jest.fn(),
   redirect: jest.fn(),
-}))
+}));
 
 // Mock Supabase client
-jest.mock('@/lib/supabase/client', () => ({
+jest.mock("@/lib/supabase/client", () => ({
   createClient: () => ({
     auth: {
-      getSession: jest.fn().mockResolvedValue({ data: { session: null }, error: null }),
-      getUser: jest.fn().mockResolvedValue({ data: { user: null }, error: null }),
+      getSession: jest
+        .fn()
+        .mockResolvedValue({ data: { session: null }, error: null }),
+      getUser: jest
+        .fn()
+        .mockResolvedValue({ data: { user: null }, error: null }),
       signInWithPassword: jest.fn(),
       signUp: jest.fn(),
       signOut: jest.fn(),
       resetPasswordForEmail: jest.fn(),
       updateUser: jest.fn(),
-      onAuthStateChange: jest.fn(() => ({ data: { subscription: { unsubscribe: jest.fn() } } })),
+      onAuthStateChange: jest.fn(() => ({
+        data: { subscription: { unsubscribe: jest.fn() } },
+      })),
     },
     from: jest.fn(() => ({
       select: jest.fn().mockReturnThis(),
@@ -56,33 +62,33 @@ jest.mock('@/lib/supabase/client', () => ({
       single: jest.fn().mockResolvedValue({ data: null, error: null }),
     })),
   }),
-}))
+}));
 
 // Mock environment variables
-process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.co'
-process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key'
-process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-service-role-key'
-process.env.OPENAI_API_KEY = 'test-openai-key'
-process.env.GEMINI_API_KEY = 'test-gemini-key'
+process.env.NEXT_PUBLIC_SUPABASE_URL = "https://test.supabase.co";
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "test-anon-key";
+process.env.SUPABASE_SERVICE_ROLE_KEY = "test-service-role-key";
+process.env.OPENAI_API_KEY = "test-openai-key";
+process.env.GEMINI_API_KEY = "test-gemini-key";
 
 // Mock window properties using global assignment
-;(global as any).window = {
+(global as any).window = {
   ...global.window,
   location: {
-    href: 'http://localhost:3000',
-    pathname: '/test',
-    search: '',
-    hash: '',
+    href: "http://localhost:3000",
+    pathname: "/test",
+    search: "",
+    hash: "",
     reload: jest.fn(),
     assign: jest.fn(),
     replace: jest.fn(),
   },
   navigator: {
-    userAgent: 'jest-test-environment',
-    platform: 'test',
-    language: 'en-US',
+    userAgent: "jest-test-environment",
+    platform: "test",
+    language: "en-US",
   },
-}
+};
 
 // Mock localStorage
 const mockStorage = {
@@ -92,76 +98,86 @@ const mockStorage = {
   clear: jest.fn(),
   key: jest.fn(),
   length: 0,
-}
+};
 
-Object.defineProperty(window, 'localStorage', {
+Object.defineProperty(window, "localStorage", {
   value: mockStorage,
   writable: true,
-})
+});
 
-Object.defineProperty(window, 'sessionStorage', {
+Object.defineProperty(window, "sessionStorage", {
   value: mockStorage,
   writable: true,
-})
+});
 
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {
-  root: Element | Document | null = null
-  rootMargin: string = ''
-  thresholds: ReadonlyArray<number> = []
+  root: Element | Document | null = null;
+  rootMargin: string = "";
+  thresholds: ReadonlyArray<number> = [];
 
   constructor(
     callback: IntersectionObserverCallback,
-    options?: IntersectionObserverInit
+    options?: IntersectionObserverInit,
   ) {
-    this.root = options?.root || null
-    this.rootMargin = options?.rootMargin || ''
-    this.thresholds = options?.threshold ? (Array.isArray(options.threshold) ? options.threshold : [options.threshold]) : []
+    this.root = options?.root || null;
+    this.rootMargin = options?.rootMargin || "";
+    this.thresholds = options?.threshold
+      ? Array.isArray(options.threshold)
+        ? options.threshold
+        : [options.threshold]
+      : [];
   }
 
   observe(_target: Element): void {}
   unobserve(_target: Element): void {}
   disconnect(): void {}
   takeRecords(): IntersectionObserverEntry[] {
-    return []
+    return [];
   }
-}
+};
 
 // Mock ResizeObserver
 global.ResizeObserver = class ResizeObserver {
   constructor() {}
-  observe() { return null }
-  disconnect() { return null }
-  unobserve() { return null }
-}
+  observe() {
+    return null;
+  }
+  disconnect() {
+    return null;
+  }
+  unobserve() {
+    return null;
+  }
+};
 
 // Mock fetch
-global.fetch = jest.fn()
+global.fetch = jest.fn();
 
 // Mock console methods to reduce noise in tests
-const originalConsole = { ...console }
+const originalConsole = { ...console };
 
 beforeEach(() => {
   // Reset all mocks before each test
-  jest.clearAllMocks()
+  jest.clearAllMocks();
 
   // Reset fetch mock
-  ;(global.fetch as jest.Mock).mockClear()
+  (global.fetch as jest.Mock).mockClear();
 
   // Suppress console outputs during tests unless explicitly testing them
-  console.log = jest.fn()
-  console.info = jest.fn()
-  console.warn = jest.fn()
-  console.error = jest.fn()
-})
+  console.log = jest.fn();
+  console.info = jest.fn();
+  console.warn = jest.fn();
+  console.error = jest.fn();
+});
 
 afterEach(() => {
   // Restore console after each test
-  console.log = originalConsole.log
-  console.info = originalConsole.info
-  console.warn = originalConsole.warn
-  console.error = originalConsole.error
-})
+  console.log = originalConsole.log;
+  console.info = originalConsole.info;
+  console.warn = originalConsole.warn;
+  console.error = originalConsole.error;
+});
 
 // Global test timeout
-jest.setTimeout(10000)
+jest.setTimeout(10000);

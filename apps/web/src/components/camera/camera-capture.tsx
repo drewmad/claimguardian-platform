@@ -8,102 +8,109 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { X, Camera, RotateCcw } from 'lucide-react'
-import React, { useRef, useEffect, useState, useCallback } from 'react'
-import { logger } from "@/lib/logger/production-logger"
+import { X, Camera, RotateCcw } from "lucide-react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
+import { logger } from "@/lib/logger/production-logger";
 
-import { Button } from '@/components/ui/button'
+import { Button } from "@/components/ui/button";
 
 interface CameraCaptureProps {
-  onClose: () => void
-  onCapture: (file: File) => void
+  onClose: () => void;
+  onCapture: (file: File) => void;
 }
 
 export function CameraCapture({ onClose, onCapture }: CameraCaptureProps) {
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [stream, setStream] = useState<MediaStream | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment')
-  const [isCapturing, setIsCapturing] = useState(false)
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [stream, setStream] = useState<MediaStream | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [facingMode, setFacingMode] = useState<"user" | "environment">(
+    "environment",
+  );
+  const [isCapturing, setIsCapturing] = useState(false);
 
   const startCamera = useCallback(async () => {
     try {
-      setError(null)
+      setError(null);
       const constraints = {
         video: {
           facingMode,
           width: { ideal: 1280 },
           height: { ideal: 720 },
         },
-      }
+      };
 
-      const mediaStream = await navigator.mediaDevices.getUserMedia(constraints)
-      setStream(mediaStream)
+      const mediaStream =
+        await navigator.mediaDevices.getUserMedia(constraints);
+      setStream(mediaStream);
 
       if (videoRef.current) {
-        videoRef.current.srcObject = mediaStream
+        videoRef.current.srcObject = mediaStream;
       }
     } catch (err) {
-      logger.error('Error accessing camera:', err)
-      setError('Unable to access camera. Please check permissions.')
+      logger.error("Error accessing camera:", err);
+      setError("Unable to access camera. Please check permissions.");
     }
-  }, [facingMode])
+  }, [facingMode]);
 
   const stopCamera = useCallback(() => {
     if (stream) {
-      stream.getTracks().forEach(track => track.stop())
-      setStream(null)
+      stream.getTracks().forEach((track) => track.stop());
+      setStream(null);
     }
-  }, [stream])
+  }, [stream]);
 
   useEffect(() => {
-    startCamera()
+    startCamera();
     return () => {
-      stopCamera()
-    }
-  }, [startCamera, stopCamera])
+      stopCamera();
+    };
+  }, [startCamera, stopCamera]);
 
   const captureImage = () => {
-    if (!videoRef.current || !canvasRef.current) return
+    if (!videoRef.current || !canvasRef.current) return;
 
-    setIsCapturing(true)
-    const video = videoRef.current
-    const canvas = canvasRef.current
-    const context = canvas.getContext('2d')
+    setIsCapturing(true);
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    const context = canvas.getContext("2d");
 
     if (!context) {
-      setError('Unable to capture image')
-      setIsCapturing(false)
-      return
+      setError("Unable to capture image");
+      setIsCapturing(false);
+      return;
     }
 
     // Set canvas dimensions to match video
-    canvas.width = video.videoWidth
-    canvas.height = video.videoHeight
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
 
     // Draw the video frame to canvas
-    context.drawImage(video, 0, 0, canvas.width, canvas.height)
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
     // Convert canvas to blob
-    canvas.toBlob((blob) => {
-      if (blob) {
-        const file = new File([blob], `camera-capture-${Date.now()}.jpg`, {
-          type: 'image/jpeg',
-        })
-        onCapture(file)
-      } else {
-        setError('Failed to capture image')
-      }
-      setIsCapturing(false)
-    }, 'image/jpeg', 0.9)
-  }
+    canvas.toBlob(
+      (blob) => {
+        if (blob) {
+          const file = new File([blob], `camera-capture-${Date.now()}.jpg`, {
+            type: "image/jpeg",
+          });
+          onCapture(file);
+        } else {
+          setError("Failed to capture image");
+        }
+        setIsCapturing(false);
+      },
+      "image/jpeg",
+      0.9,
+    );
+  };
 
   const toggleCamera = () => {
-    setFacingMode(prev => prev === 'user' ? 'environment' : 'user')
-  }
+    setFacingMode((prev) => (prev === "user" ? "environment" : "user"));
+  };
 
   return (
     <div className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4">
@@ -172,7 +179,7 @@ export function CameraCapture({ onClose, onCapture }: CameraCaptureProps) {
             className="bg-blue-600 hover:bg-blue-700 text-white px-8"
           >
             <Camera className="h-5 w-5 mr-2" />
-            {isCapturing ? 'Capturing...' : 'Capture'}
+            {isCapturing ? "Capturing..." : "Capture"}
           </Button>
 
           <Button
@@ -189,5 +196,5 @@ export function CameraCapture({ onClose, onCapture }: CameraCaptureProps) {
         <canvas ref={canvasRef} className="hidden" />
       </div>
     </div>
-  )
+  );
 }

@@ -8,10 +8,10 @@
  * @tags ["database", "caching", "dashboard", "monitoring", "performance"]
  * @status stable
  */
-'use client'
+"use client";
 
-import { useState, useEffect, useMemo } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useEffect, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Zap,
   Database,
@@ -33,175 +33,179 @@ import {
   Clock,
   Eye,
   Filter,
-  Download
-} from 'lucide-react'
+  Download,
+} from "lucide-react";
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Progress } from '@/components/ui/progress'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { getCacheManager, type CacheLevel, type CacheMetrics } from '@/lib/database/cache-manager'
-import { useToast } from '@/components/notifications/toast-system'
-import { cn } from '@/lib/utils'
-import { logger } from '@/lib/logger'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  getCacheManager,
+  type CacheLevel,
+  type CacheMetrics,
+} from "@/lib/database/cache-manager";
+import { useToast } from "@/components/notifications/toast-system";
+import { cn } from "@/lib/utils";
+import { logger } from "@/lib/logger";
 
 interface CacheDashboardProps {
-  refreshInterval?: number
-  showOptimizations?: boolean
-  className?: string
+  refreshInterval?: number;
+  showOptimizations?: boolean;
+  className?: string;
 }
 
 interface CacheAlert {
-  id: string
-  type: 'warning' | 'error' | 'info'
-  title: string
-  message: string
-  level?: CacheLevel
-  action?: () => void
-  actionLabel?: string
+  id: string;
+  type: "warning" | "error" | "info";
+  title: string;
+  message: string;
+  level?: CacheLevel;
+  action?: () => void;
+  actionLabel?: string;
 }
 
 export function CacheDashboard({
   refreshInterval = 10000, // 10 seconds
   showOptimizations = true,
-  className
+  className,
 }: CacheDashboardProps) {
-  const [metrics, setMetrics] = useState<CacheMetrics | null>(null)
-  const [cacheInfo, setCacheInfo] = useState<any>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [alerts, setAlerts] = useState<CacheAlert[]>([])
-  const [selectedLevel, setSelectedLevel] = useState<CacheLevel | 'all'>('all')
-  const [autoRefresh, setAutoRefresh] = useState(true)
-  const [isOptimizing, setIsOptimizing] = useState(false)
+  const [metrics, setMetrics] = useState<CacheMetrics | null>(null);
+  const [cacheInfo, setCacheInfo] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [alerts, setAlerts] = useState<CacheAlert[]>([]);
+  const [selectedLevel, setSelectedLevel] = useState<CacheLevel | "all">("all");
+  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [isOptimizing, setIsOptimizing] = useState(false);
 
-  const { success, error, info } = useToast()
-  const cacheManager = useMemo(() => getCacheManager(), [])
+  const { success, error, info } = useToast();
+  const cacheManager = useMemo(() => getCacheManager(), []);
 
   // Fetch cache data
   const fetchCacheData = async () => {
     try {
       const [metricsData, infoData] = await Promise.all([
         cacheManager.getMetrics(),
-        cacheManager.getCacheInfo()
-      ])
+        cacheManager.getCacheInfo(),
+      ]);
 
-      setMetrics(metricsData)
-      setCacheInfo(infoData)
-      setAlerts(generateAlerts(metricsData, infoData))
+      setMetrics(metricsData);
+      setCacheInfo(infoData);
+      setAlerts(generateAlerts(metricsData, infoData));
     } catch (err) {
-      logger.error('Failed to fetch cache data', {}, err as Error)
-      error('Failed to load cache data')
+      logger.error("Failed to fetch cache data", {}, err as Error);
+      error("Failed to load cache data");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   // Auto-refresh effect
   useEffect(() => {
-    fetchCacheData()
+    fetchCacheData();
 
     if (autoRefresh) {
-      const interval = setInterval(fetchCacheData, refreshInterval)
-      return () => clearInterval(interval)
+      const interval = setInterval(fetchCacheData, refreshInterval);
+      return () => clearInterval(interval);
     }
-  }, [autoRefresh, refreshInterval])
+  }, [autoRefresh, refreshInterval]);
 
   // Generate cache alerts
   const generateAlerts = (metrics: CacheMetrics, info: any): CacheAlert[] => {
-    const alerts: CacheAlert[] = []
+    const alerts: CacheAlert[] = [];
 
     // Low hit rate alert
     if (metrics.hitRate < 70) {
       alerts.push({
-        id: 'low-hit-rate',
-        type: 'warning',
-        title: 'Low Cache Hit Rate',
+        id: "low-hit-rate",
+        type: "warning",
+        title: "Low Cache Hit Rate",
         message: `Hit rate is ${metrics.hitRate.toFixed(1)}%. Consider optimizing cache keys or increasing TTL.`,
         action: () => handleOptimizeCache(),
-        actionLabel: 'Optimize'
-      })
+        actionLabel: "Optimize",
+      });
     }
 
     // High memory usage alert
     if (metrics.memoryUsage.utilization > 85) {
       alerts.push({
-        id: 'high-memory',
-        type: 'error',
-        title: 'High Memory Usage',
+        id: "high-memory",
+        type: "error",
+        title: "High Memory Usage",
         message: `Memory utilization is ${metrics.memoryUsage.utilization.toFixed(1)}%. Cache eviction may occur.`,
         action: () => handleClearCache(),
-        actionLabel: 'Clear Cache'
-      })
+        actionLabel: "Clear Cache",
+      });
     }
 
     // High latency alert
     if (metrics.performance.getLatency > 50) {
       alerts.push({
-        id: 'high-latency',
-        type: 'warning',
-        title: 'High Cache Latency',
+        id: "high-latency",
+        type: "warning",
+        title: "High Cache Latency",
         message: `Average get latency is ${metrics.performance.getLatency.toFixed(1)}ms. Check cache layer performance.`,
-        level: 'memory'
-      })
+        level: "memory",
+      });
     }
 
     // Excellent performance
     if (metrics.hitRate > 90 && metrics.memoryUsage.utilization < 70) {
       alerts.push({
-        id: 'excellent-performance',
-        type: 'info',
-        title: 'Excellent Cache Performance',
+        id: "excellent-performance",
+        type: "info",
+        title: "Excellent Cache Performance",
         message: `Hit rate ${metrics.hitRate.toFixed(1)}% with optimal memory usage.`,
-        action: () => info('Cache is performing excellently!'),
-        actionLabel: 'Details'
-      })
+        action: () => info("Cache is performing excellently!"),
+        actionLabel: "Details",
+      });
     }
 
-    return alerts
-  }
+    return alerts;
+  };
 
   // Cache operations
   const handleOptimizeCache = async () => {
-    setIsOptimizing(true)
+    setIsOptimizing(true);
     try {
-      const result = await cacheManager.optimize()
-      success('Cache optimization completed', {
-        subtitle: `Applied ${result.optimizations.length} optimizations`
-      })
-      await fetchCacheData()
+      const result = await cacheManager.optimize();
+      success("Cache optimization completed", {
+        subtitle: `Applied ${result.optimizations.length} optimizations`,
+      });
+      await fetchCacheData();
     } catch (err) {
-      error('Cache optimization failed')
+      error("Cache optimization failed");
     } finally {
-      setIsOptimizing(false)
+      setIsOptimizing(false);
     }
-  }
+  };
 
   const handleClearCache = async () => {
     try {
-      await cacheManager.clear()
-      success('Cache cleared successfully')
-      await fetchCacheData()
+      await cacheManager.clear();
+      success("Cache cleared successfully");
+      await fetchCacheData();
     } catch (err) {
-      error('Failed to clear cache')
+      error("Failed to clear cache");
     }
-  }
+  };
 
   const handleClearLevel = async (level: CacheLevel) => {
     try {
-      await cacheManager.clear({ levels: [level] })
-      success(`${level} cache cleared`)
-      await fetchCacheData()
+      await cacheManager.clear({ levels: [level] });
+      success(`${level} cache cleared`);
+      await fetchCacheData();
     } catch (err) {
-      error(`Failed to clear ${level} cache`)
+      error(`Failed to clear ${level} cache`);
     }
-  }
+  };
 
   // Filtered metrics by level
   const filteredMetrics = useMemo(() => {
-    if (!metrics || selectedLevel === 'all') return metrics
-    return metrics
-  }, [metrics, selectedLevel])
+    if (!metrics || selectedLevel === "all") return metrics;
+    return metrics;
+  }, [metrics, selectedLevel]);
 
   if (isLoading) {
     return (
@@ -213,7 +217,7 @@ export function CacheDashboard({
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   if (!metrics || !cacheInfo) {
@@ -233,7 +237,7 @@ export function CacheDashboard({
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   return (
@@ -253,27 +257,33 @@ export function CacheDashboard({
         <div className="flex items-center gap-3">
           {/* Level Filter */}
           <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
-            {(['all', 'memory', 'browser', 'redis', 'database'] as const).map((level) => (
-              <Button
-                key={level}
-                variant={selectedLevel === level ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setSelectedLevel(level)}
-                className="h-8 px-3 capitalize"
-                disabled={level !== 'all' && level !== 'memory' && level !== 'browser'}
-              >
-                {level}
-              </Button>
-            ))}
+            {(["all", "memory", "browser", "redis", "database"] as const).map(
+              (level) => (
+                <Button
+                  key={level}
+                  variant={selectedLevel === level ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setSelectedLevel(level)}
+                  className="h-8 px-3 capitalize"
+                  disabled={
+                    level !== "all" && level !== "memory" && level !== "browser"
+                  }
+                >
+                  {level}
+                </Button>
+              ),
+            )}
           </div>
 
           {/* Auto-refresh toggle */}
           <Button
-            variant={autoRefresh ? 'default' : 'outline'}
+            variant={autoRefresh ? "default" : "outline"}
             size="sm"
             onClick={() => setAutoRefresh(!autoRefresh)}
           >
-            <RefreshCw className={cn("w-4 h-4 mr-2", autoRefresh && "animate-spin")} />
+            <RefreshCw
+              className={cn("w-4 h-4 mr-2", autoRefresh && "animate-spin")}
+            />
             Auto-refresh
           </Button>
 
@@ -310,14 +320,26 @@ export function CacheDashboard({
       {alerts.length > 0 && (
         <div className="space-y-3">
           {alerts.map((alert) => (
-            <Alert key={alert.id} className={cn(
-              alert.type === 'error' && 'border-red-200 bg-red-50 dark:bg-red-950/20',
-              alert.type === 'warning' && 'border-yellow-200 bg-yellow-50 dark:bg-yellow-950/20',
-              alert.type === 'info' && 'border-blue-200 bg-blue-50 dark:bg-blue-950/20'
-            )}>
-              {alert.type === 'error' && <AlertTriangle className="w-4 h-4 text-red-600" />}
-              {alert.type === 'warning' && <AlertTriangle className="w-4 h-4 text-yellow-600" />}
-              {alert.type === 'info' && <CheckCircle className="w-4 h-4 text-blue-600" />}
+            <Alert
+              key={alert.id}
+              className={cn(
+                alert.type === "error" &&
+                  "border-red-200 bg-red-50 dark:bg-red-950/20",
+                alert.type === "warning" &&
+                  "border-yellow-200 bg-yellow-50 dark:bg-yellow-950/20",
+                alert.type === "info" &&
+                  "border-blue-200 bg-blue-50 dark:bg-blue-950/20",
+              )}
+            >
+              {alert.type === "error" && (
+                <AlertTriangle className="w-4 h-4 text-red-600" />
+              )}
+              {alert.type === "warning" && (
+                <AlertTriangle className="w-4 h-4 text-yellow-600" />
+              )}
+              {alert.type === "info" && (
+                <CheckCircle className="w-4 h-4 text-blue-600" />
+              )}
               <AlertDescription>
                 <div className="flex items-center justify-between">
                   <div>
@@ -385,12 +407,15 @@ export function CacheDashboard({
           <CardContent>
             <div className="space-y-4">
               {Object.entries(metrics.levelStats).map(([level, stats]) => {
-                const isActive = cacheInfo.levels[level as CacheLevel]?.active || false
-                if (!isActive && stats.hits === 0 && stats.misses === 0) return null
+                const isActive =
+                  cacheInfo.levels[level as CacheLevel]?.active || false;
+                if (!isActive && stats.hits === 0 && stats.misses === 0)
+                  return null;
 
-                const hitRate = stats.hits + stats.misses > 0
-                  ? (stats.hits / (stats.hits + stats.misses)) * 100
-                  : 0
+                const hitRate =
+                  stats.hits + stats.misses > 0
+                    ? (stats.hits / (stats.hits + stats.misses)) * 100
+                    : 0;
 
                 return (
                   <CacheLevelMonitor
@@ -401,7 +426,7 @@ export function CacheDashboard({
                     isActive={isActive}
                     onClear={() => handleClearLevel(level as CacheLevel)}
                   />
-                )
+                );
               })}
             </div>
           </CardContent>
@@ -418,20 +443,36 @@ export function CacheDashboard({
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Gets</p>
-                  <p className="text-lg font-medium">{metrics.operations.gets.toLocaleString()}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Gets
+                  </p>
+                  <p className="text-lg font-medium">
+                    {metrics.operations.gets.toLocaleString()}
+                  </p>
                 </div>
                 <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Sets</p>
-                  <p className="text-lg font-medium">{metrics.operations.sets.toLocaleString()}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Sets
+                  </p>
+                  <p className="text-lg font-medium">
+                    {metrics.operations.sets.toLocaleString()}
+                  </p>
                 </div>
                 <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Deletes</p>
-                  <p className="text-lg font-medium">{metrics.operations.deletes.toLocaleString()}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Deletes
+                  </p>
+                  <p className="text-lg font-medium">
+                    {metrics.operations.deletes.toLocaleString()}
+                  </p>
                 </div>
                 <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Evictions</p>
-                  <p className="text-lg font-medium">{metrics.operations.evictions.toLocaleString()}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Evictions
+                  </p>
+                  <p className="text-lg font-medium">
+                    {metrics.operations.evictions.toLocaleString()}
+                  </p>
                 </div>
               </div>
 
@@ -440,15 +481,23 @@ export function CacheDashboard({
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-sm text-gray-600">Set Latency:</span>
-                    <span className="font-medium">{metrics.performance.setLatency.toFixed(1)}ms</span>
+                    <span className="font-medium">
+                      {metrics.performance.setLatency.toFixed(1)}ms
+                    </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Delete Latency:</span>
-                    <span className="font-medium">{metrics.performance.deleteLatency.toFixed(1)}ms</span>
+                    <span className="text-sm text-gray-600">
+                      Delete Latency:
+                    </span>
+                    <span className="font-medium">
+                      {metrics.performance.deleteLatency.toFixed(1)}ms
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm text-gray-600">Miss Rate:</span>
-                    <span className="font-medium">{metrics.missRate.toFixed(1)}%</span>
+                    <span className="font-medium">
+                      {metrics.missRate.toFixed(1)}%
+                    </span>
                   </div>
                 </div>
               </div>
@@ -476,11 +525,15 @@ export function CacheDashboard({
                 </div>
                 <div className="flex justify-between">
                   <span>Eviction:</span>
-                  <Badge variant="outline">{cacheInfo.config.evictionPolicy}</Badge>
+                  <Badge variant="outline">
+                    {cacheInfo.config.evictionPolicy}
+                  </Badge>
                 </div>
                 <div className="flex justify-between">
                   <span>Default TTL:</span>
-                  <span>{(cacheInfo.config.defaultTTL / 1000 / 60).toFixed(0)}min</span>
+                  <span>
+                    {(cacheInfo.config.defaultTTL / 1000 / 60).toFixed(0)}min
+                  </span>
                 </div>
               </div>
             </div>
@@ -490,18 +543,32 @@ export function CacheDashboard({
               <div className="space-y-1 text-sm">
                 <div className="flex justify-between">
                   <span>Levels:</span>
-                  <span>{cacheInfo.config.levels.join(', ')}</span>
+                  <span>{cacheInfo.config.levels.join(", ")}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Compression:</span>
-                  <Badge variant={cacheInfo.config.compressionEnabled ? 'default' : 'outline'}>
-                    {cacheInfo.config.compressionEnabled ? 'Enabled' : 'Disabled'}
+                  <Badge
+                    variant={
+                      cacheInfo.config.compressionEnabled
+                        ? "default"
+                        : "outline"
+                    }
+                  >
+                    {cacheInfo.config.compressionEnabled
+                      ? "Enabled"
+                      : "Disabled"}
                   </Badge>
                 </div>
                 <div className="flex justify-between">
                   <span>Encryption:</span>
-                  <Badge variant={cacheInfo.config.encryptionEnabled ? 'default' : 'outline'}>
-                    {cacheInfo.config.encryptionEnabled ? 'Enabled' : 'Disabled'}
+                  <Badge
+                    variant={
+                      cacheInfo.config.encryptionEnabled ? "default" : "outline"
+                    }
+                  >
+                    {cacheInfo.config.encryptionEnabled
+                      ? "Enabled"
+                      : "Disabled"}
                   </Badge>
                 </div>
               </div>
@@ -512,12 +579,19 @@ export function CacheDashboard({
               <div className="space-y-1 text-sm">
                 <div className="flex justify-between">
                   <span>Max Memory:</span>
-                  <span>{(cacheInfo.config.maxMemorySize / 1024 / 1024).toFixed(0)}MB</span>
+                  <span>
+                    {(cacheInfo.config.maxMemorySize / 1024 / 1024).toFixed(0)}
+                    MB
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Metrics:</span>
-                  <Badge variant={cacheInfo.config.metricsEnabled ? 'default' : 'outline'}>
-                    {cacheInfo.config.metricsEnabled ? 'Enabled' : 'Disabled'}
+                  <Badge
+                    variant={
+                      cacheInfo.config.metricsEnabled ? "default" : "outline"
+                    }
+                  >
+                    {cacheInfo.config.metricsEnabled ? "Enabled" : "Disabled"}
                   </Badge>
                 </div>
               </div>
@@ -525,7 +599,11 @@ export function CacheDashboard({
           </div>
 
           <div className="flex gap-2 mt-4 pt-4 border-t">
-            <Button variant="outline" size="sm" onClick={() => handleClearCache()}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleClearCache()}
+            >
               <Trash2 className="w-4 h-4 mr-2" />
               Clear All Caches
             </Button>
@@ -541,17 +619,17 @@ export function CacheDashboard({
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
 
 // Cache Metrics Card Component
 interface CacheMetricsCardProps {
-  title: string
-  value: string
-  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
-  color: string
-  progress?: number
-  description?: string
+  title: string;
+  value: string;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  color: string;
+  progress?: number;
+  description?: string;
 }
 
 function CacheMetricsCard({
@@ -560,7 +638,7 @@ function CacheMetricsCard({
   icon: Icon,
   color,
   progress,
-  description
+  description,
 }: CacheMetricsCardProps) {
   return (
     <Card>
@@ -570,35 +648,36 @@ function CacheMetricsCard({
             <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
               {title}
             </p>
-            <p className="text-2xl font-bold mt-2">
-              {value}
-            </p>
+            <p className="text-2xl font-bold mt-2">{value}</p>
             {description && (
-              <p className="text-xs text-gray-500 mt-1">
-                {description}
-              </p>
+              <p className="text-xs text-gray-500 mt-1">{description}</p>
             )}
             {progress !== undefined && (
               <Progress value={progress} className="mt-3 h-2" />
             )}
           </div>
 
-          <div className={cn("w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center ml-4", color)}>
+          <div
+            className={cn(
+              "w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center ml-4",
+              color,
+            )}
+          >
             <Icon className="w-6 h-6" />
           </div>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 // Cache Level Monitor Component
 interface CacheLevelMonitorProps {
-  level: CacheLevel
-  stats: any
-  hitRate: number
-  isActive: boolean
-  onClear: () => void
+  level: CacheLevel;
+  stats: any;
+  hitRate: number;
+  isActive: boolean;
+  onClear: () => void;
 }
 
 function CacheLevelMonitor({
@@ -606,29 +685,39 @@ function CacheLevelMonitor({
   stats,
   hitRate,
   isActive,
-  onClear
+  onClear,
 }: CacheLevelMonitorProps) {
   const getLevelIcon = (level: CacheLevel) => {
     switch (level) {
-      case 'memory': return Cpu
-      case 'browser': return Globe
-      case 'redis': return Database
-      case 'database': return HardDrive
-      default: return Monitor
+      case "memory":
+        return Cpu;
+      case "browser":
+        return Globe;
+      case "redis":
+        return Database;
+      case "database":
+        return HardDrive;
+      default:
+        return Monitor;
     }
-  }
+  };
 
   const getLevelColor = (level: CacheLevel) => {
     switch (level) {
-      case 'memory': return 'text-green-600'
-      case 'browser': return 'text-blue-600'
-      case 'redis': return 'text-red-600'
-      case 'database': return 'text-purple-600'
-      default: return 'text-gray-600'
+      case "memory":
+        return "text-green-600";
+      case "browser":
+        return "text-blue-600";
+      case "redis":
+        return "text-red-600";
+      case "database":
+        return "text-purple-600";
+      default:
+        return "text-gray-600";
     }
-  }
+  };
 
-  const Icon = getLevelIcon(level)
+  const Icon = getLevelIcon(level);
 
   return (
     <motion.div
@@ -637,7 +726,12 @@ function CacheLevelMonitor({
       className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg"
     >
       <div className="flex items-center gap-3">
-        <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center bg-white dark:bg-gray-700", getLevelColor(level))}>
+        <div
+          className={cn(
+            "w-10 h-10 rounded-lg flex items-center justify-center bg-white dark:bg-gray-700",
+            getLevelColor(level),
+          )}
+        >
           <Icon className="w-5 h-5" />
         </div>
 
@@ -652,8 +746,8 @@ function CacheLevelMonitor({
       </div>
 
       <div className="flex items-center gap-2">
-        <Badge variant={isActive ? 'default' : 'outline'}>
-          {isActive ? 'Active' : 'Inactive'}
+        <Badge variant={isActive ? "default" : "outline"}>
+          {isActive ? "Active" : "Inactive"}
         </Badge>
 
         {hitRate > 0 && (
@@ -666,12 +760,17 @@ function CacheLevelMonitor({
           </div>
         )}
 
-        <Button variant="ghost" size="sm" onClick={onClear} disabled={!isActive}>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onClear}
+          disabled={!isActive}
+        >
           <Trash2 className="w-4 h-4" />
         </Button>
       </div>
     </motion.div>
-  )
+  );
 }
 
-export { CacheMetricsCard, CacheLevelMonitor }
+export { CacheMetricsCard, CacheLevelMonitor };

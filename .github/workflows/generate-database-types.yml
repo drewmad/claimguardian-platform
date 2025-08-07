@@ -3,18 +3,18 @@ name: Generate Database Types
 on:
   schedule:
     # Run daily at midnight UTC
-    - cron: '0 0 * * *'
+    - cron: "0 0 * * *"
   push:
     paths:
-      - 'supabase/schema.sql'
-      - 'supabase/migrations/**/*.sql'
-      - '.github/workflows/generate-database-types.yml'
+      - "supabase/schema.sql"
+      - "supabase/migrations/**/*.sql"
+      - ".github/workflows/generate-database-types.yml"
   workflow_dispatch:
     inputs:
       debug:
-        description: 'Enable debug logging'
+        description: "Enable debug logging"
         required: false
-        default: 'false'
+        default: "false"
 
 jobs:
   generate-types:
@@ -34,8 +34,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
-          cache: 'pnpm'
+          node-version: "24"
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

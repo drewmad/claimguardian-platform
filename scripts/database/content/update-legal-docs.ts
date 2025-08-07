@@ -4,18 +4,18 @@
  * Update legal documents with full content
  */
 
-import { createClient } from '@supabase/supabase-js'
-import * as dotenv from 'dotenv'
-import { resolve } from 'path'
+import { createClient } from "@supabase/supabase-js";
+import * as dotenv from "dotenv";
+import { resolve } from "path";
 
 // Load environment variables
-dotenv.config({ path: resolve(process.cwd(), '.env.local') })
+dotenv.config({ path: resolve(process.cwd(), ".env.local") });
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 const documentContent = {
-  'privacy_policy': `# Privacy Policy
+  privacy_policy: `# Privacy Policy
 
 **Last Updated: ${new Date().toLocaleDateString()}**
 
@@ -58,7 +58,7 @@ You have the right to access, correct, delete, export your data, and control AI 
 
 Email: privacy@claimguardian.com`,
 
-  'terms_of_service': `# Terms of Service
+  terms_of_service: `# Terms of Service
 
 **Effective Date: ${new Date().toLocaleDateString()}**
 
@@ -98,7 +98,7 @@ Services provided "AS IS". We don't provide legal or insurance advice.
 
 Email: legal@claimguardian.com`,
 
-  'ai_use_agreement': `# AI Use Agreement
+  ai_use_agreement: `# AI Use Agreement
 
 **Effective Date: ${new Date().toLocaleDateString()}**
 
@@ -130,57 +130,60 @@ Your data is encrypted and only used with consent. Opt-out of model improvement 
 
 Email: ai-support@claimguardian.com
 
-Remember: AI assists but human judgment remains essential.`
-}
+Remember: AI assists but human judgment remains essential.`,
+};
 
 async function updateLegalContent() {
-  console.log('📝 Updating legal document content...\n')
+  console.log("📝 Updating legal document content...\n");
 
   if (!supabaseUrl || !serviceRoleKey) {
-    console.error('❌ Missing environment variables. Please set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY')
-    return
+    console.error(
+      "❌ Missing environment variables. Please set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY",
+    );
+    return;
   }
 
   try {
-    const supabase = createClient(supabaseUrl, serviceRoleKey)
+    const supabase = createClient(supabaseUrl, serviceRoleKey);
 
     // Update each document type
     for (const [type, content] of Object.entries(documentContent)) {
-      console.log(`Updating ${type}...`)
+      console.log(`Updating ${type}...`);
 
       const { error } = await supabase
-        .from('legal_documents')
+        .from("legal_documents")
         .update({
           content,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
-        .eq('type', type)
-        .eq('is_active', true)
+        .eq("type", type)
+        .eq("is_active", true);
 
       if (error) {
-        console.error(`  ❌ Failed to update ${type}:`, error.message)
+        console.error(`  ❌ Failed to update ${type}:`, error.message);
       } else {
-        console.log(`  ✅ Successfully updated ${type}`)
+        console.log(`  ✅ Successfully updated ${type}`);
       }
     }
 
     // Verify updates
-    console.log('\n🔍 Verifying updates...')
+    console.log("\n🔍 Verifying updates...");
     const { data, error } = await supabase
-      .from('legal_documents')
-      .select('type, title, content')
-      .eq('is_active', true)
+      .from("legal_documents")
+      .select("type, title, content")
+      .eq("is_active", true);
 
     if (data) {
-      data.forEach(doc => {
-        const hasContent = doc.content && doc.content.length > 100
-        console.log(`  ${doc.type}: ${hasContent ? '✅ Has content' : '❌ Missing content'} (${doc.content?.length || 0} chars)`)
-      })
+      data.forEach((doc) => {
+        const hasContent = doc.content && doc.content.length > 100;
+        console.log(
+          `  ${doc.type}: ${hasContent ? "✅ Has content" : "❌ Missing content"} (${doc.content?.length || 0} chars)`,
+        );
+      });
     }
-
   } catch (error) {
-    console.error('Error:', error)
+    console.error("Error:", error);
   }
 }
 
-updateLegalContent().catch(console.error)
+updateLegalContent().catch(console.error);

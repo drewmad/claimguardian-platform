@@ -1,11 +1,11 @@
-'use client'
+"use client";
 
-import { useState, useCallback } from 'react'
-import { useDropzone } from 'react-dropzone'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
+import { useState, useCallback } from "react";
+import { useDropzone } from "react-dropzone";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import {
   Upload,
   FileText,
@@ -16,168 +16,191 @@ import {
   Sparkles,
   Clock,
   Tag,
-  Zap
-} from 'lucide-react'
-import { toast } from 'sonner'
-import { createClient } from '@/lib/supabase/client'
+  Zap,
+} from "lucide-react";
+import { toast } from "sonner";
+import { createClient } from "@/lib/supabase/client";
 
 interface UploadedDocument {
-  id: string
-  fileName: string
-  size: number
-  type: string
-  status: 'uploading' | 'processing' | 'pending_review' | 'auto_confirmed' | 'failed'
-  progress: number
+  id: string;
+  fileName: string;
+  size: number;
+  type: string;
+  status:
+    | "uploading"
+    | "processing"
+    | "pending_review"
+    | "auto_confirmed"
+    | "failed";
+  progress: number;
   aiSuggestions?: {
-    name: string
-    category: string
-    tags: string[]
-    confidence: number
-    metadata: any
-  }
+    name: string;
+    category: string;
+    tags: string[];
+    confidence: number;
+    metadata: any;
+  };
 }
 
 export function EnhancedDocumentUpload({
   propertyId,
   claimId,
-  onDocumentProcessed
+  onDocumentProcessed,
 }: {
-  propertyId?: string
-  claimId?: string
-  onDocumentProcessed?: (document: any) => void
+  propertyId?: string;
+  claimId?: string;
+  onDocumentProcessed?: (document: any) => void;
 }) {
-  const [documents, setDocuments] = useState<UploadedDocument[]>([])
-  const [isProcessing, setIsProcessing] = useState(false)
-  const supabase = createClient()
+  const [documents, setDocuments] = useState<UploadedDocument[]>([]);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const supabase = createClient();
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    setIsProcessing(true)
+  const onDrop = useCallback(
+    async (acceptedFiles: File[]) => {
+      setIsProcessing(true);
 
-    for (const file of acceptedFiles) {
-      const docId = crypto.randomUUID()
+      for (const file of acceptedFiles) {
+        const docId = crypto.randomUUID();
 
-      // Add document to state immediately
-      const newDoc: UploadedDocument = {
-        id: docId,
-        fileName: file.name,
-        size: file.size,
-        type: file.type,
-        status: 'uploading',
-        progress: 0
-      }
+        // Add document to state immediately
+        const newDoc: UploadedDocument = {
+          id: docId,
+          fileName: file.name,
+          size: file.size,
+          type: file.type,
+          status: "uploading",
+          progress: 0,
+        };
 
-      setDocuments(prev => [...prev, newDoc])
+        setDocuments((prev) => [...prev, newDoc]);
 
-      try {
-        // Mock AI processing for demo
-        setDocuments(prev => prev.map(d =>
-          d.id === docId
-            ? { ...d, status: 'processing', progress: 25 }
-            : d
-        ))
+        try {
+          // Mock AI processing for demo
+          setDocuments((prev) =>
+            prev.map((d) =>
+              d.id === docId ? { ...d, status: "processing", progress: 25 } : d,
+            ),
+          );
 
-        // Simulate processing time
-        await new Promise(resolve => setTimeout(resolve, 2000))
+          // Simulate processing time
+          await new Promise((resolve) => setTimeout(resolve, 2000));
 
-        // Mock AI results
-        const mockResult = {
-          status: 'pending_review',
-          suggested_name: `${file.name.split('.')[0]}_analyzed.${file.name.split('.').pop()}`,
-          suggested_category: 'insurance_document',
-          confidence: 0.85,
-          metadata: {
-            'Document Type': 'Insurance Policy',
-            'Date Found': new Date().toLocaleDateString(),
-            'File Size': `${(file.size / 1024).toFixed(1)} KB`
-          }
+          // Mock AI results
+          const mockResult = {
+            status: "pending_review",
+            suggested_name: `${file.name.split(".")[0]}_analyzed.${file.name.split(".").pop()}`,
+            suggested_category: "insurance_document",
+            confidence: 0.85,
+            metadata: {
+              "Document Type": "Insurance Policy",
+              "Date Found": new Date().toLocaleDateString(),
+              "File Size": `${(file.size / 1024).toFixed(1)} KB`,
+            },
+          };
+
+          setDocuments((prev) =>
+            prev.map((d) =>
+              d.id === docId
+                ? {
+                    ...d,
+                    status:
+                      mockResult.status === "auto_confirmed"
+                        ? "auto_confirmed"
+                        : "pending_review",
+                    progress: 100,
+                    aiSuggestions: {
+                      name: mockResult.suggested_name,
+                      category: mockResult.suggested_category,
+                      tags: [],
+                      confidence: mockResult.confidence,
+                      metadata: mockResult.metadata,
+                    },
+                  }
+                : d,
+            ),
+          );
+
+          toast.success(`Document processed: ${mockResult.suggested_name}`, {
+            description: `Confidence: ${Math.round(mockResult.confidence * 100)}%`,
+          });
+
+          onDocumentProcessed?.(mockResult);
+        } catch (error) {
+          console.error("Document processing error:", error);
+
+          setDocuments((prev) =>
+            prev.map((d) =>
+              d.id === docId ? { ...d, status: "failed", progress: 0 } : d,
+            ),
+          );
+
+          toast.error(`Failed to process ${file.name}`);
         }
-
-        setDocuments(prev => prev.map(d =>
-          d.id === docId
-            ? {
-                ...d,
-                status: mockResult.status === 'auto_confirmed' ? 'auto_confirmed' : 'pending_review',
-                progress: 100,
-                aiSuggestions: {
-                  name: mockResult.suggested_name,
-                  category: mockResult.suggested_category,
-                  tags: [],
-                  confidence: mockResult.confidence,
-                  metadata: mockResult.metadata
-                }
-              }
-            : d
-        ))
-
-        toast.success(`Document processed: ${mockResult.suggested_name}`, {
-          description: `Confidence: ${Math.round(mockResult.confidence * 100)}%`
-        })
-
-        onDocumentProcessed?.(mockResult)
-
-      } catch (error) {
-        console.error('Document processing error:', error)
-
-        setDocuments(prev => prev.map(d =>
-          d.id === docId
-            ? { ...d, status: 'failed', progress: 0 }
-            : d
-        ))
-
-        toast.error(`Failed to process ${file.name}`)
       }
-    }
 
-    setIsProcessing(false)
-  }, [propertyId, claimId, onDocumentProcessed])
+      setIsProcessing(false);
+    },
+    [propertyId, claimId, onDocumentProcessed],
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      'application/pdf': ['.pdf'],
-      'image/*': ['.png', '.jpg', '.jpeg', '.webp', '.tiff'],
-      'text/plain': ['.txt'],
-      'application/msword': ['.doc'],
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
+      "application/pdf": [".pdf"],
+      "image/*": [".png", ".jpg", ".jpeg", ".webp", ".tiff"],
+      "text/plain": [".txt"],
+      "application/msword": [".doc"],
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+        [".docx"],
     },
     maxSize: 50 * 1024 * 1024, // 50MB
-    maxFiles: 10
-  })
+    maxFiles: 10,
+  });
 
-  const getStatusIcon = (status: UploadedDocument['status']) => {
+  const getStatusIcon = (status: UploadedDocument["status"]) => {
     switch (status) {
-      case 'uploading':
-        return <Upload className="w-4 h-4 text-blue-500 animate-pulse" />
-      case 'processing':
-        return <Brain className="w-4 h-4 text-purple-500 animate-pulse" />
-      case 'pending_review':
-        return <Clock className="w-4 h-4 text-yellow-500" />
-      case 'auto_confirmed':
-        return <CheckCircle className="w-4 h-4 text-green-500" />
-      case 'failed':
-        return <AlertCircle className="w-4 h-4 text-red-500" />
+      case "uploading":
+        return <Upload className="w-4 h-4 text-blue-500 animate-pulse" />;
+      case "processing":
+        return <Brain className="w-4 h-4 text-purple-500 animate-pulse" />;
+      case "pending_review":
+        return <Clock className="w-4 h-4 text-yellow-500" />;
+      case "auto_confirmed":
+        return <CheckCircle className="w-4 h-4 text-green-500" />;
+      case "failed":
+        return <AlertCircle className="w-4 h-4 text-red-500" />;
     }
-  }
+  };
 
-  const getStatusText = (status: UploadedDocument['status']) => {
+  const getStatusText = (status: UploadedDocument["status"]) => {
     switch (status) {
-      case 'uploading': return 'Uploading...'
-      case 'processing': return 'AI Processing...'
-      case 'pending_review': return 'Ready for Review'
-      case 'auto_confirmed': return 'Auto-Confirmed'
-      case 'failed': return 'Processing Failed'
+      case "uploading":
+        return "Uploading...";
+      case "processing":
+        return "AI Processing...";
+      case "pending_review":
+        return "Ready for Review";
+      case "auto_confirmed":
+        return "Auto-Confirmed";
+      case "failed":
+        return "Processing Failed";
     }
-  }
+  };
 
-  const getStatusColor = (status: UploadedDocument['status']) => {
+  const getStatusColor = (status: UploadedDocument["status"]) => {
     switch (status) {
-      case 'uploading': return 'bg-blue-500/10 text-blue-500 border-blue-500/20'
-      case 'processing': return 'bg-purple-500/10 text-purple-500 border-purple-500/20'
-      case 'pending_review': return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
-      case 'auto_confirmed': return 'bg-green-500/10 text-green-500 border-green-500/20'
-      case 'failed': return 'bg-red-500/10 text-red-500 border-red-500/20'
+      case "uploading":
+        return "bg-blue-500/10 text-blue-500 border-blue-500/20";
+      case "processing":
+        return "bg-purple-500/10 text-purple-500 border-purple-500/20";
+      case "pending_review":
+        return "bg-yellow-500/10 text-yellow-500 border-yellow-500/20";
+      case "auto_confirmed":
+        return "bg-green-500/10 text-green-500 border-green-500/20";
+      case "failed":
+        return "bg-red-500/10 text-red-500 border-red-500/20";
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
@@ -195,7 +218,8 @@ export function EnhancedDocumentUpload({
             </Badge>
           </div>
           <p className="text-gray-400 text-sm">
-            Upload any document - AI will automatically name it, extract metadata, and create smart tags
+            Upload any document - AI will automatically name it, extract
+            metadata, and create smart tags
           </p>
         </CardHeader>
 
@@ -204,8 +228,8 @@ export function EnhancedDocumentUpload({
             {...getRootProps()}
             className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
               isDragActive
-                ? 'border-purple-500 bg-purple-500/5'
-                : 'border-gray-600 hover:border-gray-500'
+                ? "border-purple-500 bg-purple-500/5"
+                : "border-gray-600 hover:border-gray-500"
             }`}
           >
             <input {...getInputProps()} />
@@ -266,7 +290,7 @@ export function EnhancedDocumentUpload({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-gray-700 rounded">
-                      {doc.type.startsWith('image/') ? (
+                      {doc.type.startsWith("image/") ? (
                         <Image className="w-4 h-4 text-gray-400" />
                       ) : (
                         <FileText className="w-4 h-4 text-gray-400" />
@@ -290,7 +314,7 @@ export function EnhancedDocumentUpload({
                 </div>
 
                 {/* Progress Bar */}
-                {doc.status !== 'failed' && doc.status !== 'auto_confirmed' && (
+                {doc.status !== "failed" && doc.status !== "auto_confirmed" && (
                   <Progress value={doc.progress} className="h-2" />
                 )}
 
@@ -303,7 +327,8 @@ export function EnhancedDocumentUpload({
                         AI Analysis Results
                       </span>
                       <Badge className="bg-green-500/10 text-green-500 text-xs">
-                        {Math.round(doc.aiSuggestions.confidence * 100)}% confident
+                        {Math.round(doc.aiSuggestions.confidence * 100)}%
+                        confident
                       </Badge>
                     </div>
 
@@ -324,25 +349,31 @@ export function EnhancedDocumentUpload({
                     </div>
 
                     {/* Extracted Metadata */}
-                    {doc.aiSuggestions.metadata && Object.keys(doc.aiSuggestions.metadata).length > 0 && (
-                      <div>
-                        <span className="text-gray-400 text-sm">Extracted Information:</span>
-                        <div className="mt-2 flex flex-wrap gap-2">
-                          {Object.entries(doc.aiSuggestions.metadata)
-                            .filter(([key, value]) => value && String(value).trim())
-                            .slice(0, 6)
-                            .map(([key, value]) => (
-                            <Badge
-                              key={key}
-                              className="bg-gray-700 text-gray-300 text-xs"
-                            >
-                              <Tag className="w-3 h-3 mr-1" />
-                              {key}: {String(value).substring(0, 20)}{String(value).length > 20 ? '...' : ''}
-                            </Badge>
-                          ))}
+                    {doc.aiSuggestions.metadata &&
+                      Object.keys(doc.aiSuggestions.metadata).length > 0 && (
+                        <div>
+                          <span className="text-gray-400 text-sm">
+                            Extracted Information:
+                          </span>
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            {Object.entries(doc.aiSuggestions.metadata)
+                              .filter(
+                                ([key, value]) => value && String(value).trim(),
+                              )
+                              .slice(0, 6)
+                              .map(([key, value]) => (
+                                <Badge
+                                  key={key}
+                                  className="bg-gray-700 text-gray-300 text-xs"
+                                >
+                                  <Tag className="w-3 h-3 mr-1" />
+                                  {key}: {String(value).substring(0, 20)}
+                                  {String(value).length > 20 ? "..." : ""}
+                                </Badge>
+                              ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
                   </div>
                 )}
               </div>
@@ -357,18 +388,34 @@ export function EnhancedDocumentUpload({
           <div className="flex items-start gap-3">
             <Brain className="w-5 h-5 text-purple-500 mt-0.5" />
             <div className="space-y-2">
-              <h4 className="text-white font-medium">How Zero-Touch Processing Works</h4>
+              <h4 className="text-white font-medium">
+                How Zero-Touch Processing Works
+              </h4>
               <div className="text-gray-400 text-sm space-y-1">
-                <p>1. <strong>Upload:</strong> Drag & drop any document</p>
-                <p>2. <strong>AI Analysis:</strong> Multiple AI models extract metadata simultaneously</p>
-                <p>3. <strong>Smart Naming:</strong> Generates descriptive filenames with dates, amounts, entities</p>
-                <p>4. <strong>Auto-Tagging:</strong> Creates intelligent tags for easy searching</p>
-                <p>5. <strong>Review/Confirm:</strong> High confidence documents auto-confirm, others need review</p>
+                <p>
+                  1. <strong>Upload:</strong> Drag & drop any document
+                </p>
+                <p>
+                  2. <strong>AI Analysis:</strong> Multiple AI models extract
+                  metadata simultaneously
+                </p>
+                <p>
+                  3. <strong>Smart Naming:</strong> Generates descriptive
+                  filenames with dates, amounts, entities
+                </p>
+                <p>
+                  4. <strong>Auto-Tagging:</strong> Creates intelligent tags for
+                  easy searching
+                </p>
+                <p>
+                  5. <strong>Review/Confirm:</strong> High confidence documents
+                  auto-confirm, others need review
+                </p>
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

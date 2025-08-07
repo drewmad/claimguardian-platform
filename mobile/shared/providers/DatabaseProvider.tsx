@@ -6,68 +6,57 @@
  * @status stable
  */
 
-import React, { useEffect, useRef } from 'react'
-import { Alert } from 'react-native'
-import * as SQLite from 'expo-sqlite'
-import { useDispatch } from 'react-redux'
+import React, { useEffect, useRef } from "react";
+import { Alert } from "react-native";
+import * as SQLite from "expo-sqlite";
+import { useDispatch } from "react-redux";
 
-import {
-  loadPropertiesFromDatabase
-} from '../store/slices/propertiesSlice'
-import {
-  loadAssessmentsFromDatabase
-} from '../store/slices/assessmentsSlice'
-import {
-  loadDamageItemsFromDatabase
-} from '../store/slices/damageItemsSlice'
-import {
-  loadPhotosFromDatabase
-} from '../store/slices/photosSlice'
-import {
-  loadVoiceNotesFromDatabase
-} from '../store/slices/voiceNotesSlice'
-import { syncService } from '../services/syncService'
-import type { AppDispatch } from '../store'
+import { loadPropertiesFromDatabase } from "../store/slices/propertiesSlice";
+import { loadAssessmentsFromDatabase } from "../store/slices/assessmentsSlice";
+import { loadDamageItemsFromDatabase } from "../store/slices/damageItemsSlice";
+import { loadPhotosFromDatabase } from "../store/slices/photosSlice";
+import { loadVoiceNotesFromDatabase } from "../store/slices/voiceNotesSlice";
+import { syncService } from "../services/syncService";
+import type { AppDispatch } from "../store";
 
 interface DatabaseProviderProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
-const DATABASE_NAME = 'claimguardian.db'
-const DATABASE_VERSION = 1
+const DATABASE_NAME = "claimguardian.db";
+const DATABASE_VERSION = 1;
 
 export function DatabaseProvider({ children }: DatabaseProviderProps) {
-  const dispatch = useDispatch<AppDispatch>()
-  const dbRef = useRef<SQLite.SQLiteDatabase | null>(null)
+  const dispatch = useDispatch<AppDispatch>();
+  const dbRef = useRef<SQLite.SQLiteDatabase | null>(null);
 
   useEffect(() => {
     const initializeDatabase = async () => {
       try {
         // Open database connection
-        const db = await SQLite.openDatabaseAsync(DATABASE_NAME)
-        dbRef.current = db
+        const db = await SQLite.openDatabaseAsync(DATABASE_NAME);
+        dbRef.current = db;
 
         // Enable foreign key constraints
-        await db.execAsync('PRAGMA foreign_keys = ON;')
+        await db.execAsync("PRAGMA foreign_keys = ON;");
 
         // Create tables
-        await createTables(db)
+        await createTables(db);
 
         // Load initial data from database
-        await loadInitialData()
+        await loadInitialData();
 
-        console.log('Database initialized successfully')
-
+        console.log("Database initialized successfully");
       } catch (error) {
-        console.error('Failed to initialize database:', error)
+        console.error("Failed to initialize database:", error);
 
         Alert.alert(
-          'Database Error',
-          'Failed to initialize local database. Some features may not work properly.',
-          [{ text: 'OK' }]
-        )
+          "Database Error",
+          "Failed to initialize local database. Some features may not work properly.",
+          [{ text: "OK" }],
+        );
       }
-    }
+    };
 
     const createTables = async (db: SQLite.SQLiteDatabase) => {
       const createTableQueries = [
@@ -183,37 +172,37 @@ export function DatabaseProvider({ children }: DatabaseProviderProps) {
           key TEXT PRIMARY KEY,
           value TEXT NOT NULL,
           updated_at TEXT NOT NULL
-        );`
-      ]
+        );`,
+      ];
 
       // Create indexes for better performance
       const createIndexQueries = [
-        'CREATE INDEX IF NOT EXISTS idx_properties_user_id ON properties(user_id);',
-        'CREATE INDEX IF NOT EXISTS idx_assessments_property_id ON damage_assessments(property_id);',
-        'CREATE INDEX IF NOT EXISTS idx_damage_items_assessment_id ON damage_items(assessment_id);',
-        'CREATE INDEX IF NOT EXISTS idx_photos_assessment_id ON photos(assessment_id);',
-        'CREATE INDEX IF NOT EXISTS idx_photos_damage_item_id ON photos(damage_item_id);',
-        'CREATE INDEX IF NOT EXISTS idx_voice_notes_assessment_id ON voice_notes(assessment_id);',
-        'CREATE INDEX IF NOT EXISTS idx_voice_notes_damage_item_id ON voice_notes(damage_item_id);',
-        'CREATE INDEX IF NOT EXISTS idx_sync_queue_entity ON sync_queue(entity_type, entity_id);',
-        'CREATE INDEX IF NOT EXISTS idx_sync_queue_created_at ON sync_queue(created_at);',
-        'CREATE INDEX IF NOT EXISTS idx_photos_upload_status ON photos(upload_status);',
-        'CREATE INDEX IF NOT EXISTS idx_voice_notes_upload_status ON voice_notes(upload_status);',
-        'CREATE INDEX IF NOT EXISTS idx_properties_synced ON properties(synced);',
-        'CREATE INDEX IF NOT EXISTS idx_assessments_synced ON damage_assessments(synced);',
-        'CREATE INDEX IF NOT EXISTS idx_damage_items_synced ON damage_items(synced);'
-      ]
+        "CREATE INDEX IF NOT EXISTS idx_properties_user_id ON properties(user_id);",
+        "CREATE INDEX IF NOT EXISTS idx_assessments_property_id ON damage_assessments(property_id);",
+        "CREATE INDEX IF NOT EXISTS idx_damage_items_assessment_id ON damage_items(assessment_id);",
+        "CREATE INDEX IF NOT EXISTS idx_photos_assessment_id ON photos(assessment_id);",
+        "CREATE INDEX IF NOT EXISTS idx_photos_damage_item_id ON photos(damage_item_id);",
+        "CREATE INDEX IF NOT EXISTS idx_voice_notes_assessment_id ON voice_notes(assessment_id);",
+        "CREATE INDEX IF NOT EXISTS idx_voice_notes_damage_item_id ON voice_notes(damage_item_id);",
+        "CREATE INDEX IF NOT EXISTS idx_sync_queue_entity ON sync_queue(entity_type, entity_id);",
+        "CREATE INDEX IF NOT EXISTS idx_sync_queue_created_at ON sync_queue(created_at);",
+        "CREATE INDEX IF NOT EXISTS idx_photos_upload_status ON photos(upload_status);",
+        "CREATE INDEX IF NOT EXISTS idx_voice_notes_upload_status ON voice_notes(upload_status);",
+        "CREATE INDEX IF NOT EXISTS idx_properties_synced ON properties(synced);",
+        "CREATE INDEX IF NOT EXISTS idx_assessments_synced ON damage_assessments(synced);",
+        "CREATE INDEX IF NOT EXISTS idx_damage_items_synced ON damage_items(synced);",
+      ];
 
       // Execute all table creation queries
       for (const query of createTableQueries) {
-        await db.execAsync(query)
+        await db.execAsync(query);
       }
 
       // Execute all index creation queries
       for (const query of createIndexQueries) {
-        await db.execAsync(query)
+        await db.execAsync(query);
       }
-    }
+    };
 
     const loadInitialData = async () => {
       try {
@@ -223,27 +212,29 @@ export function DatabaseProvider({ children }: DatabaseProviderProps) {
           dispatch(loadAssessmentsFromDatabase()),
           dispatch(loadDamageItemsFromDatabase()),
           dispatch(loadPhotosFromDatabase({})),
-          dispatch(loadVoiceNotesFromDatabase({}))
-        ])
+          dispatch(loadVoiceNotesFromDatabase({})),
+        ]);
       } catch (error) {
-        console.error('Failed to load initial data:', error)
+        console.error("Failed to load initial data:", error);
       }
-    }
+    };
 
-    initializeDatabase()
-  }, [dispatch])
+    initializeDatabase();
+  }, [dispatch]);
 
   // Database maintenance
   useEffect(() => {
     const performMaintenance = async () => {
-      if (!dbRef.current) return
+      if (!dbRef.current) return;
 
       try {
         // Clean up old sync queue entries (older than 7 days)
-        const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+        const sevenDaysAgo = new Date(
+          Date.now() - 7 * 24 * 60 * 60 * 1000,
+        ).toISOString();
         await dbRef.current.execAsync(
-          `DELETE FROM sync_queue WHERE created_at < '${sevenDaysAgo}' AND retry_count >= 3;`
-        )
+          `DELETE FROM sync_queue WHERE created_at < '${sevenDaysAgo}' AND retry_count >= 3;`,
+        );
 
         // Clean up orphaned photos (not linked to any assessment or damage item)
         await dbRef.current.execAsync(`
@@ -251,7 +242,7 @@ export function DatabaseProvider({ children }: DatabaseProviderProps) {
           WHERE assessment_id IS NULL
             AND damage_item_id IS NULL
             AND created_at < '${sevenDaysAgo}';
-        `)
+        `);
 
         // Clean up orphaned voice notes
         await dbRef.current.execAsync(`
@@ -259,116 +250,138 @@ export function DatabaseProvider({ children }: DatabaseProviderProps) {
           WHERE assessment_id IS NULL
             AND damage_item_id IS NULL
             AND created_at < '${sevenDaysAgo}';
-        `)
+        `);
 
         // Vacuum database to reclaim space
-        await dbRef.current.execAsync('VACUUM;')
+        await dbRef.current.execAsync("VACUUM;");
 
-        console.log('Database maintenance completed')
-
+        console.log("Database maintenance completed");
       } catch (error) {
-        console.error('Database maintenance failed:', error)
+        console.error("Database maintenance failed:", error);
       }
-    }
+    };
 
     // Run maintenance daily
-    const maintenanceInterval = setInterval(performMaintenance, 24 * 60 * 60 * 1000)
+    const maintenanceInterval = setInterval(
+      performMaintenance,
+      24 * 60 * 60 * 1000,
+    );
 
-    return () => clearInterval(maintenanceInterval)
-  }, [])
+    return () => clearInterval(maintenanceInterval);
+  }, []);
 
   // Database integrity checks
   useEffect(() => {
     const checkIntegrity = async () => {
-      if (!dbRef.current) return
+      if (!dbRef.current) return;
 
       try {
-        const result = await dbRef.current.getFirstAsync('PRAGMA integrity_check;')
-        if (result && typeof result === 'object' && 'integrity_check' in result) {
-          if (result.integrity_check !== 'ok') {
-            console.error('Database integrity check failed:', result.integrity_check)
+        const result = await dbRef.current.getFirstAsync(
+          "PRAGMA integrity_check;",
+        );
+        if (
+          result &&
+          typeof result === "object" &&
+          "integrity_check" in result
+        ) {
+          if (result.integrity_check !== "ok") {
+            console.error(
+              "Database integrity check failed:",
+              result.integrity_check,
+            );
 
             Alert.alert(
-              'Database Integrity Issue',
-              'Local database may be corrupted. Consider clearing app data if problems persist.',
-              [{ text: 'OK' }]
-            )
+              "Database Integrity Issue",
+              "Local database may be corrupted. Consider clearing app data if problems persist.",
+              [{ text: "OK" }],
+            );
           }
         }
       } catch (error) {
-        console.error('Failed to check database integrity:', error)
+        console.error("Failed to check database integrity:", error);
       }
-    }
+    };
 
     // Check integrity on startup and then weekly
-    checkIntegrity()
-    const integrityInterval = setInterval(checkIntegrity, 7 * 24 * 60 * 60 * 1000)
+    checkIntegrity();
+    const integrityInterval = setInterval(
+      checkIntegrity,
+      7 * 24 * 60 * 60 * 1000,
+    );
 
-    return () => clearInterval(integrityInterval)
-  }, [])
+    return () => clearInterval(integrityInterval);
+  }, []);
 
   // Database size monitoring
   useEffect(() => {
     const monitorDatabaseSize = async () => {
-      if (!dbRef.current) return
+      if (!dbRef.current) return;
 
       try {
         // Get database size information
-        const result = await dbRef.current.getFirstAsync('PRAGMA page_count;')
-        const pageSize = await dbRef.current.getFirstAsync('PRAGMA page_size;')
+        const result = await dbRef.current.getFirstAsync("PRAGMA page_count;");
+        const pageSize = await dbRef.current.getFirstAsync("PRAGMA page_size;");
 
-        if (result && pageSize &&
-            typeof result === 'object' && 'page_count' in result &&
-            typeof pageSize === 'object' && 'page_size' in pageSize) {
+        if (
+          result &&
+          pageSize &&
+          typeof result === "object" &&
+          "page_count" in result &&
+          typeof pageSize === "object" &&
+          "page_size" in pageSize
+        ) {
+          const totalSize =
+            Number(result.page_count) * Number(pageSize.page_size);
+          const sizeMB = totalSize / (1024 * 1024);
 
-          const totalSize = Number(result.page_count) * Number(pageSize.page_size)
-          const sizeMB = totalSize / (1024 * 1024)
-
-          console.log(`Database size: ${sizeMB.toFixed(2)} MB`)
+          console.log(`Database size: ${sizeMB.toFixed(2)} MB`);
 
           // Warn if database is getting large (> 100MB)
           if (sizeMB > 100) {
-            console.warn('Database size is large, consider cleanup')
+            console.warn("Database size is large, consider cleanup");
           }
         }
       } catch (error) {
-        console.error('Failed to monitor database size:', error)
+        console.error("Failed to monitor database size:", error);
       }
-    }
+    };
 
     // Monitor size weekly
-    const sizeInterval = setInterval(monitorDatabaseSize, 7 * 24 * 60 * 60 * 1000)
+    const sizeInterval = setInterval(
+      monitorDatabaseSize,
+      7 * 24 * 60 * 60 * 1000,
+    );
 
-    return () => clearInterval(sizeInterval)
-  }, [])
+    return () => clearInterval(sizeInterval);
+  }, []);
 
   // Handle app state changes for database connections
   useEffect(() => {
     const handleAppStateChange = (nextAppState: string) => {
-      if (nextAppState === 'background') {
+      if (nextAppState === "background") {
         // App going to background, could close database connection if needed
-        console.log('App backgrounded, database connection remains open')
-      } else if (nextAppState === 'active') {
+        console.log("App backgrounded, database connection remains open");
+      } else if (nextAppState === "active") {
         // App became active, ensure database is ready
-        console.log('App active, database ready')
+        console.log("App active, database ready");
       }
-    }
+    };
 
     // Note: In real implementation, would use AppState.addEventListener
     return () => {
       // Cleanup
-    }
-  }, [])
+    };
+  }, []);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (dbRef.current) {
         // Note: SQLite databases are automatically closed when app terminates
-        console.log('Database provider cleanup')
+        console.log("Database provider cleanup");
       }
-    }
-  }, [])
+    };
+  }, []);
 
-  return <>{children}</>
+  return <>{children}</>;
 }

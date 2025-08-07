@@ -8,219 +8,233 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-import { SupabaseClient } from '@supabase/supabase-js'
+import { SupabaseClient } from "@supabase/supabase-js";
 
-import { recordDatabaseQuery, recordAPICall } from './metrics'
+import { recordDatabaseQuery, recordAPICall } from "./metrics";
 
 interface QueryInfo {
-  table: string
-  operation: string
-  startTime: number
+  table: string;
+  operation: string;
+  startTime: number;
 }
 
 export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
   // Store original methods
-  const originalFrom = client.from.bind(client)
-  const originalRpc = client.rpc.bind(client)
-  const originalAuth = client.auth
-  const originalStorage = client.storage
+  const originalFrom = client.from.bind(client);
+  const originalRpc = client.rpc.bind(client);
+  const originalAuth = client.auth;
+  const originalStorage = client.storage;
 
   // Monitor database queries
-  client.from = function(table: string) {
-    const queryBuilder = originalFrom(table)
+  client.from = function (table: string) {
+    const queryBuilder = originalFrom(table);
     const queryInfo: QueryInfo = {
       table,
-      operation: 'unknown',
-      startTime: Date.now()
-    }
+      operation: "unknown",
+      startTime: Date.now(),
+    };
 
     // Wrap query methods with type safety
-    const methods = ['select', 'insert', 'update', 'upsert', 'delete'] as const
+    const methods = ["select", "insert", "update", "upsert", "delete"] as const;
 
-    methods.forEach(method => {
+    methods.forEach((method) => {
       if (queryBuilder[method]) {
-        const original = (queryBuilder as any)[method]
+        const original = (queryBuilder as any)[method];
 
-        ;(queryBuilder as any)[method] = function(...args: unknown[]) {
-          queryInfo.operation = method
-          queryInfo.startTime = Date.now()
+        (queryBuilder as any)[method] = function (...args: unknown[]) {
+          queryInfo.operation = method;
+          queryInfo.startTime = Date.now();
 
-          const result = original(...args)
+          const result = original(...args);
 
           // Monitor the promise
-          if (result && typeof result.then === 'function') {
+          if (result && typeof result.then === "function") {
             return result
               .then((response: { data?: unknown[] }) => {
-                const duration = Date.now() - queryInfo.startTime
+                const duration = Date.now() - queryInfo.startTime;
 
                 recordDatabaseQuery({
                   queryName: `${queryInfo.table}.${queryInfo.operation}`,
                   duration,
                   rowCount: response?.data?.length,
-                  timestamp: Date.now()
-                })
+                  timestamp: Date.now(),
+                });
 
-                return response
+                return response;
               })
               .catch((error: Error) => {
-                const duration = Date.now() - queryInfo.startTime
+                const duration = Date.now() - queryInfo.startTime;
 
                 recordDatabaseQuery({
                   queryName: `${queryInfo.table}.${queryInfo.operation}`,
                   duration,
                   error: error.message,
-                  timestamp: Date.now()
-                })
+                  timestamp: Date.now(),
+                });
 
-                throw error
-              })
+                throw error;
+              });
           }
 
-          return result
-        }
+          return result;
+        };
       }
-    })
+    });
 
-    return queryBuilder
-  }
+    return queryBuilder;
+  };
 
   // Monitor RPC calls
-  const originalRpcTyped = originalRpc as Function
-  ;(client as any).rpc = function(fn: string, args?: unknown, options?: unknown) {
-    const startTime = Date.now()
+  const originalRpcTyped = originalRpc as Function;
+  (client as any).rpc = function (
+    fn: string,
+    args?: unknown,
+    options?: unknown,
+  ) {
+    const startTime = Date.now();
 
-    const queryBuilder = originalRpcTyped.call(client, fn, args, options)
+    const queryBuilder = originalRpcTyped.call(client, fn, args, options);
 
     // Wrap the execute methods for query builders
-    if (queryBuilder && typeof queryBuilder.then === 'function') {
-      const originalThen = queryBuilder.then.bind(queryBuilder)
-      queryBuilder.then = function(onFulfilled?: unknown, onRejected?: unknown) {
+    if (queryBuilder && typeof queryBuilder.then === "function") {
+      const originalThen = queryBuilder.then.bind(queryBuilder);
+      queryBuilder.then = function (
+        onFulfilled?: unknown,
+        onRejected?: unknown,
+      ) {
         return originalThen(
           (response: unknown) => {
             recordAPICall({
               endpoint: `/rpc/${fn}`,
-              method: 'POST',
+              method: "POST",
               statusCode: 200,
               duration: Date.now() - startTime,
-              timestamp: Date.now()
-            })
-            return onFulfilled ? (onFulfilled as any)(response) : response
+              timestamp: Date.now(),
+            });
+            return onFulfilled ? (onFulfilled as any)(response) : response;
           },
           (error: Error) => {
             recordAPICall({
               endpoint: `/rpc/${fn}`,
-              method: 'POST',
+              method: "POST",
               statusCode: (error as any).status || 500,
               duration: Date.now() - startTime,
-              timestamp: Date.now()
-            })
-            return onRejected ? (onRejected as any)(error) : Promise.reject(error)
-          }
-        )
-      }
+              timestamp: Date.now(),
+            });
+            return onRejected
+              ? (onRejected as any)(error)
+              : Promise.reject(error);
+          },
+        );
+      };
     }
 
-    return queryBuilder
-  }
+    return queryBuilder;
+  };
 
   // Monitor auth operations with correct method names
-  const authMethods = ['signInWithPassword', 'signUp', 'signOut', 'resetPasswordForEmail'] as const
+  const authMethods = [
+    "signInWithPassword",
+    "signUp",
+    "signOut",
+    "resetPasswordForEmail",
+  ] as const;
 
-  authMethods.forEach(method => {
+  authMethods.forEach((method) => {
     if (originalAuth[method]) {
-      const original = (originalAuth as any)[method]
+      const original = (originalAuth as any)[method];
 
-      ;(originalAuth as any)[method] = function(...args: unknown[]) {
-        const startTime = Date.now()
+      (originalAuth as any)[method] = function (...args: unknown[]) {
+        const startTime = Date.now();
 
-        const result = original(...args)
+        const result = original(...args);
 
         // Handle both sync and async results
-        if (result && typeof result.then === 'function') {
+        if (result && typeof result.then === "function") {
           return result
             .then((response: unknown) => {
               recordAPICall({
                 endpoint: `/auth/${method}`,
-                method: 'POST',
+                method: "POST",
                 statusCode: 200,
                 duration: Date.now() - startTime,
-                timestamp: Date.now()
-              })
+                timestamp: Date.now(),
+              });
 
-              return response
+              return response;
             })
             .catch((error: unknown) => {
               recordAPICall({
                 endpoint: `/auth/${method}`,
-                method: 'POST',
+                method: "POST",
                 statusCode: (error as any).status || 500,
                 duration: Date.now() - startTime,
-                timestamp: Date.now()
-              })
+                timestamp: Date.now(),
+              });
 
-              throw error
-            })
+              throw error;
+            });
         }
 
-        return result
-      }
+        return result;
+      };
     }
-  })
+  });
 
   // Monitor storage operations
   if (originalStorage) {
-    const storageMethods = ['upload', 'download', 'remove', 'list'] as const
+    const storageMethods = ["upload", "download", "remove", "list"] as const;
 
     const monitorBucket = (bucket: any) => {
-      storageMethods.forEach(method => {
+      storageMethods.forEach((method) => {
         if (bucket[method]) {
-          const original = bucket[method]
+          const original = bucket[method];
 
-          bucket[method] = function(...args: unknown[]) {
-            const startTime = Date.now()
+          bucket[method] = function (...args: unknown[]) {
+            const startTime = Date.now();
 
-            const result = original(...args)
+            const result = original(...args);
 
-            if (result && typeof result.then === 'function') {
+            if (result && typeof result.then === "function") {
               return result
                 .then((response: { data?: { size?: number } }) => {
                   recordAPICall({
                     endpoint: `/storage/${method}`,
-                    method: method === 'download' ? 'GET' : 'POST',
+                    method: method === "download" ? "GET" : "POST",
                     statusCode: 200,
                     duration: Date.now() - startTime,
                     size: response?.data?.size,
-                    timestamp: Date.now()
-                  })
+                    timestamp: Date.now(),
+                  });
 
-                  return response
+                  return response;
                 })
                 .catch((error: Error) => {
                   recordAPICall({
                     endpoint: `/storage/${method}`,
-                    method: method === 'download' ? 'GET' : 'POST',
+                    method: method === "download" ? "GET" : "POST",
                     statusCode: (error as any).status || 500,
                     duration: Date.now() - startTime,
-                    timestamp: Date.now()
-                  })
+                    timestamp: Date.now(),
+                  });
 
-                  throw error
-                })
+                  throw error;
+                });
             }
 
-            return result
-          }
+            return result;
+          };
         }
-      })
+      });
 
-      return bucket
-    }
+      return bucket;
+    };
 
-    const originalFromStorage = originalStorage.from.bind(originalStorage)
-    originalStorage.from = function(bucket: string) {
-      return monitorBucket(originalFromStorage(bucket))
-    }
+    const originalFromStorage = originalStorage.from.bind(originalStorage);
+    originalStorage.from = function (bucket: string) {
+      return monitorBucket(originalFromStorage(bucket));
+    };
   }
 
-  return client
+  return client;
 }

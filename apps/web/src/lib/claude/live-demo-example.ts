@@ -7,7 +7,10 @@
  * @tags ["demo", "live-example", "complete-learning"]
  */
 
-import { withCompleteLearning, quickLearn } from './claude-complete-learning-system'
+import {
+  withCompleteLearning,
+  quickLearn,
+} from "./claude-complete-learning-system";
 
 // ================================================================
 // 🧠 LIVE DEMONSTRATION - Complete Learning System Method 1
@@ -18,20 +21,22 @@ import { withCompleteLearning, quickLearn } from './claude-complete-learning-sys
  * This demonstrates how Claude learns and improves from every task
  */
 const createSmartComponent = withCompleteLearning(
-  'code-generation',
-  'Create a smart notification component with TypeScript',
-  'Build reusable notification system for ClaimGuardian',
-  'User wants better notification UI',
+  "code-generation",
+  "Create a smart notification component with TypeScript",
+  "Build reusable notification system for ClaimGuardian",
+  "User wants better notification UI",
   {
-    filePath: 'src/components/ui/smart-notification.tsx',
-    codeLanguage: 'typescript',
-    framework: 'react',
-    complexity: 'medium',
-    tools: ['Write', 'Read'],
-    enableAutoReflection: true
+    filePath: "src/components/ui/smart-notification.tsx",
+    codeLanguage: "typescript",
+    framework: "react",
+    complexity: "medium",
+    tools: ["Write", "Read"],
+    enableAutoReflection: true,
   },
   async () => {
-    console.log('🧠 Claude Learning System ACTIVE - analyzing previous learnings...')
+    console.log(
+      "🧠 Claude Learning System ACTIVE - analyzing previous learnings...",
+    );
 
     // The system automatically:
     // 1. Queries similar component generation tasks
@@ -167,58 +172,60 @@ export function useNotifications() {
     clearAll
   }
 }
-`
+`;
 
-    console.log('✅ Component generated with applied learnings!')
-    console.log('🔍 Reflection will analyze: TypeScript usage, React patterns, accessibility')
+    console.log("✅ Component generated with applied learnings!");
+    console.log(
+      "🔍 Reflection will analyze: TypeScript usage, React patterns, accessibility",
+    );
 
-    return componentCode
-  }
-)
+    return componentCode;
+  },
+);
 
 /**
  * Example 2: Quick Learning for File Modification
  */
 const improveExistingComponent = quickLearn.fileModification(
-  'Add error boundary to existing component',
-  'src/components/ui/smart-notification.tsx',
+  "Add error boundary to existing component",
+  "src/components/ui/smart-notification.tsx",
   async () => {
-    console.log('🧠 Quick Learn: Applying file modification best practices...')
+    console.log("🧠 Quick Learn: Applying file modification best practices...");
 
     // System automatically applies learnings like:
     // - Always read file first
     // - Use proper TypeScript patterns
     // - Maintain existing code style
 
-    return 'Error boundary added with learning insights applied!'
-  }
-)
+    return "Error boundary added with learning insights applied!";
+  },
+);
 
 /**
  * Example 3: Smart Learning for Debugging
  */
 const debugWithLearning = quickLearn.debugging(
-  'Fix TypeScript errors in notification system',
-  'src/components/ui/smart-notification.tsx',
+  "Fix TypeScript errors in notification system",
+  "src/components/ui/smart-notification.tsx",
   async () => {
-    console.log('🧠 Debug Mode: Using previous debugging patterns...')
+    console.log("🧠 Debug Mode: Using previous debugging patterns...");
 
     // System applies debugging learnings like:
     // - Check type definitions first
     // - Look for common TypeScript issues
     // - Apply fixes that worked before
 
-    return 'TypeScript errors resolved using learned patterns!'
-  }
-)
+    return "TypeScript errors resolved using learned patterns!";
+  },
+);
 
 /**
  * Example 4: Analysis with Learning Context
  */
 const analyzeWithContext = quickLearn.analysis(
-  'Analyze notification system performance and suggest improvements',
+  "Analyze notification system performance and suggest improvements",
   async () => {
-    console.log('🧠 Analysis Mode: Applying previous analysis patterns...')
+    console.log("🧠 Analysis Mode: Applying previous analysis patterns...");
 
     // System provides context like:
     // - Previous performance analysis approaches
@@ -227,18 +234,18 @@ const analyzeWithContext = quickLearn.analysis(
 
     return {
       performanceIssues: [
-        'Re-renders on every notification change',
-        'Timers not cleaned up properly'
+        "Re-renders on every notification change",
+        "Timers not cleaned up properly",
       ],
       optimizations: [
-        'Use React.memo for notification items',
-        'Implement proper timer cleanup',
-        'Add virtualization for many notifications'
+        "Use React.memo for notification items",
+        "Implement proper timer cleanup",
+        "Add virtualization for many notifications",
       ],
-      learningApplied: 'Used previous React performance analysis patterns'
-    }
-  }
-)
+      learningApplied: "Used previous React performance analysis patterns",
+    };
+  },
+);
 
 // ================================================================
 // 🎯 PRACTICAL USAGE EXAMPLES
@@ -248,52 +255,53 @@ const analyzeWithContext = quickLearn.analysis(
  * How to use these in your actual development workflow
  */
 export async function demonstrateLearningSystem() {
-  console.log('🚀 Starting Complete Learning System Demonstration...\n')
+  console.log("🚀 Starting Complete Learning System Demonstration...\n");
 
   try {
     // Example 1: Generate component with full learning
-    console.log('1️⃣ Generating smart component with learning system...')
-    const componentResult = await createSmartComponent()
-    console.log('✅ Component created successfully!')
-    console.log('📊 Learning data captured for future component generation tasks\n')
+    console.log("1️⃣ Generating smart component with learning system...");
+    const componentResult = await createSmartComponent();
+    console.log("✅ Component created successfully!");
+    console.log(
+      "📊 Learning data captured for future component generation tasks\n",
+    );
 
     // Example 2: File modification with quick learning
-    console.log('2️⃣ Improving component with quick learning...')
-    const modificationResult = await improveExistingComponent()
-    console.log('✅ Component improved with applied learnings!\n')
+    console.log("2️⃣ Improving component with quick learning...");
+    const modificationResult = await improveExistingComponent();
+    console.log("✅ Component improved with applied learnings!\n");
 
     // Example 3: Debugging with learning context
-    console.log('3️⃣ Debugging with previous patterns...')
-    const debugResult = await debugWithLearning()
-    console.log('✅ Bugs fixed using learned debugging approaches!\n')
+    console.log("3️⃣ Debugging with previous patterns...");
+    const debugResult = await debugWithLearning();
+    console.log("✅ Bugs fixed using learned debugging approaches!\n");
 
     // Example 4: Analysis with context
-    console.log('4️⃣ Analyzing with learned patterns...')
-    const analysisResult = await analyzeWithContext()
-    console.log('✅ Analysis complete with previous insights applied!')
-    console.log('📈 Performance recommendations generated\n')
+    console.log("4️⃣ Analyzing with learned patterns...");
+    const analysisResult = await analyzeWithContext();
+    console.log("✅ Analysis complete with previous insights applied!");
+    console.log("📈 Performance recommendations generated\n");
 
-    console.log('🎉 Complete Learning System Demo Finished!')
-    console.log('🧠 All tasks contributed to Claude\'s learning database')
-    console.log('📊 Future similar tasks will be faster and more accurate')
+    console.log("🎉 Complete Learning System Demo Finished!");
+    console.log("🧠 All tasks contributed to Claude's learning database");
+    console.log("📊 Future similar tasks will be faster and more accurate");
 
     return {
       success: true,
       tasksCompleted: 4,
-      learningsGenerated: 'Multiple patterns learned and applied',
-      nextSteps: 'System ready for production use'
-    }
-
+      learningsGenerated: "Multiple patterns learned and applied",
+      nextSteps: "System ready for production use",
+    };
   } catch (error) {
-    console.error('❌ Demo encountered error:', error)
-    console.log('🧠 Error logged to learning system for future improvement')
+    console.error("❌ Demo encountered error:", error);
+    console.log("🧠 Error logged to learning system for future improvement");
 
     // Even errors contribute to learning!
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-      learningNote: 'Error patterns captured for future prevention'
-    }
+      error: error instanceof Error ? error.message : "Unknown error",
+      learningNote: "Error patterns captured for future prevention",
+    };
   }
 }
 
@@ -304,17 +312,23 @@ export async function demonstrateLearningSystem() {
 /**
  * Template for wrapping your existing functions
  */
-export function wrapExistingFunction<T extends (...args: unknown[]) => Promise<any>>(
+export function wrapExistingFunction<
+  T extends (...args: unknown[]) => Promise<any>,
+>(
   functionName: string,
   originalFunction: T,
   options: {
-    taskType: 'code-generation' | 'file-modification' | 'debugging' | 'analysis' | 'planning'
-    filePath?: string
-    language?: string
-    complexity?: 'simple' | 'medium' | 'complex'
-  }
+    taskType:
+      | "code-generation"
+      | "file-modification"
+      | "debugging"
+      | "analysis"
+      | "planning";
+    filePath?: string;
+    language?: string;
+    complexity?: "simple" | "medium" | "complex";
+  },
 ): T {
-
   const wrappedFunction = withCompleteLearning(
     options.taskType,
     functionName,
@@ -323,13 +337,13 @@ export function wrapExistingFunction<T extends (...args: unknown[]) => Promise<a
     {
       filePath: options.filePath,
       codeLanguage: options.language,
-      complexity: options.complexity || 'medium',
-      enableAutoReflection: true
+      complexity: options.complexity || "medium",
+      enableAutoReflection: true,
     },
-    originalFunction
-  )
+    originalFunction,
+  );
 
-  return wrappedFunction as T
+  return wrappedFunction as T;
 }
 
 /**
@@ -337,23 +351,31 @@ export function wrapExistingFunction<T extends (...args: unknown[]) => Promise<a
  */
 export function smartWrap<T extends (...args: unknown[]) => Promise<any>>(
   functionName: string,
-  originalFunction: T
+  originalFunction: T,
 ): T {
-
   // Auto-detect task type from function name
-  let taskType: 'code-generation' | 'file-modification' | 'debugging' | 'analysis' | 'planning' = 'analysis'
+  let taskType:
+    | "code-generation"
+    | "file-modification"
+    | "debugging"
+    | "analysis"
+    | "planning" = "analysis";
 
-  if (functionName.includes('create') || functionName.includes('generate')) {
-    taskType = 'code-generation'
-  } else if (functionName.includes('edit') || functionName.includes('modify') || functionName.includes('update')) {
-    taskType = 'file-modification'
-  } else if (functionName.includes('debug') || functionName.includes('fix')) {
-    taskType = 'debugging'
-  } else if (functionName.includes('plan')) {
-    taskType = 'planning'
+  if (functionName.includes("create") || functionName.includes("generate")) {
+    taskType = "code-generation";
+  } else if (
+    functionName.includes("edit") ||
+    functionName.includes("modify") ||
+    functionName.includes("update")
+  ) {
+    taskType = "file-modification";
+  } else if (functionName.includes("debug") || functionName.includes("fix")) {
+    taskType = "debugging";
+  } else if (functionName.includes("plan")) {
+    taskType = "planning";
   }
 
-  return wrapExistingFunction(functionName, originalFunction, { taskType })
+  return wrapExistingFunction(functionName, originalFunction, { taskType });
 }
 
 // Export everything for easy usage
@@ -361,5 +383,5 @@ export {
   createSmartComponent,
   improveExistingComponent,
   debugWithLearning,
-  analyzeWithContext
-}
+  analyzeWithContext,
+};

@@ -1,5 +1,5 @@
 /**
- * @fileMetadata 
+ * @fileMetadata
  * @purpose "Supabase client helpers for consistent async/await patterns"
  * @owner backend-team
  * @dependencies ["@supabase/supabase-js", "@/lib/supabase/server"]
@@ -7,14 +7,14 @@
  * @status stable
  */
 
-import { createClient } from '@/lib/supabase/server'
-import type { SupabaseClient } from '@supabase/supabase-js'
+import { createClient } from "@/lib/supabase/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 /**
  * Get a server-side Supabase client with proper async handling
  */
 export async function getServerClient(): Promise<SupabaseClient> {
-  return await createClient()
+  return await createClient();
 }
 
 /**
@@ -23,6 +23,6 @@ export async function getServerClient(): Promise<SupabaseClient> {
  */
 export abstract class SupabaseService {
   protected async getSupabaseClient(): Promise<SupabaseClient> {
-    return await getServerClient()
+    return await getServerClient();
   }
 }

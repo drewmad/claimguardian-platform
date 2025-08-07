@@ -8,30 +8,33 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-import { SupabaseClient } from '@supabase/supabase-js'
-import { useEffect, useState, useCallback, useRef } from 'react'
+import { SupabaseClient } from "@supabase/supabase-js";
+import { useEffect, useState, useCallback, useRef } from "react";
 
-import { RealtimeClient } from './client'
+import { RealtimeClient } from "./client";
 import type {
   RealtimeEvent,
   PresenceState,
   ClaimUpdate,
   DocumentUpdate,
   NotificationEvent,
-  TypingIndicator
-} from './types'
+  TypingIndicator,
+} from "./types";
 
 // Global realtime client instance
-let globalRealtimeClient: RealtimeClient | null = null
+let globalRealtimeClient: RealtimeClient | null = null;
 
-function getRealtimeClient(supabase: SupabaseClient, userId?: string): RealtimeClient {
+function getRealtimeClient(
+  supabase: SupabaseClient,
+  userId?: string,
+): RealtimeClient {
   if (!globalRealtimeClient) {
-    globalRealtimeClient = new RealtimeClient(supabase, userId)
+    globalRealtimeClient = new RealtimeClient(supabase, userId);
   }
-  if (userId && !globalRealtimeClient['userId']) {
-    globalRealtimeClient.setUserId(userId)
+  if (userId && !globalRealtimeClient["userId"]) {
+    globalRealtimeClient.setUserId(userId);
   }
-  return globalRealtimeClient
+  return globalRealtimeClient;
 }
 
 /**
@@ -41,71 +44,80 @@ export function useRealtimeTable<T = unknown>(
   supabase: SupabaseClient,
   table: string,
   options?: {
-    onInsert?: (record: T) => void
-    onUpdate?: (data: { old: T; new: T }) => void
-    onDelete?: (record: T) => void
-    enabled?: boolean
-  }
+    onInsert?: (record: T) => void;
+    onUpdate?: (data: { old: T; new: T }) => void;
+    onDelete?: (record: T) => void;
+    enabled?: boolean;
+  },
 ) {
-  const [events, setEvents] = useState<RealtimeEvent<T>[]>([])
-  const [isConnected, setIsConnected] = useState(false)
-  const clientRef = useRef<RealtimeClient>(undefined)
+  const [events, setEvents] = useState<RealtimeEvent<T>[]>([]);
+  const [isConnected, setIsConnected] = useState(false);
+  const clientRef = useRef<RealtimeClient>(undefined);
 
   useEffect(() => {
-    if (options?.enabled === false) return
+    if (options?.enabled === false) return;
 
-    const client = getRealtimeClient(supabase)
-    clientRef.current = client
+    const client = getRealtimeClient(supabase);
+    clientRef.current = client;
 
     const subscription = client.subscribeToTable<T>(table, {
       onInsert: (record: unknown) => {
-        setEvents(prev => [...prev, {
-          type: 'INSERT',
-          table,
-          schema: 'public',
-          old: null,
-          new: record as T,
-          timestamp: new Date().toISOString()
-        } as RealtimeEvent<T>])
-        options?.onInsert?.(record as T)
+        setEvents((prev) => [
+          ...prev,
+          {
+            type: "INSERT",
+            table,
+            schema: "public",
+            old: null,
+            new: record as T,
+            timestamp: new Date().toISOString(),
+          } as RealtimeEvent<T>,
+        ]);
+        options?.onInsert?.(record as T);
       },
       onUpdate: (data: unknown) => {
-        const typedData = data as { old: T; new: T }
-        setEvents(prev => [...prev, {
-          type: 'UPDATE',
-          table,
-          schema: 'public',
-          old: typedData.old,
-          new: typedData.new,
-          timestamp: new Date().toISOString()
-        } as RealtimeEvent<T>])
-        options?.onUpdate?.(typedData)
+        const typedData = data as { old: T; new: T };
+        setEvents((prev) => [
+          ...prev,
+          {
+            type: "UPDATE",
+            table,
+            schema: "public",
+            old: typedData.old,
+            new: typedData.new,
+            timestamp: new Date().toISOString(),
+          } as RealtimeEvent<T>,
+        ]);
+        options?.onUpdate?.(typedData);
       },
       onDelete: (record: unknown) => {
-        setEvents(prev => [...prev, {
-          type: 'DELETE',
-          table,
-          schema: 'public',
-          old: record as T,
-          new: null,
-          timestamp: new Date().toISOString()
-        } as RealtimeEvent<T>])
-        options?.onDelete?.(record as T)
+        setEvents((prev) => [
+          ...prev,
+          {
+            type: "DELETE",
+            table,
+            schema: "public",
+            old: record as T,
+            new: null,
+            timestamp: new Date().toISOString(),
+          } as RealtimeEvent<T>,
+        ]);
+        options?.onDelete?.(record as T);
       },
       onConnect: () => setIsConnected(true),
-      onDisconnect: () => setIsConnected(false)
-    })
+      onDisconnect: () => setIsConnected(false),
+    });
 
     return () => {
-      subscription.unsubscribe()
-    }
-  }, [supabase, table, options?.enabled, options])
+      subscription.unsubscribe();
+    };
+  }, [supabase, table, options?.enabled, options]);
 
   const clearEvents = useCallback(() => {
-    setEvents([])
-  }, [])
+    setEvents([]);
+  }, []);
 
-  return { events, isConnected, clearEvents }
+  return { events, isConnected, clearEvents };
 }
 
 /**
@@ -116,40 +128,40 @@ export function useRealtimeRecord<T = unknown>(
   table: string,
   id: string | null,
   options?: {
-    onUpdate?: (data: { old: T; new: T }) => void
-    onDelete?: (record: T) => void
-    enabled?: boolean
-  }
+    onUpdate?: (data: { old: T; new: T }) => void;
+    onDelete?: (record: T) => void;
+    enabled?: boolean;
+  },
 ) {
-  const [record, setRecord] = useState<T | null>(null)
-  const [isDeleted, setIsDeleted] = useState(false)
-  const clientRef = useRef<RealtimeClient>(undefined)
+  const [record, setRecord] = useState<T | null>(null);
+  const [isDeleted, setIsDeleted] = useState(false);
+  const clientRef = useRef<RealtimeClient>(undefined);
 
   useEffect(() => {
-    if (!id || options?.enabled === false) return
+    if (!id || options?.enabled === false) return;
 
-    const client = getRealtimeClient(supabase)
-    clientRef.current = client
+    const client = getRealtimeClient(supabase);
+    clientRef.current = client;
 
     const subscription = client.subscribeToRecord<T>(table, id, {
       onUpdate: (data: unknown) => {
-        const typedData = data as { old: T; new: T }
-        setRecord(typedData.new)
-        options?.onUpdate?.(typedData)
+        const typedData = data as { old: T; new: T };
+        setRecord(typedData.new);
+        options?.onUpdate?.(typedData);
       },
       onDelete: (record: unknown) => {
-        setIsDeleted(true)
-        setRecord(null)
-        options?.onDelete?.(record as T)
-      }
-    })
+        setIsDeleted(true);
+        setRecord(null);
+        options?.onDelete?.(record as T);
+      },
+    });
 
     return () => {
-      subscription.unsubscribe()
-    }
-  }, [supabase, table, id, options?.enabled, options])
+      subscription.unsubscribe();
+    };
+  }, [supabase, table, id, options?.enabled, options]);
 
-  return { record, isDeleted }
+  return { record, isDeleted };
 }
 
 /**
@@ -157,26 +169,26 @@ export function useRealtimeRecord<T = unknown>(
  */
 export function useClaimUpdates(
   supabase: SupabaseClient,
-  claimId: string | null
+  claimId: string | null,
 ) {
-  const [updates, setUpdates] = useState<ClaimUpdate[]>([])
-  const [latestStatus, setLatestStatus] = useState<string | null>(null)
+  const [updates, setUpdates] = useState<ClaimUpdate[]>([]);
+  const [latestStatus, setLatestStatus] = useState<string | null>(null);
 
   const { record } = useRealtimeRecord<ClaimUpdate>(
     supabase,
-    'claims',
+    "claims",
     claimId,
     {
       onUpdate: ({ new: update }) => {
-        setUpdates(prev => [...prev, update])
+        setUpdates((prev) => [...prev, update]);
         if (update.status) {
-          setLatestStatus(update.status)
+          setLatestStatus(update.status);
         }
-      }
-    }
-  )
+      },
+    },
+  );
 
-  return { updates, latestStatus, currentClaim: record }
+  return { updates, latestStatus, currentClaim: record };
 }
 
 /**
@@ -184,28 +196,26 @@ export function useClaimUpdates(
  */
 export function useDocumentProcessing(
   supabase: SupabaseClient,
-  documentId: string | null
+  documentId: string | null,
 ) {
-  const [processingStatus, setProcessingStatus] = useState<string>('pending')
-  const [extractedData, setExtractedData] = useState<Record<string, unknown> | null>(null)
+  const [processingStatus, setProcessingStatus] = useState<string>("pending");
+  const [extractedData, setExtractedData] = useState<Record<
+    string,
+    unknown
+  > | null>(null);
 
-  useRealtimeRecord<DocumentUpdate>(
-    supabase,
-    'documents',
-    documentId,
-    {
-      onUpdate: ({ new: doc }) => {
-        if (doc.processing_status) {
-          setProcessingStatus(doc.processing_status)
-        }
-        if (doc.extracted_data) {
-          setExtractedData(doc.extracted_data)
-        }
+  useRealtimeRecord<DocumentUpdate>(supabase, "documents", documentId, {
+    onUpdate: ({ new: doc }) => {
+      if (doc.processing_status) {
+        setProcessingStatus(doc.processing_status);
       }
-    }
-  )
+      if (doc.extracted_data) {
+        setExtractedData(doc.extracted_data);
+      }
+    },
+  });
 
-  return { processingStatus, extractedData }
+  return { processingStatus, extractedData };
 }
 
 /**
@@ -213,55 +223,54 @@ export function useDocumentProcessing(
  */
 export function useNotifications(
   supabase: SupabaseClient,
-  userId: string | null
+  userId: string | null,
 ) {
-  const [notifications, setNotifications] = useState<NotificationEvent[]>([])
-  const [unreadCount, setUnreadCount] = useState(0)
+  const [notifications, setNotifications] = useState<NotificationEvent[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
 
-  useRealtimeTable<NotificationEvent>(
-    supabase,
-    'notifications',
-    {
-      onInsert: (notification) => {
-        if (notification.user_id === userId) {
-          setNotifications(prev => [notification, ...prev])
-          if (!notification.read) {
-            setUnreadCount(prev => prev + 1)
-          }
+  useRealtimeTable<NotificationEvent>(supabase, "notifications", {
+    onInsert: (notification) => {
+      if (notification.user_id === userId) {
+        setNotifications((prev) => [notification, ...prev]);
+        if (!notification.read) {
+          setUnreadCount((prev) => prev + 1);
         }
-      },
-      onUpdate: ({ old: oldNotif, new: newNotif }) => {
-        if (newNotif.user_id === userId) {
-          setNotifications(prev =>
-            prev.map(n => n.id === newNotif.id ? newNotif : n)
-          )
-          if (!oldNotif.read && newNotif.read) {
-            setUnreadCount(prev => Math.max(0, prev - 1))
-          }
+      }
+    },
+    onUpdate: ({ old: oldNotif, new: newNotif }) => {
+      if (newNotif.user_id === userId) {
+        setNotifications((prev) =>
+          prev.map((n) => (n.id === newNotif.id ? newNotif : n)),
+        );
+        if (!oldNotif.read && newNotif.read) {
+          setUnreadCount((prev) => Math.max(0, prev - 1));
         }
-      },
-      enabled: !!userId
-    }
-  )
+      }
+    },
+    enabled: !!userId,
+  });
 
-  const markAsRead = useCallback(async (notificationId: string) => {
-    await supabase
-      .from('notifications')
-      .update({ read: true })
-      .eq('id', notificationId)
-  }, [supabase])
+  const markAsRead = useCallback(
+    async (notificationId: string) => {
+      await supabase
+        .from("notifications")
+        .update({ read: true })
+        .eq("id", notificationId);
+    },
+    [supabase],
+  );
 
   const markAllAsRead = useCallback(async () => {
-    if (!userId) return
+    if (!userId) return;
 
     await supabase
-      .from('notifications')
+      .from("notifications")
       .update({ read: true })
-      .eq('user_id', userId)
-      .eq('read', false)
-  }, [supabase, userId])
+      .eq("user_id", userId)
+      .eq("read", false);
+  }, [supabase, userId]);
 
-  return { notifications, unreadCount, markAsRead, markAllAsRead }
+  return { notifications, unreadCount, markAsRead, markAllAsRead };
 }
 
 /**
@@ -271,91 +280,99 @@ export function usePresence(
   supabase: SupabaseClient,
   channelName: string,
   userId: string,
-  userInfo: { email: string; name?: string }
+  userInfo: { email: string; name?: string },
 ) {
-  const [presenceState, setPresenceState] = useState<PresenceState>({})
-  const [activeUsers, setActiveUsers] = useState<string[]>([])
-  const clientRef = useRef<RealtimeClient>(undefined)
+  const [presenceState, setPresenceState] = useState<PresenceState>({});
+  const [activeUsers, setActiveUsers] = useState<string[]>([]);
+  const clientRef = useRef<RealtimeClient>(undefined);
 
   useEffect(() => {
-    const client = getRealtimeClient(supabase, userId)
-    clientRef.current = client
+    const client = getRealtimeClient(supabase, userId);
+    clientRef.current = client;
 
     client.createPresenceChannel(channelName, {
       user_id: userId,
       user_email: userInfo.email,
       user_name: userInfo.name,
-      online_at: new Date().toISOString()
-    })
+      online_at: new Date().toISOString(),
+    });
 
     const handleSync = (state: PresenceState) => {
-      setPresenceState(state)
-      setActiveUsers(Object.keys(state))
-    }
+      setPresenceState(state);
+      setActiveUsers(Object.keys(state));
+    };
 
-    client.on(`presence:${channelName}:sync`, handleSync)
+    client.on(`presence:${channelName}:sync`, handleSync);
 
     return () => {
-      client.off(`presence:${channelName}:sync`, handleSync)
-      client.unsubscribe(channelName)
-    }
-  }, [supabase, channelName, userId, userInfo.email, userInfo.name])
+      client.off(`presence:${channelName}:sync`, handleSync);
+      client.unsubscribe(channelName);
+    };
+  }, [supabase, channelName, userId, userInfo.email, userInfo.name]);
 
-  const updateStatus = useCallback(async (status: Record<string, unknown>) => {
-    if (clientRef.current) {
-      await clientRef.current.updatePresence(channelName, {
-        user_id: userId,
-        user_email: userInfo.email,
-        user_name: userInfo.name,
-        ...status,
-        updated_at: new Date().toISOString()
-      })
-    }
-  }, [channelName, userId, userInfo])
+  const updateStatus = useCallback(
+    async (status: Record<string, unknown>) => {
+      if (clientRef.current) {
+        await clientRef.current.updatePresence(channelName, {
+          user_id: userId,
+          user_email: userInfo.email,
+          user_name: userInfo.name,
+          ...status,
+          updated_at: new Date().toISOString(),
+        });
+      }
+    },
+    [channelName, userId, userInfo],
+  );
 
-  return { presenceState, activeUsers, updateStatus }
+  return { presenceState, activeUsers, updateStatus };
 }
 
 /**
  * Use broadcast for real-time messaging
  */
-export function useBroadcast(
-  supabase: SupabaseClient,
-  channelName: string
-) {
-  const [messages, setMessages] = useState<Array<{ event: string; payload: unknown; timestamp: string }>>([])
-  const clientRef = useRef<RealtimeClient>(undefined)
+export function useBroadcast(supabase: SupabaseClient, channelName: string) {
+  const [messages, setMessages] = useState<
+    Array<{ event: string; payload: unknown; timestamp: string }>
+  >([]);
+  const clientRef = useRef<RealtimeClient>(undefined);
 
   useEffect(() => {
-    const client = getRealtimeClient(supabase)
-    clientRef.current = client
+    const client = getRealtimeClient(supabase);
+    clientRef.current = client;
 
-    client.createBroadcastChannel(channelName)
+    client.createBroadcastChannel(channelName);
 
     const handleMessage = (event: string) => (payload: unknown) => {
-      setMessages(prev => [...prev, {
-        event,
-        payload,
-        timestamp: new Date().toISOString()
-      }])
-    }
+      setMessages((prev) => [
+        ...prev,
+        {
+          event,
+          payload,
+          timestamp: new Date().toISOString(),
+        },
+      ]);
+    };
 
     // Listen to all events on this channel
-    client.on(`broadcast:${channelName}:*`, handleMessage('*'))
+    client.on(`broadcast:${channelName}:*`, handleMessage("*"));
 
     return () => {
-      client.off(`broadcast:${channelName}:*`)
-      client.unsubscribe(channelName)
-    }
-  }, [supabase, channelName])
+      client.off(`broadcast:${channelName}:*`);
+      client.unsubscribe(channelName);
+    };
+  }, [supabase, channelName]);
 
-  const broadcast = useCallback(async (event: string, payload: unknown) => {
-    if (clientRef.current) {
-      await clientRef.current.broadcast(channelName, event, payload)
-    }
-  }, [channelName])
+  const broadcast = useCallback(
+    async (event: string, payload: unknown) => {
+      if (clientRef.current) {
+        await clientRef.current.broadcast(channelName, event, payload);
+      }
+    },
+    [channelName],
+  );
 
-  return { messages, broadcast }
+  return { messages, broadcast };
 }
 
 /**
@@ -365,72 +382,77 @@ export function useTypingIndicator(
   supabase: SupabaseClient,
   channelName: string,
   userId: string,
-  userName: string
+  userName: string,
 ) {
-  const [typingUsers, setTypingUsers] = useState<Map<string, TypingIndicator>>(new Map())
-  const typingTimeoutRef = useRef<NodeJS.Timeout>(undefined)
-  const { broadcast } = useBroadcast(supabase, `typing-${channelName}`)
+  const [typingUsers, setTypingUsers] = useState<Map<string, TypingIndicator>>(
+    new Map(),
+  );
+  const typingTimeoutRef = useRef<NodeJS.Timeout>(undefined);
+  const { broadcast } = useBroadcast(supabase, `typing-${channelName}`);
 
   useEffect(() => {
-    const client = getRealtimeClient(supabase)
+    const client = getRealtimeClient(supabase);
 
     const handleTyping = (indicator: TypingIndicator) => {
       if (indicator.user_id !== userId) {
-        setTypingUsers(prev => {
-          const updated = new Map(prev)
+        setTypingUsers((prev) => {
+          const updated = new Map(prev);
           if (indicator.is_typing) {
-            updated.set(indicator.user_id, indicator)
+            updated.set(indicator.user_id, indicator);
 
             // Auto-remove after 3 seconds
             setTimeout(() => {
-              setTypingUsers(p => {
-                const u = new Map(p)
-                u.delete(indicator.user_id)
-                return u
-              })
-            }, 3000)
+              setTypingUsers((p) => {
+                const u = new Map(p);
+                u.delete(indicator.user_id);
+                return u;
+              });
+            }, 3000);
           } else {
-            updated.delete(indicator.user_id)
+            updated.delete(indicator.user_id);
           }
-          return updated
-        })
+          return updated;
+        });
       }
-    }
+    };
 
-    client.on(`broadcast:typing-${channelName}:typing`, handleTyping)
+    client.on(`broadcast:typing-${channelName}:typing`, handleTyping);
 
     return () => {
-      client.off(`broadcast:typing-${channelName}:typing`, handleTyping)
-    }
-  }, [supabase, channelName, userId])
+      client.off(`broadcast:typing-${channelName}:typing`, handleTyping);
+    };
+  }, [supabase, channelName, userId]);
 
-  const setTyping = useCallback((isTyping: boolean, field?: string) => {
-    // Clear existing timeout
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current)
-    }
+  const setTyping = useCallback(
+    (isTyping: boolean, field?: string) => {
+      // Clear existing timeout
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
 
-    broadcast('typing', {
-      user_id: userId,
-      user_name: userName,
-      is_typing: isTyping,
-      field
-    })
+      broadcast("typing", {
+        user_id: userId,
+        user_name: userName,
+        is_typing: isTyping,
+        field,
+      });
 
-    // Auto-stop typing after 2 seconds
-    if (isTyping) {
-      typingTimeoutRef.current = setTimeout(() => {
-        broadcast('typing', {
-          user_id: userId,
-          user_name: userName,
-          is_typing: false,
-          field
-        })
-      }, 2000)
-    }
-  }, [broadcast, userId, userName])
+      // Auto-stop typing after 2 seconds
+      if (isTyping) {
+        typingTimeoutRef.current = setTimeout(() => {
+          broadcast("typing", {
+            user_id: userId,
+            user_name: userName,
+            is_typing: false,
+            field,
+          });
+        }, 2000);
+      }
+    },
+    [broadcast, userId, userName],
+  );
 
-  return { typingUsers: Array.from(typingUsers.values()), setTyping }
+  return { typingUsers: Array.from(typingUsers.values()), setTyping };
 }
 
 /**
@@ -441,11 +463,11 @@ export function useRealtimeSubscription<T = unknown>(
   supabase: SupabaseClient,
   table: string,
   options?: {
-    onInsert?: (record: T) => void
-    onUpdate?: (data: { old: T; new: T }) => void
-    onDelete?: (record: T) => void
-    enabled?: boolean
-  }
+    onInsert?: (record: T) => void;
+    onUpdate?: (data: { old: T; new: T }) => void;
+    onDelete?: (record: T) => void;
+    enabled?: boolean;
+  },
 ) {
-  return useRealtimeTable<T>(supabase, table, options)
+  return useRealtimeTable<T>(supabase, table, options);
 }

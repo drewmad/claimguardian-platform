@@ -37,6 +37,7 @@ RESEND_WEBHOOK_SECRET=whsec_xxxxxxxxxxxxx
 ### Template Structure
 
 All emails use a consistent HTML template with:
+
 - Responsive design
 - Dark header with ClaimGuardian branding
 - Clear call-to-action buttons
@@ -47,10 +48,10 @@ All emails use a consistent HTML template with:
 ### Server Actions
 
 ```typescript
-import { sendWelcomeEmail, sendPropertyEnrichmentEmail } from '@/actions/email'
+import { sendWelcomeEmail, sendPropertyEnrichmentEmail } from "@/actions/email";
 
 // Send welcome email
-await sendWelcomeEmail(userId)
+await sendWelcomeEmail(userId);
 
 // Send property enrichment email
 await sendPropertyEnrichmentEmail({
@@ -58,12 +59,12 @@ await sendPropertyEnrichmentEmail({
   propertyId,
   propertyAddress,
   enrichmentData: {
-    floodZone: 'AE',
+    floodZone: "AE",
     elevation: 12.5,
-    hurricaneZone: 'B',
-    protectionClass: 5
-  }
-})
+    hurricaneZone: "B",
+    protectionClass: 5,
+  },
+});
 ```
 
 ### Edge Functions
@@ -72,21 +73,22 @@ The `send-email` Edge Function handles email sending from other Edge Functions:
 
 ```typescript
 await fetch(`${SUPABASE_URL}/functions/v1/send-email`, {
-  method: 'POST',
+  method: "POST",
   headers: {
-    'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
-    'Content-Type': 'application/json'
+    Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`,
+    "Content-Type": "application/json",
   },
   body: JSON.stringify({
-    type: 'welcome',
-    userId: 'user-uuid'
-  })
-})
+    type: "welcome",
+    userId: "user-uuid",
+  }),
+});
 ```
 
 ## Email Tracking
 
 All emails are logged in the `email_logs` table with:
+
 - Email type and recipient
 - Send timestamp
 - Resend ID for tracking
@@ -95,11 +97,13 @@ All emails are logged in the `email_logs` table with:
 ### Webhook Integration
 
 Configure Resend webhook endpoint:
+
 ```
 https://app.claimguardianai.com/api/webhooks/resend
 ```
 
 This tracks:
+
 - Email delivery status
 - Open rates
 - Click tracking
@@ -108,6 +112,7 @@ This tracks:
 ## Rate Limiting
 
 The system includes rate limiting protection:
+
 - Per-user limits to prevent spam
 - Bulk email batching (up to 100 recipients)
 - Automatic retry with exponential backoff
@@ -115,6 +120,7 @@ The system includes rate limiting protection:
 ## Email Types
 
 ### Transactional Emails (Immediate)
+
 - Welcome emails
 - Password resets
 - Email verification
@@ -122,6 +128,7 @@ The system includes rate limiting protection:
 - Property analysis complete
 
 ### Notification Emails (Batched)
+
 - Daily claim summaries
 - Weekly property reports
 - System announcements

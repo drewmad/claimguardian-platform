@@ -7,12 +7,14 @@ The Florida Parcels system implements the complete 138-column Florida Department
 ## Architecture
 
 ### Database Schema
+
 - **Table**: `florida_parcels` - 138 DOR standard columns plus ClaimGuardian enhancements
 - **Extensions**: PostGIS for spatial data, pg_trgm for fuzzy text search
 - **Indexes**: 40+ indexes optimized for common query patterns
 - **Triggers**: Automatic geometry processing, land use categorization, timestamp updates
 
 ### Key Features
+
 1. **Full DOR Compliance**: All 138 standard Florida DOR columns
 2. **Spatial Support**: PostGIS geometry with automatic centroid calculation
 3. **Full-Text Search**: Fuzzy owner name search using trigram matching
@@ -29,6 +31,7 @@ The Florida Parcels system implements the complete 138-column Florida Department
 ```
 
 This creates:
+
 - `florida_parcels` table with 138 DOR columns
 - PostGIS spatial indexes
 - Full-text search indexes
@@ -85,6 +88,7 @@ SELECT * FROM search_parcels_by_owner('SMITH', 15, 10);
 ## Data Import Process
 
 ### Parallel Import Architecture
+
 ```
 CSV File → Split into chunks → Parallel Node.js workers → Supabase bulk insert
          ↓                    ↓                         ↓
@@ -92,6 +96,7 @@ CSV File → Split into chunks → Parallel Node.js workers → Supabase bulk in
 ```
 
 ### Import Options
+
 - `--county`: County name or number (charlotte/15, lee/36, etc.)
 - `--file`: Input CSV file path
 - `--batch`: Records per chunk (default: 1000)
@@ -99,6 +104,7 @@ CSV File → Split into chunks → Parallel Node.js workers → Supabase bulk in
 - `--dry-run`: Test without inserting
 
 ### Performance Guidelines
+
 - **Small imports (<10k)**: Use batch=1000, jobs=2
 - **Medium imports (10k-100k)**: Use batch=5000, jobs=4
 - **Large imports (>100k)**: Use batch=10000, jobs=8
@@ -106,22 +112,26 @@ CSV File → Split into chunks → Parallel Node.js workers → Supabase bulk in
 ## Column Mapping
 
 ### Primary Identifiers
+
 - `CO_NO`: County number (1-67)
 - `PARCEL_ID`: Unique parcel ID within county
 - `county_fips`: Federal county code
 
 ### Owner Information
+
 - `OWN_NAME`: Owner name
 - `OWN_ADDR1/2`: Owner mailing address
 - `OWN_CITY`, `OWN_STATE`, `OWN_ZIPCD`: Owner location
 
 ### Property Location
+
 - `PHY_ADDR1/2`: Physical street address
 - `PHY_CITY`, `PHY_ZIPCD`: Property location
 - `LATITUDE`, `LONGITUDE`: Coordinates
 - `geometry_wkt`: Well-known text boundary
 
 ### Valuation
+
 - `JV`: Just value (market value)
 - `LND_VAL`: Land value
 - `IMP_VAL`: Improvement value
@@ -129,6 +139,7 @@ CSV File → Split into chunks → Parallel Node.js workers → Supabase bulk in
 - `SALE_YR1`: Last sale year
 
 ### Property Characteristics
+
 - `DOR_UC`: Department of Revenue use code
 - `ACT_YR_BLT`: Year built
 - `TOT_LVG_AR`: Total living area
@@ -137,6 +148,7 @@ CSV File → Split into chunks → Parallel Node.js workers → Supabase bulk in
 ## Query Examples
 
 ### Find Properties by Owner
+
 ```sql
 -- Fuzzy search by owner name
 SELECT * FROM search_parcels_by_owner('John Smith', 15, 50);
@@ -148,6 +160,7 @@ AND CO_NO = 15;
 ```
 
 ### Spatial Queries
+
 ```sql
 -- Find parcels within 1 mile of a point
 SELECT PARCEL_ID, OWN_NAME, PHY_ADDR1
@@ -166,6 +179,7 @@ GROUP BY flood_zone_type;
 ```
 
 ### Value Analysis
+
 ```sql
 -- High-value properties
 SELECT * FROM v_florida_parcels_high_value
@@ -201,11 +215,13 @@ WHERE county_number = 15;
 ### Performance Optimization
 
 1. **Vacuum after large imports**
+
    ```sql
    VACUUM ANALYZE florida_parcels;
    ```
 
 2. **Update statistics**
+
    ```sql
    ANALYZE florida_parcels;
    ```

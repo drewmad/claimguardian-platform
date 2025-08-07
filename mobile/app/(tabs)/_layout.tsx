@@ -6,89 +6,103 @@
  * @status stable
  */
 
-import { Tabs } from 'expo-router'
-import { MaterialCommunityIcons } from '@expo/vector-icons'
-import { useSelector } from 'react-redux'
-import { View, Text } from 'react-native'
+import { Tabs } from "expo-router";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useSelector } from "react-redux";
+import { View, Text } from "react-native";
 
-import { selectUnsyncedData, selectNetwork } from '../../shared/store'
+import { selectUnsyncedData, selectNetwork } from "../../shared/store";
 
 export default function TabsLayout() {
-  const unsyncedData = useSelector(selectUnsyncedData)
-  const network = useSelector(selectNetwork)
+  const unsyncedData = useSelector(selectUnsyncedData);
+  const network = useSelector(selectNetwork);
 
   const SyncBadge = ({ count }: { count: number }) => {
-    if (count === 0) return null
+    if (count === 0) return null;
 
     return (
-      <View style={{
-        position: 'absolute',
-        right: -6,
-        top: -3,
-        backgroundColor: '#EF4444',
-        borderRadius: 10,
-        minWidth: 20,
-        height: 20,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>
-        <Text style={{
-          color: 'white',
-          fontSize: 12,
-          fontWeight: 'bold',
-        }}>
-          {count > 99 ? '99+' : count}
+      <View
+        style={{
+          position: "absolute",
+          right: -6,
+          top: -3,
+          backgroundColor: "#EF4444",
+          borderRadius: 10,
+          minWidth: 20,
+          height: 20,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Text
+          style={{
+            color: "white",
+            fontSize: 12,
+            fontWeight: "bold",
+          }}
+        >
+          {count > 99 ? "99+" : count}
         </Text>
       </View>
-    )
-  }
+    );
+  };
 
   const NetworkIndicator = () => {
-    if (network.isConnected) return null
+    if (network.isConnected) return null;
 
     return (
-      <View style={{
-        position: 'absolute',
-        right: -6,
-        top: -3,
-        backgroundColor: '#F59E0B',
-        borderRadius: 8,
-        width: 16,
-        height: 16,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>
-        <MaterialCommunityIcons name="cloud-off-outline" size={10} color="white" />
+      <View
+        style={{
+          position: "absolute",
+          right: -6,
+          top: -3,
+          backgroundColor: "#F59E0B",
+          borderRadius: 8,
+          width: 16,
+          height: 16,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <MaterialCommunityIcons
+          name="cloud-off-outline"
+          size={10}
+          color="white"
+        />
       </View>
-    )
-  }
+    );
+  };
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#3B82F6',
-        tabBarInactiveTintColor: '#9CA3AF',
+        tabBarActiveTintColor: "#3B82F6",
+        tabBarInactiveTintColor: "#9CA3AF",
         tabBarStyle: {
-          backgroundColor: '#1F2937',
-          borderTopColor: '#374151',
+          backgroundColor: "#1F2937",
+          borderTopColor: "#374151",
           borderTopWidth: 1,
         },
         headerStyle: {
-          backgroundColor: '#111827',
+          backgroundColor: "#111827",
         },
-        headerTintColor: '#fff',
+        headerTintColor: "#fff",
         headerTitleStyle: {
-          fontWeight: 'bold',
+          fontWeight: "bold",
         },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Dashboard',
+          title: "Dashboard",
           tabBarIcon: ({ color, size }) => (
             <View>
-              <MaterialCommunityIcons name="view-dashboard" size={size} color={color} />
+              <MaterialCommunityIcons
+                name="view-dashboard"
+                size={size}
+                color={color}
+              />
               <NetworkIndicator />
             </View>
           ),
@@ -98,10 +112,14 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="properties"
         options={{
-          title: 'Properties',
+          title: "Properties",
           tabBarIcon: ({ color, size }) => (
             <View>
-              <MaterialCommunityIcons name="home-group" size={size} color={color} />
+              <MaterialCommunityIcons
+                name="home-group"
+                size={size}
+                color={color}
+              />
               <SyncBadge count={unsyncedData.properties.length} />
             </View>
           ),
@@ -111,11 +129,20 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="assessments"
         options={{
-          title: 'Assessments',
+          title: "Assessments",
           tabBarIcon: ({ color, size }) => (
             <View>
-              <MaterialCommunityIcons name="clipboard-check" size={size} color={color} />
-              <SyncBadge count={unsyncedData.assessments.length + unsyncedData.damageItems.length} />
+              <MaterialCommunityIcons
+                name="clipboard-check"
+                size={size}
+                color={color}
+              />
+              <SyncBadge
+                count={
+                  unsyncedData.assessments.length +
+                  unsyncedData.damageItems.length
+                }
+              />
             </View>
           ),
         }}
@@ -124,7 +151,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="sync"
         options={{
-          title: 'Sync',
+          title: "Sync",
           tabBarIcon: ({ color, size }) => (
             <View>
               <MaterialCommunityIcons
@@ -135,9 +162,10 @@ export default function TabsLayout() {
               <SyncBadge count={unsyncedData.totalCount} />
             </View>
           ),
-          tabBarBadge: unsyncedData.totalCount > 0 ? unsyncedData.totalCount : undefined,
+          tabBarBadge:
+            unsyncedData.totalCount > 0 ? unsyncedData.totalCount : undefined,
         }}
       />
     </Tabs>
-  )
+  );
 }

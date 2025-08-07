@@ -23,6 +23,7 @@ This guide walks you through setting up Stripe payments for ClaimGuardian.
 Create the following products in your Stripe Dashboard:
 
 #### Guardian Essential
+
 1. Go to Products → Add product
 2. Name: "Guardian Essential"
 3. Add pricing:
@@ -30,12 +31,14 @@ Create the following products in your Stripe Dashboard:
    - Annual: $290/year
 
 #### Guardian Plus (Future)
+
 1. Name: "Guardian Plus"
 2. Pricing:
    - Monthly: $49/month
    - Annual: $490/year
 
 #### Guardian Professional (Future)
+
 1. Name: "Guardian Professional"
 2. Pricing:
    - Monthly: $99/month
@@ -81,6 +84,7 @@ STRIPE_WEBHOOK_SECRET=whsec_...
 ### 5. Test Locally with Stripe CLI
 
 Install Stripe CLI:
+
 ```bash
 # macOS
 brew install stripe/stripe-cli/stripe
@@ -89,6 +93,7 @@ brew install stripe/stripe-cli/stripe
 ```
 
 Forward webhooks to your local server:
+
 ```bash
 stripe listen --forward-to localhost:3000/api/stripe/webhook
 ```
@@ -163,14 +168,17 @@ STRIPE_PRICE_ESSENTIAL_ANNUAL
 ## Common Issues
 
 ### "No such price" error
+
 - Ensure price IDs in environment variables match your Stripe Dashboard
 - Check you're using the correct mode (test vs live)
 
 ### Webhook signature verification failed
+
 - Ensure `STRIPE_WEBHOOK_SECRET` matches your webhook endpoint secret
 - Check raw body parsing in webhook route
 
 ### Subscription not updating
+
 - Verify webhook events are being received
 - Check Supabase RLS policies allow updates
 - Look for errors in webhook processing logs
@@ -178,11 +186,13 @@ STRIPE_PRICE_ESSENTIAL_ANNUAL
 ## Monitoring
 
 ### Stripe Dashboard
+
 - Monitor failed payments
 - Review subscription lifecycle
 - Check webhook delivery status
 
 ### Application Logs
+
 - Monitor `/api/stripe/*` routes for errors
 - Check Supabase logs for database errors
 - Set up alerts for payment failures
@@ -190,10 +200,12 @@ STRIPE_PRICE_ESSENTIAL_ANNUAL
 ## Support
 
 For Stripe-specific issues:
+
 - [Stripe Documentation](https://stripe.com/docs)
 - [Stripe Support](https://support.stripe.com)
 
 For ClaimGuardian integration issues:
+
 - Check application logs
 - Review webhook processing
 - Verify database schema matches expectations

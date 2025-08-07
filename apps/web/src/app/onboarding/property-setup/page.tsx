@@ -8,158 +8,176 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { createBrowserSupabaseClient } from '@claimguardian/db'
-import { Shield, Home, MapPin, Loader2, Check, AlertCircle } from 'lucide-react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useState, useEffect, useRef } from 'react'
-import { logger } from "@/lib/logger/production-logger"
+import { createBrowserSupabaseClient } from "@claimguardian/db";
+import {
+  Shield,
+  Home,
+  MapPin,
+  Loader2,
+  Check,
+  AlertCircle,
+} from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState, useEffect, useRef } from "react";
+import { logger } from "@/lib/logger/production-logger";
 
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { useGooglePlaces } from '@/hooks/use-google-maps'
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useGooglePlaces } from "@/hooks/use-google-maps";
 
 // Google Maps types are declared in types/globals.d.ts
 
 export default function PropertySetupPage() {
-  const router = useRouter()
-  const supabase = createBrowserSupabaseClient()
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [residencyType, setResidencyType] = useState<string>('')
-  const addressInputRef = useRef<HTMLInputElement>(null)
-  const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null)
+  const router = useRouter();
+  const supabase = createBrowserSupabaseClient();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [residencyType, setResidencyType] = useState<string>("");
+  const addressInputRef = useRef<HTMLInputElement>(null);
+  const [autocomplete, setAutocomplete] =
+    useState<google.maps.places.Autocomplete | null>(null);
 
   // Use centralized Google Maps hook
-  const { isLoaded: isGoogleLoaded, isLoading: isGoogleLoading, error: googleError } = useGooglePlaces()
+  const {
+    isLoaded: isGoogleLoaded,
+    isLoading: isGoogleLoading,
+    error: googleError,
+  } = useGooglePlaces();
 
   const [propertyData, setPropertyData] = useState({
-    address: '',
-    city: '',
-    state: 'FL',
-    zipCode: '',
-    unit: '',
-  })
+    address: "",
+    city: "",
+    state: "FL",
+    zipCode: "",
+    unit: "",
+  });
 
   useEffect(() => {
     // Get user's residency type from profile
     async function fetchUserProfile() {
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (user) {
         const { data: profile } = await supabase
-          .from('profiles')
-          .select('residency_type')
-          .eq('id', user.id)
-          .single()
+          .from("profiles")
+          .select("residency_type")
+          .eq("id", user.id)
+          .single();
 
         if (profile) {
-          setResidencyType(profile.residency_type)
+          setResidencyType(profile.residency_type);
         }
       }
     }
-    fetchUserProfile()
-  }, [supabase])
+    fetchUserProfile();
+  }, [supabase]);
 
   // Google Maps loading is now handled by useGooglePlaces hook
 
   // Initialize autocomplete when Google is loaded
   useEffect(() => {
-    if (!isGoogleLoaded || !addressInputRef.current || autocomplete) return
+    if (!isGoogleLoaded || !addressInputRef.current || autocomplete) return;
 
     const autocompleteInstance = new google.maps.places.Autocomplete(
       addressInputRef.current,
       {
-        types: ['address'],
-        componentRestrictions: { country: 'us' },
-        fields: ['address_components', 'formatted_address', 'geometry']
-      }
-    )
+        types: ["address"],
+        componentRestrictions: { country: "us" },
+        fields: ["address_components", "formatted_address", "geometry"],
+      },
+    );
 
-    autocompleteInstance.addListener('place_changed', () => {
-      const place = autocompleteInstance.getPlace()
+    autocompleteInstance.addListener("place_changed", () => {
+      const place = autocompleteInstance.getPlace();
 
       if (place.formatted_address && place.address_components) {
         // Parse address components
-        let address = ''
-        let city = ''
-        let state = ''
-        let zipCode = ''
+        let address = "";
+        let city = "";
+        let state = "";
+        let zipCode = "";
 
         place.address_components.forEach((component) => {
-          const types = component.types
-          if (types.includes('street_number') || types.includes('route')) {
-            address = address ? `${address} ${component.long_name}` : component.long_name
+          const types = component.types;
+          if (types.includes("street_number") || types.includes("route")) {
+            address = address
+              ? `${address} ${component.long_name}`
+              : component.long_name;
           }
-          if (types.includes('locality')) {
-            city = component.long_name
+          if (types.includes("locality")) {
+            city = component.long_name;
           }
-          if (types.includes('administrative_area_level_1')) {
-            state = component.short_name
+          if (types.includes("administrative_area_level_1")) {
+            state = component.short_name;
           }
-          if (types.includes('postal_code')) {
-            zipCode = component.long_name
+          if (types.includes("postal_code")) {
+            zipCode = component.long_name;
           }
-        })
+        });
 
         setPropertyData({
           address: address,
           city: city,
-          state: state || 'FL',
+          state: state || "FL",
           zipCode: zipCode,
           unit: propertyData.unit,
-        })
-        setSearchQuery(place.formatted_address)
+        });
+        setSearchQuery(place.formatted_address);
       }
-    })
+    });
 
-    setAutocomplete(autocompleteInstance)
+    setAutocomplete(autocompleteInstance);
 
     return () => {
       if (autocompleteInstance) {
-        google.maps.event.clearInstanceListeners(autocompleteInstance)
+        google.maps.event.clearInstanceListeners(autocompleteInstance);
       }
-    }
-  }, [isGoogleLoaded, autocomplete, propertyData.unit])
+    };
+  }, [isGoogleLoaded, autocomplete, propertyData.unit]);
 
   const handleManualAddressChange = (value: string) => {
-    setSearchQuery(value)
+    setSearchQuery(value);
     // If user types manually and autocomplete isn't working, allow manual entry
     if (!isGoogleLoaded) {
-      const parts = value.split(',').map(p => p.trim())
+      const parts = value.split(",").map((p) => p.trim());
       if (parts.length >= 2) {
         setPropertyData({
           address: parts[0],
-          city: parts[1] || '',
-          state: 'FL',
-          zipCode: parts[2] || '',
+          city: parts[1] || "",
+          state: "FL",
+          zipCode: parts[2] || "",
           unit: propertyData.unit,
-        })
+        });
       }
     }
-  }
+  };
 
   const handleSubmit = async () => {
     if (!propertyData.address || !propertyData.city) {
-      setError('Please enter a valid address')
-      return
+      setError("Please enter a valid address");
+      return;
     }
 
-    setIsLoading(true)
-    setError(null)
+    setIsLoading(true);
+    setError(null);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('Not authenticated')
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
 
       // Create property - store unit in metadata if provided
       const { data: property, error: propertyError } = await supabase
-        .from('properties')
+        .from("properties")
         .insert({
           user_id: user.id,
           address: propertyData.address,
@@ -167,58 +185,66 @@ export default function PropertySetupPage() {
           state: propertyData.state,
           zip_code: propertyData.zipCode,
           metadata: propertyData.unit ? { unit: propertyData.unit } : {},
-          property_type: 'residential',
-          occupancy_status: 'owner_occupied',
+          property_type: "residential",
+          occupancy_status: "owner_occupied",
         })
         .select()
-        .single()
+        .single();
 
-      if (propertyError) throw propertyError
+      if (propertyError) throw propertyError;
 
       // Update user profile with primary property
-      await supabase.from('profiles').update({
-        primary_property_id: property.id
-      }).eq('id', user.id)
+      await supabase
+        .from("profiles")
+        .update({
+          primary_property_id: property.id,
+        })
+        .eq("id", user.id);
 
       // Check if user is in Florida - if so, show disclosures
-      if (propertyData.state === 'FL') {
-        router.push('/dashboard?showFloridaDisclosures=true')
+      if (propertyData.state === "FL") {
+        router.push("/dashboard?showFloridaDisclosures=true");
       } else {
-        router.push('/dashboard')
+        router.push("/dashboard");
       }
     } catch (err) {
-      logger.error('Error creating property:', err)
-      setError(err instanceof Error ? err.message : 'Failed to save property')
+      logger.error("Error creating property:", err);
+      setError(err instanceof Error ? err.message : "Failed to save property");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const getResidencyMessage = () => {
     switch (residencyType) {
-      case 'renter':
-        return "Let's add your rental property so we can help protect your belongings"
-      case 'homeowner':
-        return "Let's add your home so we can help protect your investment"
-      case 'landlord':
-        return "Let's add your first property. You can add more properties later"
-      case 'real_estate_pro':
-        return "Let's add a property you manage or represent"
+      case "renter":
+        return "Let's add your rental property so we can help protect your belongings";
+      case "homeowner":
+        return "Let's add your home so we can help protect your investment";
+      case "landlord":
+        return "Let's add your first property. You can add more properties later";
+      case "real_estate_pro":
+        return "Let's add a property you manage or represent";
       default:
-        return "Let's add your property to get started"
+        return "Let's add your property to get started";
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
       <div className="w-full max-w-2xl">
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center justify-center mb-6">
+          <Link
+            href="/"
+            className="inline-flex items-center justify-center mb-6"
+          >
             <div className="w-16 h-16 bg-blue-600/10 rounded-2xl flex items-center justify-center">
               <Shield className="w-8 h-8 text-blue-600" />
             </div>
           </Link>
-          <h1 className="text-3xl font-bold text-white">Welcome to ClaimGuardian!</h1>
+          <h1 className="text-3xl font-bold text-white">
+            Welcome to ClaimGuardian!
+          </h1>
           <p className="text-gray-400 mt-2">{getResidencyMessage()}</p>
         </div>
 
@@ -232,7 +258,10 @@ export default function PropertySetupPage() {
 
           <div className="space-y-6">
             <div>
-              <Label htmlFor="search" className="text-lg flex items-center gap-2 mb-3">
+              <Label
+                htmlFor="search"
+                className="text-lg flex items-center gap-2 mb-3"
+              >
                 <Home className="w-5 h-5 text-blue-500" />
                 Property Address
               </Label>
@@ -296,7 +325,12 @@ export default function PropertySetupPage() {
                     <Input
                       id="address"
                       value={propertyData.address}
-                      onChange={(e) => setPropertyData({ ...propertyData, address: e.target.value })}
+                      onChange={(e) =>
+                        setPropertyData({
+                          ...propertyData,
+                          address: e.target.value,
+                        })
+                      }
                       className="mt-1 bg-slate-800 border-slate-700 text-white"
                     />
                   </div>
@@ -306,7 +340,12 @@ export default function PropertySetupPage() {
                     <Input
                       id="unit"
                       value={propertyData.unit}
-                      onChange={(e) => setPropertyData({ ...propertyData, unit: e.target.value })}
+                      onChange={(e) =>
+                        setPropertyData({
+                          ...propertyData,
+                          unit: e.target.value,
+                        })
+                      }
                       className="mt-1 bg-slate-800 border-slate-700 text-white"
                       placeholder="Apt 2B"
                     />
@@ -317,7 +356,12 @@ export default function PropertySetupPage() {
                     <Input
                       id="city"
                       value={propertyData.city}
-                      onChange={(e) => setPropertyData({ ...propertyData, city: e.target.value })}
+                      onChange={(e) =>
+                        setPropertyData({
+                          ...propertyData,
+                          city: e.target.value,
+                        })
+                      }
                       className="mt-1 bg-slate-800 border-slate-700 text-white"
                     />
                   </div>
@@ -337,7 +381,12 @@ export default function PropertySetupPage() {
                     <Input
                       id="zipCode"
                       value={propertyData.zipCode}
-                      onChange={(e) => setPropertyData({ ...propertyData, zipCode: e.target.value })}
+                      onChange={(e) =>
+                        setPropertyData({
+                          ...propertyData,
+                          zipCode: e.target.value,
+                        })
+                      }
                       className="mt-1 bg-slate-800 border-slate-700 text-white"
                       maxLength={5}
                     />
@@ -350,7 +399,7 @@ export default function PropertySetupPage() {
           <div className="flex items-center justify-between mt-8 pt-6 border-t border-slate-800">
             <Button
               variant="ghost"
-              onClick={() => router.push('/dashboard')}
+              onClick={() => router.push("/dashboard")}
               className="text-gray-400 hover:text-white"
             >
               Skip for now
@@ -358,7 +407,9 @@ export default function PropertySetupPage() {
 
             <Button
               onClick={handleSubmit}
-              disabled={!propertyData.address || !propertyData.city || isLoading}
+              disabled={
+                !propertyData.address || !propertyData.city || isLoading
+              }
               className="bg-blue-600 hover:bg-blue-700"
             >
               {isLoading ? (
@@ -378,10 +429,11 @@ export default function PropertySetupPage() {
 
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-500">
-            You can add more properties and update details anytime from your dashboard
+            You can add more properties and update details anytime from your
+            dashboard
           </p>
         </div>
       </div>
     </div>
-  )
+  );
 }

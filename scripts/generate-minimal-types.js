@@ -3,13 +3,13 @@
 // Generate minimal TypeScript types for essential tables only
 // This avoids the massive auto-generated types that break the build
 
-import { writeFileSync } from 'fs'
-import { join } from 'path'
-import { fileURLToPath } from 'url'
-import { dirname } from 'path'
+import { writeFileSync } from "fs";
+import { join } from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const minimalTypes = `// Minimal TypeScript types for ClaimGuardian core functionality
 // Generated on ${new Date().toISOString()}
@@ -186,24 +186,36 @@ export type ClaimStatus = 'draft' | 'submitted' | 'under_review' | 'approved' | 
 export type PropertyType = 'single_family' | 'condo' | 'townhouse' | 'mobile_home' | 'commercial'
 export type ClaimType = 'property_damage' | 'theft' | 'liability' | 'medical' | 'other'
 export type UserRole = 'user' | 'admin' | 'manager'
-`
+`;
 
 // Write to packages/db/src/types/database.types.ts
-const outputPath = join(__dirname, '..', 'packages', 'db', 'src', 'types', 'database.types.ts')
+const outputPath = join(
+  __dirname,
+  "..",
+  "packages",
+  "db",
+  "src",
+  "types",
+  "database.types.ts",
+);
 
 try {
-  writeFileSync(outputPath, minimalTypes, 'utf8')
-  console.log('✅ Generated minimal database types at:', outputPath)
-  console.log('📊 Type file size:', (minimalTypes.length / 1024).toFixed(1), 'KB')
+  writeFileSync(outputPath, minimalTypes, "utf8");
+  console.log("✅ Generated minimal database types at:", outputPath);
+  console.log(
+    "📊 Type file size:",
+    (minimalTypes.length / 1024).toFixed(1),
+    "KB",
+  );
 } catch (error) {
-  console.error('❌ Failed to write types:', error.message)
-  process.exit(1)
+  console.error("❌ Failed to write types:", error.message);
+  process.exit(1);
 }
 
-console.log('🎯 Minimal types include:')
-console.log('  - user_profiles (essential user data)')
-console.log('  - properties (core property management)')
-console.log('  - claims (core claim tracking)')
-console.log('  - Convenience types and enums')
-console.log('')
-console.log('🚀 Ready for development with slim schema!')
+console.log("🎯 Minimal types include:");
+console.log("  - user_profiles (essential user data)");
+console.log("  - properties (core property management)");
+console.log("  - claims (core claim tracking)");
+console.log("  - Convenience types and enums");
+console.log("");
+console.log("🚀 Ready for development with slim schema!");

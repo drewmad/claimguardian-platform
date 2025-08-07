@@ -6,9 +6,9 @@
  * @status stable
  */
 
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from "react";
 import {
   Activity,
   Database,
@@ -20,139 +20,147 @@ import {
   CheckCircle,
   RefreshCw,
   Trash2,
-  Clock
-} from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { toast } from 'sonner'
+  Clock,
+} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { toast } from "sonner";
 
 interface PerformanceMetrics {
-  timestamp: string
-  status: string
-  uptime: number
-  version: string
+  timestamp: string;
+  status: string;
+  uptime: number;
+  version: string;
   metrics: {
     database: {
-      status: 'healthy' | 'warning' | 'error'
-      responseTime: number
-      activeConnections: number
-      slowQueries: number
-    }
+      status: "healthy" | "warning" | "error";
+      responseTime: number;
+      activeConnections: number;
+      slowQueries: number;
+    };
     cache: {
-      status: 'healthy' | 'warning' | 'error'
-      hitRate: string
-      memoryUsage: string
-      entries: number
-      costSaved: string
-    }
+      status: "healthy" | "warning" | "error";
+      hitRate: string;
+      memoryUsage: string;
+      entries: number;
+      costSaved: string;
+    };
     api: {
-      totalRequests: number
-      avgResponseTime: string
-      errorRate: string
+      totalRequests: number;
+      avgResponseTime: string;
+      errorRate: string;
       rateLimit: {
-        current: number
-        limit: number
-        window: string
-      }
-    }
+        current: number;
+        limit: number;
+        window: string;
+      };
+    };
     ai: {
-      totalCost: number
-      totalRequests: number
-      avgCostPerRequest: number
-      modelsUsed: string[]
-      cacheHitRate: string
-    }
-  }
+      totalCost: number;
+      totalRequests: number;
+      avgCostPerRequest: number;
+      modelsUsed: string[];
+      cacheHitRate: string;
+    };
+  };
 }
 
 export function PerformanceDashboard() {
-  const [metrics, setMetrics] = useState<PerformanceMetrics | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [autoRefresh, setAutoRefresh] = useState(true)
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
+  const [metrics, setMetrics] = useState<PerformanceMetrics | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const fetchMetrics = async () => {
     try {
-      const response = await fetch('/api/admin/performance')
-      if (!response.ok) throw new Error('Failed to fetch metrics')
+      const response = await fetch("/api/admin/performance");
+      if (!response.ok) throw new Error("Failed to fetch metrics");
 
-      const data = await response.json()
-      setMetrics(data)
-      setLastUpdated(new Date())
-
+      const data = await response.json();
+      setMetrics(data);
+      setLastUpdated(new Date());
     } catch (error) {
-      console.error('Error fetching metrics:', error)
-      toast.error('Failed to load performance metrics')
+      console.error("Error fetching metrics:", error);
+      toast.error("Failed to load performance metrics");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const clearCache = async (type: 'all' | 'expired') => {
+  const clearCache = async (type: "all" | "expired") => {
     try {
-      const response = await fetch('/api/admin/performance', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type })
-      })
+      const response = await fetch("/api/admin/performance", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type }),
+      });
 
-      if (!response.ok) throw new Error('Failed to clear cache')
+      if (!response.ok) throw new Error("Failed to clear cache");
 
-      const result = await response.json()
-      toast.success(result.message)
-      fetchMetrics() // Refresh metrics
-
+      const result = await response.json();
+      toast.success(result.message);
+      fetchMetrics(); // Refresh metrics
     } catch (error) {
-      console.error('Error clearing cache:', error)
-      toast.error('Failed to clear cache')
+      console.error("Error clearing cache:", error);
+      toast.error("Failed to clear cache");
     }
-  }
+  };
 
   useEffect(() => {
-    fetchMetrics()
+    fetchMetrics();
 
-    let interval: NodeJS.Timeout
+    let interval: NodeJS.Timeout;
     if (autoRefresh) {
-      interval = setInterval(fetchMetrics, 30000) // Refresh every 30 seconds
+      interval = setInterval(fetchMetrics, 30000); // Refresh every 30 seconds
     }
 
     return () => {
-      if (interval) clearInterval(interval)
-    }
-  }, [autoRefresh])
+      if (interval) clearInterval(interval);
+    };
+  }, [autoRefresh]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'healthy': return 'bg-green-500'
-      case 'warning': return 'bg-yellow-500'
-      case 'error': return 'bg-red-500'
-      default: return 'bg-gray-500'
+      case "healthy":
+        return "bg-green-500";
+      case "warning":
+        return "bg-yellow-500";
+      case "error":
+        return "bg-red-500";
+      default:
+        return "bg-gray-500";
     }
-  }
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'healthy': return <CheckCircle className="w-4 h-4 text-green-400" />
-      case 'warning': return <AlertTriangle className="w-4 h-4 text-yellow-400" />
-      case 'error': return <AlertTriangle className="w-4 h-4 text-red-400" />
-      default: return <Activity className="w-4 h-4 text-gray-400" />
+      case "healthy":
+        return <CheckCircle className="w-4 h-4 text-green-400" />;
+      case "warning":
+        return <AlertTriangle className="w-4 h-4 text-yellow-400" />;
+      case "error":
+        return <AlertTriangle className="w-4 h-4 text-red-400" />;
+      default:
+        return <Activity className="w-4 h-4 text-gray-400" />;
     }
-  }
+  };
 
   const formatUptime = (seconds: number) => {
-    const days = Math.floor(seconds / (24 * 60 * 60))
-    const hours = Math.floor((seconds % (24 * 60 * 60)) / (60 * 60))
-    const minutes = Math.floor((seconds % (60 * 60)) / 60)
-    return `${days}d ${hours}h ${minutes}m`
-  }
+    const days = Math.floor(seconds / (24 * 60 * 60));
+    const hours = Math.floor((seconds % (24 * 60 * 60)) / (60 * 60));
+    const minutes = Math.floor((seconds % (60 * 60)) / 60);
+    return `${days}d ${hours}h ${minutes}m`;
+  };
 
   if (loading) {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-white">Performance Dashboard</h2>
+          <h2 className="text-2xl font-bold text-white">
+            Performance Dashboard
+          </h2>
         </div>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {Array.from({ length: 4 }, (_, i) => (
@@ -168,7 +176,7 @@ export function PerformanceDashboard() {
           ))}
         </div>
       </div>
-    )
+    );
   }
 
   if (!metrics) {
@@ -180,7 +188,7 @@ export function PerformanceDashboard() {
           Try Again
         </Button>
       </div>
-    )
+    );
   }
 
   return (
@@ -188,7 +196,9 @@ export function PerformanceDashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-white">Performance Dashboard</h2>
+          <h2 className="text-2xl font-bold text-white">
+            Performance Dashboard
+          </h2>
           <p className="text-gray-400 mt-1">
             System uptime: {formatUptime(metrics.uptime)}
             {lastUpdated && (
@@ -201,17 +211,15 @@ export function PerformanceDashboard() {
         <div className="flex items-center gap-2">
           <Button
             onClick={() => setAutoRefresh(!autoRefresh)}
-            variant={autoRefresh ? 'default' : 'outline'}
+            variant={autoRefresh ? "default" : "outline"}
             size="sm"
           >
-            <RefreshCw className={`w-4 h-4 mr-2 ${autoRefresh ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`w-4 h-4 mr-2 ${autoRefresh ? "animate-spin" : ""}`}
+            />
             Auto Refresh
           </Button>
-          <Button
-            onClick={fetchMetrics}
-            variant="outline"
-            size="sm"
-          >
+          <Button onClick={fetchMetrics} variant="outline" size="sm">
             <RefreshCw className="w-4 h-4 mr-2" />
             Refresh
           </Button>
@@ -267,7 +275,8 @@ export function PerformanceDashboard() {
               {metrics.metrics.cache.hitRate}
             </div>
             <p className="text-xs text-gray-400">
-              {metrics.metrics.cache.entries} entries • {metrics.metrics.cache.memoryUsage}
+              {metrics.metrics.cache.entries} entries •{" "}
+              {metrics.metrics.cache.memoryUsage}
             </p>
           </CardContent>
         </Card>
@@ -285,14 +294,20 @@ export function PerformanceDashboard() {
               {metrics.metrics.api.avgResponseTime}
             </div>
             <p className="text-xs text-gray-400 mb-2">
-              {metrics.metrics.api.totalRequests.toLocaleString()} total requests
+              {metrics.metrics.api.totalRequests.toLocaleString()} total
+              requests
             </p>
             <Progress
-              value={(metrics.metrics.api.rateLimit.current / metrics.metrics.api.rateLimit.limit) * 100}
+              value={
+                (metrics.metrics.api.rateLimit.current /
+                  metrics.metrics.api.rateLimit.limit) *
+                100
+              }
               className="h-2"
             />
             <p className="text-xs text-gray-400 mt-1">
-              Rate limit: {metrics.metrics.api.rateLimit.current}/{metrics.metrics.api.rateLimit.limit}
+              Rate limit: {metrics.metrics.api.rateLimit.current}/
+              {metrics.metrics.api.rateLimit.limit}
             </p>
           </CardContent>
         </Card>
@@ -313,7 +328,8 @@ export function PerformanceDashboard() {
               ${metrics.metrics.ai.totalCost.toFixed(4)} total cost
             </p>
             <p className="text-xs text-gray-400">
-              {metrics.metrics.ai.totalRequests} requests • avg ${metrics.metrics.ai.avgCostPerRequest.toFixed(4)}
+              {metrics.metrics.ai.totalRequests} requests • avg $
+              {metrics.metrics.ai.avgCostPerRequest.toFixed(4)}
             </p>
           </CardContent>
         </Card>
@@ -332,19 +348,25 @@ export function PerformanceDashboard() {
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-gray-400">Memory Usage:</span>
-              <span className="text-white font-mono">{metrics.metrics.cache.memoryUsage}</span>
+              <span className="text-white font-mono">
+                {metrics.metrics.cache.memoryUsage}
+              </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-gray-400">Cost Saved:</span>
-              <span className="text-green-400 font-mono">{metrics.metrics.cache.costSaved}</span>
+              <span className="text-green-400 font-mono">
+                {metrics.metrics.cache.costSaved}
+              </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-gray-400">Total Entries:</span>
-              <span className="text-white font-mono">{metrics.metrics.cache.entries}</span>
+              <span className="text-white font-mono">
+                {metrics.metrics.cache.entries}
+              </span>
             </div>
             <div className="flex gap-2 mt-4">
               <Button
-                onClick={() => clearCache('expired')}
+                onClick={() => clearCache("expired")}
                 variant="outline"
                 size="sm"
                 className="flex-1"
@@ -353,7 +375,7 @@ export function PerformanceDashboard() {
                 Clear Expired
               </Button>
               <Button
-                onClick={() => clearCache('all')}
+                onClick={() => clearCache("all")}
                 variant="destructive"
                 size="sm"
                 className="flex-1"
@@ -376,11 +398,15 @@ export function PerformanceDashboard() {
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-gray-400">Total Requests (24h):</span>
-              <span className="text-white font-mono">{metrics.metrics.ai.totalRequests}</span>
+              <span className="text-white font-mono">
+                {metrics.metrics.ai.totalRequests}
+              </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-gray-400">Average Cost:</span>
-              <span className="text-white font-mono">${metrics.metrics.ai.avgCostPerRequest.toFixed(4)}</span>
+              <span className="text-white font-mono">
+                ${metrics.metrics.ai.avgCostPerRequest.toFixed(4)}
+              </span>
             </div>
             <div>
               <span className="text-gray-400 text-sm">Models Used:</span>
@@ -407,14 +433,22 @@ export function PerformanceDashboard() {
         <CardContent>
           <div className="grid gap-4 md:grid-cols-3">
             <div className="text-center">
-              <div className={`w-3 h-3 rounded-full mx-auto mb-2 ${getStatusColor(metrics.metrics.database.status)}`} />
+              <div
+                className={`w-3 h-3 rounded-full mx-auto mb-2 ${getStatusColor(metrics.metrics.database.status)}`}
+              />
               <p className="text-sm text-gray-400">Database</p>
-              <p className="text-xs text-gray-500">{metrics.metrics.database.slowQueries} slow queries</p>
+              <p className="text-xs text-gray-500">
+                {metrics.metrics.database.slowQueries} slow queries
+              </p>
             </div>
             <div className="text-center">
-              <div className={`w-3 h-3 rounded-full mx-auto mb-2 ${getStatusColor(metrics.metrics.cache.status)}`} />
+              <div
+                className={`w-3 h-3 rounded-full mx-auto mb-2 ${getStatusColor(metrics.metrics.cache.status)}`}
+              />
               <p className="text-sm text-gray-400">Cache</p>
-              <p className="text-xs text-gray-500">Hit rate: {metrics.metrics.cache.hitRate}</p>
+              <p className="text-xs text-gray-500">
+                Hit rate: {metrics.metrics.cache.hitRate}
+              </p>
             </div>
             <div className="text-center">
               <div className="w-3 h-3 rounded-full mx-auto mb-2 bg-green-500" />
@@ -425,7 +459,7 @@ export function PerformanceDashboard() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
 
-export default PerformanceDashboard
+export default PerformanceDashboard;

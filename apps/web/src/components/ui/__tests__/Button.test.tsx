@@ -11,406 +11,431 @@
  * @lastModifiedDate 2025-08-04T20:55:00Z
  */
 
-import { describe, it, expect, afterEach, jest } from '@jest/globals'
-import { render, screen, cleanup } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import '@testing-library/jest-dom'
-import { Button } from '../button'
-import * as React from 'react'
+import { describe, it, expect, afterEach, jest } from "@jest/globals";
+import { render, screen, cleanup } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import "@testing-library/jest-dom";
+import { Button } from "../button";
+import * as React from "react";
 
-describe('Button Component', () => {
+describe("Button Component", () => {
   afterEach(() => {
-    cleanup()
-  })
-  describe('Basic Rendering', () => {
-    it('should render button with text', () => {
-      render(<Button>Click me</Button>)
+    cleanup();
+  });
+  describe("Basic Rendering", () => {
+    it("should render button with text", () => {
+      render(<Button>Click me</Button>);
 
-      expect(screen.getByRole('button', { name: 'Click me' })).toBeInTheDocument()
-    })
+      expect(
+        screen.getByRole("button", { name: "Click me" }),
+      ).toBeInTheDocument();
+    });
 
-    it('should render button with custom className', () => {
-      render(<Button className="custom-class">Test</Button>)
+    it("should render button with custom className", () => {
+      render(<Button className="custom-class">Test</Button>);
 
-      const button = screen.getByRole('button')
-      expect(button).toHaveClass('custom-class')
-    })
+      const button = screen.getByRole("button");
+      expect(button).toHaveClass("custom-class");
+    });
 
-    it('should forward ref correctly', () => {
-      const ref = React.createRef<HTMLButtonElement>()
-      render(<Button ref={ref}>Test</Button>)
+    it("should forward ref correctly", () => {
+      const ref = React.createRef<HTMLButtonElement>();
+      render(<Button ref={ref}>Test</Button>);
 
-      expect(ref.current).toBeInstanceOf(HTMLButtonElement)
-      expect(ref.current?.textContent).toBe('Test')
-    })
-  })
+      expect(ref.current).toBeInstanceOf(HTMLButtonElement);
+      expect(ref.current?.textContent).toBe("Test");
+    });
+  });
 
-  describe('Button Variants', () => {
-    it('should render default variant', () => {
-      render(<Button>Default</Button>)
+  describe("Button Variants", () => {
+    it("should render default variant", () => {
+      render(<Button>Default</Button>);
 
-      const button = screen.getByRole('button')
+      const button = screen.getByRole("button");
       // Check for actual default classes used by the Button component
-      expect(button).toHaveClass('bg-accent', 'text-text-primary')
-    })
+      expect(button).toHaveClass("bg-accent", "text-text-primary");
+    });
 
-    it('should render destructive variant', () => {
-      render(<Button variant="destructive">Delete</Button>)
+    it("should render destructive variant", () => {
+      render(<Button variant="destructive">Delete</Button>);
 
-      const button = screen.getByRole('button')
+      const button = screen.getByRole("button");
       // Update assertion for actual destructive classes
-      expect(button).toHaveClass('bg-destructive', 'text-destructive-foreground')
-    })
+      expect(button).toHaveClass(
+        "bg-destructive",
+        "text-destructive-foreground",
+      );
+    });
 
-    it('should render outline variant', () => {
-      render(<Button variant="outline">Outline</Button>)
+    it("should render outline variant", () => {
+      render(<Button variant="outline">Outline</Button>);
 
-      const button = screen.getByRole('button')
-      expect(button).toHaveClass('border', 'border-border')
-    })
+      const button = screen.getByRole("button");
+      expect(button).toHaveClass("border", "border-border");
+    });
 
-    it('should render secondary variant', () => {
-      render(<Button variant="secondary">Secondary</Button>)
+    it("should render secondary variant", () => {
+      render(<Button variant="secondary">Secondary</Button>);
 
-      const button = screen.getByRole('button')
-      expect(button).toHaveClass('bg-panel', 'text-text-primary')
-    })
+      const button = screen.getByRole("button");
+      expect(button).toHaveClass("bg-panel", "text-text-primary");
+    });
 
-    it('should render ghost variant', () => {
-      render(<Button variant="ghost">Ghost</Button>)
+    it("should render ghost variant", () => {
+      render(<Button variant="ghost">Ghost</Button>);
 
-      const button = screen.getByRole('button')
-      expect(button).toHaveClass('hover:bg-panel')
-    })
+      const button = screen.getByRole("button");
+      expect(button).toHaveClass("hover:bg-panel");
+    });
 
-    it('should render link variant', () => {
-      render(<Button variant="link">Link</Button>)
+    it("should render link variant", () => {
+      render(<Button variant="link">Link</Button>);
 
-      const button = screen.getByRole('button')
-      expect(button).toHaveClass('text-accent', 'underline-offset-4')
-    })
-  })
+      const button = screen.getByRole("button");
+      expect(button).toHaveClass("text-accent", "underline-offset-4");
+    });
+  });
 
-  describe('Button Sizes', () => {
-    it('should render small size', () => {
-      render(<Button size="sm">Small</Button>)
+  describe("Button Sizes", () => {
+    it("should render small size", () => {
+      render(<Button size="sm">Small</Button>);
 
-      const button = screen.getByRole('button')
-      expect(button).toHaveClass('h-9', 'px-3', 'text-sm')
-    })
+      const button = screen.getByRole("button");
+      expect(button).toHaveClass("h-9", "px-3", "text-sm");
+    });
 
-    it('should render default size', () => {
-      render(<Button>Default</Button>)
+    it("should render default size", () => {
+      render(<Button>Default</Button>);
 
-      const button = screen.getByRole('button')
-      expect(button).toHaveClass('h-10', 'px-4', 'py-2')
-    })
+      const button = screen.getByRole("button");
+      expect(button).toHaveClass("h-10", "px-4", "py-2");
+    });
 
-    it('should render large size', () => {
-      render(<Button size="lg">Large</Button>)
+    it("should render large size", () => {
+      render(<Button size="lg">Large</Button>);
 
-      const button = screen.getByRole('button')
-      expect(button).toHaveClass('h-11', 'px-8', 'text-base')
-    })
+      const button = screen.getByRole("button");
+      expect(button).toHaveClass("h-11", "px-8", "text-base");
+    });
 
-    it('should render icon size', () => {
-      render(<Button size="icon">⚙️</Button>)
+    it("should render icon size", () => {
+      render(<Button size="icon">⚙️</Button>);
 
-      const button = screen.getByRole('button')
-      expect(button).toHaveClass('h-10', 'w-10')
-    })
-  })
+      const button = screen.getByRole("button");
+      expect(button).toHaveClass("h-10", "w-10");
+    });
+  });
 
-  describe('Button States', () => {
-    it('should be clickable when enabled', async () => {
-      const user = userEvent.setup()
-      const handleClick = jest.fn()
+  describe("Button States", () => {
+    it("should be clickable when enabled", async () => {
+      const user = userEvent.setup();
+      const handleClick = jest.fn();
 
-      render(<Button onClick={handleClick}>Click me</Button>)
+      render(<Button onClick={handleClick}>Click me</Button>);
 
-      await user.click(screen.getByRole('button'))
+      await user.click(screen.getByRole("button"));
 
-      expect(handleClick).toHaveBeenCalledTimes(1)
-    })
+      expect(handleClick).toHaveBeenCalledTimes(1);
+    });
 
-    it('should be disabled when disabled prop is true', () => {
-      const handleClick = jest.fn()
+    it("should be disabled when disabled prop is true", () => {
+      const handleClick = jest.fn();
 
-      render(<Button disabled onClick={handleClick}>Disabled</Button>)
+      render(
+        <Button disabled onClick={handleClick}>
+          Disabled
+        </Button>,
+      );
 
-      const button = screen.getByRole('button')
-      expect(button).toBeDisabled()
-      expect(button).toHaveClass('disabled:pointer-events-none', 'disabled:opacity-50')
-    })
+      const button = screen.getByRole("button");
+      expect(button).toBeDisabled();
+      expect(button).toHaveClass(
+        "disabled:pointer-events-none",
+        "disabled:opacity-50",
+      );
+    });
 
-    it('should not call onClick when disabled', async () => {
-      const user = userEvent.setup()
-      const handleClick = jest.fn()
+    it("should not call onClick when disabled", async () => {
+      const user = userEvent.setup();
+      const handleClick = jest.fn();
 
-      render(<Button disabled onClick={handleClick}>Disabled</Button>)
+      render(
+        <Button disabled onClick={handleClick}>
+          Disabled
+        </Button>,
+      );
 
-      await user.click(screen.getByRole('button'))
+      await user.click(screen.getByRole("button"));
 
-      expect(handleClick).not.toHaveBeenCalled()
-    })
+      expect(handleClick).not.toHaveBeenCalled();
+    });
 
-    it('should show loading state', () => {
-      render(<Button loading>Loading</Button>)
+    it("should show loading state", () => {
+      render(<Button loading>Loading</Button>);
 
-      const button = screen.getByRole('button')
-      expect(button).toBeDisabled()
-      expect(screen.getByTestId('loading-spinner')).toBeInTheDocument()
-    })
+      const button = screen.getByRole("button");
+      expect(button).toBeDisabled();
+      expect(screen.getByTestId("loading-spinner")).toBeInTheDocument();
+    });
 
-    it('should hide text when loading and loadingText not provided', () => {
-      render(<Button loading>Click me</Button>)
+    it("should hide text when loading and loadingText not provided", () => {
+      render(<Button loading>Click me</Button>);
 
-      expect(screen.queryByText('Click me')).not.toBeInTheDocument()
-    })
+      expect(screen.queryByText("Click me")).not.toBeInTheDocument();
+    });
 
-    it('should show loading text when provided', () => {
-      render(<Button loading loadingText="Processing...">Submit</Button>)
+    it("should show loading text when provided", () => {
+      render(
+        <Button loading loadingText="Processing...">
+          Submit
+        </Button>,
+      );
 
-      expect(screen.getByText('Processing...')).toBeInTheDocument()
-      expect(screen.queryByText('Submit')).not.toBeInTheDocument()
-    })
-  })
+      expect(screen.getByText("Processing...")).toBeInTheDocument();
+      expect(screen.queryByText("Submit")).not.toBeInTheDocument();
+    });
+  });
 
-  describe('Button Types', () => {
-    it('should render as button type by default', () => {
-      render(<Button>Default</Button>)
+  describe("Button Types", () => {
+    it("should render as button type by default", () => {
+      render(<Button>Default</Button>);
 
-      expect(screen.getByRole('button')).toHaveAttribute('type', 'button')
-    })
+      expect(screen.getByRole("button")).toHaveAttribute("type", "button");
+    });
 
-    it('should render as submit type when specified', () => {
-      render(<Button type="submit">Submit</Button>)
+    it("should render as submit type when specified", () => {
+      render(<Button type="submit">Submit</Button>);
 
-      expect(screen.getByRole('button')).toHaveAttribute('type', 'submit')
-    })
+      expect(screen.getByRole("button")).toHaveAttribute("type", "submit");
+    });
 
-    it('should render as reset type when specified', () => {
-      render(<Button type="reset">Reset</Button>)
+    it("should render as reset type when specified", () => {
+      render(<Button type="reset">Reset</Button>);
 
-      expect(screen.getByRole('button')).toHaveAttribute('type', 'reset')
-    })
-  })
+      expect(screen.getByRole("button")).toHaveAttribute("type", "reset");
+    });
+  });
 
-  describe('Accessibility', () => {
-    it('should have proper ARIA attributes when disabled', () => {
-      render(<Button disabled>Disabled</Button>)
+  describe("Accessibility", () => {
+    it("should have proper ARIA attributes when disabled", () => {
+      render(<Button disabled>Disabled</Button>);
 
-      const button = screen.getByRole('button')
-      expect(button).toHaveAttribute('aria-disabled', 'true')
-    })
+      const button = screen.getByRole("button");
+      expect(button).toHaveAttribute("aria-disabled", "true");
+    });
 
-    it('should have proper ARIA attributes when loading', () => {
-      render(<Button loading>Loading</Button>)
+    it("should have proper ARIA attributes when loading", () => {
+      render(<Button loading>Loading</Button>);
 
-      const button = screen.getByRole('button')
-      expect(button).toHaveAttribute('aria-disabled', 'true')
-      expect(button).toHaveAttribute('aria-busy', 'true')
-    })
+      const button = screen.getByRole("button");
+      expect(button).toHaveAttribute("aria-disabled", "true");
+      expect(button).toHaveAttribute("aria-busy", "true");
+    });
 
-    it('should support aria-label', () => {
-      render(<Button aria-label="Close dialog">×</Button>)
+    it("should support aria-label", () => {
+      render(<Button aria-label="Close dialog">×</Button>);
 
-      expect(screen.getByRole('button', { name: 'Close dialog' })).toBeInTheDocument()
-    })
+      expect(
+        screen.getByRole("button", { name: "Close dialog" }),
+      ).toBeInTheDocument();
+    });
 
-    it('should support aria-describedby', () => {
+    it("should support aria-describedby", () => {
       render(
         <>
           <Button aria-describedby="help-text">Submit</Button>
           <div id="help-text">This will submit the form</div>
-        </>
-      )
+        </>,
+      );
 
-      expect(screen.getByRole('button')).toHaveAttribute('aria-describedby', 'help-text')
-    })
+      expect(screen.getByRole("button")).toHaveAttribute(
+        "aria-describedby",
+        "help-text",
+      );
+    });
 
-    it('should be focusable with keyboard', async () => {
-      const user = userEvent.setup()
-      render(<Button>Focus me</Button>)
+    it("should be focusable with keyboard", async () => {
+      const user = userEvent.setup();
+      render(<Button>Focus me</Button>);
 
-      await user.tab()
+      await user.tab();
 
-      expect(screen.getByRole('button')).toHaveFocus()
-    })
+      expect(screen.getByRole("button")).toHaveFocus();
+    });
 
-    it('should be activatable with Enter key', async () => {
-      const user = userEvent.setup()
-      const handleClick = jest.fn()
+    it("should be activatable with Enter key", async () => {
+      const user = userEvent.setup();
+      const handleClick = jest.fn();
 
-      render(<Button onClick={handleClick}>Press Enter</Button>)
+      render(<Button onClick={handleClick}>Press Enter</Button>);
 
-      const button = screen.getByRole('button')
-      button.focus()
-      await user.keyboard('{Enter}')
+      const button = screen.getByRole("button");
+      button.focus();
+      await user.keyboard("{Enter}");
 
-      expect(handleClick).toHaveBeenCalledTimes(1)
-    })
+      expect(handleClick).toHaveBeenCalledTimes(1);
+    });
 
-    it('should be activatable with Space key', async () => {
-      const user = userEvent.setup()
-      const handleClick = jest.fn()
+    it("should be activatable with Space key", async () => {
+      const user = userEvent.setup();
+      const handleClick = jest.fn();
 
-      render(<Button onClick={handleClick}>Press Space</Button>)
+      render(<Button onClick={handleClick}>Press Space</Button>);
 
-      const button = screen.getByRole('button')
-      button.focus()
-      await user.keyboard(' ')
+      const button = screen.getByRole("button");
+      button.focus();
+      await user.keyboard(" ");
 
-      expect(handleClick).toHaveBeenCalledTimes(1)
-    })
-  })
+      expect(handleClick).toHaveBeenCalledTimes(1);
+    });
+  });
 
-  describe('Icon Support', () => {
-    it('should render with left icon', () => {
+  describe("Icon Support", () => {
+    it("should render with left icon", () => {
       render(
-        <Button leftIcon={<span data-testid="left-icon">←</span>}>
-          Back
-        </Button>
-      )
+        <Button leftIcon={<span data-testid="left-icon">←</span>}>Back</Button>,
+      );
 
-      expect(screen.getByTestId('left-icon')).toBeInTheDocument()
-      expect(screen.getByText('Back')).toBeInTheDocument()
-    })
+      expect(screen.getByTestId("left-icon")).toBeInTheDocument();
+      expect(screen.getByText("Back")).toBeInTheDocument();
+    });
 
-    it('should render with right icon', () => {
+    it("should render with right icon", () => {
       render(
         <Button rightIcon={<span data-testid="right-icon">→</span>}>
           Next
-        </Button>
-      )
+        </Button>,
+      );
 
-      expect(screen.getByTestId('right-icon')).toBeInTheDocument()
-      expect(screen.getByText('Next')).toBeInTheDocument()
-    })
+      expect(screen.getByTestId("right-icon")).toBeInTheDocument();
+      expect(screen.getByText("Next")).toBeInTheDocument();
+    });
 
-    it('should render with both icons', () => {
+    it("should render with both icons", () => {
       render(
         <Button
           leftIcon={<span data-testid="left-icon">←</span>}
           rightIcon={<span data-testid="right-icon">→</span>}
         >
           Middle
-        </Button>
-      )
+        </Button>,
+      );
 
-      expect(screen.getByTestId('left-icon')).toBeInTheDocument()
-      expect(screen.getByTestId('right-icon')).toBeInTheDocument()
-      expect(screen.getByText('Middle')).toBeInTheDocument()
-    })
+      expect(screen.getByTestId("left-icon")).toBeInTheDocument();
+      expect(screen.getByTestId("right-icon")).toBeInTheDocument();
+      expect(screen.getByText("Middle")).toBeInTheDocument();
+    });
 
-    it('should render icon-only button', () => {
+    it("should render icon-only button", () => {
       render(
         <Button size="icon" aria-label="Settings">
           <span data-testid="settings-icon">⚙️</span>
-        </Button>
-      )
+        </Button>,
+      );
 
-      expect(screen.getByTestId('settings-icon')).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'Settings' })).toBeInTheDocument()
-    })
-  })
+      expect(screen.getByTestId("settings-icon")).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Settings" }),
+      ).toBeInTheDocument();
+    });
+  });
 
-  describe('Event Handling', () => {
-    it('should handle onClick events', async () => {
-      const user = userEvent.setup()
-      const handleClick = jest.fn()
+  describe("Event Handling", () => {
+    it("should handle onClick events", async () => {
+      const user = userEvent.setup();
+      const handleClick = jest.fn();
 
-      render(<Button onClick={handleClick}>Click me</Button>)
+      render(<Button onClick={handleClick}>Click me</Button>);
 
-      await user.click(screen.getByRole('button'))
+      await user.click(screen.getByRole("button"));
 
-      expect(handleClick).toHaveBeenCalledTimes(1)
-    })
+      expect(handleClick).toHaveBeenCalledTimes(1);
+    });
 
-    it('should handle onFocus events', async () => {
-      const user = userEvent.setup()
-      const handleFocus = jest.fn()
+    it("should handle onFocus events", async () => {
+      const user = userEvent.setup();
+      const handleFocus = jest.fn();
 
-      render(<Button onFocus={handleFocus}>Focus me</Button>)
+      render(<Button onFocus={handleFocus}>Focus me</Button>);
 
-      await user.tab()
+      await user.tab();
 
-      expect(handleFocus).toHaveBeenCalledTimes(1)
-    })
+      expect(handleFocus).toHaveBeenCalledTimes(1);
+    });
 
-    it('should handle onBlur events', async () => {
-      const user = userEvent.setup()
-      const handleBlur = jest.fn()
+    it("should handle onBlur events", async () => {
+      const user = userEvent.setup();
+      const handleBlur = jest.fn();
 
       render(
         <>
           <Button onBlur={handleBlur}>First</Button>
           <Button>Second</Button>
-        </>
-      )
+        </>,
+      );
 
-      const firstButton = screen.getByRole('button', { name: 'First' })
-      await user.click(firstButton)
-      await user.tab()
+      const firstButton = screen.getByRole("button", { name: "First" });
+      await user.click(firstButton);
+      await user.tab();
 
-      expect(handleBlur).toHaveBeenCalledTimes(1)
-    })
+      expect(handleBlur).toHaveBeenCalledTimes(1);
+    });
 
-    it('should prevent double-clicks when processing', async () => {
-      const user = userEvent.setup()
+    it("should prevent double-clicks when processing", async () => {
+      const user = userEvent.setup();
       const handleClick = jest.fn(() => {
         // Simulate async operation
-        return new Promise(resolve => setTimeout(resolve, 100))
-      })
+        return new Promise((resolve) => setTimeout(resolve, 100));
+      });
 
-      render(<Button onClick={handleClick}>Submit</Button>)
+      render(<Button onClick={handleClick}>Submit</Button>);
 
-      const button = screen.getByRole('button')
-      await user.dblClick(button)
+      const button = screen.getByRole("button");
+      await user.dblClick(button);
 
       // Should only be called once due to loading state
-      expect(handleClick).toHaveBeenCalledTimes(1)
-    })
-  })
+      expect(handleClick).toHaveBeenCalledTimes(1);
+    });
+  });
 
-  describe('Form Integration', () => {
+  describe("Form Integration", () => {
     it('should submit form when type="submit"', async () => {
-      const user = userEvent.setup()
-      const handleSubmit = jest.fn((e: React.FormEvent) => e.preventDefault())
+      const user = userEvent.setup();
+      const handleSubmit = jest.fn((e: React.FormEvent) => e.preventDefault());
 
       render(
         <form onSubmit={handleSubmit}>
           <Button type="submit">Submit Form</Button>
-        </form>
-      )
+        </form>,
+      );
 
-      await user.click(screen.getByRole('button'))
+      await user.click(screen.getByRole("button"));
 
-      expect(handleSubmit).toHaveBeenCalledTimes(1)
-    })
+      expect(handleSubmit).toHaveBeenCalledTimes(1);
+    });
 
     it('should reset form when type="reset"', async () => {
-      const user = userEvent.setup()
+      const user = userEvent.setup();
 
       render(
         <form data-testid="test-form">
           <input defaultValue="test" data-testid="input" />
           <Button type="reset">Reset Form</Button>
-        </form>
-      )
+        </form>,
+      );
 
-      const input = screen.getByTestId('input') as HTMLInputElement
-      expect(input.value).toBe('test')
+      const input = screen.getByTestId("input") as HTMLInputElement;
+      expect(input.value).toBe("test");
 
       // Modify input value first to test reset functionality
-      await user.clear(input)
-      await user.type(input, 'changed value')
-      expect(input.value).toBe('changed value')
+      await user.clear(input);
+      await user.type(input, "changed value");
+      expect(input.value).toBe("changed value");
 
       // Now test the reset functionality
-      await user.click(screen.getByRole('button'))
+      await user.click(screen.getByRole("button"));
 
-      expect(input.value).toBe('test') // Should return to default value
-    })
-  })
-})
+      expect(input.value).toBe("test"); // Should return to default value
+    });
+  });
+});

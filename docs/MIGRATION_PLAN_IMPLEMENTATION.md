@@ -7,9 +7,11 @@ This document provides the complete implementation of the Data Architecture & Sc
 ## Migration Files Created
 
 ### 1. Phase 1: Schema Unification & Cleanup
+
 **File**: `supabase/migrations/20250805_phase1_schema_unification.sql`
 
 **Purpose**: Consolidates redundant property tables and creates unified core schema
+
 - Creates `core.properties` (single source of truth)
 - Creates `reference.parcels` (cleaned Florida parcel data)
 - Includes ETL function for 9.5M Florida parcels records
@@ -17,9 +19,11 @@ This document provides the complete implementation of the Data Architecture & Sc
 - Implements Row Level Security
 
 ### 2. Phase 2: Temporal Data Enablement
+
 **File**: `supabase/migrations/20250805_phase2_temporal_enablement.sql`
 
 **Purpose**: Adds temporal dimension (SCD Type 2) for historical state tracking
+
 - Adds temporal columns (`valid_from`, `valid_to`, `is_current`, `version_id`)
 - Creates temporal update functions
 - Implements time-travel query capabilities
@@ -27,9 +31,11 @@ This document provides the complete implementation of the Data Architecture & Sc
 - Adds temporal triggers and constraints
 
 ### 3. Phase 3: Digital Twin Schema Extension
+
 **File**: `supabase/migrations/20250805_phase3_digital_twin_schema.sql`
 
 **Purpose**: Implements 3D/AR spatial schema for digital twin functionality
+
 - Creates hierarchical structure: Properties → Structures → Spaces
 - Implements AR scan data management (`core.scans`)
 - Creates 3D model storage and metadata (`core.digital_models`)
@@ -37,9 +43,11 @@ This document provides the complete implementation of the Data Architecture & Sc
 - Includes initialization functions for default data
 
 ### 4. Migration Application Script
+
 **File**: `scripts/apply-schema-migration.sh`
 
 **Purpose**: Automated migration execution with verification and rollback safety
+
 - Creates database backup before migration
 - Applies migrations in sequence with verification
 - Handles Florida parcels ETL (9.5M records)
@@ -51,6 +59,7 @@ This document provides the complete implementation of the Data Architecture & Sc
 ### ✅ **ZERO DATA LOSS RISK CONFIRMED**
 
 Current database state analysis shows:
+
 - **Properties**: 0 records (empty)
 - **Policies**: 0 records (empty)
 - **Claims**: 0 records (empty)
@@ -59,6 +68,7 @@ Current database state analysis shows:
 - **Florida Parcels**: 9,567,424 records (will be enhanced, not replaced)
 
 ### Migration Safety Features:
+
 1. **Creates new tables** - No existing core/reference tables exist
 2. **Preserves existing data** - All current tables remain untouched
 3. **Non-destructive updates** - Only updates empty foreign key constraints
@@ -69,6 +79,7 @@ Current database state analysis shows:
 ## Key Schema Improvements
 
 ### 1. Unified Property Model
+
 ```sql
 -- Before: Multiple fragmented tables
 public.properties (empty)
@@ -81,6 +92,7 @@ reference.parcels (cleaned 9.5M Florida records)
 ```
 
 ### 2. Temporal Capabilities
+
 ```sql
 -- Time-travel queries
 SELECT * FROM core.properties
@@ -92,6 +104,7 @@ SELECT * FROM core.get_property_changes('property-uuid', '2024-01-01'::timestamp
 ```
 
 ### 3. Digital Twin Hierarchy
+
 ```sql
 -- Hierarchical structure for AR/3D data
 Properties (buildings/land)
@@ -102,6 +115,7 @@ Properties (buildings/land)
 ```
 
 ### 4. AI Integration Ready
+
 - Vector search capabilities for 3D models
 - Embedding storage for similarity analysis
 - Structured metadata for AI processing
@@ -110,6 +124,7 @@ Properties (buildings/land)
 ## Execution Instructions
 
 ### Prerequisites
+
 ```bash
 # Ensure Supabase CLI is installed
 npm install -g supabase
@@ -119,6 +134,7 @@ supabase db ping --project-ref tmlrvecuwgppbaynesji
 ```
 
 ### Run Migration
+
 ```bash
 # Navigate to project root
 cd /Users/madengineering/ClaimGuardian
@@ -131,6 +147,7 @@ cd /Users/madengineering/ClaimGuardian
 ```
 
 ### Manual Application (Alternative)
+
 If you prefer to apply migrations manually:
 
 ```bash
@@ -163,16 +180,19 @@ The Florida parcels ETL processes 9.5M records in batches and can be run separat
 ## Post-Migration Tasks
 
 ### 1. Application Code Updates
+
 Update TypeScript types and server actions to use new schema:
+
 ```typescript
 // Before
-import { properties } from 'public'
+import { properties } from "public";
 
 // After
-import { properties } from 'core'
+import { properties } from "core";
 ```
 
 ### 2. Test Temporal Functions
+
 ```sql
 -- Test property updates use temporal pattern
 SELECT core.update_property_temporal(
@@ -182,6 +202,7 @@ SELECT core.update_property_temporal(
 ```
 
 ### 3. Initialize AR/3D Features
+
 ```sql
 -- Create default structures for existing properties
 SELECT core.create_default_structures();
@@ -191,6 +212,7 @@ SELECT core.get_property_digital_twin('property-uuid');
 ```
 
 ### 4. Monitor ETL Progress
+
 ```sql
 -- Check Florida parcels ETL status
 SELECT COUNT(*) FROM reference.parcels;
@@ -200,6 +222,7 @@ SELECT processing_status FROM reference.etl_florida_parcels_to_reference();
 ## Rollback Plan
 
 If issues arise, restore from the automatic backup:
+
 ```bash
 # Restore from backup file created by script
 supabase db reset --project-ref tmlrvecuwgppbaynesji \

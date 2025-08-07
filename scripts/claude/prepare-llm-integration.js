@@ -7,162 +7,212 @@
  * @status active
  */
 
-import { promises as fs } from 'fs'
-import path from 'path'
-import { fileURLToPath } from 'url'
+import { promises as fs } from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // ANSI color codes
 const colors = {
-  reset: '\x1b[0m',
-  bright: '\x1b[1m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  blue: '\x1b[34m',
-  red: '\x1b[31m',
-  cyan: '\x1b[36m'
-}
+  reset: "\x1b[0m",
+  bright: "\x1b[1m",
+  green: "\x1b[32m",
+  yellow: "\x1b[33m",
+  blue: "\x1b[34m",
+  red: "\x1b[31m",
+  cyan: "\x1b[36m",
+};
 
 async function checkLLMIntegration() {
-  console.log(`${colors.bright}${colors.cyan}🤖 Claude Learning System - LLM Integration Check${colors.reset}`)
-  console.log('='.repeat(60))
+  console.log(
+    `${colors.bright}${colors.cyan}🤖 Claude Learning System - LLM Integration Check${colors.reset}`,
+  );
+  console.log("=".repeat(60));
 
-  const llmDir = path.join(__dirname, '..', '..', 'apps', 'web', 'src', 'lib', 'claude', 'llm-integration')
+  const llmDir = path.join(
+    __dirname,
+    "..",
+    "..",
+    "apps",
+    "web",
+    "src",
+    "lib",
+    "claude",
+    "llm-integration",
+  );
 
   try {
     // Check if directory exists
-    await fs.access(llmDir)
-    console.log(`${colors.green}✓${colors.reset} LLM integration directory exists`)
+    await fs.access(llmDir);
+    console.log(
+      `${colors.green}✓${colors.reset} LLM integration directory exists`,
+    );
 
     // Check all required files
     const requiredFiles = [
-      'interfaces.ts',
-      'llm-learning-synthesis.ts',
-      'semantic-similarity.ts',
-      'natural-language-generator.ts',
-      'bottleneck-resolver.ts',
-      'auto-fix-service.ts',
-      'index.ts'
-    ]
+      "interfaces.ts",
+      "llm-learning-synthesis.ts",
+      "semantic-similarity.ts",
+      "natural-language-generator.ts",
+      "bottleneck-resolver.ts",
+      "auto-fix-service.ts",
+      "index.ts",
+    ];
 
-    const fileStats = []
+    const fileStats = [];
 
     for (const file of requiredFiles) {
-      const filePath = path.join(llmDir, file)
+      const filePath = path.join(llmDir, file);
       try {
-        const stats = await fs.stat(filePath)
+        const stats = await fs.stat(filePath);
         fileStats.push({
           name: file,
           size: stats.size,
-          exists: true
-        })
+          exists: true,
+        });
       } catch (error) {
         fileStats.push({
           name: file,
           size: 0,
-          exists: false
-        })
+          exists: false,
+        });
       }
     }
 
     // Display file status
-    console.log(`\n${colors.bright}File Status:${colors.reset}`)
-    fileStats.forEach(file => {
+    console.log(`\n${colors.bright}File Status:${colors.reset}`);
+    fileStats.forEach((file) => {
       const status = file.exists
         ? `${colors.green}✓${colors.reset}`
-        : `${colors.red}✗${colors.reset}`
+        : `${colors.red}✗${colors.reset}`;
       const size = file.exists
         ? `(${(file.size / 1024).toFixed(1)} KB)`
-        : '(missing)'
-      console.log(`  ${status} ${file.name} ${size}`)
-    })
+        : "(missing)";
+      console.log(`  ${status} ${file.name} ${size}`);
+    });
 
     // Check interface definitions
-    const interfacesPath = path.join(llmDir, 'interfaces.ts')
-    const interfacesContent = await fs.readFile(interfacesPath, 'utf8')
+    const interfacesPath = path.join(llmDir, "interfaces.ts");
+    const interfacesContent = await fs.readFile(interfacesPath, "utf8");
 
     const interfaces = [
-      'LLMProvider',
-      'LearningSynthesisRequest',
-      'SynthesizedMetaPattern',
-      'SemanticSimilarityRequest',
-      'NaturalLanguageRequest',
-      'BottleneckAnalysisRequest',
-      'AutoFixConfig',
-      'ProactiveSuggestion',
-      'RefactoringOpportunity',
-      'SelfImprovingConfig'
-    ]
+      "LLMProvider",
+      "LearningSynthesisRequest",
+      "SynthesizedMetaPattern",
+      "SemanticSimilarityRequest",
+      "NaturalLanguageRequest",
+      "BottleneckAnalysisRequest",
+      "AutoFixConfig",
+      "ProactiveSuggestion",
+      "RefactoringOpportunity",
+      "SelfImprovingConfig",
+    ];
 
-    console.log(`\n${colors.bright}Interface Definitions:${colors.reset}`)
-    interfaces.forEach(intf => {
-      const exists = interfacesContent.includes(`interface ${intf}`)
+    console.log(`\n${colors.bright}Interface Definitions:${colors.reset}`);
+    interfaces.forEach((intf) => {
+      const exists = interfacesContent.includes(`interface ${intf}`);
       const status = exists
         ? `${colors.green}✓${colors.reset}`
-        : `${colors.red}✗${colors.reset}`
-      console.log(`  ${status} ${intf}`)
-    })
+        : `${colors.red}✗${colors.reset}`;
+      console.log(`  ${status} ${intf}`);
+    });
 
     // Check service implementations
     const services = [
-      { file: 'llm-learning-synthesis.ts', class: 'LLMLearningynthesis', instance: 'llmLearningSynthesis' },
-      { file: 'semantic-similarity.ts', class: 'SemanticSimilarityService', instance: 'semanticSimilarityService' },
-      { file: 'natural-language-generator.ts', class: 'NaturalLanguageGenerator', instance: 'naturalLanguageGenerator' },
-      { file: 'bottleneck-resolver.ts', class: 'AIBottleneckResolver', instance: 'aiBottleneckResolver' },
-      { file: 'auto-fix-service.ts', class: 'AutoFixService', instance: 'autoFixService' }
-    ]
+      {
+        file: "llm-learning-synthesis.ts",
+        class: "LLMLearningynthesis",
+        instance: "llmLearningSynthesis",
+      },
+      {
+        file: "semantic-similarity.ts",
+        class: "SemanticSimilarityService",
+        instance: "semanticSimilarityService",
+      },
+      {
+        file: "natural-language-generator.ts",
+        class: "NaturalLanguageGenerator",
+        instance: "naturalLanguageGenerator",
+      },
+      {
+        file: "bottleneck-resolver.ts",
+        class: "AIBottleneckResolver",
+        instance: "aiBottleneckResolver",
+      },
+      {
+        file: "auto-fix-service.ts",
+        class: "AutoFixService",
+        instance: "autoFixService",
+      },
+    ];
 
-    console.log(`\n${colors.bright}Service Implementations:${colors.reset}`)
+    console.log(`\n${colors.bright}Service Implementations:${colors.reset}`);
     for (const service of services) {
-      const filePath = path.join(llmDir, service.file)
+      const filePath = path.join(llmDir, service.file);
       try {
-        const content = await fs.readFile(filePath, 'utf8')
-        const hasClass = content.includes(`class ${service.class}`)
-        const hasInstance = content.includes(`export const ${service.instance}`)
-        const hasPendingError = content.includes('requires Opus model')
+        const content = await fs.readFile(filePath, "utf8");
+        const hasClass = content.includes(`class ${service.class}`);
+        const hasInstance = content.includes(
+          `export const ${service.instance}`,
+        );
+        const hasPendingError = content.includes("requires Opus model");
 
-        const status = hasClass && hasInstance && hasPendingError
-          ? `${colors.yellow}⚠${colors.reset}`  // Ready but pending
-          : hasClass && hasInstance
-          ? `${colors.green}✓${colors.reset}`   // Fully ready
-          : `${colors.red}✗${colors.reset}`     // Missing
+        const status =
+          hasClass && hasInstance && hasPendingError
+            ? `${colors.yellow}⚠${colors.reset}` // Ready but pending
+            : hasClass && hasInstance
+              ? `${colors.green}✓${colors.reset}` // Fully ready
+              : `${colors.red}✗${colors.reset}`; // Missing
 
-        const state = hasPendingError ? '(pending Opus)' : '(ready)'
-        console.log(`  ${status} ${service.class} ${state}`)
+        const state = hasPendingError ? "(pending Opus)" : "(ready)";
+        console.log(`  ${status} ${service.class} ${state}`);
       } catch (error) {
-        console.log(`  ${colors.red}✗${colors.reset} ${service.class} (file error)`)
+        console.log(
+          `  ${colors.red}✗${colors.reset} ${service.class} (file error)`,
+        );
       }
     }
 
     // Summary
-    console.log(`\n${colors.bright}Summary:${colors.reset}`)
-    console.log(`  Total Files: ${fileStats.length}`)
-    console.log(`  Files Ready: ${fileStats.filter(f => f.exists).length}`)
-    console.log(`  Interfaces Defined: ${interfaces.length}`)
-    console.log(`  Services Prepared: ${services.length}`)
+    console.log(`\n${colors.bright}Summary:${colors.reset}`);
+    console.log(`  Total Files: ${fileStats.length}`);
+    console.log(`  Files Ready: ${fileStats.filter((f) => f.exists).length}`);
+    console.log(`  Interfaces Defined: ${interfaces.length}`);
+    console.log(`  Services Prepared: ${services.length}`);
 
-    console.log(`\n${colors.bright}${colors.yellow}Status: Structure Ready for Opus Integration${colors.reset}`)
-    console.log('\nAll LLM integration components are structurally complete.')
-    console.log('Implementation will be activated when Opus model is available.')
+    console.log(
+      `\n${colors.bright}${colors.yellow}Status: Structure Ready for Opus Integration${colors.reset}`,
+    );
+    console.log("\nAll LLM integration components are structurally complete.");
+    console.log(
+      "Implementation will be activated when Opus model is available.",
+    );
 
     // Next steps
-    console.log(`\n${colors.bright}Next Steps:${colors.reset}`)
-    console.log('1. When Opus is available, run: npm run claude:enable-llm')
-    console.log('2. Update API configuration with Opus credentials')
-    console.log('3. Run integration tests: npm run claude:test-llm')
-    console.log('4. Monitor performance: npm run claude:monitor')
-
+    console.log(`\n${colors.bright}Next Steps:${colors.reset}`);
+    console.log("1. When Opus is available, run: npm run claude:enable-llm");
+    console.log("2. Update API configuration with Opus credentials");
+    console.log("3. Run integration tests: npm run claude:test-llm");
+    console.log("4. Monitor performance: npm run claude:monitor");
   } catch (error) {
-    console.error(`${colors.red}Error checking LLM integration: ${error.message}${colors.reset}`)
-    process.exit(1)
+    console.error(
+      `${colors.red}Error checking LLM integration: ${error.message}${colors.reset}`,
+    );
+    process.exit(1);
   }
 }
 
 // Generate summary report
 async function generateLLMReadinessReport() {
-  const reportPath = path.join(__dirname, '..', '..', 'docs', 'LLM_INTEGRATION_STATUS.md')
+  const reportPath = path.join(
+    __dirname,
+    "..",
+    "..",
+    "docs",
+    "LLM_INTEGRATION_STATUS.md",
+  );
 
   const report = `# LLM Integration Status Report
 
@@ -252,20 +302,24 @@ The Claude Learning System LLM integration structure is fully prepared and await
 ---
 
 *This integration is part of the Claude Learning System v2.0*
-`
+`;
 
   try {
-    await fs.writeFile(reportPath, report)
-    console.log(`\n${colors.green}✓${colors.reset} Generated readiness report: ${reportPath}`)
+    await fs.writeFile(reportPath, report);
+    console.log(
+      `\n${colors.green}✓${colors.reset} Generated readiness report: ${reportPath}`,
+    );
   } catch (error) {
-    console.error(`${colors.red}Failed to generate report: ${error.message}${colors.reset}`)
+    console.error(
+      `${colors.red}Failed to generate report: ${error.message}${colors.reset}`,
+    );
   }
 }
 
 // Run checks and generate report
 async function main() {
-  await checkLLMIntegration()
-  await generateLLMReadinessReport()
+  await checkLLMIntegration();
+  await generateLLMReadinessReport();
 }
 
-main().catch(console.error)
+main().catch(console.error);

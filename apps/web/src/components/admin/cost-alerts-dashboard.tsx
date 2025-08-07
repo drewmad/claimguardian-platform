@@ -8,18 +8,24 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Progress } from '@/components/ui/progress'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   DollarSign,
   AlertTriangle,
@@ -36,31 +42,44 @@ import {
   Calendar,
   PieChart,
   Activity,
-  Settings
-} from 'lucide-react'
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RechartsPieChart, Pie, Cell } from 'recharts'
-import { aiCostMonitor } from '@/lib/ai/cost-monitor'
-import type { CostBudget, CostAlert, CostMetrics } from '@/lib/ai/cost-monitor'
-import { toast } from 'sonner'
+  Settings,
+} from "lucide-react";
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart as RechartsPieChart,
+  Pie,
+  Cell,
+} from "recharts";
+import { aiCostMonitor } from "@/lib/ai/cost-monitor";
+import type { CostBudget, CostAlert, CostMetrics } from "@/lib/ai/cost-monitor";
+import { toast } from "sonner";
 
 const ALERT_COLORS = {
-  info: 'bg-blue-900/20 border-blue-900 text-blue-300',
-  warning: 'bg-yellow-900/20 border-yellow-900 text-yellow-300',
-  critical: 'bg-red-900/20 border-red-900 text-red-300'
-}
+  info: "bg-blue-900/20 border-blue-900 text-blue-300",
+  warning: "bg-yellow-900/20 border-yellow-900 text-yellow-300",
+  critical: "bg-red-900/20 border-red-900 text-red-300",
+};
 
 const FEATURE_COLORS = {
-  'damage-analyzer': '#8B5CF6',
-  'policy-chat': '#F59E0B',
-  'settlement-analyzer': '#06B6D4',
-  'claim-assistant': '#10B981',
-  'document-generator': '#EF4444',
-  'communication-helper': '#F97316'
-}
+  "damage-analyzer": "#8B5CF6",
+  "policy-chat": "#F59E0B",
+  "settlement-analyzer": "#06B6D4",
+  "claim-assistant": "#10B981",
+  "document-generator": "#EF4444",
+  "communication-helper": "#F97316",
+};
 
 export function CostAlertsDashboard() {
-  const [budgets, setBudgets] = useState<CostBudget[]>([])
-  const [alerts, setAlerts] = useState<CostAlert[]>([])
+  const [budgets, setBudgets] = useState<CostBudget[]>([]);
+  const [alerts, setAlerts] = useState<CostAlert[]>([]);
   const [metrics, setMetrics] = useState<CostMetrics>({
     totalSpent: 0,
     dailySpend: 0,
@@ -70,65 +89,65 @@ export function CostAlertsDashboard() {
     predictedMonthlySpend: 0,
     costPerRequest: 0,
     costPerFeature: {},
-    costTrend: 'stable'
-  })
+    costTrend: "stable",
+  });
 
-  const [loading, setLoading] = useState(true)
-  const [showCreateBudget, setShowCreateBudget] = useState(false)
-  const [editingBudget, setEditingBudget] = useState<CostBudget | null>(null)
+  const [loading, setLoading] = useState(true);
+  const [showCreateBudget, setShowCreateBudget] = useState(false);
+  const [editingBudget, setEditingBudget] = useState<CostBudget | null>(null);
   const [newBudget, setNewBudget] = useState<{
-    name: string
-    type: 'daily' | 'weekly' | 'monthly' | 'yearly'
-    amount: number
-    featureId: string
-    alertThresholds: { warning: number; critical: number }
+    name: string;
+    type: "daily" | "weekly" | "monthly" | "yearly";
+    amount: number;
+    featureId: string;
+    alertThresholds: { warning: number; critical: number };
   }>({
-    name: '',
-    type: 'monthly' as 'daily' | 'weekly' | 'monthly' | 'yearly',
+    name: "",
+    type: "monthly" as "daily" | "weekly" | "monthly" | "yearly",
     amount: 100,
-    featureId: '',
-    alertThresholds: { warning: 75, critical: 90 }
-  })
+    featureId: "",
+    alertThresholds: { warning: 75, critical: 90 },
+  });
 
   useEffect(() => {
     const loadData = () => {
       try {
-        const currentBudgets = aiCostMonitor.getBudgets()
-        const currentAlerts = aiCostMonitor.getAlerts()
-        const currentMetrics = aiCostMonitor.getCostMetrics()
+        const currentBudgets = aiCostMonitor.getBudgets();
+        const currentAlerts = aiCostMonitor.getAlerts();
+        const currentMetrics = aiCostMonitor.getCostMetrics();
 
-        setBudgets(currentBudgets)
-        setAlerts(currentAlerts)
-        setMetrics(currentMetrics)
-        setLoading(false)
+        setBudgets(currentBudgets);
+        setAlerts(currentAlerts);
+        setMetrics(currentMetrics);
+        setLoading(false);
       } catch (error) {
-        console.error('Error loading cost monitoring data:', error)
-        toast.error('Failed to load cost monitoring data')
+        console.error("Error loading cost monitoring data:", error);
+        toast.error("Failed to load cost monitoring data");
       }
-    }
+    };
 
-    loadData()
-    const interval = setInterval(loadData, 30000) // Update every 30 seconds
+    loadData();
+    const interval = setInterval(loadData, 30000); // Update every 30 seconds
 
     // Set up alert listener
     const unsubscribe = aiCostMonitor.onAlert((alert) => {
       toast.error(`Cost Alert: ${alert.message}`, {
         duration: 10000,
         action: {
-          label: 'View Details',
+          label: "View Details",
           onClick: () => {
             // Could open alert details modal
-          }
-        }
-      })
-      loadData() // Refresh data when new alert arrives
-    })
+          },
+        },
+      });
+      loadData(); // Refresh data when new alert arrives
+    });
 
     return () => {
-      clearInterval(interval)
-      unsubscribe()
-    }
-  }, [])
+      clearInterval(interval);
+      unsubscribe();
+    };
+  }, []);
 
   const handleCreateBudget = () => {
     try {
@@ -138,101 +157,117 @@ export function CostAlertsDashboard() {
         amount: newBudget.amount,
         featureId: newBudget.featureId || undefined,
         alertThresholds: newBudget.alertThresholds,
-        isActive: true
-      })
+        isActive: true,
+      });
 
-      setBudgets(aiCostMonitor.getBudgets())
+      setBudgets(aiCostMonitor.getBudgets());
       setNewBudget({
-        name: '',
-        type: 'monthly',
+        name: "",
+        type: "monthly",
         amount: 100,
-        featureId: '',
-        alertThresholds: { warning: 75, critical: 90 }
-      })
-      setShowCreateBudget(false)
-      toast.success('Budget created successfully')
+        featureId: "",
+        alertThresholds: { warning: 75, critical: 90 },
+      });
+      setShowCreateBudget(false);
+      toast.success("Budget created successfully");
     } catch (error) {
-      toast.error('Failed to create budget')
+      toast.error("Failed to create budget");
     }
-  }
+  };
 
   const handleUpdateBudget = () => {
-    if (!editingBudget) return
+    if (!editingBudget) return;
 
     try {
-      aiCostMonitor.updateBudget(editingBudget.id, editingBudget)
-      setBudgets(aiCostMonitor.getBudgets())
-      setEditingBudget(null)
-      toast.success('Budget updated successfully')
+      aiCostMonitor.updateBudget(editingBudget.id, editingBudget);
+      setBudgets(aiCostMonitor.getBudgets());
+      setEditingBudget(null);
+      toast.success("Budget updated successfully");
     } catch (error) {
-      toast.error('Failed to update budget')
+      toast.error("Failed to update budget");
     }
-  }
+  };
 
   const handleDeleteBudget = (budgetId: string) => {
     try {
-      aiCostMonitor.deleteBudget(budgetId)
-      setBudgets(aiCostMonitor.getBudgets())
-      toast.success('Budget deleted successfully')
+      aiCostMonitor.deleteBudget(budgetId);
+      setBudgets(aiCostMonitor.getBudgets());
+      toast.success("Budget deleted successfully");
     } catch (error) {
-      toast.error('Failed to delete budget')
+      toast.error("Failed to delete budget");
     }
-  }
+  };
 
   const handleResolveAlert = (alertId: string) => {
     try {
-      aiCostMonitor.resolveAlert(alertId)
-      setAlerts(aiCostMonitor.getAlerts())
-      toast.success('Alert resolved')
+      aiCostMonitor.resolveAlert(alertId);
+      setAlerts(aiCostMonitor.getAlerts());
+      toast.success("Alert resolved");
     } catch (error) {
-      toast.error('Failed to resolve alert')
+      toast.error("Failed to resolve alert");
     }
-  }
+  };
 
-  const getAlertIcon = (level: CostAlert['level']) => {
+  const getAlertIcon = (level: CostAlert["level"]) => {
     switch (level) {
-      case 'info': return <Bell className="h-4 w-4" />
-      case 'warning': return <AlertTriangle className="h-4 w-4" />
-      case 'critical': return <XCircle className="h-4 w-4" />
+      case "info":
+        return <Bell className="h-4 w-4" />;
+      case "warning":
+        return <AlertTriangle className="h-4 w-4" />;
+      case "critical":
+        return <XCircle className="h-4 w-4" />;
     }
-  }
+  };
 
-  const getTrendIcon = (trend: CostMetrics['costTrend']) => {
+  const getTrendIcon = (trend: CostMetrics["costTrend"]) => {
     switch (trend) {
-      case 'increasing': return <TrendingUp className="h-4 w-4 text-red-400" />
-      case 'decreasing': return <TrendingDown className="h-4 w-4 text-green-400" />
-      default: return <Activity className="h-4 w-4 text-gray-400" />
+      case "increasing":
+        return <TrendingUp className="h-4 w-4 text-red-400" />;
+      case "decreasing":
+        return <TrendingDown className="h-4 w-4 text-green-400" />;
+      default:
+        return <Activity className="h-4 w-4 text-gray-400" />;
     }
-  }
+  };
 
   const getBudgetStatus = (budget: CostBudget) => {
-    const percentage = (budget.spent / budget.amount) * 100
-    if (percentage >= 100) return { status: 'exceeded', color: 'text-red-400' }
-    if (percentage >= budget.alertThresholds.critical) return { status: 'critical', color: 'text-red-400' }
-    if (percentage >= budget.alertThresholds.warning) return { status: 'warning', color: 'text-yellow-400' }
-    return { status: 'healthy', color: 'text-green-400' }
-  }
+    const percentage = (budget.spent / budget.amount) * 100;
+    if (percentage >= 100) return { status: "exceeded", color: "text-red-400" };
+    if (percentage >= budget.alertThresholds.critical)
+      return { status: "critical", color: "text-red-400" };
+    if (percentage >= budget.alertThresholds.warning)
+      return { status: "warning", color: "text-yellow-400" };
+    return { status: "healthy", color: "text-green-400" };
+  };
 
   // Prepare chart data
-  const budgetChartData = budgets.map(budget => ({
-    name: budget.name.length > 15 ? budget.name.substring(0, 15) + '...' : budget.name,
+  const budgetChartData = budgets.map((budget) => ({
+    name:
+      budget.name.length > 15
+        ? budget.name.substring(0, 15) + "..."
+        : budget.name,
     spent: budget.spent,
     remaining: budget.remaining,
-    percentage: (budget.spent / budget.amount) * 100
-  }))
+    percentage: (budget.spent / budget.amount) * 100,
+  }));
 
-  const featureSpendingData = Object.entries(metrics.costPerFeature).map(([feature, cost]) => ({
-    name: feature.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()),
-    value: parseFloat(cost.toFixed(2)),
-    color: FEATURE_COLORS[feature as keyof typeof FEATURE_COLORS] || '#6B7280'
-  }))
+  const featureSpendingData = Object.entries(metrics.costPerFeature).map(
+    ([feature, cost]) => ({
+      name: feature.replace("-", " ").replace(/\b\w/g, (l) => l.toUpperCase()),
+      value: parseFloat(cost.toFixed(2)),
+      color:
+        FEATURE_COLORS[feature as keyof typeof FEATURE_COLORS] || "#6B7280",
+    }),
+  );
 
   // Mock trend data - in production this would come from historical data
   const trendData = Array.from({ length: 7 }, (_, i) => ({
-    day: new Date(Date.now() - (6 - i) * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { weekday: 'short' }),
+    day: new Date(
+      Date.now() - (6 - i) * 24 * 60 * 60 * 1000,
+    ).toLocaleDateString("en-US", { weekday: "short" }),
     spend: metrics.avgDailySpend * (0.8 + Math.random() * 0.4),
-    prediction: metrics.avgDailySpend
-  }))
+    prediction: metrics.avgDailySpend,
+  }));
 
   if (loading) {
     return (
@@ -242,7 +277,7 @@ export function CostAlertsDashboard() {
           <p className="text-gray-500">Loading cost monitoring data...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -254,7 +289,9 @@ export function CostAlertsDashboard() {
             <Target className="h-7 w-7 text-green-400" />
             Cost Monitoring & Budget Controls
           </h2>
-          <p className="text-gray-400">Manage AI spending budgets and automated cost alerts</p>
+          <p className="text-gray-400">
+            Manage AI spending budgets and automated cost alerts
+          </p>
         </div>
         <div className="flex gap-3">
           <Button
@@ -318,7 +355,9 @@ export function CostAlertsDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card className="bg-gray-800 border-gray-700">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Monthly Spend</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-400">
+              Monthly Spend
+            </CardTitle>
             <DollarSign className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
@@ -339,7 +378,9 @@ export function CostAlertsDashboard() {
 
         <Card className="bg-gray-800 border-gray-700">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Daily Average</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-400">
+              Daily Average
+            </CardTitle>
             <Calendar className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
@@ -354,7 +395,9 @@ export function CostAlertsDashboard() {
 
         <Card className="bg-gray-800 border-gray-700">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Cost per Request</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-400">
+              Cost per Request
+            </CardTitle>
             <Activity className="h-4 w-4 text-purple-500" />
           </CardHeader>
           <CardContent>
@@ -369,15 +412,21 @@ export function CostAlertsDashboard() {
 
         <Card className="bg-gray-800 border-gray-700">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Active Budgets</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-400">
+              Active Budgets
+            </CardTitle>
             <Target className="h-4 w-4 text-yellow-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-white">
-              {budgets.filter(b => b.isActive).length}
+              {budgets.filter((b) => b.isActive).length}
             </div>
             <p className="text-xs text-gray-500 mt-1">
-              {budgets.filter(b => getBudgetStatus(b).status !== 'healthy').length} need attention
+              {
+                budgets.filter((b) => getBudgetStatus(b).status !== "healthy")
+                  .length
+              }{" "}
+              need attention
             </p>
           </CardContent>
         </Card>
@@ -402,16 +451,22 @@ export function CostAlertsDashboard() {
               <CardContent>
                 <div className="space-y-4">
                   {budgets.map((budget) => {
-                    const status = getBudgetStatus(budget)
-                    const percentage = (budget.spent / budget.amount) * 100
+                    const status = getBudgetStatus(budget);
+                    const percentage = (budget.spent / budget.amount) * 100;
 
                     return (
-                      <div key={budget.id} className="p-4 bg-slate-700/50 rounded-lg">
+                      <div
+                        key={budget.id}
+                        className="p-4 bg-slate-700/50 rounded-lg"
+                      >
                         <div className="flex items-center justify-between mb-3">
                           <div>
-                            <h4 className="font-medium text-white">{budget.name}</h4>
+                            <h4 className="font-medium text-white">
+                              {budget.name}
+                            </h4>
                             <p className="text-sm text-gray-400">
-                              {budget.type} • {budget.featureId || 'All features'}
+                              {budget.type} •{" "}
+                              {budget.featureId || "All features"}
                             </p>
                           </div>
                           <div className="flex items-center gap-2">
@@ -439,13 +494,21 @@ export function CostAlertsDashboard() {
                           <div className="flex justify-between text-sm">
                             <span className="text-gray-400">Spent:</span>
                             <span className="text-white font-medium">
-                              ${budget.spent.toFixed(2)} / ${budget.amount.toFixed(2)}
+                              ${budget.spent.toFixed(2)} / $
+                              {budget.amount.toFixed(2)}
                             </span>
                           </div>
-                          <Progress value={Math.min(percentage, 100)} className="h-2" />
+                          <Progress
+                            value={Math.min(percentage, 100)}
+                            className="h-2"
+                          />
                           <div className="flex justify-between text-xs text-gray-500">
-                            <span>Warning: {budget.alertThresholds.warning}%</span>
-                            <span>Critical: {budget.alertThresholds.critical}%</span>
+                            <span>
+                              Warning: {budget.alertThresholds.warning}%
+                            </span>
+                            <span>
+                              Critical: {budget.alertThresholds.critical}%
+                            </span>
                           </div>
                         </div>
 
@@ -453,7 +516,7 @@ export function CostAlertsDashboard() {
                           Resets: {budget.resetDate.toLocaleDateString()}
                         </div>
                       </div>
-                    )
+                    );
                   })}
 
                   {budgets.length === 0 && (
@@ -494,8 +557,14 @@ export function CostAlertsDashboard() {
                       />
                       <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
                       <Tooltip
-                        contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
-                        formatter={(value: number) => [`$${value.toFixed(2)}`, '']}
+                        contentStyle={{
+                          backgroundColor: "#1F2937",
+                          border: "none",
+                        }}
+                        formatter={(value: number) => [
+                          `$${value.toFixed(2)}`,
+                          "",
+                        ]}
                       />
                       <Bar dataKey="spent" stackId="a" fill="#EF4444" />
                       <Bar dataKey="remaining" stackId="a" fill="#10B981" />
@@ -520,7 +589,9 @@ export function CostAlertsDashboard() {
             {/* Spending Trend */}
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader>
-                <CardTitle className="text-white">7-Day Spending Trend</CardTitle>
+                <CardTitle className="text-white">
+                  7-Day Spending Trend
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={250}>
@@ -533,8 +604,14 @@ export function CostAlertsDashboard() {
                     />
                     <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
                     <Tooltip
-                      contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
-                      formatter={(value: number) => [`$${value.toFixed(2)}`, '']}
+                      contentStyle={{
+                        backgroundColor: "#1F2937",
+                        border: "none",
+                      }}
+                      formatter={(value: number) => [
+                        `$${value.toFixed(2)}`,
+                        "",
+                      ]}
                     />
                     <Line
                       type="monotone"
@@ -561,7 +638,9 @@ export function CostAlertsDashboard() {
             {/* Feature Breakdown */}
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader>
-                <CardTitle className="text-white">Spending by Feature</CardTitle>
+                <CardTitle className="text-white">
+                  Spending by Feature
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 {featureSpendingData.length > 0 ? (
@@ -584,8 +663,14 @@ export function CostAlertsDashboard() {
                         ))}
                       </Pie>
                       <Tooltip
-                        contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
-                        formatter={(value: number) => [`$${value.toFixed(2)}`, 'Spent']}
+                        contentStyle={{
+                          backgroundColor: "#1F2937",
+                          border: "none",
+                        }}
+                        formatter={(value: number) => [
+                          `$${value.toFixed(2)}`,
+                          "Spent",
+                        ]}
                       />
                     </RechartsPieChart>
                   </ResponsiveContainer>
@@ -615,7 +700,7 @@ export function CostAlertsDashboard() {
                     key={alert.id}
                     className={`p-4 rounded-lg border ${
                       alert.isResolved
-                        ? 'bg-slate-700/30 border-slate-600 opacity-60'
+                        ? "bg-slate-700/30 border-slate-600 opacity-60"
                         : ALERT_COLORS[alert.level]
                     }`}
                   >
@@ -757,7 +842,9 @@ export function CostAlertsDashboard() {
                 <Label>Budget Name</Label>
                 <Input
                   value={newBudget.name}
-                  onChange={(e) => setNewBudget(prev => ({ ...prev, name: e.target.value }))}
+                  onChange={(e) =>
+                    setNewBudget((prev) => ({ ...prev, name: e.target.value }))
+                  }
                   placeholder="e.g., Monthly AI Operations"
                   className="bg-slate-700 border-slate-600"
                 />
@@ -767,7 +854,9 @@ export function CostAlertsDashboard() {
                 <Label>Budget Type</Label>
                 <Select
                   value={newBudget.type}
-                  onValueChange={(value: 'daily' | 'weekly' | 'monthly' | 'yearly') => setNewBudget(prev => ({ ...prev, type: value }))}
+                  onValueChange={(
+                    value: "daily" | "weekly" | "monthly" | "yearly",
+                  ) => setNewBudget((prev) => ({ ...prev, type: value }))}
                 >
                   <SelectTrigger className="bg-slate-700 border-slate-600">
                     <SelectValue />
@@ -786,7 +875,12 @@ export function CostAlertsDashboard() {
                 <Input
                   type="number"
                   value={newBudget.amount}
-                  onChange={(e) => setNewBudget(prev => ({ ...prev, amount: parseFloat(e.target.value) || 0 }))}
+                  onChange={(e) =>
+                    setNewBudget((prev) => ({
+                      ...prev,
+                      amount: parseFloat(e.target.value) || 0,
+                    }))
+                  }
                   className="bg-slate-700 border-slate-600"
                 />
               </div>
@@ -795,17 +889,25 @@ export function CostAlertsDashboard() {
                 <Label>Feature (Optional)</Label>
                 <Select
                   value={newBudget.featureId}
-                  onValueChange={(value) => setNewBudget(prev => ({ ...prev, featureId: value }))}
+                  onValueChange={(value) =>
+                    setNewBudget((prev) => ({ ...prev, featureId: value }))
+                  }
                 >
                   <SelectTrigger className="bg-slate-700 border-slate-600">
                     <SelectValue placeholder="All features" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="">All features</SelectItem>
-                    <SelectItem value="damage-analyzer">Damage Analyzer</SelectItem>
+                    <SelectItem value="damage-analyzer">
+                      Damage Analyzer
+                    </SelectItem>
                     <SelectItem value="policy-chat">Policy Chat</SelectItem>
-                    <SelectItem value="settlement-analyzer">Settlement Analyzer</SelectItem>
-                    <SelectItem value="claim-assistant">Claim Assistant</SelectItem>
+                    <SelectItem value="settlement-analyzer">
+                      Settlement Analyzer
+                    </SelectItem>
+                    <SelectItem value="claim-assistant">
+                      Claim Assistant
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -816,13 +918,15 @@ export function CostAlertsDashboard() {
                   <Input
                     type="number"
                     value={newBudget.alertThresholds.warning}
-                    onChange={(e) => setNewBudget(prev => ({
-                      ...prev,
-                      alertThresholds: {
-                        ...prev.alertThresholds,
-                        warning: parseFloat(e.target.value) || 0
-                      }
-                    }))}
+                    onChange={(e) =>
+                      setNewBudget((prev) => ({
+                        ...prev,
+                        alertThresholds: {
+                          ...prev.alertThresholds,
+                          warning: parseFloat(e.target.value) || 0,
+                        },
+                      }))
+                    }
                     className="bg-slate-700 border-slate-600"
                   />
                 </div>
@@ -831,13 +935,15 @@ export function CostAlertsDashboard() {
                   <Input
                     type="number"
                     value={newBudget.alertThresholds.critical}
-                    onChange={(e) => setNewBudget(prev => ({
-                      ...prev,
-                      alertThresholds: {
-                        ...prev.alertThresholds,
-                        critical: parseFloat(e.target.value) || 0
-                      }
-                    }))}
+                    onChange={(e) =>
+                      setNewBudget((prev) => ({
+                        ...prev,
+                        alertThresholds: {
+                          ...prev.alertThresholds,
+                          critical: parseFloat(e.target.value) || 0,
+                        },
+                      }))
+                    }
                     className="bg-slate-700 border-slate-600"
                   />
                 </div>
@@ -872,7 +978,11 @@ export function CostAlertsDashboard() {
                 <Label>Budget Name</Label>
                 <Input
                   value={editingBudget.name}
-                  onChange={(e) => setEditingBudget(prev => prev ? ({ ...prev, name: e.target.value }) : null)}
+                  onChange={(e) =>
+                    setEditingBudget((prev) =>
+                      prev ? { ...prev, name: e.target.value } : null,
+                    )
+                  }
                   className="bg-slate-700 border-slate-600"
                 />
               </div>
@@ -882,7 +992,13 @@ export function CostAlertsDashboard() {
                 <Input
                   type="number"
                   value={editingBudget.amount}
-                  onChange={(e) => setEditingBudget(prev => prev ? ({ ...prev, amount: parseFloat(e.target.value) || 0 }) : null)}
+                  onChange={(e) =>
+                    setEditingBudget((prev) =>
+                      prev
+                        ? { ...prev, amount: parseFloat(e.target.value) || 0 }
+                        : null,
+                    )
+                  }
                   className="bg-slate-700 border-slate-600"
                 />
               </div>
@@ -893,13 +1009,19 @@ export function CostAlertsDashboard() {
                   <Input
                     type="number"
                     value={editingBudget.alertThresholds.warning}
-                    onChange={(e) => setEditingBudget(prev => prev ? ({
-                      ...prev,
-                      alertThresholds: {
-                        ...prev.alertThresholds,
-                        warning: parseFloat(e.target.value) || 0
-                      }
-                    }) : null)}
+                    onChange={(e) =>
+                      setEditingBudget((prev) =>
+                        prev
+                          ? {
+                              ...prev,
+                              alertThresholds: {
+                                ...prev.alertThresholds,
+                                warning: parseFloat(e.target.value) || 0,
+                              },
+                            }
+                          : null,
+                      )
+                    }
                     className="bg-slate-700 border-slate-600"
                   />
                 </div>
@@ -908,13 +1030,19 @@ export function CostAlertsDashboard() {
                   <Input
                     type="number"
                     value={editingBudget.alertThresholds.critical}
-                    onChange={(e) => setEditingBudget(prev => prev ? ({
-                      ...prev,
-                      alertThresholds: {
-                        ...prev.alertThresholds,
-                        critical: parseFloat(e.target.value) || 0
-                      }
-                    }) : null)}
+                    onChange={(e) =>
+                      setEditingBudget((prev) =>
+                        prev
+                          ? {
+                              ...prev,
+                              alertThresholds: {
+                                ...prev.alertThresholds,
+                                critical: parseFloat(e.target.value) || 0,
+                              },
+                            }
+                          : null,
+                      )
+                    }
                     className="bg-slate-700 border-slate-600"
                   />
                 </div>
@@ -923,14 +1051,18 @@ export function CostAlertsDashboard() {
               <div className="flex items-center justify-between">
                 <Label>Active</Label>
                 <button
-                  onClick={() => setEditingBudget(prev => prev ? ({ ...prev, isActive: !prev.isActive }) : null)}
+                  onClick={() =>
+                    setEditingBudget((prev) =>
+                      prev ? { ...prev, isActive: !prev.isActive } : null,
+                    )
+                  }
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                    editingBudget.isActive ? 'bg-blue-600' : 'bg-gray-600'
+                    editingBudget.isActive ? "bg-blue-600" : "bg-gray-600"
                   }`}
                 >
                   <span
                     className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      editingBudget.isActive ? 'translate-x-6' : 'translate-x-1'
+                      editingBudget.isActive ? "translate-x-6" : "translate-x-1"
                     }`}
                   />
                 </button>
@@ -953,5 +1085,5 @@ export function CostAlertsDashboard() {
         </div>
       )}
     </div>
-  )
+  );
 }

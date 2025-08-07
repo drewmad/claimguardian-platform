@@ -11,23 +11,23 @@
  * @status active
  */
 
-import chokidar from 'chokidar';
-import fs from 'fs/promises';
-import path from 'path';
-import http from 'http';
+import chokidar from "chokidar";
+import fs from "fs/promises";
+import path from "path";
+import http from "http";
 
 // --- Configuration ---
-const WATCHED_DIRECTORIES = ['./apps', './packages', './services'];
+const WATCHED_DIRECTORIES = ["./apps", "./packages", "./services"];
 const LOCAL_MODEL_API = {
-  hostname: 'localhost',
+  hostname: "localhost",
   port: 11434, // Default for Ollama
-  path: '/api/generate',
-  method: 'POST',
+  path: "/api/generate",
+  method: "POST",
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 };
-const MODEL_NAME = 'local-llama3-8b'; // As defined in model-roster.json
+const MODEL_NAME = "local-llama3-8b"; // As defined in model-roster.json
 
 // --- Utility Functions ---
 
@@ -76,17 +76,17 @@ async function invokeLocalModel(filePath, fileContent) {
 
   return new Promise((resolve, reject) => {
     const req = http.request(LOCAL_MODEL_API, (res) => {
-      let data = '';
-      res.on('data', (chunk) => {
+      let data = "";
+      res.on("data", (chunk) => {
         data += chunk;
       });
-      res.on('end', () => {
+      res.on("end", () => {
         try {
           const parsedData = JSON.parse(data);
           if (parsedData.response) {
             resolve(parsedData.response.trim());
           } else {
-            resolve('OK'); // Assume OK if no direct response
+            resolve("OK"); // Assume OK if no direct response
           }
         } catch (error) {
           reject(`Error parsing model response: ${error.message}`);
@@ -94,8 +94,10 @@ async function invokeLocalModel(filePath, fileContent) {
       });
     });
 
-    req.on('error', (error) => {
-      reject(`Error calling local model API: ${error.message}. Is the local model running?`);
+    req.on("error", (error) => {
+      reject(
+        `Error calling local model API: ${error.message}. Is the local model running?`,
+      );
     });
 
     req.write(requestBody);
@@ -110,17 +112,20 @@ async function invokeLocalModel(filePath, fileContent) {
 async function onFileChange(filePath) {
   try {
     console.log(`[Co-Strategist] Analyzing: ${filePath}`);
-    const fileContent = await fs.readFile(filePath, 'utf-8');
+    const fileContent = await fs.readFile(filePath, "utf-8");
     const feedback = await invokeLocalModel(filePath, fileContent);
 
-    if (feedback && feedback.toUpperCase() !== 'OK') {
-      console.log(`[Co-Strategist] Feedback for ${filePath}:\n---\n${feedback}\n---`);
+    if (feedback && feedback.toUpperCase() !== "OK") {
+      console.log(
+        `[Co-Strategist] Feedback for ${filePath}:\n---\n${feedback}\n---`,
+      );
     } else {
-       console.log(`[Co-Strategist] OK: ${filePath}`);
+      console.log(`[Co-Strategist] OK: ${filePath}`);
     }
   } catch (error) {
-    if (error.code !== 'ENOENT') { // Ignore file not found errors (e.g., temp files)
-        console.error(`[Co-Strategist] Error: ${error.message}`);
+    if (error.code !== "ENOENT") {
+      // Ignore file not found errors (e.g., temp files)
+      console.error(`[Co-Strategist] Error: ${error.message}`);
     }
   }
 }
@@ -128,25 +133,27 @@ async function onFileChange(filePath) {
 // --- Main Execution ---
 
 function main() {
-  console.log('[Co-Strategist] Starting...');
-  console.log('Watching for file changes. Press Ctrl+C to exit.');
+  console.log("[Co-Strategist] Starting...");
+  console.log("Watching for file changes. Press Ctrl+C to exit.");
 
   const watcher = chokidar.watch(WATCHED_DIRECTORIES, {
     ignored: /(^|[\/\\])\..|node_modules|dist|.turbo/, // Corrected escaping for backslash
     persistent: true,
     ignoreInitial: true,
     awaitWriteFinish: {
-        stabilityThreshold: 500,
-        pollInterval: 100
-    }
+      stabilityThreshold: 500,
+      pollInterval: 100,
+    },
   });
 
   const debouncedFileChange = debounce(onFileChange, 1000);
 
   watcher
-    .on('add', path => debouncedFileChange(path))
-    .on('change', path => debouncedFileChange(path))
-    .on('error', error => console.error(`[Co-Strategist] Watcher error: ${error}`));
+    .on("add", (path) => debouncedFileChange(path))
+    .on("change", (path) => debouncedFileChange(path))
+    .on("error", (error) =>
+      console.error(`[Co-Strategist] Watcher error: ${error}`),
+    );
 }
 
 main();

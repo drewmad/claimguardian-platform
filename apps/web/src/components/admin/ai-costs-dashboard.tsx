@@ -8,13 +8,20 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Badge } from '@/components/ui/badge'
-import { TrendingUp, DollarSign, AlertCircle, Users, Zap, Clock } from 'lucide-react'
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import {
+  TrendingUp,
+  DollarSign,
+  AlertCircle,
+  Users,
+  Zap,
+  Clock,
+} from "lucide-react";
 import {
   LineChart,
   Line,
@@ -27,96 +34,100 @@ import {
   ResponsiveContainer,
   PieChart,
   Pie,
-  Cell
-} from 'recharts'
-import { createBrowserSupabaseClient } from '@claimguardian/db'
+  Cell,
+} from "recharts";
+import { createBrowserSupabaseClient } from "@claimguardian/db";
 
 interface AIDailySummary {
-  date: string
-  provider: string
-  model: string
-  calls: number
-  total_tokens: number
-  daily_cost: number
-  avg_response_time_ms: number
-  failed_calls: number
+  date: string;
+  provider: string;
+  model: string;
+  calls: number;
+  total_tokens: number;
+  daily_cost: number;
+  avg_response_time_ms: number;
+  failed_calls: number;
 }
 
 interface AIHourlyUsage {
-  hour: string
-  provider: string
-  calls: number
-  tokens: number
-  cost: number
+  hour: string;
+  provider: string;
+  calls: number;
+  tokens: number;
+  cost: number;
 }
 
 interface ChartDataItem {
-  date: string
-  [provider: string]: number | string
+  date: string;
+  [provider: string]: number | string;
 }
 
 interface HourlyChartDataItem {
-  hour: string
-  calls: number
+  hour: string;
+  calls: number;
 }
 
 interface UserAISummary {
-  user_id: string
-  email: string
-  days_active: number
-  total_calls: number
-  total_tokens: number
-  total_cost: number
-  last_usage: string
+  user_id: string;
+  email: string;
+  days_active: number;
+  total_calls: number;
+  total_tokens: number;
+  total_cost: number;
+  last_usage: string;
 }
 
 interface ModelPerformance {
-  provider: string
-  model: string
-  operation_type: string
-  total_calls: number
-  avg_response_time: number
-  median_response_time: number
-  p95_response_time: number
-  error_rate: number
-  avg_tokens_per_call: number
+  provider: string;
+  model: string;
+  operation_type: string;
+  total_calls: number;
+  avg_response_time: number;
+  median_response_time: number;
+  p95_response_time: number;
+  error_rate: number;
+  avg_tokens_per_call: number;
 }
 
 interface CostProjection {
-  current_month: string
-  month_to_date_cost: number
-  recent_avg_daily_cost: number
-  projected_monthly_cost: number
+  current_month: string;
+  month_to_date_cost: number;
+  recent_avg_daily_cost: number;
+  projected_monthly_cost: number;
 }
 
 const PROVIDER_COLORS = {
-  openai: '#10A37F',
-  gemini: '#4285F4',
-  anthropic: '#8B5CF6',
-  xai: '#1DA1F2'
-}
+  openai: "#10A37F",
+  gemini: "#4285F4",
+  anthropic: "#8B5CF6",
+  xai: "#1DA1F2",
+};
 
 export function AICostsDashboard() {
-  const [dailySummary, setDailySummary] = useState<AIDailySummary[]>([])
-  const [hourlyUsage, setHourlyUsage] = useState<AIHourlyUsage[]>([])
-  const [topUsers, setTopUsers] = useState<UserAISummary[]>([])
-  const [modelPerformance, setModelPerformance] = useState<ModelPerformance[]>([])
-  const [costProjection, setCostProjection] = useState<CostProjection | null>(null)
-  const [alerts, setAlerts] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [dailySummary, setDailySummary] = useState<AIDailySummary[]>([]);
+  const [hourlyUsage, setHourlyUsage] = useState<AIHourlyUsage[]>([]);
+  const [topUsers, setTopUsers] = useState<UserAISummary[]>([]);
+  const [modelPerformance, setModelPerformance] = useState<ModelPerformance[]>(
+    [],
+  );
+  const [costProjection, setCostProjection] = useState<CostProjection | null>(
+    null,
+  );
+  const [alerts, setAlerts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const supabase = createBrowserSupabaseClient()
+  const supabase = createBrowserSupabaseClient();
 
   useEffect(() => {
-    loadDashboardData()
-    const interval = setInterval(loadDashboardData, 60000) // Refresh every minute
-    return () => clearInterval(interval)
-  }, [])
+    loadDashboardData();
+    const interval = setInterval(loadDashboardData, 60000); // Refresh every minute
+    return () => clearInterval(interval);
+  }, []);
 
   const loadDashboardData = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
 
       // Fetch all dashboard data in parallel
       const [
@@ -125,88 +136,107 @@ export function AICostsDashboard() {
         userData,
         performanceData,
         projectionData,
-        alertData
+        alertData,
       ] = await Promise.all([
-        supabase.from('ai_usage_summary').select('*').order('date', { ascending: false }).limit(30),
-        supabase.from('ai_usage_hourly').select('*').order('hour', { ascending: false }).limit(168), // 7 days
-        supabase.from('user_ai_usage_summary').select('*').limit(10),
-        supabase.from('ai_model_performance').select('*'),
-        supabase.from('ai_cost_projection').select('*').single(),
-        supabase.rpc('check_ai_cost_alerts')
-      ])
+        supabase
+          .from("ai_usage_summary")
+          .select("*")
+          .order("date", { ascending: false })
+          .limit(30),
+        supabase
+          .from("ai_usage_hourly")
+          .select("*")
+          .order("hour", { ascending: false })
+          .limit(168), // 7 days
+        supabase.from("user_ai_usage_summary").select("*").limit(10),
+        supabase.from("ai_model_performance").select("*"),
+        supabase.from("ai_cost_projection").select("*").single(),
+        supabase.rpc("check_ai_cost_alerts"),
+      ]);
 
-      if (dailyData.error) throw dailyData.error
-      if (hourlyData.error) throw hourlyData.error
-      if (userData.error) throw userData.error
-      if (performanceData.error) throw performanceData.error
+      if (dailyData.error) throw dailyData.error;
+      if (hourlyData.error) throw hourlyData.error;
+      if (userData.error) throw userData.error;
+      if (performanceData.error) throw performanceData.error;
 
-      setDailySummary(dailyData.data || [])
-      setHourlyUsage(hourlyData.data || [])
-      setTopUsers(userData.data || [])
-      setModelPerformance(performanceData.data || [])
-      setCostProjection(projectionData.data)
-      setAlerts(alertData.data || [])
+      setDailySummary(dailyData.data || []);
+      setHourlyUsage(hourlyData.data || []);
+      setTopUsers(userData.data || []);
+      setModelPerformance(performanceData.data || []);
+      setCostProjection(projectionData.data);
+      setAlerts(alertData.data || []);
 
-      setError(null)
+      setError(null);
     } catch (err) {
-      console.error('Error loading dashboard data:', err)
-      setError('Failed to load dashboard data')
+      console.error("Error loading dashboard data:", err);
+      setError("Failed to load dashboard data");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   // Calculate summary metrics
   const totalCostToday = dailySummary
-    .filter(d => d.date === new Date().toISOString().split('T')[0])
-    .reduce((sum, d) => sum + (d.daily_cost || 0), 0)
+    .filter((d) => d.date === new Date().toISOString().split("T")[0])
+    .reduce((sum, d) => sum + (d.daily_cost || 0), 0);
 
   const totalCallsToday = dailySummary
-    .filter(d => d.date === new Date().toISOString().split('T')[0])
-    .reduce((sum, d) => sum + (d.calls || 0), 0)
+    .filter((d) => d.date === new Date().toISOString().split("T")[0])
+    .reduce((sum, d) => sum + (d.calls || 0), 0);
 
   const providerBreakdown = dailySummary
-    .filter(d => d.date === new Date().toISOString().split('T')[0])
-    .reduce((acc, d) => {
-      const provider = d.provider
-      if (!acc[provider]) acc[provider] = 0
-      acc[provider] += d.daily_cost || 0
-      return acc
-    }, {} as Record<string, number>)
+    .filter((d) => d.date === new Date().toISOString().split("T")[0])
+    .reduce(
+      (acc, d) => {
+        const provider = d.provider;
+        if (!acc[provider]) acc[provider] = 0;
+        acc[provider] += d.daily_cost || 0;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
 
   const pieData = Object.entries(providerBreakdown).map(([provider, cost]) => ({
     name: provider.toUpperCase(),
     value: parseFloat(cost.toFixed(2)),
-    color: PROVIDER_COLORS[provider as keyof typeof PROVIDER_COLORS] || '#666'
-  }))
+    color: PROVIDER_COLORS[provider as keyof typeof PROVIDER_COLORS] || "#666",
+  }));
 
   // Prepare chart data
-  const dailyChartData = dailySummary.reduce((acc, item) => {
-    const existing = acc.find((d: ChartDataItem) => d.date === item.date)
-    if (existing) {
-      existing[item.provider] = (existing[item.provider] as number || 0) + item.daily_cost
-    } else {
-      acc.push({
-        date: item.date,
-        [item.provider]: item.daily_cost
-      })
-    }
-    return acc
-  }, [] as ChartDataItem[]).reverse()
+  const dailyChartData = dailySummary
+    .reduce((acc, item) => {
+      const existing = acc.find((d: ChartDataItem) => d.date === item.date);
+      if (existing) {
+        existing[item.provider] =
+          ((existing[item.provider] as number) || 0) + item.daily_cost;
+      } else {
+        acc.push({
+          date: item.date,
+          [item.provider]: item.daily_cost,
+        });
+      }
+      return acc;
+    }, [] as ChartDataItem[])
+    .reverse();
 
-  const hourlyChartData = hourlyUsage.reduce((acc, item) => {
-    const hourStr = new Date(item.hour).toLocaleTimeString('en-US', { hour: 'numeric' })
-    const existing = acc.find((d: HourlyChartDataItem) => d.hour === hourStr)
-    if (existing) {
-      existing.calls += item.calls
-    } else {
-      acc.push({
-        hour: hourStr,
-        calls: item.calls
-      })
-    }
-    return acc
-  }, [] as HourlyChartDataItem[]).slice(-24).reverse()
+  const hourlyChartData = hourlyUsage
+    .reduce((acc, item) => {
+      const hourStr = new Date(item.hour).toLocaleTimeString("en-US", {
+        hour: "numeric",
+      });
+      const existing = acc.find((d: HourlyChartDataItem) => d.hour === hourStr);
+      if (existing) {
+        existing.calls += item.calls;
+      } else {
+        acc.push({
+          hour: hourStr,
+          calls: item.calls,
+        });
+      }
+      return acc;
+    }, [] as HourlyChartDataItem[])
+    .slice(-24)
+    .reverse();
 
   if (loading) {
     return (
@@ -216,13 +246,15 @@ export function AICostsDashboard() {
           <p className="text-gray-500">Loading AI cost data...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-white">AI Cost Tracking Dashboard</h1>
+        <h1 className="text-3xl font-bold text-white">
+          AI Cost Tracking Dashboard
+        </h1>
         <Badge variant="outline" className="text-gray-400">
           <Clock className="w-3 h-3 mr-1" />
           Live Updates
@@ -251,11 +283,15 @@ export function AICostsDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card className="bg-gray-800 border-gray-700">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Today's Cost</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-400">
+              Today's Cost
+            </CardTitle>
             <DollarSign className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">${totalCostToday.toFixed(2)}</div>
+            <div className="text-2xl font-bold text-white">
+              ${totalCostToday.toFixed(2)}
+            </div>
             <p className="text-xs text-gray-500 mt-1">
               {totalCallsToday} API calls
             </p>
@@ -264,46 +300,57 @@ export function AICostsDashboard() {
 
         <Card className="bg-gray-800 border-gray-700">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Month to Date</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-400">
+              Month to Date
+            </CardTitle>
             <TrendingUp className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-white">
-              ${costProjection?.month_to_date_cost?.toFixed(2) || '0.00'}
+              ${costProjection?.month_to_date_cost?.toFixed(2) || "0.00"}
             </div>
             <p className="text-xs text-gray-500 mt-1">
-              Projected: ${costProjection?.projected_monthly_cost?.toFixed(2) || '0.00'}
+              Projected: $
+              {costProjection?.projected_monthly_cost?.toFixed(2) || "0.00"}
             </p>
           </CardContent>
         </Card>
 
         <Card className="bg-gray-800 border-gray-700">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Active Users</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-400">
+              Active Users
+            </CardTitle>
             <Users className="h-4 w-4 text-purple-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{topUsers.length}</div>
-            <p className="text-xs text-gray-500 mt-1">
-              In the last 30 days
-            </p>
+            <div className="text-2xl font-bold text-white">
+              {topUsers.length}
+            </div>
+            <p className="text-xs text-gray-500 mt-1">In the last 30 days</p>
           </CardContent>
         </Card>
 
         <Card className="bg-gray-800 border-gray-700">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Avg Response Time</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-400">
+              Avg Response Time
+            </CardTitle>
             <Zap className="h-4 w-4 text-yellow-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-white">
               {modelPerformance.length > 0
-                ? Math.round(modelPerformance.reduce((sum, m) => sum + m.avg_response_time, 0) / modelPerformance.length)
-                : 0}ms
+                ? Math.round(
+                    modelPerformance.reduce(
+                      (sum, m) => sum + m.avg_response_time,
+                      0,
+                    ) / modelPerformance.length,
+                  )
+                : 0}
+              ms
             </div>
-            <p className="text-xs text-gray-500 mt-1">
-              Across all models
-            </p>
+            <p className="text-xs text-gray-500 mt-1">Across all models</p>
           </CardContent>
         </Card>
       </div>
@@ -323,19 +370,26 @@ export function AICostsDashboard() {
                   dataKey="date"
                   stroke="#9CA3AF"
                   tick={{ fontSize: 12 }}
-                  tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  tickFormatter={(value) =>
+                    new Date(value).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                    })
+                  }
                 />
                 <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
-                  labelStyle={{ color: '#9CA3AF' }}
+                  contentStyle={{ backgroundColor: "#1F2937", border: "none" }}
+                  labelStyle={{ color: "#9CA3AF" }}
                 />
-                {Object.keys(PROVIDER_COLORS).map(provider => (
+                {Object.keys(PROVIDER_COLORS).map((provider) => (
                   <Line
                     key={provider}
                     type="monotone"
                     dataKey={provider}
-                    stroke={PROVIDER_COLORS[provider as keyof typeof PROVIDER_COLORS]}
+                    stroke={
+                      PROVIDER_COLORS[provider as keyof typeof PROVIDER_COLORS]
+                    }
                     strokeWidth={2}
                     dot={{ r: 4 }}
                   />
@@ -348,7 +402,9 @@ export function AICostsDashboard() {
         {/* Provider Breakdown */}
         <Card className="bg-gray-800 border-gray-700">
           <CardHeader>
-            <CardTitle className="text-white">Today's Provider Breakdown</CardTitle>
+            <CardTitle className="text-white">
+              Today's Provider Breakdown
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -358,7 +414,9 @@ export function AICostsDashboard() {
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
+                  label={({ name, percent }) =>
+                    `${name} ${((percent ?? 0) * 100).toFixed(0)}%`
+                  }
                   outerRadius={100}
                   fill="#8884d8"
                   dataKey="value"
@@ -368,7 +426,7 @@ export function AICostsDashboard() {
                   ))}
                 </Pie>
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
+                  contentStyle={{ backgroundColor: "#1F2937", border: "none" }}
                   formatter={(value: number) => `$${value.toFixed(2)}`}
                 />
               </PieChart>
@@ -385,11 +443,15 @@ export function AICostsDashboard() {
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={hourlyChartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis dataKey="hour" stroke="#9CA3AF" tick={{ fontSize: 12 }} />
+                <XAxis
+                  dataKey="hour"
+                  stroke="#9CA3AF"
+                  tick={{ fontSize: 12 }}
+                />
                 <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
-                  labelStyle={{ color: '#9CA3AF' }}
+                  contentStyle={{ backgroundColor: "#1F2937", border: "none" }}
+                  labelStyle={{ color: "#9CA3AF" }}
                 />
                 <Bar dataKey="calls" fill="#3B82F6" />
               </BarChart>
@@ -411,22 +473,36 @@ export function AICostsDashboard() {
                       <Badge variant="outline" className="text-xs">
                         {model.provider}
                       </Badge>
-                      <span className="text-sm text-gray-300">{model.model}</span>
+                      <span className="text-sm text-gray-300">
+                        {model.model}
+                      </span>
                     </div>
-                    <span className="text-xs text-gray-500">{model.total_calls} calls</span>
+                    <span className="text-xs text-gray-500">
+                      {model.total_calls} calls
+                    </span>
                   </div>
                   <div className="grid grid-cols-3 gap-2 text-xs">
                     <div>
                       <span className="text-gray-500">Avg: </span>
-                      <span className="text-gray-300">{Math.round(model.avg_response_time)}ms</span>
+                      <span className="text-gray-300">
+                        {Math.round(model.avg_response_time)}ms
+                      </span>
                     </div>
                     <div>
                       <span className="text-gray-500">P95: </span>
-                      <span className="text-gray-300">{Math.round(model.p95_response_time)}ms</span>
+                      <span className="text-gray-300">
+                        {Math.round(model.p95_response_time)}ms
+                      </span>
                     </div>
                     <div>
                       <span className="text-gray-500">Error: </span>
-                      <span className={model.error_rate > 5 ? 'text-red-400' : 'text-gray-300'}>
+                      <span
+                        className={
+                          model.error_rate > 5
+                            ? "text-red-400"
+                            : "text-gray-300"
+                        }
+                      >
                         {model.error_rate.toFixed(1)}%
                       </span>
                     </div>
@@ -441,7 +517,9 @@ export function AICostsDashboard() {
       {/* Top Users Table */}
       <Card className="bg-gray-800 border-gray-700">
         <CardHeader>
-          <CardTitle className="text-white">Top Users by Cost (Last 30 Days)</CardTitle>
+          <CardTitle className="text-white">
+            Top Users by Cost (Last 30 Days)
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
@@ -451,7 +529,9 @@ export function AICostsDashboard() {
                   <th className="text-left py-2 text-gray-400">User</th>
                   <th className="text-right py-2 text-gray-400">Days Active</th>
                   <th className="text-right py-2 text-gray-400">Total Calls</th>
-                  <th className="text-right py-2 text-gray-400">Total Tokens</th>
+                  <th className="text-right py-2 text-gray-400">
+                    Total Tokens
+                  </th>
                   <th className="text-right py-2 text-gray-400">Total Cost</th>
                   <th className="text-right py-2 text-gray-400">Last Usage</th>
                 </tr>
@@ -460,10 +540,18 @@ export function AICostsDashboard() {
                 {topUsers.map((user, idx) => (
                   <tr key={idx} className="border-b border-gray-700/50">
                     <td className="py-2 text-gray-300">{user.email}</td>
-                    <td className="text-right py-2 text-gray-300">{user.days_active}</td>
-                    <td className="text-right py-2 text-gray-300">{user.total_calls.toLocaleString()}</td>
-                    <td className="text-right py-2 text-gray-300">{user.total_tokens.toLocaleString()}</td>
-                    <td className="text-right py-2 text-gray-300">${user.total_cost.toFixed(2)}</td>
+                    <td className="text-right py-2 text-gray-300">
+                      {user.days_active}
+                    </td>
+                    <td className="text-right py-2 text-gray-300">
+                      {user.total_calls.toLocaleString()}
+                    </td>
+                    <td className="text-right py-2 text-gray-300">
+                      {user.total_tokens.toLocaleString()}
+                    </td>
+                    <td className="text-right py-2 text-gray-300">
+                      ${user.total_cost.toFixed(2)}
+                    </td>
                     <td className="text-right py-2 text-gray-300">
                       {new Date(user.last_usage).toLocaleDateString()}
                     </td>
@@ -475,5 +563,5 @@ export function AICostsDashboard() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

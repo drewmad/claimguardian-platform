@@ -5,6 +5,7 @@
 ### 1. AI-Related Tables Found
 
 #### Limited AI Support Currently:
+
 - **`document_extractions`** - Basic document processing tracking
   - Has `processing_status`, `error_message`, `processing_time_ms`
   - Stores extracted data in JSONB fields
@@ -13,17 +14,20 @@
 ### 2. Missing AI-First Components
 
 #### 🚫 No Vector/Embedding Support
+
 - No pgvector extension enabled
 - No embedding columns for semantic search
 - No vector indexes for similarity queries
 
 #### 🚫 No AI Processing Tables
+
 - No AI analysis history
 - No model prediction tracking
 - No prompt/response logging
 - No AI feedback loops
 
 #### 🚫 No ML Pipeline Support
+
 - No training data tables
 - No model versioning
 - No feature stores
@@ -252,7 +256,9 @@ CREATE TABLE ai_training_data (
 ## Implementation Roadmap
 
 ### Phase 1: Foundation (Week 1-2)
+
 1. **Enable pgvector extension**
+
    ```sql
    CREATE EXTENSION IF NOT EXISTS vector;
    ```
@@ -268,6 +274,7 @@ CREATE TABLE ai_training_data (
    - policy_documents.content_embedding
 
 ### Phase 2: Integration (Week 3-4)
+
 1. **Implement embedding generation**
    - On property creation/update
    - On damage photo upload
@@ -284,6 +291,7 @@ CREATE TABLE ai_training_data (
    - Find relevant documents
 
 ### Phase 3: Intelligence (Week 5-6)
+
 1. **Implement AI pipelines**
    - Damage assessment pipeline
    - Document extraction pipeline
@@ -302,26 +310,31 @@ CREATE TABLE ai_training_data (
 ## Key Benefits of AI-First Schema
 
 ### 1. **Semantic Search**
+
 - Find similar claims by damage pattern
 - Search documents by meaning, not keywords
 - Match properties with similar risks
 
 ### 2. **Predictive Analytics**
+
 - Predict claim outcomes
 - Estimate repair costs
 - Identify fraud patterns
 
 ### 3. **Automated Processing**
+
 - Auto-categorize damage
 - Extract policy details
 - Generate claim summaries
 
 ### 4. **Personalization**
+
 - Tailored recommendations
 - Context-aware assistance
 - Learning from user behavior
 
 ### 5. **Cost Optimization**
+
 - Track AI usage costs
 - Optimize model selection
 - Cache common queries
@@ -329,18 +342,21 @@ CREATE TABLE ai_training_data (
 ## Next Steps
 
 ### Immediate Actions
+
 1. **Enable pgvector** in Supabase
 2. **Create AI foundation tables**
 3. **Add embedding columns** to core entities
 4. **Implement embedding generation** for new data
 
 ### Short-term Goals
+
 1. **Build similarity search** for properties
 2. **Implement damage detection** pipeline
 3. **Create document extraction** service
 4. **Track AI performance** metrics
 
 ### Long-term Vision
+
 1. **Predictive claim outcomes**
 2. **Automated damage assessment**
 3. **Intelligent document analysis**
@@ -349,18 +365,21 @@ CREATE TABLE ai_training_data (
 ## Technical Considerations
 
 ### Performance
+
 - Use IVFFlat indexes for vector search
 - Implement embedding caching
 - Batch AI operations
 - Monitor query performance
 
 ### Security
+
 - Encrypt sensitive embeddings
 - Audit AI access
 - Implement rate limiting
 - Track AI costs per user
 
 ### Scalability
+
 - Partition large tables
 - Use materialized views
 - Implement data archiving

@@ -45,7 +45,7 @@ jobs:
   # Property AI Enrichment - Daily at 02:00 UTC
   property_ai_enrichment:
     schedule: "0 2 * * *"
-    command: "curl -X POST https://tmlrvecuwgppbaynesji.supabase.co/functions/v1/property-ai-enrichment -H 'Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}' -d '{\"mode\":\"batch\",\"limit\":1000}'"
+    command: 'curl -X POST https://tmlrvecuwgppbaynesji.supabase.co/functions/v1/property-ai-enrichment -H ''Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}'' -d ''{"mode":"batch","limit":1000}'''
     description: "Daily batch AI enrichment of property data"
 
   # Model Performance Metrics Aggregation - Every hour
@@ -88,7 +88,7 @@ jobs:
   # Federated Learning Round Scheduler - Daily at 00:00 UTC
   federated_learning_scheduler:
     schedule: "0 0 * * *"
-    command: "curl -X POST https://tmlrvecuwgppbaynesji.supabase.co/functions/v1/federated-learning -H 'Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}' -d '{\"action\":\"start_round\",\"data\":{\"modelFamily\":\"property_risk\",\"aggregationStrategy\":\"fedavg\"}}'"
+    command: 'curl -X POST https://tmlrvecuwgppbaynesji.supabase.co/functions/v1/federated-learning -H ''Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}'' -d ''{"action":"start_round","data":{"modelFamily":"property_risk","aggregationStrategy":"fedavg"}}'''
     description: "Daily federated learning round for property risk model"
 
   # Florida Parcel Monitor - Every 30 minutes

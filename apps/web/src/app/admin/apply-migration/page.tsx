@@ -8,20 +8,20 @@
  * @tags ["admin", "migration", "database"]
  * @status stable
  */
-'use client'
+"use client";
 
-import { CheckCircle, Copy, ExternalLink } from 'lucide-react'
-import { useState } from 'react'
-import { toast } from 'sonner'
+import { CheckCircle, Copy, ExternalLink } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const migrationSteps = [
   {
-    title: 'Create Enum Types',
-    description: 'Creates claim status, damage type, and policy type enums',
+    title: "Create Enum Types",
+    description: "Creates claim status, damage type, and policy type enums",
     sql: `-- Create enum types for claims and policies
 CREATE TYPE public.claim_status_enum AS ENUM (
     'draft', 'submitted', 'under_review', 'approved',
@@ -41,11 +41,11 @@ CREATE TYPE public.policy_type_enum AS ENUM (
 
 CREATE TYPE public.document_type_enum AS ENUM (
     'policy', 'claim', 'evidence'
-);`
+);`,
   },
   {
-    title: 'Create Policies Table',
-    description: 'Creates the policies table for insurance policy management',
+    title: "Create Policies Table",
+    description: "Creates the policies table for insurance policy management",
     sql: `CREATE TABLE public.policies (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     property_id uuid NOT NULL REFERENCES public.properties(id) ON DELETE CASCADE,
@@ -64,11 +64,11 @@ CREATE TYPE public.document_type_enum AS ENUM (
     updated_at timestamptz DEFAULT now(),
     created_by uuid REFERENCES auth.users(id),
     UNIQUE (property_id, policy_number, policy_type)
-);`
+);`,
   },
   {
-    title: 'Create Claims Table',
-    description: 'Creates the main claims table for tracking insurance claims',
+    title: "Create Claims Table",
+    description: "Creates the main claims table for tracking insurance claims",
     sql: `CREATE TABLE public.claims (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     claim_number text UNIQUE,
@@ -92,22 +92,22 @@ CREATE TYPE public.document_type_enum AS ENUM (
     metadata jsonb DEFAULT '{}',
     created_at timestamptz DEFAULT now(),
     updated_at timestamptz DEFAULT now()
-);`
+);`,
   },
   {
-    title: 'Add Address Columns',
-    description: 'Adds structured address columns to properties table',
+    title: "Add Address Columns",
+    description: "Adds structured address columns to properties table",
     sql: `ALTER TABLE public.properties
 ADD COLUMN IF NOT EXISTS street_address text,
 ADD COLUMN IF NOT EXISTS city text,
 ADD COLUMN IF NOT EXISTS state text,
 ADD COLUMN IF NOT EXISTS postal_code text,
 ADD COLUMN IF NOT EXISTS county text,
-ADD COLUMN IF NOT EXISTS country text DEFAULT 'USA';`
+ADD COLUMN IF NOT EXISTS country text DEFAULT 'USA';`,
   },
   {
-    title: 'Migrate Address Data',
-    description: 'Migrates existing JSONB address data to structured columns',
+    title: "Migrate Address Data",
+    description: "Migrates existing JSONB address data to structured columns",
     sql: `UPDATE public.properties
 SET
     street_address = TRIM(CONCAT(
@@ -123,11 +123,11 @@ SET
     postal_code = address->>'zip',
     county = address->>'county',
     country = COALESCE(address->>'country', 'USA')
-WHERE address IS NOT NULL;`
+WHERE address IS NOT NULL;`,
   },
   {
-    title: 'Setup Storage Bucket',
-    description: 'Creates storage bucket and RLS policies for policy documents',
+    title: "Setup Storage Bucket",
+    description: "Creates storage bucket and RLS policies for policy documents",
     sql: `-- Create storage bucket for policy documents
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('policy-documents', 'policy-documents', false);
@@ -158,11 +158,11 @@ CREATE POLICY "Users can update their own policy documents" ON storage.objects
   FOR UPDATE USING (
     bucket_id = 'policy-documents'
     AND auth.uid()::text = (storage.foldername(name))[1]
-  );`
+  );`,
   },
   {
-    title: 'Create Policy Documents Table',
-    description: 'Creates table for storing policy document metadata',
+    title: "Create Policy Documents Table",
+    description: "Creates table for storing policy document metadata",
     sql: `-- Create policy_documents table
 CREATE TABLE public.policy_documents (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -208,35 +208,41 @@ CREATE POLICY "Users can update their own documents" ON public.policy_documents
     FOR UPDATE USING (uploaded_by = auth.uid());
 
 CREATE POLICY "Users can delete their own documents" ON public.policy_documents
-    FOR DELETE USING (uploaded_by = auth.uid());`
-  }
-]
+    FOR DELETE USING (uploaded_by = auth.uid());`,
+  },
+];
 
 export default function ApplyMigrationPage() {
-  const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const copyToClipboard = async (sql: string, index: number) => {
     try {
-      await navigator.clipboard.writeText(sql)
-      setCopiedIndex(index)
-      toast.success('SQL copied to clipboard!')
-      setTimeout(() => setCopiedIndex(null), 2000)
+      await navigator.clipboard.writeText(sql);
+      setCopiedIndex(index);
+      toast.success("SQL copied to clipboard!");
+      setTimeout(() => setCopiedIndex(null), 2000);
     } catch {
-      toast.error('Failed to copy to clipboard')
+      toast.error("Failed to copy to clipboard");
     }
-  }
+  };
 
   const openSupabaseSQL = () => {
-    window.open('https://supabase.com/dashboard/project/tmlrvecuwgppbaynesji/sql/new', '_blank')
-  }
+    window.open(
+      "https://supabase.com/dashboard/project/tmlrvecuwgppbaynesji/sql/new",
+      "_blank",
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 p-6">
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Apply Database Migration</h1>
+          <h1 className="text-3xl font-bold text-white mb-2">
+            Apply Database Migration
+          </h1>
           <p className="text-gray-400">
-            Follow these steps to apply the claims and policies database enhancements
+            Follow these steps to apply the claims and policies database
+            enhancements
           </p>
         </div>
 
@@ -292,21 +298,32 @@ export default function ApplyMigrationPage() {
             </div>
 
             <div className="mt-8 p-4 bg-blue-900/20 border border-blue-600/30 rounded-lg">
-              <h3 className="text-lg font-semibold text-blue-300 mb-2">Instructions:</h3>
+              <h3 className="text-lg font-semibold text-blue-300 mb-2">
+                Instructions:
+              </h3>
               <ol className="list-decimal list-inside space-y-2 text-sm text-blue-200">
                 <li>Click "Open Supabase SQL Editor" above</li>
                 <li>Copy each SQL block using the copy button</li>
                 <li>Paste into the SQL editor and click "Run"</li>
                 <li>Run each step in order</li>
-                <li>If a step fails with "already exists", that's okay - continue to the next</li>
+                <li>
+                  If a step fails with "already exists", that's okay - continue
+                  to the next
+                </li>
               </ol>
             </div>
 
             <div className="mt-6 p-4 bg-green-900/20 border border-green-600/30 rounded-lg">
-              <h3 className="text-lg font-semibold text-green-300 mb-2">What This Migration Does:</h3>
+              <h3 className="text-lg font-semibold text-green-300 mb-2">
+                What This Migration Does:
+              </h3>
               <ul className="list-disc list-inside space-y-1 text-sm text-green-200">
-                <li>Creates dedicated tables for insurance claims and policies</li>
-                <li>Adds proper tracking for claim lifecycle and communications</li>
+                <li>
+                  Creates dedicated tables for insurance claims and policies
+                </li>
+                <li>
+                  Adds proper tracking for claim lifecycle and communications
+                </li>
                 <li>Normalizes address data into structured columns</li>
                 <li>Sets up Supabase Storage bucket for policy documents</li>
                 <li>Creates policy_documents table for file metadata</li>
@@ -323,7 +340,8 @@ export default function ApplyMigrationPage() {
           </CardHeader>
           <CardContent>
             <p className="text-gray-400 mb-4">
-              For the complete migration including all tables, indexes, and RLS policies:
+              For the complete migration including all tables, indexes, and RLS
+              policies:
             </p>
             <div className="bg-gray-700 p-4 rounded-lg">
               <code className="text-sm text-gray-300">
@@ -334,5 +352,5 @@ export default function ApplyMigrationPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

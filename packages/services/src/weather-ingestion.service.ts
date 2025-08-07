@@ -1,7 +1,7 @@
-import { createClient } from '@supabase/supabase-js';
-import axios, { AxiosInstance } from 'axios';
-import pLimit from 'p-limit';
-import { logger } from '@/lib/logger';
+import { createClient } from "@supabase/supabase-js";
+import axios, { AxiosInstance } from "axios";
+import pLimit from "p-limit";
+import { logger } from "@/lib/logger";
 
 interface WeatherStation {
   stationIdentifier: string;
@@ -69,21 +69,22 @@ export class WeatherIngestionService {
   private supabase;
   private nwsClient: AxiosInstance;
   private readonly limit = pLimit(5); // Concurrent request limit
-  private readonly USER_AGENT = 'ClaimGuardian/1.0 (claimguardianai.com, support@claimguardianai.com)';
+  private readonly USER_AGENT =
+    "ClaimGuardian/1.0 (claimguardianai.com, support@claimguardianai.com)";
 
   constructor() {
     this.supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
     );
 
     this.nwsClient = axios.create({
-      baseURL: 'https://api.weather.gov',
+      baseURL: "https://api.weather.gov",
       headers: {
-        'User-Agent': this.USER_AGENT,
-        'Accept': 'application/geo+json'
+        "User-Agent": this.USER_AGENT,
+        Accept: "application/geo+json",
       },
-      timeout: 30000
+      timeout: 30000,
     });
   }
 
@@ -93,10 +94,10 @@ export class WeatherIngestionService {
 
   async syncStations(state?: string): Promise<void> {
     try {
-      logger.info('Starting station sync', { state });
+      logger.info("Starting station sync", { state });
 
       const params = state ? { state } : {};
-      const response = await this.nwsClient.get('/stations', { params });
+      const response = await this.nwsClient.get("/stations", { params });
       const stations = response.data.features;
 
       const stationData = stations.map((feature: any) => ({
@@ -113,15 +114,15 @@ export class WeatherIngestionService {
         forecast_zone: feature.properties.forecast,
         county_zone: feature.properties.county,
         fire_zone: feature.properties.fireWeatherZone,
-        metadata: feature.properties
+        metadata: feature.properties,
       }));
 
       // Upsert stations
       const { error } = await this.supabase
-        .from('weather.stations')
+        .from("weather.stations")
         .upsert(stationData, {
-          onConflict: 'station_id',
-          ignoreDuplicates: false
+          onConflict: "station_id",
+          ignoreDuplicates: false,
         });
 
       if (error) throw error;
@@ -129,10 +130,10 @@ export class WeatherIngestionService {
       logger.info(`Synced ${stationData.length} stations`);
 
       // Update sync status
-      await this.updateSyncStatus('stations', null, 'completed');
+      await this.updateSyncStatus("stations", null, "completed");
     } catch (error) {
-      logger.error('Station sync failed', error);
-      await this.updateSyncStatus('stations', null, 'error', error);
+      logger.error("Station sync failed", error);
+      await this.updateSyncStatus("stations", null, "error", error);
       throw error;
     }
   }
@@ -149,17 +150,19 @@ export class WeatherIngestionService {
 
       // Process stations in parallel with rate limiting
       const results = await Promise.allSettled(
-        stations.map(station =>
-          this.limit(() => this.syncStationObservations(station))
-        )
+        stations.map((station) =>
+          this.limit(() => this.syncStationObservations(station)),
+        ),
       );
 
-      const successful = results.filter(r => r.status === 'fulfilled').length;
-      const failed = results.filter(r => r.status === 'rejected').length;
+      const successful = results.filter((r) => r.status === "fulfilled").length;
+      const failed = results.filter((r) => r.status === "rejected").length;
 
-      logger.info(`Observation sync completed: ${successful} successful, ${failed} failed`);
+      logger.info(
+        `Observation sync completed: ${successful} successful, ${failed} failed`,
+      );
     } catch (error) {
-      logger.error('Observation sync failed', error);
+      logger.error("Observation sync failed", error);
       throw error;
     }
   }
@@ -167,7 +170,7 @@ export class WeatherIngestionService {
   private async syncStationObservations(station: any): Promise<void> {
     try {
       const response = await this.nwsClient.get(
-        `/stations/${station.station_id}/observations/latest`
+        `/stations/${station.station_id}/observations/latest`,
       );
 
       const obs = response.data.properties;
@@ -175,45 +178,73 @@ export class WeatherIngestionService {
       const observation = {
         station_id: station.station_id,
         observed_at: obs.timestamp,
-        temperature_c: this.extractValue(obs.temperature, 'degC'),
-        temperature_f: this.extractValue(obs.temperature, 'degF'),
-        dewpoint_c: this.extractValue(obs.dewpoint, 'degC'),
-        dewpoint_f: this.extractValue(obs.dewpoint, 'degF'),
-        humidity_percent: this.extractValue(obs.relativeHumidity, 'percent'),
-        barometric_pressure_pa: this.extractValue(obs.barometricPressure, 'Pa'),
-        sea_level_pressure_pa: this.extractValue(obs.seaLevelPressure, 'Pa'),
-        visibility_meters: this.extractValue(obs.visibility, 'm'),
-        wind_speed_kmh: this.extractValue(obs.windSpeed, 'km_h-1'),
-        wind_speed_mph: this.extractValue(obs.windSpeed, 'mph'),
-        wind_direction_degrees: this.extractValue(obs.windDirection, 'degree_(angle)'),
-        wind_gust_kmh: this.extractValue(obs.windGust, 'km_h-1'),
-        wind_gust_mph: this.extractValue(obs.windGust, 'mph'),
-        precipitation_last_hour_mm: this.extractValue(obs.precipitationLastHour, 'mm'),
-        precipitation_last_hour_in: this.extractValue(obs.precipitationLastHour, 'inch'),
-        precipitation_last_3hours_mm: this.extractValue(obs.precipitationLast3Hours, 'mm'),
-        precipitation_last_6hours_mm: this.extractValue(obs.precipitationLast6Hours, 'mm'),
-        wind_chill_c: this.extractValue(obs.windChill, 'degC'),
-        wind_chill_f: this.extractValue(obs.windChill, 'degF'),
-        heat_index_c: this.extractValue(obs.heatIndex, 'degC'),
-        heat_index_f: this.extractValue(obs.heatIndex, 'degF'),
+        temperature_c: this.extractValue(obs.temperature, "degC"),
+        temperature_f: this.extractValue(obs.temperature, "degF"),
+        dewpoint_c: this.extractValue(obs.dewpoint, "degC"),
+        dewpoint_f: this.extractValue(obs.dewpoint, "degF"),
+        humidity_percent: this.extractValue(obs.relativeHumidity, "percent"),
+        barometric_pressure_pa: this.extractValue(obs.barometricPressure, "Pa"),
+        sea_level_pressure_pa: this.extractValue(obs.seaLevelPressure, "Pa"),
+        visibility_meters: this.extractValue(obs.visibility, "m"),
+        wind_speed_kmh: this.extractValue(obs.windSpeed, "km_h-1"),
+        wind_speed_mph: this.extractValue(obs.windSpeed, "mph"),
+        wind_direction_degrees: this.extractValue(
+          obs.windDirection,
+          "degree_(angle)",
+        ),
+        wind_gust_kmh: this.extractValue(obs.windGust, "km_h-1"),
+        wind_gust_mph: this.extractValue(obs.windGust, "mph"),
+        precipitation_last_hour_mm: this.extractValue(
+          obs.precipitationLastHour,
+          "mm",
+        ),
+        precipitation_last_hour_in: this.extractValue(
+          obs.precipitationLastHour,
+          "inch",
+        ),
+        precipitation_last_3hours_mm: this.extractValue(
+          obs.precipitationLast3Hours,
+          "mm",
+        ),
+        precipitation_last_6hours_mm: this.extractValue(
+          obs.precipitationLast6Hours,
+          "mm",
+        ),
+        wind_chill_c: this.extractValue(obs.windChill, "degC"),
+        wind_chill_f: this.extractValue(obs.windChill, "degF"),
+        heat_index_c: this.extractValue(obs.heatIndex, "degC"),
+        heat_index_f: this.extractValue(obs.heatIndex, "degF"),
         cloud_layers: obs.cloudLayers || null,
-        present_weather: obs.presentWeather?.map((w: any) => w.rawString) || null,
+        present_weather:
+          obs.presentWeather?.map((w: any) => w.rawString) || null,
         raw_message: obs.rawMessage,
-        quality_control: obs.qualityControl || null
+        quality_control: obs.qualityControl || null,
       };
 
       const { error } = await this.supabase
-        .from('weather.observations')
+        .from("weather.observations")
         .upsert(observation, {
-          onConflict: 'station_id,observed_at'
+          onConflict: "station_id,observed_at",
         });
 
       if (error) throw error;
 
-      await this.updateSyncStatus('observations', station.station_id, 'completed');
+      await this.updateSyncStatus(
+        "observations",
+        station.station_id,
+        "completed",
+      );
     } catch (error) {
-      logger.error(`Failed to sync observations for ${station.station_id}`, error);
-      await this.updateSyncStatus('observations', station.station_id, 'error', error);
+      logger.error(
+        `Failed to sync observations for ${station.station_id}`,
+        error,
+      );
+      await this.updateSyncStatus(
+        "observations",
+        station.station_id,
+        "error",
+        error,
+      );
     }
   }
 
@@ -221,21 +252,23 @@ export class WeatherIngestionService {
   // FORECAST INGESTION
   // =====================================================
 
-  async syncForecasts(gridPoints?: Array<{gridId: string, x: number, y: number}>): Promise<void> {
+  async syncForecasts(
+    gridPoints?: Array<{ gridId: string; x: number; y: number }>,
+  ): Promise<void> {
     try {
-      const points = gridPoints || await this.getActiveGridPoints();
+      const points = gridPoints || (await this.getActiveGridPoints());
       logger.info(`Syncing forecasts for ${points.length} grid points`);
 
       const results = await Promise.allSettled(
-        points.map(point =>
-          this.limit(() => this.syncGridForecast(point))
-        )
+        points.map((point) => this.limit(() => this.syncGridForecast(point))),
       );
 
-      const successful = results.filter(r => r.status === 'fulfilled').length;
-      logger.info(`Forecast sync completed: ${successful}/${points.length} successful`);
+      const successful = results.filter((r) => r.status === "fulfilled").length;
+      logger.info(
+        `Forecast sync completed: ${successful}/${points.length} successful`,
+      );
     } catch (error) {
-      logger.error('Forecast sync failed', error);
+      logger.error("Forecast sync failed", error);
       throw error;
     }
   }
@@ -244,39 +277,53 @@ export class WeatherIngestionService {
     try {
       // Get standard forecast
       const standardResponse = await this.nwsClient.get(
-        `/gridpoints/${point.gridId}/${point.x},${point.y}/forecast`
+        `/gridpoints/${point.gridId}/${point.x},${point.y}/forecast`,
       );
 
       // Get hourly forecast
       const hourlyResponse = await this.nwsClient.get(
-        `/gridpoints/${point.gridId}/${point.x},${point.y}/forecast/hourly`
+        `/gridpoints/${point.gridId}/${point.x},${point.y}/forecast/hourly`,
       );
 
       const forecasts = [
-        ...this.processForecast(standardResponse.data, 'standard', point),
-        ...this.processForecast(hourlyResponse.data, 'hourly', point)
+        ...this.processForecast(standardResponse.data, "standard", point),
+        ...this.processForecast(hourlyResponse.data, "hourly", point),
       ];
 
       if (forecasts.length > 0) {
         const { error } = await this.supabase
-          .from('weather.forecasts')
+          .from("weather.forecasts")
           .upsert(forecasts, {
-            onConflict: 'grid_id,grid_x,grid_y,valid_time_start,forecast_type'
+            onConflict: "grid_id,grid_x,grid_y,valid_time_start,forecast_type",
           });
 
         if (error) throw error;
       }
 
-      await this.updateSyncStatus('forecasts', `${point.gridId}/${point.x},${point.y}`, 'completed');
+      await this.updateSyncStatus(
+        "forecasts",
+        `${point.gridId}/${point.x},${point.y}`,
+        "completed",
+      );
     } catch (error) {
-      logger.error(`Failed to sync forecast for grid ${point.gridId}/${point.x},${point.y}`, error);
-      await this.updateSyncStatus('forecasts', `${point.gridId}/${point.x},${point.y}`, 'error', error);
+      logger.error(
+        `Failed to sync forecast for grid ${point.gridId}/${point.x},${point.y}`,
+        error,
+      );
+      await this.updateSyncStatus(
+        "forecasts",
+        `${point.gridId}/${point.x},${point.y}`,
+        "error",
+        error,
+      );
     }
   }
 
   private processForecast(data: any, type: string, point: any): any[] {
     const geometry = data.geometry;
-    const location = geometry ? `POINT(${geometry.coordinates[0][0][0]} ${geometry.coordinates[0][0][1]})` : null;
+    const location = geometry
+      ? `POINT(${geometry.coordinates[0][0][0]} ${geometry.coordinates[0][0][1]})`
+      : null;
 
     return data.properties.periods.map((period: any) => {
       const [startTime, endTime] = this.parseISOInterval(period.validTime);
@@ -293,15 +340,21 @@ export class WeatherIngestionService {
         temperature_value: period.temperature,
         temperature_unit: period.temperatureUnit,
         temperature_trend: period.temperatureTrend,
-        dewpoint_value: this.extractValue(period.dewpoint, period.temperatureUnit),
-        relative_humidity: this.extractValue(period.relativeHumidity, 'percent'),
+        dewpoint_value: this.extractValue(
+          period.dewpoint,
+          period.temperatureUnit,
+        ),
+        relative_humidity: this.extractValue(
+          period.relativeHumidity,
+          "percent",
+        ),
         wind_direction: period.windDirection,
         wind_speed: period.windSpeed,
         precipitation_probability: period.probabilityOfPrecipitation?.value,
         weather_condition: period.shortForecast,
         detailed_forecast: period.detailedForecast,
         short_forecast: period.shortForecast,
-        raw_data: period
+        raw_data: period,
       };
     });
   }
@@ -315,7 +368,7 @@ export class WeatherIngestionService {
       const params: any = { active: true };
       if (state) params.area = state;
 
-      const response = await this.nwsClient.get('/alerts/active', { params });
+      const response = await this.nwsClient.get("/alerts/active", { params });
       const alerts = response.data.features;
 
       logger.info(`Processing ${alerts.length} active alerts`);
@@ -349,29 +402,30 @@ export class WeatherIngestionService {
           geocodes: props.geocode,
           same_codes: props.parameters?.SAME,
           ugc_codes: props.parameters?.UGC,
-          geometry: feature.geometry ?
-            `SRID=4326;${this.geometryToWKT(feature.geometry)}` : null,
+          geometry: feature.geometry
+            ? `SRID=4326;${this.geometryToWKT(feature.geometry)}`
+            : null,
           parameters: props.parameters,
-          raw_cap_xml: props.rawMessage
+          raw_cap_xml: props.rawMessage,
         };
       });
 
       if (alertData.length > 0) {
         const { error } = await this.supabase
-          .from('weather.alerts')
+          .from("weather.alerts")
           .upsert(alertData, {
-            onConflict: 'alert_id',
-            ignoreDuplicates: false
+            onConflict: "alert_id",
+            ignoreDuplicates: false,
           });
 
         if (error) throw error;
       }
 
       logger.info(`Synced ${alertData.length} alerts`);
-      await this.updateSyncStatus('alerts', state || 'all', 'completed');
+      await this.updateSyncStatus("alerts", state || "all", "completed");
     } catch (error) {
-      logger.error('Alert sync failed', error);
-      await this.updateSyncStatus('alerts', state || 'all', 'error', error);
+      logger.error("Alert sync failed", error);
+      await this.updateSyncStatus("alerts", state || "all", "error", error);
       throw error;
     }
   }
@@ -380,14 +434,20 @@ export class WeatherIngestionService {
   // PROPERTY WEATHER LINKING
   // =====================================================
 
-  async linkPropertyToWeather(propertyId: string, lat: number, lon: number): Promise<void> {
+  async linkPropertyToWeather(
+    propertyId: string,
+    lat: number,
+    lon: number,
+  ): Promise<void> {
     try {
       // Find nearest station
-      const { data: stations } = await this.supabase
-        .rpc('find_nearest_station', { lat, lon, max_distance_miles: 50 });
+      const { data: stations } = await this.supabase.rpc(
+        "find_nearest_station",
+        { lat, lon, max_distance_miles: 50 },
+      );
 
       if (!stations || stations.length === 0) {
-        throw new Error('No weather stations found nearby');
+        throw new Error("No weather stations found nearby");
       }
 
       const nearestStation = stations[0];
@@ -398,24 +458,29 @@ export class WeatherIngestionService {
 
       // Link property to weather monitoring
       const { error } = await this.supabase
-        .from('weather.property_monitoring')
-        .upsert({
-          property_id: propertyId,
-          station_id: nearestStation.station_id,
-          grid_id: gridData.gridId,
-          grid_x: gridData.gridX,
-          grid_y: gridData.gridY,
-          county_fips: gridData.county?.split('/').pop(),
-          distance_miles: nearestStation.distance_miles,
-          monitoring_active: true,
-          is_primary: true
-        }, {
-          onConflict: 'property_id'
-        });
+        .from("weather.property_monitoring")
+        .upsert(
+          {
+            property_id: propertyId,
+            station_id: nearestStation.station_id,
+            grid_id: gridData.gridId,
+            grid_x: gridData.gridX,
+            grid_y: gridData.gridY,
+            county_fips: gridData.county?.split("/").pop(),
+            distance_miles: nearestStation.distance_miles,
+            monitoring_active: true,
+            is_primary: true,
+          },
+          {
+            onConflict: "property_id",
+          },
+        );
 
       if (error) throw error;
 
-      logger.info(`Linked property ${propertyId} to weather station ${nearestStation.station_id}`);
+      logger.info(
+        `Linked property ${propertyId} to weather station ${nearestStation.station_id}`,
+      );
     } catch (error) {
       logger.error(`Failed to link property ${propertyId} to weather`, error);
       throw error;
@@ -438,46 +503,54 @@ export class WeatherIngestionService {
   }
 
   private parseISOInterval(interval: string): [string, string] {
-    const parts = interval.split('/');
+    const parts = interval.split("/");
     return [parts[0], parts[1]];
   }
 
   private geometryToWKT(geometry: any): string {
     switch (geometry.type) {
-      case 'Point':
+      case "Point":
         return `POINT(${geometry.coordinates[0]} ${geometry.coordinates[1]})`;
-      case 'Polygon':
+      case "Polygon":
         const rings = geometry.coordinates
-          .map((ring: any) =>
-            '(' + ring.map((coord: any) => `${coord[0]} ${coord[1]}`).join(',') + ')'
+          .map(
+            (ring: any) =>
+              "(" +
+              ring.map((coord: any) => `${coord[0]} ${coord[1]}`).join(",") +
+              ")",
           )
-          .join(',');
+          .join(",");
         return `POLYGON(${rings})`;
-      case 'MultiPolygon':
+      case "MultiPolygon":
         const polygons = geometry.coordinates
           .map((polygon: any) => {
             const rings = polygon
-              .map((ring: any) =>
-                '(' + ring.map((coord: any) => `${coord[0]} ${coord[1]}`).join(',') + ')'
+              .map(
+                (ring: any) =>
+                  "(" +
+                  ring
+                    .map((coord: any) => `${coord[0]} ${coord[1]}`)
+                    .join(",") +
+                  ")",
               )
-              .join(',');
+              .join(",");
             return `(${rings})`;
           })
-          .join(',');
+          .join(",");
         return `MULTIPOLYGON(${polygons})`;
       default:
-        return '';
+        return "";
     }
   }
 
   private async getStationsToSync(stationIds?: string[]): Promise<any[]> {
     const query = this.supabase
-      .from('weather.stations')
-      .select('station_id, name, location')
-      .eq('is_active', true);
+      .from("weather.stations")
+      .select("station_id, name, location")
+      .eq("is_active", true);
 
     if (stationIds && stationIds.length > 0) {
-      query.in('station_id', stationIds);
+      query.in("station_id", stationIds);
     }
 
     const { data, error } = await query;
@@ -488,16 +561,16 @@ export class WeatherIngestionService {
 
   private async getActiveGridPoints(): Promise<any[]> {
     const { data, error } = await this.supabase
-      .from('weather.property_monitoring')
-      .select('grid_id, grid_x, grid_y')
-      .eq('monitoring_active', true)
-      .not('grid_id', 'is', null);
+      .from("weather.property_monitoring")
+      .select("grid_id, grid_x, grid_y")
+      .eq("monitoring_active", true)
+      .not("grid_id", "is", null);
 
     if (error) throw error;
 
     // Deduplicate grid points
     const uniquePoints = new Map();
-    (data || []).forEach(point => {
+    (data || []).forEach((point) => {
       const key = `${point.grid_id}/${point.grid_x},${point.grid_y}`;
       uniquePoints.set(key, point);
     });
@@ -509,24 +582,22 @@ export class WeatherIngestionService {
     syncType: string,
     reference: string | null,
     status: string,
-    error?: any
+    error?: any,
   ): Promise<void> {
     const record: any = {
       sync_type: syncType,
-      station_id: syncType === 'observations' ? reference : null,
-      grid_reference: syncType === 'forecasts' ? reference : null,
+      station_id: syncType === "observations" ? reference : null,
+      grid_reference: syncType === "forecasts" ? reference : null,
       last_sync_at: new Date().toISOString(),
       next_sync_at: new Date(Date.now() + 15 * 60 * 1000).toISOString(), // 15 minutes
-      status: status === 'completed' ? 'active' : status,
-      error_count: status === 'error' ? 1 : 0,
+      status: status === "completed" ? "active" : status,
+      error_count: status === "error" ? 1 : 0,
       last_error: error ? error.message : null,
-      last_error_at: error ? new Date().toISOString() : null
+      last_error_at: error ? new Date().toISOString() : null,
     };
 
-    await this.supabase
-      .from('weather.sync_status')
-      .upsert(record, {
-        onConflict: 'sync_type,station_id,grid_reference'
-      });
+    await this.supabase.from("weather.sync_status").upsert(record, {
+      onConflict: "sync_type,station_id,grid_reference",
+    });
   }
 }

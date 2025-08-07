@@ -8,11 +8,11 @@
  * @tags ["auth", "social-login", "account-management", "page"]
  * @status stable
  */
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import {
   Link2,
   ArrowLeft,
@@ -22,75 +22,82 @@ import {
   Home,
   ExternalLink,
   CheckCircle,
-  AlertTriangle
-} from 'lucide-react'
-import Link from 'next/link'
+  AlertTriangle,
+} from "lucide-react";
+import Link from "next/link";
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { SocialLoginPanel, type SocialAccount } from '@/components/auth/social-login-enhanced'
-import { useAuth } from '@/components/auth/auth-provider'
-import { useToast } from '@/components/notifications/toast-system'
-import { logger } from '@/lib/logger'
-import { createClient } from '@/lib/supabase/client'
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  SocialLoginPanel,
+  type SocialAccount,
+} from "@/components/auth/social-login-enhanced";
+import { useAuth } from "@/components/auth/auth-provider";
+import { useToast } from "@/components/notifications/toast-system";
+import { logger } from "@/lib/logger";
+import { createClient } from "@/lib/supabase/client";
 
 export default function SocialConnectPage() {
-  const router = useRouter()
-  const { user, loading: authLoading } = useAuth()
-  const [isLoading, setIsLoading] = useState(true)
-  const [connectedCount, setConnectedCount] = useState(0)
+  const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
+  const [isLoading, setIsLoading] = useState(true);
+  const [connectedCount, setConnectedCount] = useState(0);
 
-  const { success, info } = useToast()
+  const { success, info } = useToast();
 
   useEffect(() => {
     // Redirect if not authenticated
     if (!authLoading && !user) {
-      router.push('/auth/signin?redirect=/auth/social-connect')
-      return
+      router.push("/auth/signin?redirect=/auth/social-connect");
+      return;
     }
 
     if (user) {
-      loadAccountStats()
+      loadAccountStats();
     }
-  }, [user, authLoading, router])
+  }, [user, authLoading, router]);
 
   const loadAccountStats = async () => {
     try {
-      const supabase = createClient()
-      const { data: { user: currentUser } } = await supabase.auth.getUser()
+      const supabase = createClient();
+      const {
+        data: { user: currentUser },
+      } = await supabase.auth.getUser();
 
       if (currentUser?.identities) {
-        const socialProviders = currentUser.identities.filter(
-          identity => ['google', 'azure', 'linkedin'].includes(identity.provider)
-        )
-        setConnectedCount(socialProviders.length)
+        const socialProviders = currentUser.identities.filter((identity) =>
+          ["google", "azure", "linkedin"].includes(identity.provider),
+        );
+        setConnectedCount(socialProviders.length);
       }
     } catch (err) {
-      logger.error('Failed to load account stats', {}, err as Error)
+      logger.error("Failed to load account stats", {}, err as Error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleSocialSuccess = (provider: string, userData: any) => {
-    success('Account connected successfully!', {
+    success("Account connected successfully!", {
       subtitle: `Your ${provider} account is now linked to ClaimGuardian`,
-      actions: [{
-        label: 'View Dashboard',
-        onClick: () => router.push('/dashboard')
-      }]
-    })
+      actions: [
+        {
+          label: "View Dashboard",
+          onClick: () => router.push("/dashboard"),
+        },
+      ],
+    });
 
     // Reload stats
-    loadAccountStats()
+    loadAccountStats();
 
-    logger.track('social_account_connected', { provider })
-  }
+    logger.track("social_account_connected", { provider });
+  };
 
   const handleSocialError = (error: string) => {
-    logger.error('Social connection failed', { error })
-  }
+    logger.error("Social connection failed", { error });
+  };
 
   if (authLoading || isLoading) {
     return (
@@ -100,14 +107,16 @@ export default function SocialConnectPage() {
             <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
               <Link2 className="w-8 h-8 text-blue-400 animate-pulse" />
             </div>
-            <h2 className="text-2xl font-bold mb-2">Loading Account Settings</h2>
+            <h2 className="text-2xl font-bold mb-2">
+              Loading Account Settings
+            </h2>
             <p className="text-gray-600 dark:text-gray-400">
               Please wait while we prepare your account connection page...
             </p>
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   return (
@@ -149,8 +158,12 @@ export default function SocialConnectPage() {
                   <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
                     <Users className="w-6 h-6 text-blue-400" />
                   </div>
-                  <h3 className="text-white font-medium mb-1">Connected Accounts</h3>
-                  <p className="text-2xl font-bold text-blue-400">{connectedCount}</p>
+                  <h3 className="text-white font-medium mb-1">
+                    Connected Accounts
+                  </h3>
+                  <p className="text-2xl font-bold text-blue-400">
+                    {connectedCount}
+                  </p>
                   <p className="text-sm text-gray-400">of 3 providers</p>
                 </div>
 
@@ -158,9 +171,15 @@ export default function SocialConnectPage() {
                   <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
                     <Shield className="w-6 h-6 text-green-400" />
                   </div>
-                  <h3 className="text-white font-medium mb-1">Security Level</h3>
+                  <h3 className="text-white font-medium mb-1">
+                    Security Level
+                  </h3>
                   <p className="text-2xl font-bold text-green-400">
-                    {connectedCount === 0 ? 'Basic' : connectedCount === 1 ? 'Good' : 'High'}
+                    {connectedCount === 0
+                      ? "Basic"
+                      : connectedCount === 1
+                        ? "Good"
+                        : "High"}
                   </p>
                   <p className="text-sm text-gray-400">OAuth 2.0 protected</p>
                 </div>
@@ -169,7 +188,9 @@ export default function SocialConnectPage() {
                   <div className="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
                     <CheckCircle className="w-6 h-6 text-purple-400" />
                   </div>
-                  <h3 className="text-white font-medium mb-1">Account Status</h3>
+                  <h3 className="text-white font-medium mb-1">
+                    Account Status
+                  </h3>
                   <p className="text-2xl font-bold text-purple-400">Verified</p>
                   <p className="text-sm text-gray-400">Primary account</p>
                 </div>
@@ -191,7 +212,8 @@ export default function SocialConnectPage() {
                   Social Account Connections
                 </CardTitle>
                 <p className="text-gray-300 text-center">
-                  Connect your social accounts to enable quick sign-in and enhanced security
+                  Connect your social accounts to enable quick sign-in and
+                  enhanced security
                 </p>
               </CardHeader>
               <CardContent>
@@ -226,7 +248,9 @@ export default function SocialConnectPage() {
                         <CheckCircle className="w-4 h-4 text-blue-400" />
                       </div>
                       <div>
-                        <h4 className="text-white font-medium">Faster Sign-In</h4>
+                        <h4 className="text-white font-medium">
+                          Faster Sign-In
+                        </h4>
                         <p className="text-gray-400 text-sm">
                           Skip typing passwords with one-click authentication
                         </p>
@@ -238,7 +262,9 @@ export default function SocialConnectPage() {
                         <Shield className="w-4 h-4 text-green-400" />
                       </div>
                       <div>
-                        <h4 className="text-white font-medium">Enhanced Security</h4>
+                        <h4 className="text-white font-medium">
+                          Enhanced Security
+                        </h4>
                         <p className="text-gray-400 text-sm">
                           OAuth 2.0 protection without sharing passwords
                         </p>
@@ -264,7 +290,9 @@ export default function SocialConnectPage() {
                         <Settings className="w-4 h-4 text-orange-400" />
                       </div>
                       <div>
-                        <h4 className="text-white font-medium">Easy Management</h4>
+                        <h4 className="text-white font-medium">
+                          Easy Management
+                        </h4>
                         <p className="text-gray-400 text-sm">
                           Connect or disconnect accounts anytime
                         </p>
@@ -286,8 +314,9 @@ export default function SocialConnectPage() {
             <Alert>
               <Shield className="w-4 h-4" />
               <AlertDescription>
-                <strong>Privacy & Security:</strong> ClaimGuardian never stores your social media passwords.
-                All connections use secure OAuth 2.0 tokens that can be revoked at any time.
+                <strong>Privacy & Security:</strong> ClaimGuardian never stores
+                your social media passwords. All connections use secure OAuth
+                2.0 tokens that can be revoked at any time.
               </AlertDescription>
             </Alert>
           </motion.div>
@@ -322,7 +351,12 @@ export default function SocialConnectPage() {
                   <div className="hidden sm:block w-px h-4 bg-white/20" />
 
                   <button
-                    onClick={() => window.open('https://docs.claimguardianai.com/auth/social-login', '_blank')}
+                    onClick={() =>
+                      window.open(
+                        "https://docs.claimguardianai.com/auth/social-login",
+                        "_blank",
+                      )
+                    }
                     className="flex items-center text-white hover:text-gray-300 transition-colors"
                   >
                     <ExternalLink className="w-4 h-4 mr-2" />
@@ -335,5 +369,5 @@ export default function SocialConnectPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

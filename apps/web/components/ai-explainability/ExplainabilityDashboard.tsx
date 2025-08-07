@@ -8,100 +8,109 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { Card } from '@claimguardian/ui'
-import { BarChart, Info, TrendingUp, AlertTriangle, Brain } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { Card } from "@claimguardian/ui";
+import { BarChart, Info, TrendingUp, AlertTriangle, Brain } from "lucide-react";
+import { useState, useEffect } from "react";
 
-import { CardContent, CardHeader, CardTitle } from '../ui/card'
-
+import { CardContent, CardHeader, CardTitle } from "../ui/card";
 
 interface ExplainabilityProps {
-  predictionId: string
-  propertyId: string
-  modelVersion: string
+  predictionId: string;
+  propertyId: string;
+  modelVersion: string;
 }
 
 interface FeatureImportance {
-  feature: string
-  importance: number
-  direction: 'positive' | 'negative'
+  feature: string;
+  importance: number;
+  direction: "positive" | "negative";
 }
 
 interface Explanation {
-  featureImportance: FeatureImportance[]
-  textExplanation: string
-  confidence: number
+  featureImportance: FeatureImportance[];
+  textExplanation: string;
+  confidence: number;
   decisionPath: Array<{
-    step: number
-    description: string
-    confidence: number
-  }>
+    step: number;
+    description: string;
+    confidence: number;
+  }>;
   counterfactuals: Array<{
-    feature: string
-    currentValue: string | number
-    suggestedValue: string | number
-    expectedOutcome: string
-  }>
+    feature: string;
+    currentValue: string | number;
+    suggestedValue: string | number;
+    expectedOutcome: string;
+  }>;
 }
 
-export function ExplainabilityDashboard({ predictionId, propertyId, modelVersion }: ExplainabilityProps) {
-  const [explanation, setExplanation] = useState<Explanation | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [selectedFeature, setSelectedFeature] = useState<string | null>(null)
-  const [explanationMethod, setExplanationMethod] = useState<'shap' | 'lime' | 'attention'>('shap')
+export function ExplainabilityDashboard({
+  predictionId,
+  propertyId,
+  modelVersion,
+}: ExplainabilityProps) {
+  const [explanation, setExplanation] = useState<Explanation | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
+  const [explanationMethod, setExplanationMethod] = useState<
+    "shap" | "lime" | "attention"
+  >("shap");
 
   const fetchExplanation = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const response = await fetch('/api/ml-model-management', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/ml-model-management", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          action: 'explain',
+          action: "explain",
           data: {
             predictionId,
             propertyId,
-            method: explanationMethod
-          }
-        })
-      })
+            method: explanationMethod,
+          },
+        }),
+      });
 
-      const result = await response.json()
+      const result = await response.json();
       if (result.success) {
         // Transform API response to typed format
-        const featureImportance: FeatureImportance[] = Object.entries(result.explanation.featureImportance)
+        const featureImportance: FeatureImportance[] = Object.entries(
+          result.explanation.featureImportance,
+        )
           .map(([feature, importance]) => ({
             feature,
             importance: importance as number,
-            direction: ((importance as number) > 0 ? 'positive' : 'negative') as 'positive' | 'negative'
+            direction: ((importance as number) > 0
+              ? "positive"
+              : "negative") as "positive" | "negative",
           }))
-          .sort((a, b) => Math.abs(b.importance) - Math.abs(a.importance))
+          .sort((a, b) => Math.abs(b.importance) - Math.abs(a.importance));
 
         setExplanation({
           ...result.explanation,
           featureImportance,
-          confidence: result.explanation.confidence || 0.85
-        })
+          confidence: result.explanation.confidence || 0.85,
+        });
       }
     } catch (error) {
-      console.error('Failed to fetch explanation:', error)
+      console.error("Failed to fetch explanation:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchExplanation()
-  }, [predictionId, explanationMethod, fetchExplanation])
+    fetchExplanation();
+  }, [predictionId, explanationMethod, fetchExplanation]);
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
-    )
+    );
   }
 
   if (!explanation) {
@@ -111,7 +120,7 @@ export function ExplainabilityDashboard({ predictionId, propertyId, modelVersion
           <p className="text-gray-500">No explanation available</p>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -119,31 +128,31 @@ export function ExplainabilityDashboard({ predictionId, propertyId, modelVersion
       {/* Method Selector */}
       <div className="flex gap-2">
         <button
-          onClick={() => setExplanationMethod('shap')}
+          onClick={() => setExplanationMethod("shap")}
           className={`px-4 py-2 rounded ${
-            explanationMethod === 'shap'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-200 text-gray-700'
+            explanationMethod === "shap"
+              ? "bg-blue-600 text-white"
+              : "bg-gray-200 text-gray-700"
           }`}
         >
           SHAP Analysis
         </button>
         <button
-          onClick={() => setExplanationMethod('lime')}
+          onClick={() => setExplanationMethod("lime")}
           className={`px-4 py-2 rounded ${
-            explanationMethod === 'lime'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-200 text-gray-700'
+            explanationMethod === "lime"
+              ? "bg-blue-600 text-white"
+              : "bg-gray-200 text-gray-700"
           }`}
         >
           LIME Analysis
         </button>
         <button
-          onClick={() => setExplanationMethod('attention')}
+          onClick={() => setExplanationMethod("attention")}
           className={`px-4 py-2 rounded ${
-            explanationMethod === 'attention'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-200 text-gray-700'
+            explanationMethod === "attention"
+              ? "bg-blue-600 text-white"
+              : "bg-gray-200 text-gray-700"
           }`}
         >
           Attention Maps
@@ -167,7 +176,9 @@ export function ExplainabilityDashboard({ predictionId, propertyId, modelVersion
             </div>
             <div className="flex items-center gap-1">
               <TrendingUp className="w-4 h-4 text-green-500" />
-              <span>Confidence: {(explanation.confidence * 100).toFixed(1)}%</span>
+              <span>
+                Confidence: {(explanation.confidence * 100).toFixed(1)}%
+              </span>
             </div>
           </div>
         </CardContent>
@@ -191,16 +202,23 @@ export function ExplainabilityDashboard({ predictionId, propertyId, modelVersion
               >
                 <div className="flex justify-between items-center mb-1">
                   <span className="text-sm font-medium">{feature.feature}</span>
-                  <span className={`text-sm ${
-                    feature.direction === 'positive' ? 'text-green-600' : 'text-red-600'
-                  }`}>
-                    {feature.direction === 'positive' ? '↑' : '↓'} {(Math.abs(feature.importance) * 100).toFixed(1)}%
+                  <span
+                    className={`text-sm ${
+                      feature.direction === "positive"
+                        ? "text-green-600"
+                        : "text-red-600"
+                    }`}
+                  >
+                    {feature.direction === "positive" ? "↑" : "↓"}{" "}
+                    {(Math.abs(feature.importance) * 100).toFixed(1)}%
                   </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
                     className={`h-2 rounded-full ${
-                      feature.direction === 'positive' ? 'bg-green-500' : 'bg-red-500'
+                      feature.direction === "positive"
+                        ? "bg-green-500"
+                        : "bg-red-500"
                     }`}
                     style={{ width: `${Math.abs(feature.importance) * 100}%` }}
                   />
@@ -266,7 +284,9 @@ export function ExplainabilityDashboard({ predictionId, propertyId, modelVersion
                   </div>
                   <div>
                     <span className="text-gray-500">Change to:</span>
-                    <span className="ml-2 font-medium text-yellow-700">{cf.suggestedValue}</span>
+                    <span className="ml-2 font-medium text-yellow-700">
+                      {cf.suggestedValue}
+                    </span>
                   </div>
                 </div>
                 <div className="text-xs text-gray-600 mt-1">
@@ -287,16 +307,24 @@ export function ExplainabilityDashboard({ predictionId, propertyId, modelVersion
           <CardContent>
             <div className="space-y-2">
               <p className="text-sm text-gray-600">
-                This feature contributed {
-                  (Math.abs(explanation.featureImportance.find(f => f.feature === selectedFeature)?.importance || 0) * 100).toFixed(1)
-                }% to the final decision.
+                This feature contributed{" "}
+                {(
+                  Math.abs(
+                    explanation.featureImportance.find(
+                      (f) => f.feature === selectedFeature,
+                    )?.importance || 0,
+                  ) * 100
+                ).toFixed(1)}
+                % to the final decision.
               </p>
               <div className="bg-gray-50 p-3 rounded">
                 <p className="text-sm font-medium mb-1">Impact Analysis:</p>
                 <p className="text-sm text-gray-600">
-                  {explanation.featureImportance.find(f => f.feature === selectedFeature)?.direction === 'positive'
-                    ? 'Higher values of this feature increase the likelihood of a positive outcome.'
-                    : 'Higher values of this feature decrease the likelihood of a positive outcome.'}
+                  {explanation.featureImportance.find(
+                    (f) => f.feature === selectedFeature,
+                  )?.direction === "positive"
+                    ? "Higher values of this feature increase the likelihood of a positive outcome."
+                    : "Higher values of this feature decrease the likelihood of a positive outcome."}
                 </p>
               </div>
             </div>
@@ -304,5 +332,5 @@ export function ExplainabilityDashboard({ predictionId, propertyId, modelVersion
         </Card>
       )}
     </div>
-  )
+  );
 }

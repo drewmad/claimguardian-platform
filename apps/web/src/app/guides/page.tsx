@@ -29,18 +29,24 @@ export default function GuidesPage() {
           </h1>
 
           <p className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
-            Comprehensive guides to help you maximize your property's potential and build generational wealth.
+            Comprehensive guides to help you maximize your property's potential
+            and build generational wealth.
           </p>
 
           <div className="bg-gray-800/50 rounded-xl p-8 border border-gray-700">
-            <h2 className="text-2xl font-semibold mb-4">Resource Library Coming Soon</h2>
+            <h2 className="text-2xl font-semibold mb-4">
+              Resource Library Coming Soon
+            </h2>
             <p className="text-gray-400 mb-6">
-              We're building a comprehensive library of guides to help you master property intelligence:
+              We're building a comprehensive library of guides to help you
+              master property intelligence:
             </p>
 
             <div className="grid md:grid-cols-3 gap-6 text-left">
               <div className="bg-gray-800/30 rounded-lg p-4">
-                <h3 className="font-semibold text-green-400 mb-2">Getting Started</h3>
+                <h3 className="font-semibold text-green-400 mb-2">
+                  Getting Started
+                </h3>
                 <ul className="space-y-1 text-sm text-gray-400">
                   <li>• Digital twin setup</li>
                   <li>• Property documentation</li>
@@ -50,7 +56,9 @@ export default function GuidesPage() {
               </div>
 
               <div className="bg-gray-800/30 rounded-lg p-4">
-                <h3 className="font-semibold text-blue-400 mb-2">Advanced Management</h3>
+                <h3 className="font-semibold text-blue-400 mb-2">
+                  Advanced Management
+                </h3>
                 <ul className="space-y-1 text-sm text-gray-400">
                   <li>• Predictive maintenance</li>
                   <li>• Insurance optimization</li>
@@ -60,7 +68,9 @@ export default function GuidesPage() {
               </div>
 
               <div className="bg-gray-800/30 rounded-lg p-4">
-                <h3 className="font-semibold text-purple-400 mb-2">Legacy Building</h3>
+                <h3 className="font-semibold text-purple-400 mb-2">
+                  Legacy Building
+                </h3>
                 <ul className="space-y-1 text-sm text-gray-400">
                   <li>• Knowledge transfer</li>
                   <li>• Estate planning</li>
@@ -73,5 +83,5 @@ export default function GuidesPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

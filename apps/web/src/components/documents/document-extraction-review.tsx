@@ -9,37 +9,48 @@
  * @status stable
  */
 
-'use client'
+"use client";
 
-import { Brain, FileText, CheckCircle, XCircle, Clock, Loader2, Edit3, Save, X } from 'lucide-react'
-import { useState, useEffect, useCallback } from 'react'
-import { toast } from 'sonner'
-import { logger } from "@/lib/logger/production-logger"
+import {
+  Brain,
+  FileText,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Loader2,
+  Edit3,
+  Save,
+  X,
+} from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { toast } from "sonner";
+import { logger } from "@/lib/logger/production-logger";
 
-import { processDocumentExtraction, getExtractionResults } from '@/actions/ai-extraction'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { insuranceTypes } from '@/data/florida-insurance-carriers'
-import { ExtractedPolicyData } from '@/lib/services/ai-document-extraction'
-import { cn } from '@/lib/utils'
-
-
+import {
+  processDocumentExtraction,
+  getExtractionResults,
+} from "@/actions/ai-extraction";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { insuranceTypes } from "@/data/florida-insurance-carriers";
+import { ExtractedPolicyData } from "@/lib/services/ai-document-extraction";
+import { cn } from "@/lib/utils";
 
 interface DocumentExtractionReviewProps {
-  documentId: string
-  propertyId: string
-  fileName: string
-  onApplied?: () => void
-  className?: string
+  documentId: string;
+  propertyId: string;
+  fileName: string;
+  onApplied?: () => void;
+  className?: string;
 }
 
 interface ExtractionStatus {
-  status: 'idle' | 'processing' | 'completed' | 'failed'
-  confidence?: number
-  data?: ExtractedPolicyData
-  error?: string
+  status: "idle" | "processing" | "completed" | "failed";
+  confidence?: number;
+  data?: ExtractedPolicyData;
+  error?: string;
 }
 
 export function DocumentExtractionReview({
@@ -47,128 +58,139 @@ export function DocumentExtractionReview({
   propertyId,
   fileName,
   onApplied,
-  className
+  className,
 }: DocumentExtractionReviewProps) {
-  const [extractionStatus, setExtractionStatus] = useState<ExtractionStatus>({ status: 'idle' })
-  const [isEditing, setIsEditing] = useState(false)
-  const [editedData, setEditedData] = useState<Partial<ExtractedPolicyData>>({})
-  const [isApplying, setIsApplying] = useState(false)
+  const [extractionStatus, setExtractionStatus] = useState<ExtractionStatus>({
+    status: "idle",
+  });
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedData, setEditedData] = useState<Partial<ExtractedPolicyData>>(
+    {},
+  );
+  const [isApplying, setIsApplying] = useState(false);
 
   const checkExistingExtraction = useCallback(async () => {
     try {
-      const { data } = await getExtractionResults(documentId)
+      const { data } = await getExtractionResults(documentId);
 
       if (data) {
         setExtractionStatus({
-          status: data.processing_status as 'idle' | 'processing' | 'completed' | 'failed',
+          status: data.processing_status as
+            | "idle"
+            | "processing"
+            | "completed"
+            | "failed",
           confidence: data.confidence_score,
           data: data.extracted_data as ExtractedPolicyData,
-          error: data.error_message || undefined
-        })
-        setEditedData(data.extracted_data as ExtractedPolicyData)
+          error: data.error_message || undefined,
+        });
+        setEditedData(data.extracted_data as ExtractedPolicyData);
       }
     } catch (error) {
-      logger.error('Error checking extraction:', error)
+      logger.error("Error checking extraction:", error);
     }
-  }, [documentId])
+  }, [documentId]);
 
   // Check for existing extraction results on mount
   useEffect(() => {
-    checkExistingExtraction()
-  }, [checkExistingExtraction])
+    checkExistingExtraction();
+  }, [checkExistingExtraction]);
 
   const startExtraction = async () => {
-    setExtractionStatus({ status: 'processing' })
+    setExtractionStatus({ status: "processing" });
 
     try {
       const { data, error } = await processDocumentExtraction({
         documentId,
-        propertyId
-      })
+        propertyId,
+      });
 
       if (error) {
         setExtractionStatus({
-          status: 'failed',
-          error
-        })
-        toast.error(`Extraction failed: ${error}`)
-        return
+          status: "failed",
+          error,
+        });
+        toast.error(`Extraction failed: ${error}`);
+        return;
       }
 
       if (data) {
         setExtractionStatus({
-          status: 'completed',
+          status: "completed",
           confidence: data.confidence_score,
-          data: data.extracted_data as ExtractedPolicyData
-        })
-        setEditedData(data.extracted_data as ExtractedPolicyData)
-        toast.success('Document processed successfully!')
+          data: data.extracted_data as ExtractedPolicyData,
+        });
+        setEditedData(data.extracted_data as ExtractedPolicyData);
+        toast.success("Document processed successfully!");
       }
     } catch {
       setExtractionStatus({
-        status: 'failed',
-        error: 'Unexpected error during processing'
-      })
-      toast.error('Failed to process document')
+        status: "failed",
+        error: "Unexpected error during processing",
+      });
+      toast.error("Failed to process document");
     }
-  }
+  };
 
   const applyExtraction = async () => {
-    if (!extractionStatus.data) return
+    if (!extractionStatus.data) return;
 
-    setIsApplying(true)
+    setIsApplying(true);
 
     try {
       // In a real implementation, we would pass the extraction ID
       // For now, we'll simulate applying the data
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      toast.success('Policy data applied successfully!')
-      onApplied?.()
+      toast.success("Policy data applied successfully!");
+      onApplied?.();
     } catch {
-      toast.error('Failed to apply policy data')
+      toast.error("Failed to apply policy data");
     } finally {
-      setIsApplying(false)
+      setIsApplying(false);
     }
-  }
+  };
 
-  const handleFieldChange = (field: keyof ExtractedPolicyData, value: unknown) => {
-    setEditedData(prev => ({
+  const handleFieldChange = (
+    field: keyof ExtractedPolicyData,
+    value: unknown,
+  ) => {
+    setEditedData((prev) => ({
       ...prev,
-      [field]: value
-    }))
-  }
+      [field]: value,
+    }));
+  };
 
   const saveEdits = () => {
-    setExtractionStatus(prev => ({
+    setExtractionStatus((prev) => ({
       ...prev,
-      data: { ...prev.data, ...editedData }
-    }))
-    setIsEditing(false)
-    toast.success('Changes saved')
-  }
+      data: { ...prev.data, ...editedData },
+    }));
+    setIsEditing(false);
+    toast.success("Changes saved");
+  };
 
   const cancelEdits = () => {
-    setEditedData(extractionStatus.data || {})
-    setIsEditing(false)
-  }
+    setEditedData(extractionStatus.data || {});
+    setIsEditing(false);
+  };
 
   const renderStatusIcon = () => {
     switch (extractionStatus.status) {
-      case 'processing':
-        return <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
-      case 'completed':
-        return <CheckCircle className="w-5 h-5 text-green-500" />
-      case 'failed':
-        return <XCircle className="w-5 h-5 text-red-500" />
+      case "processing":
+        return <Loader2 className="w-5 h-5 animate-spin text-blue-500" />;
+      case "completed":
+        return <CheckCircle className="w-5 h-5 text-green-500" />;
+      case "failed":
+        return <XCircle className="w-5 h-5 text-red-500" />;
       default:
-        return <Clock className="w-5 h-5 text-gray-400" />
+        return <Clock className="w-5 h-5 text-gray-400" />;
     }
-  }
+  };
 
   const renderExtractionData = () => {
-    const data = isEditing ? editedData : extractionStatus.data
-    if (!data) return null
+    const data = isEditing ? editedData : extractionStatus.data;
+    if (!data) return null;
 
     return (
       <div className="space-y-4">
@@ -177,24 +199,32 @@ export function DocumentExtractionReview({
             <Label>Policy Number</Label>
             {isEditing ? (
               <Input
-                value={data.policyNumber || ''}
-                onChange={(e) => handleFieldChange('policyNumber', e.target.value)}
+                value={data.policyNumber || ""}
+                onChange={(e) =>
+                  handleFieldChange("policyNumber", e.target.value)
+                }
                 className="mt-1 bg-gray-700 border-gray-600 text-white"
               />
             ) : (
-              <p className="text-white mt-1">{data.policyNumber || 'Not found'}</p>
+              <p className="text-white mt-1">
+                {data.policyNumber || "Not found"}
+              </p>
             )}
           </div>
           <div>
             <Label>Insurance Carrier</Label>
             {isEditing ? (
               <Input
-                value={data.carrierName || ''}
-                onChange={(e) => handleFieldChange('carrierName', e.target.value)}
+                value={data.carrierName || ""}
+                onChange={(e) =>
+                  handleFieldChange("carrierName", e.target.value)
+                }
                 className="mt-1 bg-gray-700 border-gray-600 text-white"
               />
             ) : (
-              <p className="text-white mt-1">{data.carrierName || 'Not found'}</p>
+              <p className="text-white mt-1">
+                {data.carrierName || "Not found"}
+              </p>
             )}
           </div>
         </div>
@@ -204,21 +234,25 @@ export function DocumentExtractionReview({
             <Label>Policy Type</Label>
             {isEditing ? (
               <select
-                value={data.policyType || ''}
-                onChange={(e) => handleFieldChange('policyType', e.target.value)}
+                value={data.policyType || ""}
+                onChange={(e) =>
+                  handleFieldChange("policyType", e.target.value)
+                }
                 className="w-full mt-1 bg-gray-700 border-gray-600 text-white rounded px-3 py-2"
               >
                 <option value="">Select Type</option>
-                {insuranceTypes.map(type => (
-                  <option key={type.value} value={type.value}>{type.label}</option>
+                {insuranceTypes.map((type) => (
+                  <option key={type.value} value={type.value}>
+                    {type.label}
+                  </option>
                 ))}
               </select>
             ) : (
               <p className="text-white mt-1">
-                {data.policyType ?
-                  insuranceTypes.find(t => t.value === data.policyType)?.label || data.policyType
-                  : 'Not found'
-                }
+                {data.policyType
+                  ? insuranceTypes.find((t) => t.value === data.policyType)
+                      ?.label || data.policyType
+                  : "Not found"}
               </p>
             )}
           </div>
@@ -227,13 +261,20 @@ export function DocumentExtractionReview({
             {isEditing ? (
               <Input
                 type="number"
-                value={data.coverageAmount || ''}
-                onChange={(e) => handleFieldChange('coverageAmount', parseInt(e.target.value) || undefined)}
+                value={data.coverageAmount || ""}
+                onChange={(e) =>
+                  handleFieldChange(
+                    "coverageAmount",
+                    parseInt(e.target.value) || undefined,
+                  )
+                }
                 className="mt-1 bg-gray-700 border-gray-600 text-white"
               />
             ) : (
               <p className="text-white mt-1">
-                {data.coverageAmount ? `$${data.coverageAmount.toLocaleString()}` : 'Not found'}
+                {data.coverageAmount
+                  ? `$${data.coverageAmount.toLocaleString()}`
+                  : "Not found"}
               </p>
             )}
           </div>
@@ -245,13 +286,20 @@ export function DocumentExtractionReview({
             {isEditing ? (
               <Input
                 type="number"
-                value={data.deductible || ''}
-                onChange={(e) => handleFieldChange('deductible', parseInt(e.target.value) || undefined)}
+                value={data.deductible || ""}
+                onChange={(e) =>
+                  handleFieldChange(
+                    "deductible",
+                    parseInt(e.target.value) || undefined,
+                  )
+                }
                 className="mt-1 bg-gray-700 border-gray-600 text-white"
               />
             ) : (
               <p className="text-white mt-1">
-                {data.deductible ? `$${data.deductible.toLocaleString()}` : 'Not found'}
+                {data.deductible
+                  ? `$${data.deductible.toLocaleString()}`
+                  : "Not found"}
               </p>
             )}
           </div>
@@ -259,13 +307,17 @@ export function DocumentExtractionReview({
             <Label>Wind Deductible</Label>
             {isEditing ? (
               <Input
-                value={data.windDeductible || ''}
-                onChange={(e) => handleFieldChange('windDeductible', e.target.value)}
+                value={data.windDeductible || ""}
+                onChange={(e) =>
+                  handleFieldChange("windDeductible", e.target.value)
+                }
                 placeholder="e.g., 2% or $5000"
                 className="mt-1 bg-gray-700 border-gray-600 text-white"
               />
             ) : (
-              <p className="text-white mt-1">{data.windDeductible || 'Not found'}</p>
+              <p className="text-white mt-1">
+                {data.windDeductible || "Not found"}
+              </p>
             )}
           </div>
           <div>
@@ -273,13 +325,20 @@ export function DocumentExtractionReview({
             {isEditing ? (
               <Input
                 type="number"
-                value={data.premiumAmount || ''}
-                onChange={(e) => handleFieldChange('premiumAmount', parseInt(e.target.value) || undefined)}
+                value={data.premiumAmount || ""}
+                onChange={(e) =>
+                  handleFieldChange(
+                    "premiumAmount",
+                    parseInt(e.target.value) || undefined,
+                  )
+                }
                 className="mt-1 bg-gray-700 border-gray-600 text-white"
               />
             ) : (
               <p className="text-white mt-1">
-                {data.premiumAmount ? `$${data.premiumAmount.toLocaleString()}` : 'Not found'}
+                {data.premiumAmount
+                  ? `$${data.premiumAmount.toLocaleString()}`
+                  : "Not found"}
               </p>
             )}
           </div>
@@ -291,12 +350,16 @@ export function DocumentExtractionReview({
             {isEditing ? (
               <Input
                 type="date"
-                value={data.effectiveDate || ''}
-                onChange={(e) => handleFieldChange('effectiveDate', e.target.value)}
+                value={data.effectiveDate || ""}
+                onChange={(e) =>
+                  handleFieldChange("effectiveDate", e.target.value)
+                }
                 className="mt-1 bg-gray-700 border-gray-600 text-white"
               />
             ) : (
-              <p className="text-white mt-1">{data.effectiveDate || 'Not found'}</p>
+              <p className="text-white mt-1">
+                {data.effectiveDate || "Not found"}
+              </p>
             )}
           </div>
           <div>
@@ -304,12 +367,16 @@ export function DocumentExtractionReview({
             {isEditing ? (
               <Input
                 type="date"
-                value={data.expirationDate || ''}
-                onChange={(e) => handleFieldChange('expirationDate', e.target.value)}
+                value={data.expirationDate || ""}
+                onChange={(e) =>
+                  handleFieldChange("expirationDate", e.target.value)
+                }
                 className="mt-1 bg-gray-700 border-gray-600 text-white"
               />
             ) : (
-              <p className="text-white mt-1">{data.expirationDate || 'Not found'}</p>
+              <p className="text-white mt-1">
+                {data.expirationDate || "Not found"}
+              </p>
             )}
           </div>
         </div>
@@ -337,8 +404,8 @@ export function DocumentExtractionReview({
           </div>
         )}
       </div>
-    )
-  }
+    );
+  };
 
   return (
     <Card className={cn("bg-gray-800 border-gray-700", className)}>
@@ -366,7 +433,7 @@ export function DocumentExtractionReview({
             {fileName}
           </div>
 
-          {extractionStatus.status === 'idle' && (
+          {extractionStatus.status === "idle" && (
             <div className="text-center py-6">
               <p className="text-gray-400 mb-4">
                 Process this document with AI to extract policy information
@@ -381,18 +448,18 @@ export function DocumentExtractionReview({
             </div>
           )}
 
-          {extractionStatus.status === 'processing' && (
+          {extractionStatus.status === "processing" && (
             <div className="text-center py-6">
               <Loader2 className="w-8 h-8 animate-spin text-blue-400 mx-auto mb-4" />
               <p className="text-gray-400">Processing document with AI...</p>
             </div>
           )}
 
-          {extractionStatus.status === 'failed' && (
+          {extractionStatus.status === "failed" && (
             <div className="text-center py-6">
               <XCircle className="w-8 h-8 text-red-500 mx-auto mb-4" />
               <p className="text-red-400 mb-4">
-                {extractionStatus.error || 'Failed to process document'}
+                {extractionStatus.error || "Failed to process document"}
               </p>
               <Button
                 onClick={startExtraction}
@@ -404,7 +471,7 @@ export function DocumentExtractionReview({
             </div>
           )}
 
-          {extractionStatus.status === 'completed' && (
+          {extractionStatus.status === "completed" && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -477,5 +544,5 @@ export function DocumentExtractionReview({
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

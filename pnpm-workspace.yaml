@@ -8,9 +8,9 @@
 # @notes Specifies which directories are part of the monorepo's workspaces.
 #
 packages:
-  - 'apps/*'
-  - 'packages/*'
-  - 'services/*'
-  - 'scripts/ai'
-  - 'packages/ai-config'
-  - 'tools/*'
+  - "apps/*"
+  - "packages/*"
+  - "services/*"
+  - "scripts/ai"
+  - "packages/ai-config"
+  - "tools/*"

@@ -1,12 +1,18 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { createClient } from '@/lib/supabase/client';
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { createClient } from "@/lib/supabase/client";
 import {
   Activity,
   AlertTriangle,
@@ -20,8 +26,8 @@ import {
   Server,
   RefreshCw,
   Download,
-  Settings
-} from 'lucide-react';
+  Settings,
+} from "lucide-react";
 import {
   LineChart,
   Line,
@@ -34,21 +40,21 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  ResponsiveContainer
-} from 'recharts';
+  ResponsiveContainer,
+} from "recharts";
 
 interface SystemMetric {
   name: string;
   value: number | string;
   unit?: string;
-  status: 'healthy' | 'warning' | 'critical';
-  trend?: 'up' | 'down' | 'stable';
+  status: "healthy" | "warning" | "critical";
+  trend?: "up" | "down" | "stable";
   change?: number;
 }
 
 interface EdgeFunctionStatus {
   name: string;
-  status: 'active' | 'inactive' | 'error';
+  status: "active" | "inactive" | "error";
   lastRun?: string;
   executions: number;
   avgResponseTime: number;
@@ -72,55 +78,68 @@ export function SystemMonitoringDashboard() {
 
   // Mock data for demonstration
   const systemMetrics: SystemMetric[] = [
-    { name: 'API Uptime', value: '99.98%', status: 'healthy', trend: 'stable' },
-    { name: 'Response Time', value: 142, unit: 'ms', status: 'healthy', trend: 'down', change: -8 },
-    { name: 'Active Users', value: 1284, status: 'healthy', trend: 'up', change: 12 },
-    { name: 'Error Rate', value: '0.02%', status: 'healthy', trend: 'stable' },
+    { name: "API Uptime", value: "99.98%", status: "healthy", trend: "stable" },
+    {
+      name: "Response Time",
+      value: 142,
+      unit: "ms",
+      status: "healthy",
+      trend: "down",
+      change: -8,
+    },
+    {
+      name: "Active Users",
+      value: 1284,
+      status: "healthy",
+      trend: "up",
+      change: 12,
+    },
+    { name: "Error Rate", value: "0.02%", status: "healthy", trend: "stable" },
   ];
 
   const edgeFunctions: EdgeFunctionStatus[] = [
     {
-      name: 'smart-notification-engine',
-      status: 'active',
-      lastRun: '2 min ago',
+      name: "smart-notification-engine",
+      status: "active",
+      lastRun: "2 min ago",
       executions: 15420,
       avgResponseTime: 89,
-      errorRate: 0.01
+      errorRate: 0.01,
     },
     {
-      name: 'community-intelligence',
-      status: 'active',
-      lastRun: '5 min ago',
+      name: "community-intelligence",
+      status: "active",
+      lastRun: "5 min ago",
       executions: 8234,
       avgResponseTime: 234,
-      errorRate: 0.02
+      errorRate: 0.02,
     },
     {
-      name: 'damage-doc-copilot',
-      status: 'active',
-      lastRun: '12 min ago',
+      name: "damage-doc-copilot",
+      status: "active",
+      lastRun: "12 min ago",
       executions: 5621,
       avgResponseTime: 456,
-      errorRate: 0.03
+      errorRate: 0.03,
     },
     {
-      name: 'policy-chat',
-      status: 'active',
-      lastRun: '18 min ago',
+      name: "policy-chat",
+      status: "active",
+      lastRun: "18 min ago",
       executions: 3412,
       avgResponseTime: 312,
-      errorRate: 0.01
-    }
+      errorRate: 0.01,
+    },
   ];
 
   const performanceData = [
-    { time: '00:00', requests: 245, responseTime: 120, errors: 2 },
-    { time: '04:00', requests: 189, responseTime: 115, errors: 1 },
-    { time: '08:00', requests: 456, responseTime: 135, errors: 3 },
-    { time: '12:00', requests: 678, responseTime: 142, errors: 4 },
-    { time: '16:00', requests: 589, responseTime: 138, errors: 2 },
-    { time: '20:00', requests: 412, responseTime: 125, errors: 1 },
-    { time: '24:00', requests: 234, responseTime: 118, errors: 1 },
+    { time: "00:00", requests: 245, responseTime: 120, errors: 2 },
+    { time: "04:00", requests: 189, responseTime: 115, errors: 1 },
+    { time: "08:00", requests: 456, responseTime: 135, errors: 3 },
+    { time: "12:00", requests: 678, responseTime: 142, errors: 4 },
+    { time: "16:00", requests: 589, responseTime: 138, errors: 2 },
+    { time: "20:00", requests: 412, responseTime: 125, errors: 1 },
+    { time: "24:00", requests: 234, responseTime: 118, errors: 1 },
   ];
 
   const databaseMetrics: DatabaseMetric = {
@@ -129,7 +148,7 @@ export function SystemMonitoringDashboard() {
     queryTime: 23,
     cacheHitRate: 94.5,
     storageUsed: 2.4,
-    storageLimit: 8
+    storageLimit: 8,
   };
 
   useEffect(() => {
@@ -147,9 +166,9 @@ export function SystemMonitoringDashboard() {
     try {
       // Load actual monitoring data from Supabase
       // This would connect to your monitoring infrastructure
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate loading
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate loading
     } catch (error) {
-      console.error('Error loading monitoring data:', error);
+      console.error("Error loading monitoring data:", error);
     } finally {
       setLoading(false);
     }
@@ -157,32 +176,32 @@ export function SystemMonitoringDashboard() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'healthy':
-      case 'active':
-        return 'text-green-500';
-      case 'warning':
-        return 'text-yellow-500';
-      case 'critical':
-      case 'error':
-        return 'text-red-500';
-      case 'inactive':
-        return 'text-gray-500';
+      case "healthy":
+      case "active":
+        return "text-green-500";
+      case "warning":
+        return "text-yellow-500";
+      case "critical":
+      case "error":
+        return "text-red-500";
+      case "inactive":
+        return "text-gray-500";
       default:
-        return 'text-gray-400';
+        return "text-gray-400";
     }
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'healthy':
-      case 'active':
+      case "healthy":
+      case "active":
         return <Badge className="bg-green-500">Healthy</Badge>;
-      case 'warning':
+      case "warning":
         return <Badge className="bg-yellow-500">Warning</Badge>;
-      case 'critical':
-      case 'error':
+      case "critical":
+      case "error":
         return <Badge className="bg-red-500">Critical</Badge>;
-      case 'inactive':
+      case "inactive":
         return <Badge className="bg-gray-500">Inactive</Badge>;
       default:
         return <Badge>Unknown</Badge>;
@@ -195,16 +214,20 @@ export function SystemMonitoringDashboard() {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold">System Monitoring</h2>
-          <p className="text-gray-600">Real-time system health and performance metrics</p>
+          <p className="text-gray-600">
+            Real-time system health and performance metrics
+          </p>
         </div>
         <div className="flex items-center space-x-2">
           <Button
-            variant={autoRefresh ? 'default' : 'outline'}
+            variant={autoRefresh ? "default" : "outline"}
             size="sm"
             onClick={() => setAutoRefresh(!autoRefresh)}
           >
-            <RefreshCw className={`h-4 w-4 mr-1 ${autoRefresh ? 'animate-spin' : ''}`} />
-            {autoRefresh ? 'Auto-refresh ON' : 'Auto-refresh OFF'}
+            <RefreshCw
+              className={`h-4 w-4 mr-1 ${autoRefresh ? "animate-spin" : ""}`}
+            />
+            {autoRefresh ? "Auto-refresh ON" : "Auto-refresh OFF"}
           </Button>
           <Button variant="outline" size="sm" onClick={loadMonitoringData}>
             <RefreshCw className="h-4 w-4 mr-1" />
@@ -223,19 +246,22 @@ export function SystemMonitoringDashboard() {
           <Card key={metric.name}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-2">
-                <Activity className={`h-5 w-5 ${getStatusColor(metric.status)}`} />
+                <Activity
+                  className={`h-5 w-5 ${getStatusColor(metric.status)}`}
+                />
                 {metric.trend && (
                   <div className="flex items-center space-x-1">
-                    {metric.trend === 'up' ? (
+                    {metric.trend === "up" ? (
                       <TrendingUp className="h-4 w-4 text-green-500" />
-                    ) : metric.trend === 'down' ? (
+                    ) : metric.trend === "down" ? (
                       <TrendingDown className="h-4 w-4 text-blue-500" />
                     ) : (
                       <Activity className="h-4 w-4 text-gray-500" />
                     )}
                     {metric.change && (
                       <span className="text-sm font-medium">
-                        {metric.change > 0 ? '+' : ''}{metric.change}%
+                        {metric.change > 0 ? "+" : ""}
+                        {metric.change}%
                       </span>
                     )}
                   </div>
@@ -243,7 +269,12 @@ export function SystemMonitoringDashboard() {
               </div>
               <div>
                 <p className="text-2xl font-bold">
-                  {metric.value}{metric.unit && <span className="text-lg text-gray-500 ml-1">{metric.unit}</span>}
+                  {metric.value}
+                  {metric.unit && (
+                    <span className="text-lg text-gray-500 ml-1">
+                      {metric.unit}
+                    </span>
+                  )}
                 </p>
                 <p className="text-sm text-gray-500">{metric.name}</p>
               </div>
@@ -314,10 +345,14 @@ export function SystemMonitoringDashboard() {
                   <div key={func.name} className="border rounded-lg p-4">
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center space-x-3">
-                        <Zap className={`h-5 w-5 ${getStatusColor(func.status)}`} />
+                        <Zap
+                          className={`h-5 w-5 ${getStatusColor(func.status)}`}
+                        />
                         <div>
                           <p className="font-medium">{func.name}</p>
-                          <p className="text-sm text-gray-500">Last run: {func.lastRun}</p>
+                          <p className="text-sm text-gray-500">
+                            Last run: {func.lastRun}
+                          </p>
                         </div>
                       </div>
                       {getStatusBadge(func.status)}
@@ -326,7 +361,9 @@ export function SystemMonitoringDashboard() {
                     <div className="grid grid-cols-3 gap-4 text-sm">
                       <div>
                         <p className="text-gray-500">Executions</p>
-                        <p className="font-medium">{func.executions.toLocaleString()}</p>
+                        <p className="font-medium">
+                          {func.executions.toLocaleString()}
+                        </p>
                       </div>
                       <div>
                         <p className="text-gray-500">Avg Response</p>
@@ -358,20 +395,34 @@ export function SystemMonitoringDashboard() {
                   <div className="flex justify-between mb-2">
                     <span className="text-sm font-medium">Connections</span>
                     <span className="text-sm text-gray-500">
-                      {databaseMetrics.connections} / {databaseMetrics.maxConnections}
+                      {databaseMetrics.connections} /{" "}
+                      {databaseMetrics.maxConnections}
                     </span>
                   </div>
-                  <Progress value={(databaseMetrics.connections / databaseMetrics.maxConnections) * 100} />
+                  <Progress
+                    value={
+                      (databaseMetrics.connections /
+                        databaseMetrics.maxConnections) *
+                      100
+                    }
+                  />
                 </div>
 
                 <div>
                   <div className="flex justify-between mb-2">
                     <span className="text-sm font-medium">Storage Used</span>
                     <span className="text-sm text-gray-500">
-                      {databaseMetrics.storageUsed}GB / {databaseMetrics.storageLimit}GB
+                      {databaseMetrics.storageUsed}GB /{" "}
+                      {databaseMetrics.storageLimit}GB
                     </span>
                   </div>
-                  <Progress value={(databaseMetrics.storageUsed / databaseMetrics.storageLimit) * 100} />
+                  <Progress
+                    value={
+                      (databaseMetrics.storageUsed /
+                        databaseMetrics.storageLimit) *
+                      100
+                    }
+                  />
                 </div>
               </div>
 
@@ -380,9 +431,13 @@ export function SystemMonitoringDashboard() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <Clock className="h-4 w-4 text-gray-500" />
-                      <span className="text-sm text-gray-500">Avg Query Time</span>
+                      <span className="text-sm text-gray-500">
+                        Avg Query Time
+                      </span>
                     </div>
-                    <span className="text-xl font-bold">{databaseMetrics.queryTime}ms</span>
+                    <span className="text-xl font-bold">
+                      {databaseMetrics.queryTime}ms
+                    </span>
                   </div>
                 </div>
 
@@ -390,9 +445,13 @@ export function SystemMonitoringDashboard() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <Database className="h-4 w-4 text-gray-500" />
-                      <span className="text-sm text-gray-500">Cache Hit Rate</span>
+                      <span className="text-sm text-gray-500">
+                        Cache Hit Rate
+                      </span>
                     </div>
-                    <span className="text-xl font-bold">{databaseMetrics.cacheHitRate}%</span>
+                    <span className="text-xl font-bold">
+                      {databaseMetrics.cacheHitRate}%
+                    </span>
                   </div>
                 </div>
               </div>
@@ -404,18 +463,19 @@ export function SystemMonitoringDashboard() {
           <Card>
             <CardHeader>
               <CardTitle>System Alerts</CardTitle>
-              <CardDescription>
-                Recent alerts and notifications
-              </CardDescription>
+              <CardDescription>Recent alerts and notifications</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
                 <div className="flex items-start space-x-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                   <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5" />
                   <div className="flex-1">
-                    <p className="font-medium text-yellow-900">High API Usage</p>
+                    <p className="font-medium text-yellow-900">
+                      High API Usage
+                    </p>
                     <p className="text-sm text-yellow-700">
-                      API usage at 85% of monthly limit. Consider upgrading plan.
+                      API usage at 85% of monthly limit. Consider upgrading
+                      plan.
                     </p>
                     <p className="text-xs text-yellow-600 mt-1">2 hours ago</p>
                   </div>
@@ -424,7 +484,9 @@ export function SystemMonitoringDashboard() {
                 <div className="flex items-start space-x-3 p-3 bg-green-50 border border-green-200 rounded-lg">
                   <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
                   <div className="flex-1">
-                    <p className="font-medium text-green-900">Database Backup Complete</p>
+                    <p className="font-medium text-green-900">
+                      Database Backup Complete
+                    </p>
                     <p className="text-sm text-green-700">
                       Daily backup completed successfully.
                     </p>
@@ -435,7 +497,9 @@ export function SystemMonitoringDashboard() {
                 <div className="flex items-start space-x-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                   <Globe className="h-5 w-5 text-blue-600 mt-0.5" />
                   <div className="flex-1">
-                    <p className="font-medium text-blue-900">Edge Functions Deployed</p>
+                    <p className="font-medium text-blue-900">
+                      Edge Functions Deployed
+                    </p>
                     <p className="text-sm text-blue-700">
                       2 new Edge Functions deployed successfully.
                     </p>

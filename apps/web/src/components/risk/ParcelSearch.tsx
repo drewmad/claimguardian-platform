@@ -8,96 +8,93 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { searchParcels, linkPropertyToParcel, ParcelData } from '@/actions/geospatial'
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
-  Search,
-  Link2,
-  MapPin,
-  User,
-  Home,
-  Calendar
-} from 'lucide-react'
+  searchParcels,
+  linkPropertyToParcel,
+  ParcelData,
+} from "@/actions/geospatial";
+import { Search, Link2, MapPin, User, Home, Calendar } from "lucide-react";
 
 // Using ParcelData type from geospatial actions
 
 interface ParcelSearchProps {
-  propertyId: string
-  currentParcelId?: string
-  onParcelLinked?: (parcelId: string) => void
+  propertyId: string;
+  currentParcelId?: string;
+  onParcelLinked?: (parcelId: string) => void;
 }
 
 export function ParcelSearch({
   propertyId,
   currentParcelId,
-  onParcelLinked
+  onParcelLinked,
 }: ParcelSearchProps) {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [searching, setSearching] = useState(false)
-  const [linking, setLinking] = useState(false)
-  const [results, setResults] = useState<ParcelData[]>([])
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searching, setSearching] = useState(false);
+  const [linking, setLinking] = useState(false);
+  const [results, setResults] = useState<ParcelData[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const handleSearch = async () => {
-    if (!searchQuery.trim()) return
+    if (!searchQuery.trim()) return;
 
-    setSearching(true)
-    setError(null)
-    setSuccess(null)
+    setSearching(true);
+    setError(null);
+    setSuccess(null);
 
     try {
       const result = await searchParcels({
         query: searchQuery,
-        limit: 10
-      })
+        limit: 10,
+      });
 
       if (result.error) {
-        setError(result.error)
-        setResults([])
+        setError(result.error);
+        setResults([]);
       } else {
-        setResults(result.data || [])
+        setResults(result.data || []);
         if (result.data?.length === 0) {
-          setError('No parcels found matching your search')
+          setError("No parcels found matching your search");
         }
       }
     } catch (err) {
-      setError('Failed to search parcels')
-      setResults([])
+      setError("Failed to search parcels");
+      setResults([]);
     } finally {
-      setSearching(false)
+      setSearching(false);
     }
-  }
+  };
 
   const handleLinkParcel = async (parcelId: string) => {
-    setLinking(true)
-    setError(null)
-    setSuccess(null)
+    setLinking(true);
+    setError(null);
+    setSuccess(null);
 
     try {
-      const result = await linkPropertyToParcel({ propertyId, parcelId })
+      const result = await linkPropertyToParcel({ propertyId, parcelId });
 
       if (result.error) {
-        setError(result.error)
+        setError(result.error);
       } else {
-        setSuccess('Property successfully linked to parcel!')
-        onParcelLinked?.(parcelId)
-        setResults([])
-        setSearchQuery('')
+        setSuccess("Property successfully linked to parcel!");
+        onParcelLinked?.(parcelId);
+        setResults([]);
+        setSearchQuery("");
       }
     } catch (err) {
-      setError('Failed to link parcel')
+      setError("Failed to link parcel");
     } finally {
-      setLinking(false)
+      setLinking(false);
     }
-  }
+  };
 
   return (
     <Card className="bg-gray-800 border-gray-700">
@@ -111,7 +108,8 @@ export function ParcelSearch({
         {currentParcelId ? (
           <Alert className="bg-green-900/20 border-green-600/50">
             <AlertDescription className="text-green-200">
-              This property is linked to parcel: <strong>{currentParcelId}</strong>
+              This property is linked to parcel:{" "}
+              <strong>{currentParcelId}</strong>
             </AlertDescription>
           </Alert>
         ) : (
@@ -131,7 +129,7 @@ export function ParcelSearch({
               id="parcel-search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               placeholder="e.g., 123 Main St or John Smith"
               className="bg-gray-900 border-gray-700 text-white"
             />
@@ -151,20 +149,24 @@ export function ParcelSearch({
 
         {error && (
           <Alert className="bg-red-900/20 border-red-600/50">
-            <AlertDescription className="text-red-200">{error}</AlertDescription>
+            <AlertDescription className="text-red-200">
+              {error}
+            </AlertDescription>
           </Alert>
         )}
 
         {success && (
           <Alert className="bg-green-900/20 border-green-600/50">
-            <AlertDescription className="text-green-200">{success}</AlertDescription>
+            <AlertDescription className="text-green-200">
+              {success}
+            </AlertDescription>
           </Alert>
         )}
 
         {results.length > 0 && (
           <div className="space-y-2">
             <p className="text-sm text-gray-400">
-              Found {results.length} parcel{results.length > 1 ? 's' : ''}:
+              Found {results.length} parcel{results.length > 1 ? "s" : ""}:
             </p>
             <div className="space-y-2 max-h-96 overflow-y-auto">
               {results.map((parcel) => (
@@ -209,7 +211,7 @@ export function ParcelSearch({
                       className="bg-green-600 hover:bg-green-700"
                     >
                       <Link2 className="h-4 w-4 mr-1" />
-                      {parcel.parcelId === currentParcelId ? 'Linked' : 'Link'}
+                      {parcel.parcelId === currentParcelId ? "Linked" : "Link"}
                     </Button>
                   </div>
 
@@ -246,5 +248,5 @@ export function ParcelSearch({
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

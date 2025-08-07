@@ -8,17 +8,16 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-import type { AIResponse } from '../types';
+import type { AIResponse } from "../types";
 import {
   AIRequest as NewAIRequest,
-  ImageAnalysisRequest as NewImageAnalysisRequest
-} from '../types/index';
+  ImageAnalysisRequest as NewImageAnalysisRequest,
+} from "../types/index";
 
-import { AIProvider } from './base';
-import { GeminiProvider as NewGeminiProvider } from './gemini.provider';
-
+import { AIProvider } from "./base";
+import { GeminiProvider as NewGeminiProvider } from "./gemini.provider";
 
 /**
  * Adapter class that maintains backward compatibility while using the new provider
@@ -28,11 +27,11 @@ export class GeminiProviderAdapter extends AIProvider {
   private client: GoogleGenerativeAI | null = null;
 
   constructor(apiKey?: string) {
-    super(apiKey || process.env.GEMINI_API_KEY || '', 'gemini');
+    super(apiKey || process.env.GEMINI_API_KEY || "", "gemini");
 
     // Initialize new provider
     this.newProvider = new NewGeminiProvider({
-      apiKey: this.apiKey
+      apiKey: this.apiKey,
     });
 
     if (this.apiKey) {
@@ -46,7 +45,7 @@ export class GeminiProviderAdapter extends AIProvider {
 
   async extractDocument(fileUrl: string, prompt: string): Promise<AIResponse> {
     if (!this.isAvailable()) {
-      return { success: false, error: 'Gemini API not configured' };
+      return { success: false, error: "Gemini API not configured" };
     }
 
     try {
@@ -54,8 +53,8 @@ export class GeminiProviderAdapter extends AIProvider {
       const request: NewImageAnalysisRequest = {
         imageUrl: fileUrl,
         prompt,
-        userId: 'legacy-user', // Default for backward compatibility
-        feature: 'document-extractor'
+        userId: "legacy-user", // Default for backward compatibility
+        feature: "document-extractor",
       };
 
       const response = await this.newProvider.analyzeImage(request);
@@ -79,31 +78,34 @@ export class GeminiProviderAdapter extends AIProvider {
         data: data as Record<string, unknown>,
         provider: this.name,
         processingTime: response.latency,
-        confidence: (data as { confidence?: number })?.confidence
+        confidence: (data as { confidence?: number })?.confidence,
       };
     } catch (error: unknown) {
       const err = error as Error;
       return {
         success: false,
-        error: err.message || 'Unknown error',
+        error: err.message || "Unknown error",
         provider: this.name,
-        processingTime: 0
+        processingTime: 0,
       };
     }
   }
 
-  async generateText(prompt: string, context?: Record<string, unknown>): Promise<AIResponse<string>> {
+  async generateText(
+    prompt: string,
+    context?: Record<string, unknown>,
+  ): Promise<AIResponse<string>> {
     if (!this.isAvailable()) {
-      return { success: false, error: 'Gemini API not configured' };
+      return { success: false, error: "Gemini API not configured" };
     }
 
     try {
       // Convert to new request format
       const request: NewAIRequest = {
         prompt,
-        userId: 'legacy-user',
-        feature: 'generic',
-        metadata: context
+        userId: "legacy-user",
+        feature: "generic",
+        metadata: context,
       };
 
       const response = await this.newProvider.generateText(request);
@@ -113,21 +115,21 @@ export class GeminiProviderAdapter extends AIProvider {
         success: true,
         data: response.text,
         provider: this.name,
-        processingTime: response.latency
+        processingTime: response.latency,
       };
     } catch (error: unknown) {
       return {
         success: false,
-        error: (error as Error).message || 'Unknown error',
+        error: (error as Error).message || "Unknown error",
         provider: this.name,
-        processingTime: 0
+        processingTime: 0,
       };
     }
   }
 
   async analyzeImage(imageUrl: string, prompt: string): Promise<AIResponse> {
     if (!this.isAvailable()) {
-      return { success: false, error: 'Gemini API not configured' };
+      return { success: false, error: "Gemini API not configured" };
     }
 
     try {
@@ -135,8 +137,8 @@ export class GeminiProviderAdapter extends AIProvider {
       const request: NewImageAnalysisRequest = {
         imageUrl,
         prompt,
-        userId: 'legacy-user',
-        feature: 'damage-analyzer'
+        userId: "legacy-user",
+        feature: "damage-analyzer",
       };
 
       const response = await this.newProvider.analyzeImage(request);
@@ -146,14 +148,14 @@ export class GeminiProviderAdapter extends AIProvider {
         success: true,
         data: response.text,
         provider: this.name,
-        processingTime: response.latency
+        processingTime: response.latency,
       };
     } catch (error: unknown) {
       return {
         success: false,
-        error: (error as Error).message || 'Unknown error',
+        error: (error as Error).message || "Unknown error",
         provider: this.name,
-        processingTime: 0
+        processingTime: 0,
       };
     }
   }

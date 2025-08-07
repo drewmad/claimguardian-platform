@@ -1,34 +1,52 @@
 #!/usr/bin/env node
 
-import { glob } from 'glob';
-import { readFile } from 'fs/promises';
-import path from 'path';
+import { glob } from "glob";
+import { readFile } from "fs/promises";
+import path from "path";
 
-const directoriesToScan = ['apps', 'packages'];
-const fileExtensions = ['.js', '.jsx', '.ts', '.tsx'];
-const ignorePatterns = ['**/node_modules/**', '**/dist/**', '**/build/**', '**/.next/**'];
+const directoriesToScan = ["apps", "packages"];
+const fileExtensions = [".js", ".jsx", ".ts", ".tsx"];
+const ignorePatterns = [
+  "**/node_modules/**",
+  "**/dist/**",
+  "**/build/**",
+  "**/.next/**",
+];
 
 // Required tags for validation
-const requiredTags = ['@owner', '@purpose', '@dependencies'];
+const requiredTags = ["@owner", "@purpose", "@dependencies"];
 
 // Valid values for specific tags
 const validValues = {
-  '@status': ['experimental', 'stable', 'deprecated', 'refactoring'],
-  '@ai-integration': ['openai', 'gemini', 'multi-provider', 'none'],
-  '@insurance-context': ['claims', 'policies', 'underwriting', 'fraud-detection'],
-  '@florida-specific': ['true', 'false'],
-  '@supabase-integration': ['auth', 'database', 'storage', 'edge-functions'],
-  '@review-policy': ['strict', 'standard', 'ai-assisted'],
-  '@test-strategy': ['unit-only', 'e2e-required', 'property-based', 'integration'],
-  '@data-sensitivity': ['public', 'internal', 'confidential', 'restricted']
+  "@status": ["experimental", "stable", "deprecated", "refactoring"],
+  "@ai-integration": ["openai", "gemini", "multi-provider", "none"],
+  "@insurance-context": [
+    "claims",
+    "policies",
+    "underwriting",
+    "fraud-detection",
+  ],
+  "@florida-specific": ["true", "false"],
+  "@supabase-integration": ["auth", "database", "storage", "edge-functions"],
+  "@review-policy": ["strict", "standard", "ai-assisted"],
+  "@test-strategy": [
+    "unit-only",
+    "e2e-required",
+    "property-based",
+    "integration",
+  ],
+  "@data-sensitivity": ["public", "internal", "confidential", "restricted"],
 };
 
 async function validateMetadata() {
-  console.log('🔍 Starting metadata validation...\n');
+  console.log("🔍 Starting metadata validation...\n");
 
-  const filesToScan = await glob(`{${directoriesToScan.join(',')}}/**/*.{js,jsx,ts,tsx}`, {
-    ignore: ignorePatterns,
-  });
+  const filesToScan = await glob(
+    `{${directoriesToScan.join(",")}}/**/*.{js,jsx,ts,tsx}`,
+    {
+      ignore: ignorePatterns,
+    },
+  );
 
   const validationErrors = [];
   const warnings = [];
@@ -39,10 +57,10 @@ async function validateMetadata() {
       continue;
     }
 
-    const content = await readFile(file, 'utf-8');
+    const content = await readFile(file, "utf-8");
 
     // Skip files without metadata (they should be caught by audit)
-    if (!content.includes('@fileMetadata')) {
+    if (!content.includes("@fileMetadata")) {
       continue;
     }
 
@@ -50,9 +68,11 @@ async function validateMetadata() {
     const fileWarnings = [];
 
     // Extract metadata block
-    const metadataMatch = content.match(/\/\*\*[\s\S]*?@fileMetadata[\s\S]*?\*\//);
+    const metadataMatch = content.match(
+      /\/\*\*[\s\S]*?@fileMetadata[\s\S]*?\*\//,
+    );
     if (!metadataMatch) {
-      fileErrors.push('Invalid metadata block format');
+      fileErrors.push("Invalid metadata block format");
       continue;
     }
 
@@ -67,11 +87,15 @@ async function validateMetadata() {
 
     // Validate tag values
     for (const [tag, validOptions] of Object.entries(validValues)) {
-      const tagMatch = metadata.match(new RegExp(`${tag.replace('@', '\\@')}\\s+([^\\s\\n]+)`));
+      const tagMatch = metadata.match(
+        new RegExp(`${tag.replace("@", "\\@")}\\s+([^\\s\\n]+)`),
+      );
       if (tagMatch) {
-        const value = tagMatch[1].replace(/['"]/g, '');
+        const value = tagMatch[1].replace(/['"]/g, "");
         if (!validOptions.includes(value)) {
-          fileErrors.push(`Invalid value "${value}" for ${tag}. Valid options: ${validOptions.join(', ')}`);
+          fileErrors.push(
+            `Invalid value "${value}" for ${tag}. Valid options: ${validOptions.join(", ")}`,
+          );
         }
       }
     }
@@ -81,14 +105,18 @@ async function validateMetadata() {
     if (purposeMatch) {
       const purpose = purposeMatch[1].trim();
       if (!purpose.startsWith('"') || !purpose.endsWith('"')) {
-        fileWarnings.push('@purpose should be a quoted string');
+        fileWarnings.push("@purpose should be a quoted string");
       } else {
         const purposeText = purpose.slice(1, -1);
         if (purposeText.length < 10) {
-          fileWarnings.push('@purpose description is too short (minimum 10 characters)');
+          fileWarnings.push(
+            "@purpose description is too short (minimum 10 characters)",
+          );
         }
         if (purposeText.length > 100) {
-          fileWarnings.push('@purpose description is too long (maximum 100 characters)');
+          fileWarnings.push(
+            "@purpose description is too long (maximum 100 characters)",
+          );
         }
       }
     }
@@ -99,10 +127,10 @@ async function validateMetadata() {
       try {
         const deps = JSON.parse(depsMatch[1].replace(/'/g, '"'));
         if (!Array.isArray(deps)) {
-          fileErrors.push('@dependencies must be an array');
+          fileErrors.push("@dependencies must be an array");
         }
       } catch (e) {
-        fileErrors.push('@dependencies has invalid JSON format');
+        fileErrors.push("@dependencies has invalid JSON format");
       }
     }
 
@@ -124,40 +152,42 @@ async function validateMetadata() {
   console.log(`⚠️  Files with warnings: ${warnings.length}\n`);
 
   if (validationErrors.length > 0) {
-    console.log('❌ VALIDATION ERRORS:\n');
+    console.log("❌ VALIDATION ERRORS:\n");
     for (const { file, errors } of validationErrors) {
       console.log(`📄 ${file}`);
       for (const error of errors) {
         console.log(`   ❌ ${error}`);
       }
-      console.log('');
+      console.log("");
     }
   }
 
   if (warnings.length > 0) {
-    console.log('⚠️  WARNINGS:\n');
+    console.log("⚠️  WARNINGS:\n");
     for (const { file, warnings: fileWarnings } of warnings) {
       console.log(`📄 ${file}`);
       for (const warning of fileWarnings) {
         console.log(`   ⚠️  ${warning}`);
       }
-      console.log('');
+      console.log("");
     }
   }
 
   if (validationErrors.length === 0 && warnings.length === 0) {
-    console.log('🎉 All metadata is valid!');
+    console.log("🎉 All metadata is valid!");
     process.exit(0);
   } else if (validationErrors.length === 0) {
-    console.log('✅ No validation errors found, only warnings');
+    console.log("✅ No validation errors found, only warnings");
     process.exit(0);
   } else {
-    console.log(`❌ Found ${validationErrors.length} files with validation errors`);
+    console.log(
+      `❌ Found ${validationErrors.length} files with validation errors`,
+    );
     process.exit(1);
   }
 }
 
-validateMetadata().catch(err => {
-  console.error('❌ Validation failed:', err);
+validateMetadata().catch((err) => {
+  console.error("❌ Validation failed:", err);
   process.exit(1);
 });

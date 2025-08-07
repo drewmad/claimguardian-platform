@@ -1,12 +1,27 @@
-'use client'
+"use client";
 
-import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { WeatherDashboard } from '@/components/noaa/weather-dashboard'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Cloud, CloudRain, Sun, Wind, Thermometer, Eye, Gauge, Info } from 'lucide-react'
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import { WeatherDashboard } from "@/components/noaa/weather-dashboard";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import {
+  Cloud,
+  CloudRain,
+  Sun,
+  Wind,
+  Thermometer,
+  Eye,
+  Gauge,
+  Info,
+} from "lucide-react";
 
 export default function WeatherPage() {
   return (
@@ -15,7 +30,9 @@ export default function WeatherPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-white">Weather Intelligence</h1>
+            <h1 className="text-3xl font-bold text-white">
+              Weather Intelligence
+            </h1>
             <p className="text-gray-400 mt-1">
               Real-time NOAA weather data for property risk assessment
             </p>
@@ -23,17 +40,23 @@ export default function WeatherPage() {
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
-              onClick={() => window.location.href = '/dashboard/weather/sync'}
+              onClick={() => (window.location.href = "/dashboard/weather/sync")}
               className="bg-purple-500/10 border-purple-500/20 text-purple-400 hover:bg-purple-500/20"
             >
               <Cloud className="w-4 h-4 mr-2" />
               Historical Sync
             </Button>
-            <Badge variant="outline" className="bg-green-500/10 text-green-400 border-green-500/20">
+            <Badge
+              variant="outline"
+              className="bg-green-500/10 text-green-400 border-green-500/20"
+            >
               <Eye className="w-3 h-3 mr-1" />
               System Active
             </Badge>
-            <Badge variant="outline" className="bg-blue-500/10 text-blue-400 border-blue-500/20">
+            <Badge
+              variant="outline"
+              className="bg-blue-500/10 text-blue-400 border-blue-500/20"
+            >
               NOAA Connected
             </Badge>
           </div>
@@ -48,7 +71,10 @@ export default function WeatherPage() {
               <p>✅ NOAA Weather API: Connected and operational</p>
               <p>✅ NOAA Tide API: Connected and operational</p>
               <p>✅ Database Tables: All 14 weather data sources configured</p>
-              <p>✅ Edge Functions: noaa-data-ingestor, property-weather-monitor, weather-claims-correlator deployed</p>
+              <p>
+                ✅ Edge Functions: noaa-data-ingestor, property-weather-monitor,
+                weather-claims-correlator deployed
+              </p>
               <p>✅ Real-time Monitoring: Property alerts active</p>
               <p>✅ Claims Correlation: Weather-claim analysis ready</p>
             </div>
@@ -63,8 +89,12 @@ export default function WeatherPage() {
                 <Cloud className="w-8 h-8 text-blue-400" />
                 <Badge variant="secondary">Live</Badge>
               </div>
-              <h3 className="text-lg font-semibold text-white">Weather Stations</h3>
-              <p className="text-gray-400 text-sm">14+ NOAA data sources monitoring Florida</p>
+              <h3 className="text-lg font-semibold text-white">
+                Weather Stations
+              </h3>
+              <p className="text-gray-400 text-sm">
+                14+ NOAA data sources monitoring Florida
+              </p>
             </CardContent>
           </Card>
 
@@ -74,8 +104,12 @@ export default function WeatherPage() {
                 <Wind className="w-8 h-8 text-green-400" />
                 <Badge variant="secondary">Dynamic</Badge>
               </div>
-              <h3 className="text-lg font-semibold text-white">Adaptive Cadence</h3>
-              <p className="text-gray-400 text-sm">Increases frequency during severe weather</p>
+              <h3 className="text-lg font-semibold text-white">
+                Adaptive Cadence
+              </h3>
+              <p className="text-gray-400 text-sm">
+                Increases frequency during severe weather
+              </p>
             </CardContent>
           </Card>
 
@@ -85,8 +119,12 @@ export default function WeatherPage() {
                 <Gauge className="w-8 h-8 text-orange-400" />
                 <Badge variant="secondary">Real-time</Badge>
               </div>
-              <h3 className="text-lg font-semibold text-white">Property Alerts</h3>
-              <p className="text-gray-400 text-sm">Instant notifications for severe conditions</p>
+              <h3 className="text-lg font-semibold text-white">
+                Property Alerts
+              </h3>
+              <p className="text-gray-400 text-sm">
+                Instant notifications for severe conditions
+              </p>
             </CardContent>
           </Card>
 
@@ -96,8 +134,12 @@ export default function WeatherPage() {
                 <Thermometer className="w-8 h-8 text-purple-400" />
                 <Badge variant="secondary">AI-Powered</Badge>
               </div>
-              <h3 className="text-lg font-semibold text-white">Claims Correlation</h3>
-              <p className="text-gray-400 text-sm">AI correlates weather with insurance claims</p>
+              <h3 className="text-lg font-semibold text-white">
+                Claims Correlation
+              </h3>
+              <p className="text-gray-400 text-sm">
+                AI correlates weather with insurance claims
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -210,5 +252,5 @@ export default function WeatherPage() {
         </div>
       </div>
     </DashboardLayout>
-  )
+  );
 }

@@ -1,141 +1,146 @@
-import "jsr:@supabase/functions-js/edge-runtime.d.ts"
-import { createClient } from 'jsr:@supabase/supabase-js@2'
-import { GoogleGenerativeAI } from "@google/generative-ai"
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "jsr:@supabase/supabase-js@2";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-}
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
 
 interface PageAnalysisRequest {
-  url: string
-  analysisType: 'comprehensive' | 'seo' | 'accessibility' | 'performance'
-  userId?: string
+  url: string;
+  analysisType: "comprehensive" | "seo" | "accessibility" | "performance";
+  userId?: string;
 }
 
 interface PageAnalysisResult {
   seo: {
-    score: number
-    title: string
-    description: string
-    headings: { h1: number; h2: number; h3: number }
-    keywords: string[]
-    issues: string[]
-    recommendations: string[]
-  }
+    score: number;
+    title: string;
+    description: string;
+    headings: { h1: number; h2: number; h3: number };
+    keywords: string[];
+    issues: string[];
+    recommendations: string[];
+  };
   accessibility: {
-    score: number
-    issues: string[]
-    recommendations: string[]
-  }
+    score: number;
+    issues: string[];
+    recommendations: string[];
+  };
   performance: {
-    score: number
-    loadTime: number
-    pageSize: string
-    issues: string[]
-    recommendations: string[]
-  }
+    score: number;
+    loadTime: number;
+    pageSize: string;
+    issues: string[];
+    recommendations: string[];
+  };
   content: {
-    wordCount: number
-    readabilityScore: number
-    language: string
-    summary: string
-    mainTopics: string[]
-  }
+    wordCount: number;
+    readabilityScore: number;
+    language: string;
+    summary: string;
+    mainTopics: string[];
+  };
   insurance?: {
-    relevantTopics: string[]
-    insuranceTerms: string[]
-    claimRelated: boolean
-  }
+    relevantTopics: string[];
+    insuranceTerms: string[];
+    claimRelated: boolean;
+  };
 }
 
 interface PageAnalysisResponse {
-  success: boolean
-  analysis?: PageAnalysisResult
+  success: boolean;
+  analysis?: PageAnalysisResult;
   abTestInfo?: {
-    testId: string
-    variant: 'A' | 'B'
-    modelUsed: string
-  }
-  error?: string
-  processingTime?: number
+    testId: string;
+    variant: "A" | "B";
+    modelUsed: string;
+  };
+  error?: string;
+  processingTime?: number;
 }
 
 // Initialize AI clients
-const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY')
-const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY')
+const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
+const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
 
 // Initialize Supabase client
-const supabaseUrl = Deno.env.get('SUPABASE_URL')
-const supabaseServiceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+const supabaseUrl = Deno.env.get("SUPABASE_URL");
+const supabaseServiceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
-const supabase = createClient(
-  supabaseUrl ?? '',
-  supabaseServiceRoleKey ?? ''
-)
+const supabase = createClient(supabaseUrl ?? "", supabaseServiceRoleKey ?? "");
 
 // Helper function to fetch page content
-async function fetchPageContent(url: string): Promise<{ html: string; metadata: any }> {
+async function fetchPageContent(
+  url: string,
+): Promise<{ html: string; metadata: any }> {
   try {
     const response = await fetch(url, {
       headers: {
-        'User-Agent': 'ClaimGuardian-PageAnalyzer/1.0 (compatible; bot)'
-      }
-    })
+        "User-Agent": "ClaimGuardian-PageAnalyzer/1.0 (compatible; bot)",
+      },
+    });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch page: ${response.statusText}`)
+      throw new Error(`Failed to fetch page: ${response.statusText}`);
     }
 
-    const html = await response.text()
+    const html = await response.text();
 
     // Basic metadata extraction
-    const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i)
-    const descriptionMatch = html.match(/<meta\s+name=["']description["']\s+content=["']([^"']+)["']/i)
+    const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+    const descriptionMatch = html.match(
+      /<meta\s+name=["']description["']\s+content=["']([^"']+)["']/i,
+    );
 
     return {
       html,
       metadata: {
         url,
-        title: titleMatch?.[1] || '',
-        description: descriptionMatch?.[1] || '',
-        fetchedAt: new Date().toISOString()
-      }
-    }
+        title: titleMatch?.[1] || "",
+        description: descriptionMatch?.[1] || "",
+        fetchedAt: new Date().toISOString(),
+      },
+    };
   } catch (error) {
-    console.error('Error fetching page:', error)
-    throw new Error(`Failed to fetch page content: ${error.message}`)
+    console.error("Error fetching page:", error);
+    throw new Error(`Failed to fetch page content: ${error.message}`);
   }
 }
 
 // Helper function to extract text content from HTML
 function extractTextContent(html: string): string {
   // Remove script and style tags
-  let text = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-  text = text.replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
+  let text = html.replace(
+    /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+    "",
+  );
+  text = text.replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "");
 
   // Remove HTML tags
-  text = text.replace(/<[^>]+>/g, ' ')
+  text = text.replace(/<[^>]+>/g, " ");
 
   // Decode HTML entities
-  text = text.replace(/&nbsp;/g, ' ')
-  text = text.replace(/&amp;/g, '&')
-  text = text.replace(/&lt;/g, '<')
-  text = text.replace(/&gt;/g, '>')
-  text = text.replace(/&quot;/g, '"')
-  text = text.replace(/&#39;/g, "'")
+  text = text.replace(/&nbsp;/g, " ");
+  text = text.replace(/&amp;/g, "&");
+  text = text.replace(/&lt;/g, "<");
+  text = text.replace(/&gt;/g, ">");
+  text = text.replace(/&quot;/g, '"');
+  text = text.replace(/&#39;/g, "'");
 
   // Clean up whitespace
-  text = text.replace(/\s+/g, ' ').trim()
+  text = text.replace(/\s+/g, " ").trim();
 
-  return text
+  return text;
 }
 
 // Helper function to analyze page with AI
 async function analyzePageWithAI(
   content: { html: string; metadata: any; text: string },
-  analysisType: string
+  analysisType: string,
 ): Promise<PageAnalysisResult> {
   const prompt = `
 You are an expert web analyst. Analyze the following webpage content and provide a comprehensive analysis.
@@ -188,99 +193,131 @@ Provide a ${analysisType} analysis with the following structure:
   }
 }
 
-Focus on ${analysisType === 'comprehensive' ? 'all aspects' : analysisType} but provide complete data.
-Return ONLY valid JSON, no additional text.`
+Focus on ${analysisType === "comprehensive" ? "all aspects" : analysisType} but provide complete data.
+Return ONLY valid JSON, no additional text.`;
 
   try {
     // Use OpenAI by default, with Gemini as fallback
-    let result: string
+    let result: string;
 
     if (OPENAI_API_KEY) {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${OPENAI_API_KEY}`,
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${OPENAI_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "gpt-4-turbo-preview",
+            messages: [
+              {
+                role: "system",
+                content:
+                  "You are a web analysis expert. Always respond with valid JSON only.",
+              },
+              {
+                role: "user",
+                content: prompt,
+              },
+            ],
+            temperature: 0.3,
+            max_tokens: 2000,
+            response_format: { type: "json_object" },
+          }),
         },
-        body: JSON.stringify({
-          model: 'gpt-4-turbo-preview',
-          messages: [
-            {
-              role: 'system',
-              content: 'You are a web analysis expert. Always respond with valid JSON only.'
-            },
-            {
-              role: 'user',
-              content: prompt
-            }
-          ],
-          temperature: 0.3,
-          max_tokens: 2000,
-          response_format: { type: 'json_object' }
-        })
-      })
+      );
 
       if (!response.ok) {
-        throw new Error(`OpenAI API error: ${response.statusText}`)
+        throw new Error(`OpenAI API error: ${response.statusText}`);
       }
 
-      const data = await response.json()
-      result = data.choices[0].message.content
+      const data = await response.json();
+      result = data.choices[0].message.content;
     } else if (GEMINI_API_KEY) {
-      const genAI = new GoogleGenerativeAI(GEMINI_API_KEY)
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
+      const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-      const geminiResult = await model.generateContent(prompt)
-      result = geminiResult.response.text()
+      const geminiResult = await model.generateContent(prompt);
+      result = geminiResult.response.text();
     } else {
       // Mock analysis for demo purposes
       return {
         seo: {
           score: 85,
-          title: content.metadata.title || 'No title found',
-          description: content.metadata.description || 'No description found',
+          title: content.metadata.title || "No title found",
+          description: content.metadata.description || "No description found",
           headings: { h1: 1, h2: 5, h3: 10 },
-          keywords: ['insurance', 'claims', 'property', 'florida', 'coverage'],
-          issues: ['Missing alt text on images', 'No schema markup detected'],
-          recommendations: ['Add schema markup', 'Optimize images', 'Improve meta descriptions']
+          keywords: ["insurance", "claims", "property", "florida", "coverage"],
+          issues: ["Missing alt text on images", "No schema markup detected"],
+          recommendations: [
+            "Add schema markup",
+            "Optimize images",
+            "Improve meta descriptions",
+          ],
         },
         accessibility: {
           score: 78,
-          issues: ['Low contrast text detected', 'Missing ARIA labels'],
-          recommendations: ['Increase text contrast', 'Add ARIA labels to interactive elements']
+          issues: ["Low contrast text detected", "Missing ARIA labels"],
+          recommendations: [
+            "Increase text contrast",
+            "Add ARIA labels to interactive elements",
+          ],
         },
         performance: {
           score: 72,
           loadTime: 3.2,
-          pageSize: '2.1MB',
-          issues: ['Large image files', 'No lazy loading detected'],
-          recommendations: ['Compress images', 'Implement lazy loading', 'Enable caching']
+          pageSize: "2.1MB",
+          issues: ["Large image files", "No lazy loading detected"],
+          recommendations: [
+            "Compress images",
+            "Implement lazy loading",
+            "Enable caching",
+          ],
         },
         content: {
           wordCount: Math.floor(content.text.length / 5),
           readabilityScore: 82,
-          language: 'en',
-          summary: 'This webpage provides information about insurance claims and property damage assessment.',
-          mainTopics: ['Insurance', 'Claims', 'Property Damage', 'Florida', 'Hurricane']
+          language: "en",
+          summary:
+            "This webpage provides information about insurance claims and property damage assessment.",
+          mainTopics: [
+            "Insurance",
+            "Claims",
+            "Property Damage",
+            "Florida",
+            "Hurricane",
+          ],
         },
         insurance: {
-          relevantTopics: ['Property Insurance', 'Claim Filing', 'Damage Assessment'],
-          insuranceTerms: ['deductible', 'coverage', 'claim', 'policy', 'premium'],
-          claimRelated: true
-        }
-      }
+          relevantTopics: [
+            "Property Insurance",
+            "Claim Filing",
+            "Damage Assessment",
+          ],
+          insuranceTerms: [
+            "deductible",
+            "coverage",
+            "claim",
+            "policy",
+            "premium",
+          ],
+          claimRelated: true,
+        },
+      };
     }
 
     // Parse the AI response
     try {
-      return JSON.parse(result)
+      return JSON.parse(result);
     } catch (parseError) {
-      console.error('Failed to parse AI response:', parseError)
-      throw new Error('Invalid AI response format')
+      console.error("Failed to parse AI response:", parseError);
+      throw new Error("Invalid AI response format");
     }
   } catch (error) {
-    console.error('AI analysis error:', error)
-    throw new Error(`AI analysis failed: ${error.message}`)
+    console.error("AI analysis error:", error);
+    throw new Error(`AI analysis failed: ${error.message}`);
   }
 }
 
@@ -290,78 +327,76 @@ async function trackUsage(
   url: string,
   analysisType: string,
   success: boolean,
-  processingTime: number
+  processingTime: number,
 ) {
   try {
-    await supabase
-      .from('ai_usage_logs')
-      .insert({
-        user_id: userId,
-        feature_id: 'page-analyzer',
-        operation_type: analysisType,
-        metadata: {
-          url,
-          success,
-          processingTime
-        },
-        created_at: new Date().toISOString()
-      })
+    await supabase.from("ai_usage_logs").insert({
+      user_id: userId,
+      feature_id: "page-analyzer",
+      operation_type: analysisType,
+      metadata: {
+        url,
+        success,
+        processingTime,
+      },
+      created_at: new Date().toISOString(),
+    });
   } catch (error) {
-    console.error('Failed to track usage:', error)
+    console.error("Failed to track usage:", error);
   }
 }
 
 Deno.serve(async (req: Request): Promise<Response> => {
   // Handle CORS preflight
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
   }
 
-  const startTime = Date.now()
+  const startTime = Date.now();
 
   try {
     // Parse request body
-    const body: PageAnalysisRequest = await req.json()
+    const body: PageAnalysisRequest = await req.json();
 
     // Validate URL
     if (!body.url) {
       return new Response(
-        JSON.stringify({ success: false, error: 'URL is required' }),
+        JSON.stringify({ success: false, error: "URL is required" }),
         {
           status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
-      )
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
     }
 
     // Validate URL format
     try {
-      new URL(body.url)
+      new URL(body.url);
     } catch {
       return new Response(
-        JSON.stringify({ success: false, error: 'Invalid URL format' }),
+        JSON.stringify({ success: false, error: "Invalid URL format" }),
         {
           status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
-      )
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
     }
 
-    console.log(`Analyzing page: ${body.url} (type: ${body.analysisType})`)
+    console.log(`Analyzing page: ${body.url} (type: ${body.analysisType})`);
 
     // Fetch page content
-    const pageContent = await fetchPageContent(body.url)
+    const pageContent = await fetchPageContent(body.url);
 
     // Extract text content
-    const textContent = extractTextContent(pageContent.html)
+    const textContent = extractTextContent(pageContent.html);
 
     // Analyze with AI
     const analysis = await analyzePageWithAI(
       { ...pageContent, text: textContent },
-      body.analysisType
-    )
+      body.analysisType,
+    );
 
-    const processingTime = Date.now() - startTime
+    const processingTime = Date.now() - startTime;
 
     // Track usage
     await trackUsage(
@@ -369,8 +404,8 @@ Deno.serve(async (req: Request): Promise<Response> => {
       body.url,
       body.analysisType,
       true,
-      processingTime
-    )
+      processingTime,
+    );
 
     // Prepare response
     const response: PageAnalysisResponse = {
@@ -379,45 +414,32 @@ Deno.serve(async (req: Request): Promise<Response> => {
       processingTime,
       abTestInfo: {
         testId: `test_${Date.now()}`,
-        variant: Math.random() > 0.5 ? 'A' : 'B',
-        modelUsed: OPENAI_API_KEY ? 'gpt-4-turbo' : 'gemini-1.5-flash'
-      }
-    }
+        variant: Math.random() > 0.5 ? "A" : "B",
+        modelUsed: OPENAI_API_KEY ? "gpt-4-turbo" : "gemini-1.5-flash",
+      },
+    };
 
-    return new Response(
-      JSON.stringify(response),
-      {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      }
-    )
-
+    return new Response(JSON.stringify(response), {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   } catch (error) {
-    console.error('Page analysis error:', error)
+    console.error("Page analysis error:", error);
 
-    const processingTime = Date.now() - startTime
+    const processingTime = Date.now() - startTime;
 
     // Track failed usage
-    await trackUsage(
-      undefined,
-      '',
-      'error',
-      false,
-      processingTime
-    )
+    await trackUsage(undefined, "", "error", false, processingTime);
 
     const errorResponse: PageAnalysisResponse = {
       success: false,
-      error: error.message || 'Internal server error',
-      processingTime
-    }
+      error: error.message || "Internal server error",
+      processingTime,
+    };
 
-    return new Response(
-      JSON.stringify(errorResponse),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      }
-    )
+    return new Response(JSON.stringify(errorResponse), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
-})
+});

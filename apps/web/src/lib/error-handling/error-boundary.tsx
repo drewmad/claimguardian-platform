@@ -8,228 +8,266 @@
  * @status stable
  */
 
-'use client'
+"use client";
 
-import { AlertTriangle, RefreshCw, Home, ArrowLeft } from 'lucide-react'
-import React, { Component, ReactNode, ErrorInfo } from 'react'
-import { logger } from '@/lib/logger/production-logger'
-import { toError } from '@claimguardian/utils'
+import { AlertTriangle, RefreshCw, Home, ArrowLeft } from "lucide-react";
+import React, { Component, ReactNode, ErrorInfo } from "react";
+import { logger } from "@/lib/logger/production-logger";
+import { toError } from "@claimguardian/utils";
 
 interface Props {
-  children: ReactNode
-  fallbackComponent?: React.ComponentType<ErrorFallbackProps>
-  onError?: (error: Error, errorInfo: ErrorInfo) => void
-  isolate?: boolean // Isolate errors to prevent cascade failures
+  children: ReactNode;
+  fallbackComponent?: React.ComponentType<ErrorFallbackProps>;
+  onError?: (error: Error, errorInfo: ErrorInfo) => void;
+  isolate?: boolean; // Isolate errors to prevent cascade failures
 }
 
 interface State {
-  hasError: boolean
-  error: Error | null
-  errorInfo: ErrorInfo | null
-  errorId: string | null
-  isRecovering: boolean
+  hasError: boolean;
+  error: Error | null;
+  errorInfo: ErrorInfo | null;
+  errorId: string | null;
+  isRecovering: boolean;
 }
 
 export interface ErrorFallbackProps {
-  error: Error | null
-  errorInfo: ErrorInfo | null
-  errorId: string | null
-  retry: () => void
-  goHome: () => void
-  goBack: () => void
-  isRecovering: boolean
+  error: Error | null;
+  errorInfo: ErrorInfo | null;
+  errorId: string | null;
+  retry: () => void;
+  goHome: () => void;
+  goBack: () => void;
+  isRecovering: boolean;
 }
 
-type ErrorSeverity = 'low' | 'medium' | 'high' | 'critical'
-type ErrorCategory = 'network' | 'auth' | 'validation' | 'runtime' | 'unknown'
+type ErrorSeverity = "low" | "medium" | "high" | "critical";
+type ErrorCategory = "network" | "auth" | "validation" | "runtime" | "unknown";
 
 interface ClassifiedError {
-  severity: ErrorSeverity
-  category: ErrorCategory
-  isRecoverable: boolean
-  userMessage: string
-  technicalMessage: string
+  severity: ErrorSeverity;
+  category: ErrorCategory;
+  isRecoverable: boolean;
+  userMessage: string;
+  technicalMessage: string;
 }
 
 class ErrorBoundary extends Component<Props, State> {
   private errorClassification: Map<string, ClassifiedError> = new Map([
     // Network errors
-    ['NetworkError', {
-      severity: 'medium',
-      category: 'network',
-      isRecoverable: true,
-      userMessage: 'Connection issue. Please check your internet and try again.',
-      technicalMessage: 'Network request failed'
-    }],
-    ['TypeError: Failed to fetch', {
-      severity: 'medium',
-      category: 'network',
-      isRecoverable: true,
-      userMessage: 'Unable to connect to our servers. Please try again.',
-      technicalMessage: 'Fetch operation failed'
-    }],
+    [
+      "NetworkError",
+      {
+        severity: "medium",
+        category: "network",
+        isRecoverable: true,
+        userMessage:
+          "Connection issue. Please check your internet and try again.",
+        technicalMessage: "Network request failed",
+      },
+    ],
+    [
+      "TypeError: Failed to fetch",
+      {
+        severity: "medium",
+        category: "network",
+        isRecoverable: true,
+        userMessage: "Unable to connect to our servers. Please try again.",
+        technicalMessage: "Fetch operation failed",
+      },
+    ],
 
     // Authentication errors
-    ['AuthError', {
-      severity: 'high',
-      category: 'auth',
-      isRecoverable: true,
-      userMessage: 'Your session has expired. Please sign in again.',
-      technicalMessage: 'Authentication failed'
-    }],
-    ['Unauthorized', {
-      severity: 'high',
-      category: 'auth',
-      isRecoverable: true,
-      userMessage: 'You need to sign in to access this feature.',
-      technicalMessage: 'Unauthorized access attempt'
-    }],
+    [
+      "AuthError",
+      {
+        severity: "high",
+        category: "auth",
+        isRecoverable: true,
+        userMessage: "Your session has expired. Please sign in again.",
+        technicalMessage: "Authentication failed",
+      },
+    ],
+    [
+      "Unauthorized",
+      {
+        severity: "high",
+        category: "auth",
+        isRecoverable: true,
+        userMessage: "You need to sign in to access this feature.",
+        technicalMessage: "Unauthorized access attempt",
+      },
+    ],
 
     // Validation errors
-    ['ValidationError', {
-      severity: 'low',
-      category: 'validation',
-      isRecoverable: true,
-      userMessage: 'Please check your input and try again.',
-      technicalMessage: 'Input validation failed'
-    }],
+    [
+      "ValidationError",
+      {
+        severity: "low",
+        category: "validation",
+        isRecoverable: true,
+        userMessage: "Please check your input and try again.",
+        technicalMessage: "Input validation failed",
+      },
+    ],
 
     // Runtime errors
-    ['ChunkLoadError', {
-      severity: 'medium',
-      category: 'runtime',
-      isRecoverable: true,
-      userMessage: 'Failed to load application resources. Please refresh the page.',
-      technicalMessage: 'Dynamic import failed'
-    }],
-    ['ReferenceError', {
-      severity: 'high',
-      category: 'runtime',
-      isRecoverable: false,
-      userMessage: 'An unexpected error occurred. Our team has been notified.',
-      technicalMessage: 'Reference error in application code'
-    }],
+    [
+      "ChunkLoadError",
+      {
+        severity: "medium",
+        category: "runtime",
+        isRecoverable: true,
+        userMessage:
+          "Failed to load application resources. Please refresh the page.",
+        technicalMessage: "Dynamic import failed",
+      },
+    ],
+    [
+      "ReferenceError",
+      {
+        severity: "high",
+        category: "runtime",
+        isRecoverable: false,
+        userMessage:
+          "An unexpected error occurred. Our team has been notified.",
+        technicalMessage: "Reference error in application code",
+      },
+    ],
 
     // Critical errors
-    ['InternalError', {
-      severity: 'critical',
-      category: 'runtime',
-      isRecoverable: false,
-      userMessage: 'A critical error occurred. Please contact support if this continues.',
-      technicalMessage: 'Internal application error'
-    }]
-  ])
+    [
+      "InternalError",
+      {
+        severity: "critical",
+        category: "runtime",
+        isRecoverable: false,
+        userMessage:
+          "A critical error occurred. Please contact support if this continues.",
+        technicalMessage: "Internal application error",
+      },
+    ],
+  ]);
 
   constructor(props: Props) {
-    super(props)
+    super(props);
     this.state = {
       hasError: false,
       error: null,
       errorInfo: null,
       errorId: null,
-      isRecovering: false
-    }
+      isRecovering: false,
+    };
   }
 
   static getDerivedStateFromError(error: Error): Partial<State> {
-    const errorId = `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    const errorId = `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
     return {
       hasError: true,
       error,
       errorId,
-      isRecovering: false
-    }
+      isRecovering: false,
+    };
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    const errorId = this.state.errorId || 'unknown'
+    const errorId = this.state.errorId || "unknown";
 
     // Classify the error
-    const classified = this.classifyError(error)
+    const classified = this.classifyError(error);
 
     // Log error with classification
-    logger.error('React error boundary caught error', {
+    logger.error("React error boundary caught error", {
       errorId,
       name: error.name,
       message: error.message,
       stack: error.stack,
       componentStack: errorInfo.componentStack,
       classification: classified,
-      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
-      url: typeof window !== 'undefined' ? window.location.href : 'unknown',
-      timestamp: new Date().toISOString()
-    })
+      userAgent:
+        typeof navigator !== "undefined" ? navigator.userAgent : "unknown",
+      url: typeof window !== "undefined" ? window.location.href : "unknown",
+      timestamp: new Date().toISOString(),
+    });
 
     // Call custom error handler if provided
     if (this.props.onError) {
-      this.props.onError(error, errorInfo)
+      this.props.onError(error, errorInfo);
     }
 
     // Update state with error info
     this.setState({
       errorInfo,
-    })
+    });
 
     // Report to external error service in production
-    if (process.env.NODE_ENV === 'production') {
-      this.reportError(error, errorInfo, classified, errorId)
+    if (process.env.NODE_ENV === "production") {
+      this.reportError(error, errorInfo, classified, errorId);
     }
   }
 
   private classifyError(error: Error): ClassifiedError {
     // Check for exact matches first
-    const exactMatch = this.errorClassification.get(error.name)
-    if (exactMatch) return exactMatch
+    const exactMatch = this.errorClassification.get(error.name);
+    if (exactMatch) return exactMatch;
 
     // Check for message patterns
-    for (const [pattern, classification] of this.errorClassification.entries()) {
-      if (error.message.includes(pattern) || error.toString().includes(pattern)) {
-        return classification
+    for (const [
+      pattern,
+      classification,
+    ] of this.errorClassification.entries()) {
+      if (
+        error.message.includes(pattern) ||
+        error.toString().includes(pattern)
+      ) {
+        return classification;
       }
     }
 
     // Default classification for unknown errors
     return {
-      severity: 'medium',
-      category: 'unknown',
+      severity: "medium",
+      category: "unknown",
       isRecoverable: true,
-      userMessage: 'An unexpected error occurred. Please try again.',
-      technicalMessage: error.message || 'Unknown error'
-    }
+      userMessage: "An unexpected error occurred. Please try again.",
+      technicalMessage: error.message || "Unknown error",
+    };
   }
 
   private async reportError(
     error: Error,
     errorInfo: ErrorInfo,
     classified: ClassifiedError,
-    errorId: string
+    errorId: string,
   ) {
     try {
       // This would typically send to your error reporting service
       // For now, we'll just log it
-      console.error('Error reported to monitoring service:', {
+      console.error("Error reported to monitoring service:", {
         errorId,
         error: {
           name: error.name,
           message: error.message,
-          stack: error.stack
+          stack: error.stack,
         },
         errorInfo,
         classified,
         context: {
           userAgent: navigator.userAgent,
           url: window.location.href,
-          timestamp: new Date().toISOString()
-        }
-      })
+          timestamp: new Date().toISOString(),
+        },
+      });
     } catch (reportingError) {
-      logger.error('Failed to report error to monitoring service', toError(reportingError))
+      logger.error(
+        "Failed to report error to monitoring service",
+        toError(reportingError),
+      );
     }
   }
 
   private retry = () => {
-    this.setState({ isRecovering: true })
+    this.setState({ isRecovering: true });
 
     // Simulate recovery delay
     setTimeout(() => {
@@ -238,30 +276,30 @@ class ErrorBoundary extends Component<Props, State> {
         error: null,
         errorInfo: null,
         errorId: null,
-        isRecovering: false
-      })
-    }, 1000)
-  }
+        isRecovering: false,
+      });
+    }, 1000);
+  };
 
   private goHome = () => {
-    window.location.href = '/'
-  }
+    window.location.href = "/";
+  };
 
   private goBack = () => {
     if (window.history.length > 1) {
-      window.history.back()
+      window.history.back();
     } else {
-      this.goHome()
+      this.goHome();
     }
-  }
+  };
 
   render() {
     if (this.state.hasError) {
-      const classified = this.classifyError(this.state.error!)
+      const classified = this.classifyError(this.state.error!);
 
       // Use custom fallback component if provided
       if (this.props.fallbackComponent) {
-        const FallbackComponent = this.props.fallbackComponent
+        const FallbackComponent = this.props.fallbackComponent;
         return (
           <FallbackComponent
             error={this.state.error}
@@ -272,7 +310,7 @@ class ErrorBoundary extends Component<Props, State> {
             goBack={this.goBack}
             isRecovering={this.state.isRecovering}
           />
-        )
+        );
       }
 
       // Default error UI
@@ -280,12 +318,17 @@ class ErrorBoundary extends Component<Props, State> {
         <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
           <div className="max-w-md w-full bg-gray-800 rounded-lg border border-gray-700 p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                classified.severity === 'critical' ? 'bg-red-600' :
-                classified.severity === 'high' ? 'bg-orange-600' :
-                classified.severity === 'medium' ? 'bg-yellow-600' :
-                'bg-blue-600'
-              }`}>
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  classified.severity === "critical"
+                    ? "bg-red-600"
+                    : classified.severity === "high"
+                      ? "bg-orange-600"
+                      : classified.severity === "medium"
+                        ? "bg-yellow-600"
+                        : "bg-blue-600"
+                }`}
+              >
                 <AlertTriangle className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -298,19 +341,24 @@ class ErrorBoundary extends Component<Props, State> {
               </div>
             </div>
 
-            <p className="text-gray-300 mb-6">
-              {classified.userMessage}
-            </p>
+            <p className="text-gray-300 mb-6">{classified.userMessage}</p>
 
-            {process.env.NODE_ENV === 'development' && (
+            {process.env.NODE_ENV === "development" && (
               <details className="mb-6 p-3 bg-gray-900 rounded border border-gray-600">
                 <summary className="text-sm text-gray-400 cursor-pointer">
                   Error Details (Development)
                 </summary>
                 <div className="mt-2 text-xs text-gray-500 font-mono">
-                  <p><strong>Error:</strong> {this.state.error?.message}</p>
-                  <p><strong>ID:</strong> {this.state.errorId}</p>
-                  <p><strong>Classification:</strong> {classified.severity} / {classified.category}</p>
+                  <p>
+                    <strong>Error:</strong> {this.state.error?.message}
+                  </p>
+                  <p>
+                    <strong>ID:</strong> {this.state.errorId}
+                  </p>
+                  <p>
+                    <strong>Classification:</strong> {classified.severity} /{" "}
+                    {classified.category}
+                  </p>
                   {this.state.error?.stack && (
                     <pre className="mt-2 whitespace-pre-wrap break-all">
                       {this.state.error.stack}
@@ -327,8 +375,10 @@ class ErrorBoundary extends Component<Props, State> {
                   disabled={this.state.isRecovering}
                   className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors"
                 >
-                  <RefreshCw className={`w-4 h-4 ${this.state.isRecovering ? 'animate-spin' : ''}`} />
-                  {this.state.isRecovering ? 'Retrying...' : 'Try Again'}
+                  <RefreshCw
+                    className={`w-4 h-4 ${this.state.isRecovering ? "animate-spin" : ""}`}
+                  />
+                  {this.state.isRecovering ? "Retrying..." : "Try Again"}
                 </button>
               )}
 
@@ -356,12 +406,12 @@ class ErrorBoundary extends Component<Props, State> {
             </p>
           </div>
         </div>
-      )
+      );
     }
 
-    return this.props.children
+    return this.props.children;
   }
 }
 
-export { ErrorBoundary }
-export default ErrorBoundary
+export { ErrorBoundary };
+export default ErrorBoundary;

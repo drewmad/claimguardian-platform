@@ -16,8 +16,8 @@ import {
   ChatResponse,
   ImageAnalysisRequest,
   ImageAnalysisResponse,
-  AIServiceError
-} from '../types/index';
+  AIServiceError,
+} from "../types/index";
 
 export abstract class BaseAIProvider {
   protected config: AIProviderConfig;
@@ -36,26 +36,28 @@ export abstract class BaseAIProvider {
   abstract getAvailableModels(): string[];
 
   // Optional methods with default implementations
-  async analyzeImage(_request: ImageAnalysisRequest): Promise<ImageAnalysisResponse> {
+  async analyzeImage(
+    _request: ImageAnalysisRequest,
+  ): Promise<ImageAnalysisResponse> {
     throw new AIServiceError(
       `Image analysis not supported by ${this.constructor.name}`,
-      'FEATURE_NOT_SUPPORTED',
-      this.constructor.name
+      "FEATURE_NOT_SUPPORTED",
+      this.constructor.name,
     );
   }
 
   async generateEmbedding(_text: string): Promise<number[]> {
     throw new AIServiceError(
       `Embeddings not supported by ${this.constructor.name}`,
-      'FEATURE_NOT_SUPPORTED',
-      this.constructor.name
+      "FEATURE_NOT_SUPPORTED",
+      this.constructor.name,
     );
   }
 
   // Helper methods available to all providers
   protected async withRetry<T>(
     operation: () => Promise<T>,
-    maxRetries: number = this.config.maxRetries || 3
+    maxRetries: number = this.config.maxRetries || 3,
   ): Promise<T> {
     let lastError: Error;
 
@@ -82,44 +84,48 @@ export abstract class BaseAIProvider {
   }
 
   protected delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   protected validateConfig(): void {
     if (!this.config.apiKey) {
       throw new AIServiceError(
-        'API key is required',
-        'INVALID_CONFIG',
-        this.constructor.name
+        "API key is required",
+        "INVALID_CONFIG",
+        this.constructor.name,
       );
     }
   }
 
-  protected trackMetrics(start: number, request: AIRequest | ChatRequest, response: Partial<AIResponse> & { model?: string }): void {
+  protected trackMetrics(
+    start: number,
+    request: AIRequest | ChatRequest,
+    response: Partial<AIResponse> & { model?: string },
+  ): void {
     const latency = Date.now() - start;
 
     // In production, this would emit to a metrics collector
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       console.log(`[${this.constructor.name}] Request completed`, {
         feature: request.feature,
         latency: `${latency}ms`,
-        model: response.model || 'unknown',
-        cached: false
+        model: response.model || "unknown",
+        cached: false,
       });
     }
   }
 
   protected buildPrompt(request: AIRequest): string {
-    let prompt = '';
+    let prompt = "";
 
     // Add system prompt if provided
     if (request.systemPrompt) {
-      prompt += request.systemPrompt + '\n\n';
+      prompt += request.systemPrompt + "\n\n";
     }
 
     // Add examples if provided
     if (request.examples && request.examples.length > 0) {
-      prompt += 'Examples:\n';
+      prompt += "Examples:\n";
       request.examples.forEach((example, i) => {
         prompt += `Example ${i + 1}:\n`;
         prompt += `Input: ${example.input}\n`;
@@ -141,7 +147,7 @@ export abstract class BaseAIProvider {
   protected calculateTokenCost(
     promptTokens: number,
     completionTokens: number,
-    model: string
+    model: string,
   ): number {
     const costPerToken = this.estimateCost(1, model);
 
@@ -156,15 +162,17 @@ export abstract class BaseAIProvider {
   protected selectModel(request: AIRequest | ChatRequest): string {
     const feature = request.feature;
     const modelPreferences: Record<string, string> = {
-      'clara': 'balanced',     // Empathetic responses need balance
-      'clarity': 'fast',       // Calculations can use faster model
-      'max': 'powerful',       // Analysis needs best model
-      'sentinel': 'fast',      // Simple notifications
-      'generic': 'balanced'    // Default to balanced
+      clara: "balanced", // Empathetic responses need balance
+      clarity: "fast", // Calculations can use faster model
+      max: "powerful", // Analysis needs best model
+      sentinel: "fast", // Simple notifications
+      generic: "balanced", // Default to balanced
     };
 
-    const preference = modelPreferences[feature] || 'balanced';
-    return this.modelMapping[preference] || this.config.defaultModel || 'default';
+    const preference = modelPreferences[feature] || "balanced";
+    return (
+      this.modelMapping[preference] || this.config.defaultModel || "default"
+    );
   }
 
   // Response validation helpers
@@ -181,54 +189,57 @@ export abstract class BaseAIProvider {
     // Remove unknown potential harmful content
     // In production, this would be more sophisticated
     return text
-      .replace(/<script[^>]*>.*?<\/script>/gi, '') // Remove scripts
-      .replace(/<iframe[^>]*>.*?<\/iframe>/gi, '') // Remove iframes
+      .replace(/<script[^>]*>.*?<\/script>/gi, "") // Remove scripts
+      .replace(/<iframe[^>]*>.*?<\/iframe>/gi, "") // Remove iframes
       .trim();
   }
 
   // Error handling
-  protected handleError(error: unknown, request: AIRequest | ChatRequest): never {
+  protected handleError(
+    error: unknown,
+    request: AIRequest | ChatRequest,
+  ): never {
     const err = error as Error;
     console.error(`[${this.constructor.name}] Error:`, {
       error: err.message || error,
       feature: request.feature,
-      userId: request.userId
+      userId: request.userId,
     });
 
     // Transform provider-specific errors to our error types
-    if (err.message?.includes('rate limit')) {
+    if (err.message?.includes("rate limit")) {
       throw new AIServiceError(
-        'Rate limit exceeded',
-        'RATE_LIMIT',
+        "Rate limit exceeded",
+        "RATE_LIMIT",
         this.constructor.name,
-        true
+        true,
       );
     }
 
-    if (err.message?.includes('timeout')) {
+    if (err.message?.includes("timeout")) {
       throw new AIServiceError(
-        'Request timed out',
-        'TIMEOUT',
+        "Request timed out",
+        "TIMEOUT",
         this.constructor.name,
-        true
+        true,
       );
     }
 
-    if (err.message?.includes('invalid api key')) {
+    if (err.message?.includes("invalid api key")) {
       throw new AIServiceError(
-        'Invalid API key',
-        'AUTH_ERROR',
+        "Invalid API key",
+        "AUTH_ERROR",
         this.constructor.name,
-        false
+        false,
       );
     }
 
     // Generic error
     throw new AIServiceError(
-      err.message || 'Unknown error',
-      'PROVIDER_ERROR',
+      err.message || "Unknown error",
+      "PROVIDER_ERROR",
       this.constructor.name,
-      true
+      true,
     );
   }
 
@@ -236,12 +247,12 @@ export abstract class BaseAIProvider {
   protected createUsageMetrics(
     promptTokens: number,
     completionTokens: number,
-    model: string
+    model: string,
   ) {
     return {
       promptTokens,
       completionTokens,
-      totalCost: this.calculateTokenCost(promptTokens, completionTokens, model)
+      totalCost: this.calculateTokenCost(promptTokens, completionTokens, model),
     };
   }
 }

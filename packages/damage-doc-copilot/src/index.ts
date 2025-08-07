@@ -9,6 +9,6 @@
  * @tags ["patent-worthy", "claimguardian-native", "competitive-advantage"]
  */
 
-export * from './ToolComponent'
-export * from './useDamageCopilot'
-export * from './damageCopilotService'
+export * from "./ToolComponent";
+export * from "./useDamageCopilot";
+export * from "./damageCopilotService";

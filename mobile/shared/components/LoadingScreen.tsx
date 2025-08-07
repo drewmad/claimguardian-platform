@@ -6,33 +6,27 @@
  * @status stable
  */
 
-import React, { useEffect, useState } from 'react'
-import {
-  View,
-  Text,
-  StyleSheet,
-  Animated,
-  Dimensions
-} from 'react-native'
-import { MaterialCommunityIcons } from '@expo/vector-icons'
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, Animated, Dimensions } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 interface LoadingScreenProps {
-  message?: string
-  showProgress?: boolean
-  progress?: number
+  message?: string;
+  showProgress?: boolean;
+  progress?: number;
 }
 
 export function LoadingScreen({
-  message = 'Loading ClaimGuardian...',
+  message = "Loading ClaimGuardian...",
   showProgress = false,
-  progress = 0
+  progress = 0,
 }: LoadingScreenProps) {
-  const [fadeAnim] = useState(new Animated.Value(0))
-  const [scaleAnim] = useState(new Animated.Value(0.8))
-  const [rotateAnim] = useState(new Animated.Value(0))
-  const [progressAnim] = useState(new Animated.Value(0))
+  const [fadeAnim] = useState(new Animated.Value(0));
+  const [scaleAnim] = useState(new Animated.Value(0.8));
+  const [rotateAnim] = useState(new Animated.Value(0));
+  const [progressAnim] = useState(new Animated.Value(0));
 
-  const { width } = Dimensions.get('window')
+  const { width } = Dimensions.get("window");
 
   useEffect(() => {
     // Fade in animation
@@ -40,7 +34,7 @@ export function LoadingScreen({
       toValue: 1,
       duration: 800,
       useNativeDriver: true,
-    }).start()
+    }).start();
 
     // Scale in animation
     Animated.spring(scaleAnim, {
@@ -48,7 +42,7 @@ export function LoadingScreen({
       tension: 50,
       friction: 7,
       useNativeDriver: true,
-    }).start()
+    }).start();
 
     // Continuous rotation for loading icon
     const rotateLoop = Animated.loop(
@@ -56,12 +50,12 @@ export function LoadingScreen({
         toValue: 1,
         duration: 2000,
         useNativeDriver: true,
-      })
-    )
-    rotateLoop.start()
+      }),
+    );
+    rotateLoop.start();
 
-    return () => rotateLoop.stop()
-  }, [fadeAnim, scaleAnim, rotateAnim])
+    return () => rotateLoop.stop();
+  }, [fadeAnim, scaleAnim, rotateAnim]);
 
   useEffect(() => {
     if (showProgress) {
@@ -69,20 +63,20 @@ export function LoadingScreen({
         toValue: progress,
         duration: 300,
         useNativeDriver: false,
-      }).start()
+      }).start();
     }
-  }, [progress, showProgress, progressAnim])
+  }, [progress, showProgress, progressAnim]);
 
   const spin = rotateAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
-  })
+    outputRange: ["0deg", "360deg"],
+  });
 
   const progressWidth = progressAnim.interpolate({
     inputRange: [0, 100],
     outputRange: [0, width - 80],
-    extrapolate: 'clamp',
-  })
+    extrapolate: "clamp",
+  });
 
   return (
     <View style={styles.container}>
@@ -115,11 +109,7 @@ export function LoadingScreen({
             },
           ]}
         >
-          <MaterialCommunityIcons
-            name="loading"
-            size={32}
-            color="#3B82F6"
-          />
+          <MaterialCommunityIcons name="loading" size={32} color="#3B82F6" />
         </Animated.View>
 
         {/* App Name */}
@@ -187,18 +177,18 @@ export function LoadingScreen({
         <Text style={styles.copyrightText}>© 2025 ClaimGuardian AI</Text>
       </View>
     </View>
-  )
+  );
 }
 
 interface LoadingStepProps {
-  icon: keyof typeof MaterialCommunityIcons.glyphMap
-  text: string
-  completed: boolean
-  active: boolean
+  icon: keyof typeof MaterialCommunityIcons.glyphMap;
+  text: string;
+  completed: boolean;
+  active: boolean;
 }
 
 function LoadingStep({ icon, text, completed, active }: LoadingStepProps) {
-  const [stepFadeAnim] = useState(new Animated.Value(0.3))
+  const [stepFadeAnim] = useState(new Animated.Value(0.3));
 
   useEffect(() => {
     if (active || completed) {
@@ -206,9 +196,9 @@ function LoadingStep({ icon, text, completed, active }: LoadingStepProps) {
         toValue: 1,
         duration: 300,
         useNativeDriver: true,
-      }).start()
+      }).start();
     }
-  }, [active, completed, stepFadeAnim])
+  }, [active, completed, stepFadeAnim]);
 
   return (
     <Animated.View
@@ -220,34 +210,34 @@ function LoadingStep({ icon, text, completed, active }: LoadingStepProps) {
       ]}
     >
       <MaterialCommunityIcons
-        name={completed ? 'check-circle' : icon}
+        name={completed ? "check-circle" : icon}
         size={16}
-        color={completed ? '#10B981' : active ? '#3B82F6' : '#6B7280'}
+        color={completed ? "#10B981" : active ? "#3B82F6" : "#6B7280"}
       />
       <Text
         style={[
           styles.stepText,
           {
-            color: completed ? '#10B981' : active ? '#3B82F6' : '#6B7280',
+            color: completed ? "#10B981" : active ? "#3B82F6" : "#6B7280",
           },
         ]}
       >
         {text}
       </Text>
     </Animated.View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#111827',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#111827",
+    justifyContent: "center",
+    alignItems: "center",
   },
   content: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     flex: 1,
   },
   logoContainer: {
@@ -257,12 +247,12 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: '#1F2937',
+    backgroundColor: "#1F2937",
     borderWidth: 2,
-    borderColor: '#374151',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
+    borderColor: "#374151",
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 8,
@@ -277,77 +267,77 @@ const styles = StyleSheet.create({
   },
   appName: {
     fontSize: 32,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    textAlign: 'center',
+    fontWeight: "bold",
+    color: "#FFFFFF",
+    textAlign: "center",
     marginBottom: 8,
     letterSpacing: -0.5,
   },
   tagline: {
     fontSize: 16,
-    color: '#9CA3AF',
-    textAlign: 'center',
+    color: "#9CA3AF",
+    textAlign: "center",
     marginBottom: 40,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   message: {
     fontSize: 16,
-    color: '#D1D5DB',
-    textAlign: 'center',
+    color: "#D1D5DB",
+    textAlign: "center",
     marginBottom: 30,
     paddingHorizontal: 40,
   },
   progressContainer: {
-    width: '100%',
+    width: "100%",
     paddingHorizontal: 40,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 40,
   },
   progressBar: {
-    width: '100%',
+    width: "100%",
     height: 4,
-    backgroundColor: '#374151',
+    backgroundColor: "#374151",
     borderRadius: 2,
-    overflow: 'hidden',
+    overflow: "hidden",
     marginBottom: 8,
   },
   progressFill: {
-    height: '100%',
-    backgroundColor: '#3B82F6',
+    height: "100%",
+    backgroundColor: "#3B82F6",
     borderRadius: 2,
   },
   progressText: {
     fontSize: 12,
-    color: '#9CA3AF',
-    fontWeight: '600',
+    color: "#9CA3AF",
+    fontWeight: "600",
   },
   stepsContainer: {
-    alignItems: 'flex-start',
+    alignItems: "flex-start",
     marginTop: 20,
   },
   step: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 8,
     paddingHorizontal: 20,
   },
   stepText: {
     fontSize: 14,
     marginLeft: 12,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   versionContainer: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 50,
-    alignItems: 'center',
+    alignItems: "center",
   },
   versionText: {
     fontSize: 12,
-    color: '#6B7280',
+    color: "#6B7280",
     marginBottom: 4,
   },
   copyrightText: {
     fontSize: 12,
-    color: '#4B5563',
+    color: "#4B5563",
   },
-})
+});

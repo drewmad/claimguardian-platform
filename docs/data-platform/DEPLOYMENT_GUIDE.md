@@ -74,6 +74,7 @@ graph TB
 ## Implementation Components
 
 ### 1. Database Schema (`florida-parcels-schema.sql`)
+
 - **florida_parcels**: Core 9.6M parcel records with geospatial data
 - **property_risk_assessments**: AI-powered risk analysis
 - **property_market_analysis**: Market trends and valuations
@@ -88,6 +89,7 @@ graph TB
 ### 2. Edge Functions
 
 #### A. Florida Property Enrichment (`florida-property-enrichment/index.ts`)
+
 - **Purpose**: AI-powered comprehensive property analysis
 - **Features**:
   - Hurricane, flood, and wildfire risk assessment
@@ -99,6 +101,7 @@ graph TB
 - **Performance**: Handles individual property enrichment in <30 seconds
 
 #### B. Data Pipeline Automation (`florida-data-pipeline/index.ts`)
+
 - **Purpose**: Automated data refresh and quality monitoring
 - **Features**:
   - Automated county statistics refresh
@@ -110,6 +113,7 @@ graph TB
 - **Monitoring**: Real-time health checks and error reporting
 
 ### 3. Analytics Dashboard (`florida-analytics-dashboard.tsx`)
+
 - **Purpose**: Comprehensive data visualization and analytics
 - **Features**:
   - Real-time county statistics with 9.6M records
@@ -123,13 +127,16 @@ graph TB
 ## Deployment Instructions
 
 ### Phase 1: Database Setup
+
 1. **Apply Schema Migration**:
+
    ```sql
    -- Execute the complete schema
    \i packages/db/src/data-platform/florida-parcels-schema.sql
    ```
 
 2. **Enable Required Extensions**:
+
    ```sql
    CREATE EXTENSION IF NOT EXISTS postgis;
    CREATE EXTENSION IF NOT EXISTS vector;
@@ -144,12 +151,15 @@ graph TB
    ```
 
 ### Phase 2: Edge Functions Deployment
+
 1. **Deploy Property Enrichment**:
+
    ```bash
    supabase functions deploy florida-property-enrichment --project-ref YOUR_PROJECT_ID
    ```
 
 2. **Deploy Data Pipeline**:
+
    ```bash
    supabase functions deploy florida-data-pipeline --project-ref YOUR_PROJECT_ID
    ```
@@ -160,7 +170,9 @@ graph TB
    ```
 
 ### Phase 3: Initial Data Load
+
 1. **Load Sample Data**:
+
    ```bash
    # Use existing parcel loading functions
    curl -X POST 'https://YOUR_PROJECT_ID.supabase.co/functions/v1/florida-data-pipeline' \
@@ -178,12 +190,14 @@ graph TB
    ```
 
 ### Phase 4: Frontend Integration
+
 1. **Add Dashboard Route** (`apps/web/src/app/admin/florida-data/page.tsx`):
+
    ```tsx
-   import { FloridaAnalyticsDashboard } from '@/components/data-platform/florida-analytics-dashboard'
+   import { FloridaAnalyticsDashboard } from "@/components/data-platform/florida-analytics-dashboard";
 
    export default function FloridaDataPage() {
-     return <FloridaAnalyticsDashboard />
+     return <FloridaAnalyticsDashboard />;
    }
    ```
 
@@ -195,18 +209,21 @@ graph TB
 ## Data Sources Integration
 
 ### 1. Florida Parcels Data
+
 - **Source**: Florida Department of Revenue (DOR)
 - **Volume**: 9.6M records across 67 counties
 - **Update Frequency**: Quarterly for full refresh, weekly for incremental
 - **Fields**: 50+ property attributes including valuations, characteristics, ownership
 
 ### 2. Geospatial Features
+
 - **FEMA Flood Maps**: Flood zone classifications and risk areas
 - **Hurricane Evacuation Zones**: Emergency planning boundaries
 - **Infrastructure Data**: Hospitals, schools, emergency services proximity
 - **Market Boundaries**: Neighborhood and district definitions
 
 ### 3. Market Data Integration
+
 - **Comparable Sales**: MLS and public records integration
 - **Property Value Trends**: Historical and predictive analytics
 - **Rental Market Data**: Investment property analysis
@@ -215,18 +232,21 @@ graph TB
 ## Performance Specifications
 
 ### Database Performance
+
 - **Query Response Time**: <2 seconds for property lookup
 - **Geospatial Queries**: <5 seconds for radius searches
 - **Analytics Queries**: <10 seconds for county-level aggregations
 - **Bulk Operations**: 10,000 records/minute processing rate
 
 ### Scalability Metrics
+
 - **Concurrent Users**: 1,000+ simultaneous dashboard users
 - **API Throughput**: 10,000 requests/minute per Edge Function
 - **Data Pipeline**: Process 100,000+ records/hour
 - **Storage Optimization**: 2TB compressed parcel data
 
 ### Quality Assurance
+
 - **Data Completeness**: >95% for critical fields
 - **Accuracy Validation**: Automated cross-reference checks
 - **Freshness Monitoring**: Real-time staleness alerts
@@ -235,18 +255,21 @@ graph TB
 ## Business Intelligence Features
 
 ### 1. Property Analytics
+
 - **Risk Scoring**: Hurricane, flood, fire, crime, age factors
 - **Market Valuation**: Automated property value estimation
 - **Investment Analysis**: ROI, cap rates, rental yield calculations
 - **Insurance Optimization**: Coverage recommendations and premium estimates
 
 ### 2. Geographic Analysis
+
 - **Spatial Relationships**: Property proximity analysis
 - **Risk Mapping**: Visual risk overlay on interactive maps
 - **Market Boundaries**: Neighborhood and district analytics
 - **Infrastructure Access**: Emergency services and amenities scoring
 
 ### 3. Predictive Analytics
+
 - **Market Trends**: Property value appreciation forecasting
 - **Risk Projection**: Climate change impact modeling
 - **Demand Analysis**: Market supply/demand predictions
@@ -255,12 +278,14 @@ graph TB
 ## Security and Compliance
 
 ### Data Privacy
+
 - **GDPR Compliance**: Data anonymization and user consent
 - **CCPA Ready**: California privacy law compliance
 - **PII Protection**: Sensitive data masking and access controls
 - **Audit Logging**: Comprehensive access and modification tracking
 
 ### Security Measures
+
 - **Row Level Security**: Supabase RLS policies on all tables
 - **API Authentication**: JWT-based access control
 - **Rate Limiting**: Abuse prevention and fair usage
@@ -269,12 +294,14 @@ graph TB
 ## Cost Optimization
 
 ### Expected Usage (Monthly)
+
 - **Database Storage**: 2TB (Florida parcels + analytics)
 - **Edge Function Invocations**: 1M+ requests/month
 - **AI API Calls**: 100K OpenAI API calls/month
 - **Bandwidth**: 500GB data transfer/month
 
 ### Estimated Costs
+
 - **Supabase Pro**: $25/month base + usage overages
 - **OpenAI API**: $150-300/month (property enrichment)
 - **Total Platform Cost**: ~$400-500/month at scale
@@ -282,12 +309,14 @@ graph TB
 ## Monitoring and Alerts
 
 ### Health Monitoring
+
 - **Uptime Tracking**: 99.9% availability target
 - **Performance Monitoring**: Response time alerting
 - **Error Rate Tracking**: <1% error rate threshold
 - **Data Quality Alerts**: Completeness and accuracy monitoring
 
 ### Business Metrics
+
 - **User Engagement**: Dashboard usage and session analytics
 - **Feature Adoption**: Property enrichment and search usage
 - **Data Freshness**: Last refresh timestamps by source
@@ -296,6 +325,7 @@ graph TB
 ## API Documentation
 
 ### Property Enrichment Endpoint
+
 ```typescript
 POST /functions/v1/florida-property-enrichment
 {
@@ -307,6 +337,7 @@ POST /functions/v1/florida-property-enrichment
 ```
 
 ### Pipeline Management Endpoint
+
 ```typescript
 POST /functions/v1/florida-data-pipeline
 {
@@ -320,12 +351,14 @@ POST /functions/v1/florida-data-pipeline
 ## Support and Maintenance
 
 ### Regular Maintenance
+
 - **Weekly**: Data quality reports and pipeline health checks
 - **Monthly**: Performance optimization and cost analysis
 - **Quarterly**: Full data refresh and schema optimization
 - **Annually**: Security audit and compliance review
 
 ### Troubleshooting
+
 - **Pipeline Failures**: Automated retry with exponential backoff
 - **API Errors**: Comprehensive error logging and alerting
 - **Performance Issues**: Query optimization and index maintenance

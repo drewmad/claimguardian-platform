@@ -8,198 +8,258 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { FolderOpen, Search, Tag, FileText, Image, VideoIcon, Upload, Brain, Sparkles, CheckCircle, Clock, Archive, Grid, List } from 'lucide-react'
-import Link from 'next/link'
-import { useState } from 'react'
-import { toast } from 'sonner'
+import {
+  FolderOpen,
+  Search,
+  Tag,
+  FileText,
+  Image,
+  VideoIcon,
+  Upload,
+  Brain,
+  Sparkles,
+  CheckCircle,
+  Clock,
+  Archive,
+  Grid,
+  List,
+} from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { toast } from "sonner";
 
-import { ProtectedRoute } from '@/components/auth/protected-route'
-import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
+import { ProtectedRoute } from "@/components/auth/protected-route";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 
 interface EvidenceItem {
-  id: string
-  name: string
-  type: 'image' | 'video' | 'document' | 'audio'
-  category: 'damage' | 'before' | 'after' | 'receipts' | 'correspondence' | 'reports'
-  tags: string[]
-  dateCreated: string
-  fileSize: string
-  aiAnalysis?: string
-  thumbnail?: string
-  priority: 'high' | 'medium' | 'low'
+  id: string;
+  name: string;
+  type: "image" | "video" | "document" | "audio";
+  category:
+    | "damage"
+    | "before"
+    | "after"
+    | "receipts"
+    | "correspondence"
+    | "reports";
+  tags: string[];
+  dateCreated: string;
+  fileSize: string;
+  aiAnalysis?: string;
+  thumbnail?: string;
+  priority: "high" | "medium" | "low";
 }
 
 const mockEvidenceItems: EvidenceItem[] = [
   {
-    id: '1',
-    name: 'Kitchen Water Damage Overview.jpg',
-    type: 'image',
-    category: 'damage',
-    tags: ['water damage', 'kitchen', 'ceiling'],
-    dateCreated: '2024-01-15',
-    fileSize: '2.3 MB',
-    aiAnalysis: 'Water staining detected on ceiling. Estimated damage area: 12 sq ft. Severity: Moderate to severe.',
-    priority: 'high'
+    id: "1",
+    name: "Kitchen Water Damage Overview.jpg",
+    type: "image",
+    category: "damage",
+    tags: ["water damage", "kitchen", "ceiling"],
+    dateCreated: "2024-01-15",
+    fileSize: "2.3 MB",
+    aiAnalysis:
+      "Water staining detected on ceiling. Estimated damage area: 12 sq ft. Severity: Moderate to severe.",
+    priority: "high",
   },
   {
-    id: '2',
-    name: 'Contractor Estimate - ABC Restoration.pdf',
-    type: 'document',
-    category: 'reports',
-    tags: ['estimate', 'contractor', 'repair cost'],
-    dateCreated: '2024-01-16',
-    fileSize: '456 KB',
-    aiAnalysis: 'Professional repair estimate: $8,750. Includes water damage remediation and ceiling repair.',
-    priority: 'high'
+    id: "2",
+    name: "Contractor Estimate - ABC Restoration.pdf",
+    type: "document",
+    category: "reports",
+    tags: ["estimate", "contractor", "repair cost"],
+    dateCreated: "2024-01-16",
+    fileSize: "456 KB",
+    aiAnalysis:
+      "Professional repair estimate: $8,750. Includes water damage remediation and ceiling repair.",
+    priority: "high",
   },
   {
-    id: '3',
-    name: 'Before - Kitchen Original State.jpg',
-    type: 'image',
-    category: 'before',
-    tags: ['kitchen', 'original condition'],
-    dateCreated: '2023-12-01',
-    fileSize: '1.8 MB',
-    aiAnalysis: 'Clean, undamaged kitchen ceiling for comparison. Good baseline documentation.',
-    priority: 'medium'
+    id: "3",
+    name: "Before - Kitchen Original State.jpg",
+    type: "image",
+    category: "before",
+    tags: ["kitchen", "original condition"],
+    dateCreated: "2023-12-01",
+    fileSize: "1.8 MB",
+    aiAnalysis:
+      "Clean, undamaged kitchen ceiling for comparison. Good baseline documentation.",
+    priority: "medium",
   },
   {
-    id: '4',
-    name: 'Insurance Adjuster Call Recording.mp3',
-    type: 'audio',
-    category: 'correspondence',
-    tags: ['adjuster', 'call', 'discussion'],
-    dateCreated: '2024-01-18',
-    fileSize: '12.4 MB',
-    aiAnalysis: 'Discussion about coverage limits and next steps. Adjuster confirmed coverage for water damage.',
-    priority: 'high'
-  }
-]
+    id: "4",
+    name: "Insurance Adjuster Call Recording.mp3",
+    type: "audio",
+    category: "correspondence",
+    tags: ["adjuster", "call", "discussion"],
+    dateCreated: "2024-01-18",
+    fileSize: "12.4 MB",
+    aiAnalysis:
+      "Discussion about coverage limits and next steps. Adjuster confirmed coverage for water damage.",
+    priority: "high",
+  },
+];
 
 export default function EvidenceOrganizerPage() {
-  const [evidenceItems, setEvidenceItems] = useState<EvidenceItem[]>(mockEvidenceItems)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-  const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [evidenceItems, setEvidenceItems] =
+    useState<EvidenceItem[]>(mockEvidenceItems);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-  const filteredItems = evidenceItems.filter(item => {
-    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         item.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                         (item.aiAnalysis?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
+  const filteredItems = evidenceItems.filter((item) => {
+    const matchesSearch =
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.tags.some((tag) =>
+        tag.toLowerCase().includes(searchQuery.toLowerCase()),
+      ) ||
+      (item.aiAnalysis?.toLowerCase().includes(searchQuery.toLowerCase()) ??
+        false);
 
-    const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory
+    const matchesCategory =
+      selectedCategory === "all" || item.category === selectedCategory;
 
-    return matchesSearch && matchesCategory
-  })
+    return matchesSearch && matchesCategory;
+  });
 
   const runAIAnalysis = async () => {
-    setIsAnalyzing(true)
+    setIsAnalyzing(true);
 
     try {
       // Use real AI-powered analysis for evidence categorization
-      const { enhancedDocumentExtractor } = await import('@/lib/services/enhanced-document-extraction')
+      const { enhancedDocumentExtractor } = await import(
+        "@/lib/services/enhanced-document-extraction"
+      );
 
       // Simulate processing of evidence items (in production, these would be actual files)
       const analysisPromises = evidenceItems.map(async (item) => {
         try {
           // Create mock file based on item type for demonstration
-          const mockContent = item.aiAnalysis || `This is a ${item.type} file named ${item.name} in the ${item.category} category.`
+          const mockContent =
+            item.aiAnalysis ||
+            `This is a ${item.type} file named ${item.name} in the ${item.category} category.`;
 
           // Use real AI to improve categorization and analysis
-          const response = await enhancedDocumentExtractor.categorizeAndScoreEvidence(
-            mockContent,
-            item.type,
-            item.name
-          )
+          const response =
+            await enhancedDocumentExtractor.categorizeAndScoreEvidence(
+              mockContent,
+              item.type,
+              item.name,
+            );
 
           return {
             ...item,
             category: response.category as any, // Type assertion for demo
             priority: response.priority,
-            aiAnalysis: `AI Analysis: Quality Score: ${response.qualityScore}/100. ${response.suggestions.join(' ')}`,
-            tags: [...new Set([...item.tags, 'ai-analyzed', 'quality-scored', `score-${Math.floor(response.qualityScore/20)*20}`])]
-          }
+            aiAnalysis: `AI Analysis: Quality Score: ${response.qualityScore}/100. ${response.suggestions.join(" ")}`,
+            tags: [
+              ...new Set([
+                ...item.tags,
+                "ai-analyzed",
+                "quality-scored",
+                `score-${Math.floor(response.qualityScore / 20) * 20}`,
+              ]),
+            ],
+          };
         } catch (error) {
-          console.warn(`Failed to analyze ${item.name}:`, error)
+          console.warn(`Failed to analyze ${item.name}:`, error);
           return {
             ...item,
-            aiAnalysis: 'Advanced AI analysis unavailable - basic categorization applied',
-            tags: [...new Set([...item.tags, 'basic-analysis'])]
-          }
+            aiAnalysis:
+              "Advanced AI analysis unavailable - basic categorization applied",
+            tags: [...new Set([...item.tags, "basic-analysis"])],
+          };
         }
-      })
+      });
 
-      const updatedItems = await Promise.all(analysisPromises)
-      setEvidenceItems(updatedItems)
+      const updatedItems = await Promise.all(analysisPromises);
+      setEvidenceItems(updatedItems);
 
-      const successCount = updatedItems.filter(item =>
-        item.tags.includes('ai-analyzed')
-      ).length
+      const successCount = updatedItems.filter((item) =>
+        item.tags.includes("ai-analyzed"),
+      ).length;
 
-      toast.success(`AI analysis complete! ${successCount}/${evidenceItems.length} items processed with advanced categorization.`)
+      toast.success(
+        `AI analysis complete! ${successCount}/${evidenceItems.length} items processed with advanced categorization.`,
+      );
     } catch (error) {
-      console.error('AI analysis failed:', error)
-      toast.error('AI analysis failed - using basic categorization')
+      console.error("AI analysis failed:", error);
+      toast.error("AI analysis failed - using basic categorization");
 
       // Fallback to basic categorization
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      const basicUpdatedItems = evidenceItems.map(item => ({
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const basicUpdatedItems = evidenceItems.map((item) => ({
         ...item,
-        aiAnalysis: item.aiAnalysis || `Basic analysis: This appears to be a ${item.type} file related to ${item.category}.`,
-        tags: [...new Set([...item.tags, 'basic-analysis'])]
-      }))
-      setEvidenceItems(basicUpdatedItems)
-      toast.success('Basic categorization complete!')
+        aiAnalysis:
+          item.aiAnalysis ||
+          `Basic analysis: This appears to be a ${item.type} file related to ${item.category}.`,
+        tags: [...new Set([...item.tags, "basic-analysis"])],
+      }));
+      setEvidenceItems(basicUpdatedItems);
+      toast.success("Basic categorization complete!");
     } finally {
-      setIsAnalyzing(false)
+      setIsAnalyzing(false);
     }
-  }
+  };
 
   const handleFileUpload = () => {
-    toast.success('Files uploaded successfully! AI analysis started.')
+    toast.success("Files uploaded successfully! AI analysis started.");
     // Simulate adding new files
     const newItem: EvidenceItem = {
       id: Date.now().toString(),
-      name: 'New Evidence File.jpg',
-      type: 'image',
-      category: 'damage',
-      tags: ['ai-generated', 'recent'],
-      dateCreated: new Date().toISOString().split('T')[0],
-      fileSize: '1.2 MB',
-      aiAnalysis: 'Analyzing... AI categorization in progress.',
-      priority: 'medium'
-    }
-    setEvidenceItems(prev => [newItem, ...prev])
-  }
+      name: "New Evidence File.jpg",
+      type: "image",
+      category: "damage",
+      tags: ["ai-generated", "recent"],
+      dateCreated: new Date().toISOString().split("T")[0],
+      fileSize: "1.2 MB",
+      aiAnalysis: "Analyzing... AI categorization in progress.",
+      priority: "medium",
+    };
+    setEvidenceItems((prev) => [newItem, ...prev]);
+  };
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'image': return <Image className="h-4 w-4" />
-      case 'video': return <VideoIcon className="h-4 w-4" />
-      case 'document': return <FileText className="h-4 w-4" />
-      case 'audio': return <Archive className="h-4 w-4" />
-      default: return <FileText className="h-4 w-4" />
+      case "image":
+        return <Image className="h-4 w-4" />;
+      case "video":
+        return <VideoIcon className="h-4 w-4" />;
+      case "document":
+        return <FileText className="h-4 w-4" />;
+      case "audio":
+        return <Archive className="h-4 w-4" />;
+      default:
+        return <FileText className="h-4 w-4" />;
     }
-  }
+  };
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'damage': return 'bg-red-600/20 text-red-400 border-red-600/30'
-      case 'before': return 'bg-blue-600/20 text-blue-400 border-blue-600/30'
-      case 'after': return 'bg-green-600/20 text-green-400 border-green-600/30'
-      case 'receipts': return 'bg-yellow-600/20 text-yellow-400 border-yellow-600/30'
-      case 'correspondence': return 'bg-purple-600/20 text-purple-400 border-purple-600/30'
-      case 'reports': return 'bg-cyan-600/20 text-cyan-400 border-cyan-600/30'
-      default: return 'bg-gray-600/20 text-gray-400 border-gray-600/30'
+      case "damage":
+        return "bg-red-600/20 text-red-400 border-red-600/30";
+      case "before":
+        return "bg-blue-600/20 text-blue-400 border-blue-600/30";
+      case "after":
+        return "bg-green-600/20 text-green-400 border-green-600/30";
+      case "receipts":
+        return "bg-yellow-600/20 text-yellow-400 border-yellow-600/30";
+      case "correspondence":
+        return "bg-purple-600/20 text-purple-400 border-purple-600/30";
+      case "reports":
+        return "bg-cyan-600/20 text-cyan-400 border-cyan-600/30";
+      default:
+        return "bg-gray-600/20 text-gray-400 border-gray-600/30";
     }
-  }
+  };
 
   return (
     <ProtectedRoute>
@@ -224,13 +284,16 @@ export default function EvidenceOrganizerPage() {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <h1 className="text-4xl font-bold text-white drop-shadow-[0_2px_20px_rgba(255,255,255,0.3)]">Evidence Organizer</h1>
+                      <h1 className="text-4xl font-bold text-white drop-shadow-[0_2px_20px_rgba(255,255,255,0.3)]">
+                        Evidence Organizer
+                      </h1>
                       <Badge className="bg-gradient-to-r from-yellow-600/30 to-orange-600/30 text-yellow-300 border-yellow-600/30 backdrop-blur-md shadow-[0_8px_32px_rgba(245,158,11,0.2)]">
                         Beta
                       </Badge>
                     </div>
                     <p className="text-gray-300 max-w-3xl drop-shadow-[0_2px_10px_rgba(0,0,0,0.3)]">
-                      Smart organization with AI-powered auto-categorization, tagging, and advanced search capabilities.
+                      Smart organization with AI-powered auto-categorization,
+                      tagging, and advanced search capabilities.
                     </p>
                   </div>
                 </div>
@@ -246,7 +309,9 @@ export default function EvidenceOrganizerPage() {
                       <Archive className="h-6 w-6 text-teal-300 drop-shadow-[0_0_12px_rgba(20,184,166,0.6)]" />
                     </div>
                     <div>
-                      <p className="text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">{evidenceItems.length}</p>
+                      <p className="text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
+                        {evidenceItems.length}
+                      </p>
                       <p className="text-sm text-gray-400">Total Items</p>
                     </div>
                   </div>
@@ -260,7 +325,9 @@ export default function EvidenceOrganizerPage() {
                       <CheckCircle className="h-6 w-6 text-green-300 drop-shadow-[0_0_12px_rgba(34,197,94,0.6)]" />
                     </div>
                     <div>
-                      <p className="text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">{evidenceItems.filter(item => item.aiAnalysis).length}</p>
+                      <p className="text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
+                        {evidenceItems.filter((item) => item.aiAnalysis).length}
+                      </p>
                       <p className="text-sm text-gray-400">AI Analyzed</p>
                     </div>
                   </div>
@@ -274,7 +341,13 @@ export default function EvidenceOrganizerPage() {
                       <Clock className="h-6 w-6 text-yellow-300 drop-shadow-[0_0_12px_rgba(245,158,11,0.6)]" />
                     </div>
                     <div>
-                      <p className="text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">{evidenceItems.filter(item => item.priority === 'high').length}</p>
+                      <p className="text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
+                        {
+                          evidenceItems.filter(
+                            (item) => item.priority === "high",
+                          ).length
+                        }
+                      </p>
                       <p className="text-sm text-gray-400">High Priority</p>
                     </div>
                   </div>
@@ -288,7 +361,15 @@ export default function EvidenceOrganizerPage() {
                       <Tag className="h-6 w-6 text-purple-300 drop-shadow-[0_0_12px_rgba(147,51,234,0.6)]" />
                     </div>
                     <div>
-                      <p className="text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">{[...new Set(evidenceItems.flatMap(item => item.tags))].length}</p>
+                      <p className="text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
+                        {
+                          [
+                            ...new Set(
+                              evidenceItems.flatMap((item) => item.tags),
+                            ),
+                          ].length
+                        }
+                      </p>
                       <p className="text-sm text-gray-400">Unique Tags</p>
                     </div>
                   </div>
@@ -314,18 +395,34 @@ export default function EvidenceOrganizerPage() {
 
                     {/* Category Filter */}
                     <div className="flex gap-2 flex-wrap">
-                      {['all', 'damage', 'before', 'after', 'receipts', 'correspondence', 'reports'].map((category) => (
+                      {[
+                        "all",
+                        "damage",
+                        "before",
+                        "after",
+                        "receipts",
+                        "correspondence",
+                        "reports",
+                      ].map((category) => (
                         <Button
                           key={category}
                           size="sm"
-                          variant={selectedCategory === category ? 'default' : 'outline'}
+                          variant={
+                            selectedCategory === category
+                              ? "default"
+                              : "outline"
+                          }
                           onClick={() => setSelectedCategory(category)}
-                          className={selectedCategory === category
-                            ? 'bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white shadow-[0_8px_32px_rgba(20,184,166,0.3)] backdrop-blur-md border-0'
-                            : 'bg-gray-700/50 hover:bg-gray-600/50 text-gray-300 border-gray-600/50 backdrop-blur-md'
+                          className={
+                            selectedCategory === category
+                              ? "bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white shadow-[0_8px_32px_rgba(20,184,166,0.3)] backdrop-blur-md border-0"
+                              : "bg-gray-700/50 hover:bg-gray-600/50 text-gray-300 border-gray-600/50 backdrop-blur-md"
                           }
                         >
-                          {category === 'all' ? 'All' : category.charAt(0).toUpperCase() + category.slice(1)}
+                          {category === "all"
+                            ? "All"
+                            : category.charAt(0).toUpperCase() +
+                              category.slice(1)}
                         </Button>
                       ))}
                     </div>
@@ -336,16 +433,16 @@ export default function EvidenceOrganizerPage() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => setViewMode('grid')}
-                      className={`${viewMode === 'grid' ? 'bg-teal-600/20 text-teal-400' : 'bg-gray-700/50 text-gray-400'} border-gray-600/50 backdrop-blur-md`}
+                      onClick={() => setViewMode("grid")}
+                      className={`${viewMode === "grid" ? "bg-teal-600/20 text-teal-400" : "bg-gray-700/50 text-gray-400"} border-gray-600/50 backdrop-blur-md`}
                     >
                       <Grid className="h-4 w-4" />
                     </Button>
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => setViewMode('list')}
-                      className={`${viewMode === 'list' ? 'bg-teal-600/20 text-teal-400' : 'bg-gray-700/50 text-gray-400'} border-gray-600/50 backdrop-blur-md`}
+                      onClick={() => setViewMode("list")}
+                      className={`${viewMode === "list" ? "bg-teal-600/20 text-teal-400" : "bg-gray-700/50 text-gray-400"} border-gray-600/50 backdrop-blur-md`}
                     >
                       <List className="h-4 w-4" />
                     </Button>
@@ -384,10 +481,13 @@ export default function EvidenceOrganizerPage() {
             </div>
 
             {/* Evidence Items */}
-            <div className={viewMode === 'grid'
-              ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6'
-              : 'space-y-4'
-            }>
+            <div
+              className={
+                viewMode === "grid"
+                  ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
+                  : "space-y-4"
+              }
+            >
               {filteredItems.map((item) => (
                 <Card
                   key={item.id}
@@ -400,8 +500,12 @@ export default function EvidenceOrganizerPage() {
                           {getTypeIcon(item.type)}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-white text-sm truncate">{item.name}</h3>
-                          <p className="text-xs text-gray-400">{item.fileSize} • {item.dateCreated}</p>
+                          <h3 className="font-semibold text-white text-sm truncate">
+                            {item.name}
+                          </h3>
+                          <p className="text-xs text-gray-400">
+                            {item.fileSize} • {item.dateCreated}
+                          </p>
                         </div>
                       </div>
                       <Badge className={getCategoryColor(item.category)}>
@@ -414,7 +518,11 @@ export default function EvidenceOrganizerPage() {
                     {/* Tags */}
                     <div className="flex flex-wrap gap-1 mb-3">
                       {item.tags.map((tag) => (
-                        <Badge key={tag} variant="outline" className="text-xs bg-gray-700/30 text-gray-300 border-gray-600/30">
+                        <Badge
+                          key={tag}
+                          variant="outline"
+                          className="text-xs bg-gray-700/30 text-gray-300 border-gray-600/30"
+                        >
                           {tag}
                         </Badge>
                       ))}
@@ -425,23 +533,35 @@ export default function EvidenceOrganizerPage() {
                       <div className="bg-gradient-to-br from-blue-900/20 to-purple-900/10 backdrop-blur-md border border-blue-600/20 rounded-lg p-3 mb-3">
                         <div className="flex items-center gap-2 mb-2">
                           <Sparkles className="h-3 w-3 text-cyan-400" />
-                          <span className="text-xs font-medium text-cyan-300">AI Analysis</span>
+                          <span className="text-xs font-medium text-cyan-300">
+                            AI Analysis
+                          </span>
                         </div>
-                        <p className="text-xs text-gray-300">{item.aiAnalysis}</p>
+                        <p className="text-xs text-gray-300">
+                          {item.aiAnalysis}
+                        </p>
                       </div>
                     )}
 
                     {/* Priority Badge */}
                     <div className="flex justify-between items-center">
-                      <Badge className={
-                        item.priority === 'high' ? 'bg-red-600/20 text-red-400' :
-                        item.priority === 'medium' ? 'bg-yellow-600/20 text-yellow-400' :
-                        'bg-green-600/20 text-green-400'
-                      }>
+                      <Badge
+                        className={
+                          item.priority === "high"
+                            ? "bg-red-600/20 text-red-400"
+                            : item.priority === "medium"
+                              ? "bg-yellow-600/20 text-yellow-400"
+                              : "bg-green-600/20 text-green-400"
+                        }
+                      >
                         {item.priority} priority
                       </Badge>
 
-                      <Button size="sm" variant="ghost" className="text-gray-400 hover:text-white">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="text-gray-400 hover:text-white"
+                      >
                         View Details
                       </Button>
                     </div>
@@ -463,7 +583,9 @@ export default function EvidenceOrganizerPage() {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div>
-                    <h4 className="font-semibold text-gray-200 mb-2">Smart Categorization:</h4>
+                    <h4 className="font-semibold text-gray-200 mb-2">
+                      Smart Categorization:
+                    </h4>
                     <ul className="space-y-1 text-gray-400">
                       <li>• Auto-detects damage types and severity</li>
                       <li>• Chronological timeline organization</li>
@@ -471,7 +593,9 @@ export default function EvidenceOrganizerPage() {
                     </ul>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-200 mb-2">Evidence Quality:</h4>
+                    <h4 className="font-semibold text-gray-200 mb-2">
+                      Evidence Quality:
+                    </h4>
                     <ul className="space-y-1 text-gray-400">
                       <li>• Missing documentation suggestions</li>
                       <li>• Chain of custody tracking</li>
@@ -485,5 +609,5 @@ export default function EvidenceOrganizerPage() {
         </div>
       </DashboardLayout>
     </ProtectedRoute>
-  )
+  );
 }

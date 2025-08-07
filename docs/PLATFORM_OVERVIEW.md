@@ -1,6 +1,7 @@
 # ClaimGuardian Platform Overview
 
 ## Table of Contents
+
 1. [Platform Architecture](#platform-architecture)
 2. [Authentication & Security](#authentication--security)
 3. [AI-Powered Features](#ai-powered-features)
@@ -15,6 +16,7 @@
 ClaimGuardian is a comprehensive AI-powered insurance claim advocacy platform specifically designed for Florida homeowners. Built with modern web technologies and a security-first approach.
 
 ### Technology Stack
+
 - **Frontend**: Next.js 15.3.5, React 19.0.0, TypeScript 5.8.3
 - **Backend**: Supabase (PostgreSQL, Auth, Storage, Edge Functions)
 - **AI Integration**: OpenAI GPT-4, Google Gemini Pro Vision, Custom MCP Server
@@ -24,6 +26,7 @@ ClaimGuardian is a comprehensive AI-powered insurance claim advocacy platform sp
 - **Node.js**: 22+ required
 
 ### Project Structure
+
 ```
 ClaimGuardian/
 ├── apps/
@@ -62,6 +65,7 @@ ClaimGuardian/
    - GDPR/CCPA considerations
 
 ### Authentication Features
+
 - Email/password authentication
 - Email verification
 - Password reset/recovery
@@ -72,6 +76,7 @@ ClaimGuardian/
 - Remember me functionality
 
 ### Security Measures
+
 - HTTPS enforcement
 - XSS protection
 - CSRF protection
@@ -81,6 +86,7 @@ ClaimGuardian/
 - Comprehensive audit logging
 
 For detailed implementation, see:
+
 - [Authentication Implementation Guide](./setup/AUTH_IMPLEMENTATION.md)
 - [Authentication Quick Reference](./setup/AUTH_QUICK_REFERENCE.md)
 - [Deployment Checklist](./setup/AUTH_DEPLOYMENT_CHECKLIST.md)
@@ -90,6 +96,7 @@ For detailed implementation, see:
 ## AI-Powered Features
 
 ### 1. Policy Chat Advisor
+
 - **Models**: OpenAI GPT-4, Google Gemini Pro
 - **Purpose**: Interactive policy understanding and coverage analysis
 - **Features**:
@@ -99,6 +106,7 @@ For detailed implementation, see:
   - Coverage gap identification
 
 ### 2. AI Damage Analyzer
+
 - **Models**: GPT-4 Vision, Gemini Vision
 - **Purpose**: Automated damage assessment from photos
 - **Features**:
@@ -109,6 +117,7 @@ For detailed implementation, see:
   - Professional report generation
 
 ### 3. Inventory Scanner
+
 - **Models**: GPT-4 Vision, Gemini Vision
 - **Purpose**: Automated home inventory cataloging
 - **Features**:
@@ -119,12 +128,14 @@ For detailed implementation, see:
   - Export capabilities
 
 ### 4. MCP Server Integration
+
 - Custom Model Context Protocol server
 - Enhanced context management
 - Supabase integration for AI operations
 - Real-time data access for AI models
 
 For detailed AI implementation, see:
+
 - [AI Features Roadmap](./AI_FEATURES_ROADMAP.md)
 - [AI Features & Improvements](../apps/web/src/app/ai-augmented/AI_FEATURES_IMPROVEMENTS.md)
 - [AI Models & Prompts Guide](../apps/web/src/app/ai-augmented/AI_MODELS_AND_PROMPTS.md)
@@ -136,6 +147,7 @@ For detailed AI implementation, see:
 ClaimGuardian implements comprehensive data collection for insurance claims, property management, and risk assessment.
 
 ### Core Data Categories
+
 1. **Policy & Coverage** - Complete insurance policy details
 2. **Property Information** - Physical characteristics and location data
 3. **Damage Documentation** - Structural and contents damage tracking
@@ -144,12 +156,14 @@ ClaimGuardian implements comprehensive data collection for insurance claims, pro
 6. **External Data Integration** - Weather, real estate, and environmental data
 
 ### Data Sources
+
 - **Google Maps Platform** - Location, elevation, street view, environmental data
 - **Real Estate APIs** - Property valuations, market data
 - **Weather Services** - NOAA/NWS historical and forecast data
 - **IoT Integration** - Smart home sensors and telemetry
 
 For the complete data collection framework, see:
+
 - [Comprehensive Data Collection Guide](./DATA_COLLECTION_COMPREHENSIVE.md)
 
 ---
@@ -157,9 +171,11 @@ For the complete data collection framework, see:
 ## Logging & Monitoring
 
 ### Enhanced Logging System
+
 Located at `/apps/web/src/lib/logger/enhanced-logger.ts`
 
 #### Logging Categories
+
 1. **Authentication Events**
    - Login attempts, successes, and failures
    - Session events (start, refresh, expire)
@@ -186,6 +202,7 @@ Located at `/apps/web/src/lib/logger/enhanced-logger.ts`
    - Document operations
 
 ### Monitoring Features
+
 - Real-time error tracking with Sentry
 - Performance monitoring
 - User activity analytics
@@ -197,12 +214,14 @@ Located at `/apps/web/src/lib/logger/enhanced-logger.ts`
 ## Development Guide
 
 ### Prerequisites
+
 - Node.js >= 22.0.0
 - pnpm 10.12.4
 - Supabase CLI
 - Git
 
 ### Getting Started
+
 ```bash
 # Clone the repository
 git clone <repository-url>
@@ -220,6 +239,7 @@ pnpm dev
 ```
 
 ### Key Commands
+
 ```bash
 pnpm dev          # Start development server
 pnpm build        # Build for production
@@ -230,6 +250,7 @@ pnpm validate     # Run all checks
 ```
 
 ### Development Workflow
+
 1. Create feature branch from `main`
 2. Implement changes following coding standards
 3. Add tests for new functionality
@@ -238,6 +259,7 @@ pnpm validate     # Run all checks
 6. Create pull request with detailed description
 
 ### Coding Standards
+
 - TypeScript strict mode enabled
 - ESLint and Prettier configured
 - Component-based architecture
@@ -250,12 +272,14 @@ pnpm validate     # Run all checks
 ## Additional Resources
 
 ### Documentation
+
 - [Supabase Setup Guide](./setup/SUPABASE_SETUP.md)
 - [Legal Compliance Guide](./setup/LEGAL_COMPLIANCE.md)
 - [API Endpoints Reference](./setup/API_LEGAL_ENDPOINTS.md)
 - [Contributing Guidelines](../CONTRIBUTING.md)
 
 ### External Documentation
+
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Supabase Documentation](https://supabase.com/docs)
 - [OpenAI API Reference](https://platform.openai.com/docs)
@@ -266,10 +290,11 @@ pnpm validate     # Run all checks
 ## Support & Contact
 
 For questions or support:
+
 - Technical Issues: Create a GitHub issue
 - Security Concerns: security@claimguardian.com
 - General Inquiries: support@claimguardian.com
 
 ---
 
-*Last Updated: January 2025*
+_Last Updated: January 2025_

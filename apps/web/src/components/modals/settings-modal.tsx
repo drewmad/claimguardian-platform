@@ -8,189 +8,225 @@
  * @tags ["modal", "settings", "preferences", "account"]
  * @status stable
  */
-'use client'
+"use client";
 
 import {
-  X, User, Bell, Shield, Key, Palette, Globe,
-  CreditCard, HelpCircle, LogOut, ChevronRight,
-  Moon, Sun, Monitor, Smartphone, Volume2, Mail,
-  Lock, Eye, EyeOff, Save, AlertCircle, CheckCircle
-} from 'lucide-react'
-import { useState, useEffect } from 'react'
-import { logger } from '@/lib/logger'
+  X,
+  User,
+  Bell,
+  Shield,
+  Key,
+  Palette,
+  Globe,
+  CreditCard,
+  HelpCircle,
+  LogOut,
+  ChevronRight,
+  Moon,
+  Sun,
+  Monitor,
+  Smartphone,
+  Volume2,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  Save,
+  AlertCircle,
+  CheckCircle,
+} from "lucide-react";
+import { useState, useEffect } from "react";
+import { logger } from "@/lib/logger";
 
-import { useAuth } from '@/components/auth/auth-provider'
-import { useModalStore } from '@/stores/modal-store'
-import { createClient } from '@/lib/supabase/client'
+import { useAuth } from "@/components/auth/auth-provider";
+import { useModalStore } from "@/stores/modal-store";
+import { createClient } from "@/lib/supabase/client";
 
-type SettingsTab = 'profile' | 'notifications' | 'appearance' | 'security' | 'billing' | 'help'
+type SettingsTab =
+  | "profile"
+  | "notifications"
+  | "appearance"
+  | "security"
+  | "billing"
+  | "help";
 
 interface UserPreferences {
-  theme: 'light' | 'dark' | 'system'
-  emailNotifications: boolean
-  pushNotifications: boolean
-  smsNotifications: boolean
-  soundEnabled: boolean
-  language: 'en' | 'es'
-  timezone: string
+  theme: "light" | "dark" | "system";
+  emailNotifications: boolean;
+  pushNotifications: boolean;
+  smsNotifications: boolean;
+  soundEnabled: boolean;
+  language: "en" | "es";
+  timezone: string;
 }
 
 export function SettingsModal() {
-  const { activeModal, closeModal, openModal } = useModalStore()
-  const { user, signOut } = useAuth()
-  const [activeTab, setActiveTab] = useState<SettingsTab>('profile')
-  const [loading, setLoading] = useState(false)
-  const [saveSuccess, setSaveSuccess] = useState(false)
-  const [error, setError] = useState('')
+  const { activeModal, closeModal, openModal } = useModalStore();
+  const { user, signOut } = useAuth();
+  const [activeTab, setActiveTab] = useState<SettingsTab>("profile");
+  const [loading, setLoading] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [error, setError] = useState("");
 
   // Profile state
   const [profile, setProfile] = useState({
-    firstName: '',
-    lastName: '',
-    email: user?.email || '',
-    phone: '',
-    bio: ''
-  })
+    firstName: "",
+    lastName: "",
+    email: user?.email || "",
+    phone: "",
+    bio: "",
+  });
 
   // Preferences state
   const [preferences, setPreferences] = useState<UserPreferences>({
-    theme: 'dark',
+    theme: "dark",
     emailNotifications: true,
     pushNotifications: true,
     smsNotifications: false,
     soundEnabled: true,
-    language: 'en',
-    timezone: 'America/New_York'
-  })
+    language: "en",
+    timezone: "America/New_York",
+  });
 
   // Security state
-  const [showApiKey, setShowApiKey] = useState(false)
+  const [showApiKey, setShowApiKey] = useState(false);
   const [apiKeys, setApiKeys] = useState({
-    openai: '',
-    gemini: ''
-  })
+    openai: "",
+    gemini: "",
+  });
 
   useEffect(() => {
-    if (activeModal === 'settings') {
-      loadUserSettings()
+    if (activeModal === "settings") {
+      loadUserSettings();
     }
-  }, [activeModal])
+  }, [activeModal]);
 
   useEffect(() => {
     if (saveSuccess) {
-      const timer = setTimeout(() => setSaveSuccess(false), 3000)
-      return () => clearTimeout(timer)
+      const timer = setTimeout(() => setSaveSuccess(false), 3000);
+      return () => clearTimeout(timer);
     }
-  }, [saveSuccess])
+  }, [saveSuccess]);
 
-  if (activeModal !== 'settings') return null
+  if (activeModal !== "settings") return null;
 
   const loadUserSettings = async () => {
     try {
-      const supabase = createClient()
+      const supabase = createClient();
       const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('user_id', user?.id)
-        .single()
+        .from("user_profiles")
+        .select("*")
+        .eq("user_id", user?.id)
+        .single();
 
       if (profile) {
         setProfile({
-          firstName: profile.first_name || '',
-          lastName: profile.last_name || '',
-          email: user?.email || '',
-          phone: profile.phone || '',
-          bio: profile.bio || ''
-        })
+          firstName: profile.first_name || "",
+          lastName: profile.last_name || "",
+          email: user?.email || "",
+          phone: profile.phone || "",
+          bio: profile.bio || "",
+        });
       }
 
       // Load preferences from localStorage for now
-      const savedPrefs = localStorage.getItem('userPreferences')
+      const savedPrefs = localStorage.getItem("userPreferences");
       if (savedPrefs) {
-        setPreferences(JSON.parse(savedPrefs))
+        setPreferences(JSON.parse(savedPrefs));
       }
     } catch (error) {
-      logger.error('Failed to load user settings', { error })
+      logger.error("Failed to load user settings", { error });
     }
-  }
+  };
 
   const handleSaveProfile = async () => {
-    setLoading(true)
-    setError('')
+    setLoading(true);
+    setError("");
 
     try {
-      const supabase = createClient()
-      const { error } = await supabase
-        .from('user_profiles')
-        .upsert({
-          user_id: user?.id,
-          first_name: profile.firstName,
-          last_name: profile.lastName,
-          phone: profile.phone,
-          bio: profile.bio,
-          updated_at: new Date().toISOString()
-        })
+      const supabase = createClient();
+      const { error } = await supabase.from("user_profiles").upsert({
+        user_id: user?.id,
+        first_name: profile.firstName,
+        last_name: profile.lastName,
+        phone: profile.phone,
+        bio: profile.bio,
+        updated_at: new Date().toISOString(),
+      });
 
-      if (error) throw error
+      if (error) throw error;
 
-      setSaveSuccess(true)
-      logger.track('profile_updated', { userId: user?.id })
+      setSaveSuccess(true);
+      logger.track("profile_updated", { userId: user?.id });
     } catch (error) {
-      setError('Failed to save profile')
-      logger.error('Profile save failed', { error })
+      setError("Failed to save profile");
+      logger.error("Profile save failed", { error });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleSavePreferences = () => {
-    localStorage.setItem('userPreferences', JSON.stringify(preferences))
-    setSaveSuccess(true)
-    logger.track('preferences_updated', preferences as unknown as Record<string, unknown>)
-  }
+    localStorage.setItem("userPreferences", JSON.stringify(preferences));
+    setSaveSuccess(true);
+    logger.track(
+      "preferences_updated",
+      preferences as unknown as Record<string, unknown>,
+    );
+  };
 
   const handleSignOut = async () => {
-    closeModal()
-    await signOut()
-  }
+    closeModal();
+    await signOut();
+  };
 
   const tabs = [
-    { id: 'profile' as SettingsTab, label: 'Profile', icon: User },
-    { id: 'notifications' as SettingsTab, label: 'Notifications', icon: Bell },
-    { id: 'appearance' as SettingsTab, label: 'Appearance', icon: Palette },
-    { id: 'security' as SettingsTab, label: 'Security', icon: Shield },
-    { id: 'billing' as SettingsTab, label: 'Billing', icon: CreditCard },
-    { id: 'help' as SettingsTab, label: 'Help', icon: HelpCircle }
-  ]
+    { id: "profile" as SettingsTab, label: "Profile", icon: User },
+    { id: "notifications" as SettingsTab, label: "Notifications", icon: Bell },
+    { id: "appearance" as SettingsTab, label: "Appearance", icon: Palette },
+    { id: "security" as SettingsTab, label: "Security", icon: Shield },
+    { id: "billing" as SettingsTab, label: "Billing", icon: CreditCard },
+    { id: "help" as SettingsTab, label: "Help", icon: HelpCircle },
+  ];
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'profile':
+      case "profile":
         return (
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">First Name</label>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  First Name
+                </label>
                 <input
                   type="text"
                   value={profile.firstName}
-                  onChange={(e) => setProfile({ ...profile, firstName: e.target.value })}
+                  onChange={(e) =>
+                    setProfile({ ...profile, firstName: e.target.value })
+                  }
                   className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Last Name</label>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Last Name
+                </label>
                 <input
                   type="text"
                   value={profile.lastName}
-                  onChange={(e) => setProfile({ ...profile, lastName: e.target.value })}
+                  onChange={(e) =>
+                    setProfile({ ...profile, lastName: e.target.value })
+                  }
                   className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Email
+              </label>
               <input
                 type="email"
                 value={profile.email}
@@ -200,21 +236,29 @@ export function SettingsModal() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Phone Number</label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Phone Number
+              </label>
               <input
                 type="tel"
                 value={profile.phone}
-                onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
+                onChange={(e) =>
+                  setProfile({ ...profile, phone: e.target.value })
+                }
                 className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="+1 (555) 123-4567"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Bio</label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Bio
+              </label>
               <textarea
                 value={profile.bio}
-                onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
+                onChange={(e) =>
+                  setProfile({ ...profile, bio: e.target.value })
+                }
                 className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 rows={3}
                 placeholder="Tell us about yourself..."
@@ -226,7 +270,9 @@ export function SettingsModal() {
               disabled={loading}
               className="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold rounded-lg disabled:opacity-50 flex items-center justify-center gap-2"
             >
-              {loading ? 'Saving...' : (
+              {loading ? (
+                "Saving..."
+              ) : (
                 <>
                   <Save className="w-4 h-4" />
                   Save Profile
@@ -234,9 +280,9 @@ export function SettingsModal() {
               )}
             </button>
           </div>
-        )
+        );
 
-      case 'notifications':
+      case "notifications":
         return (
           <div className="space-y-4">
             <div className="space-y-3">
@@ -244,14 +290,23 @@ export function SettingsModal() {
                 <div className="flex items-center gap-3">
                   <Mail className="w-5 h-5 text-gray-400" />
                   <div>
-                    <p className="font-medium text-white">Email Notifications</p>
-                    <p className="text-xs text-gray-400">Receive updates via email</p>
+                    <p className="font-medium text-white">
+                      Email Notifications
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      Receive updates via email
+                    </p>
                   </div>
                 </div>
                 <input
                   type="checkbox"
                   checked={preferences.emailNotifications}
-                  onChange={(e) => setPreferences({ ...preferences, emailNotifications: e.target.checked })}
+                  onChange={(e) =>
+                    setPreferences({
+                      ...preferences,
+                      emailNotifications: e.target.checked,
+                    })
+                  }
                   className="w-5 h-5 rounded border-slate-600 bg-slate-700 text-blue-500 focus:ring-blue-500"
                 />
               </label>
@@ -261,13 +316,20 @@ export function SettingsModal() {
                   <Smartphone className="w-5 h-5 text-gray-400" />
                   <div>
                     <p className="font-medium text-white">Push Notifications</p>
-                    <p className="text-xs text-gray-400">Get mobile app notifications</p>
+                    <p className="text-xs text-gray-400">
+                      Get mobile app notifications
+                    </p>
                   </div>
                 </div>
                 <input
                   type="checkbox"
                   checked={preferences.pushNotifications}
-                  onChange={(e) => setPreferences({ ...preferences, pushNotifications: e.target.checked })}
+                  onChange={(e) =>
+                    setPreferences({
+                      ...preferences,
+                      pushNotifications: e.target.checked,
+                    })
+                  }
                   className="w-5 h-5 rounded border-slate-600 bg-slate-700 text-blue-500 focus:ring-blue-500"
                 />
               </label>
@@ -277,13 +339,20 @@ export function SettingsModal() {
                   <Volume2 className="w-5 h-5 text-gray-400" />
                   <div>
                     <p className="font-medium text-white">Sound Effects</p>
-                    <p className="text-xs text-gray-400">Play sounds for notifications</p>
+                    <p className="text-xs text-gray-400">
+                      Play sounds for notifications
+                    </p>
                   </div>
                 </div>
                 <input
                   type="checkbox"
                   checked={preferences.soundEnabled}
-                  onChange={(e) => setPreferences({ ...preferences, soundEnabled: e.target.checked })}
+                  onChange={(e) =>
+                    setPreferences({
+                      ...preferences,
+                      soundEnabled: e.target.checked,
+                    })
+                  }
                   className="w-5 h-5 rounded border-slate-600 bg-slate-700 text-blue-500 focus:ring-blue-500"
                 />
               </label>
@@ -297,26 +366,30 @@ export function SettingsModal() {
               Save Preferences
             </button>
           </div>
-        )
+        );
 
-      case 'appearance':
+      case "appearance":
         return (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-3">Theme</label>
+              <label className="block text-sm font-medium text-gray-300 mb-3">
+                Theme
+              </label>
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { value: 'light' as const, icon: Sun, label: 'Light' },
-                  { value: 'dark' as const, icon: Moon, label: 'Dark' },
-                  { value: 'system' as const, icon: Monitor, label: 'System' }
+                  { value: "light" as const, icon: Sun, label: "Light" },
+                  { value: "dark" as const, icon: Moon, label: "Dark" },
+                  { value: "system" as const, icon: Monitor, label: "System" },
                 ].map(({ value, icon: Icon, label }) => (
                   <button
                     key={value}
-                    onClick={() => setPreferences({ ...preferences, theme: value })}
+                    onClick={() =>
+                      setPreferences({ ...preferences, theme: value })
+                    }
                     className={`p-3 rounded-lg border transition-all ${
                       preferences.theme === value
-                        ? 'bg-blue-600/20 border-blue-500 text-blue-400'
-                        : 'bg-slate-700/30 border-slate-600 text-gray-400 hover:bg-slate-700/50'
+                        ? "bg-blue-600/20 border-blue-500 text-blue-400"
+                        : "bg-slate-700/30 border-slate-600 text-gray-400 hover:bg-slate-700/50"
                     }`}
                   >
                     <Icon className="w-5 h-5 mx-auto mb-1" />
@@ -327,10 +400,17 @@ export function SettingsModal() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Language</label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Language
+              </label>
               <select
                 value={preferences.language}
-                onChange={(e) => setPreferences({ ...preferences, language: e.target.value as 'en' | 'es' })}
+                onChange={(e) =>
+                  setPreferences({
+                    ...preferences,
+                    language: e.target.value as "en" | "es",
+                  })
+                }
                 className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="en">English</option>
@@ -339,10 +419,14 @@ export function SettingsModal() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Timezone</label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Timezone
+              </label>
               <select
                 value={preferences.timezone}
-                onChange={(e) => setPreferences({ ...preferences, timezone: e.target.value })}
+                onChange={(e) =>
+                  setPreferences({ ...preferences, timezone: e.target.value })
+                }
                 className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="America/New_York">Eastern Time</option>
@@ -360,21 +444,25 @@ export function SettingsModal() {
               Save Appearance Settings
             </button>
           </div>
-        )
+        );
 
-      case 'security':
+      case "security":
         return (
           <div className="space-y-4">
             <div className="p-4 bg-slate-700/30 rounded-lg">
               <h3 className="font-medium text-white mb-3">API Keys</h3>
               <div className="space-y-3">
                 <div>
-                  <label className="block text-sm text-gray-400 mb-1">OpenAI API Key</label>
+                  <label className="block text-sm text-gray-400 mb-1">
+                    OpenAI API Key
+                  </label>
                   <div className="flex gap-2">
                     <input
-                      type={showApiKey ? 'text' : 'password'}
+                      type={showApiKey ? "text" : "password"}
                       value={apiKeys.openai}
-                      onChange={(e) => setApiKeys({ ...apiKeys, openai: e.target.value })}
+                      onChange={(e) =>
+                        setApiKeys({ ...apiKeys, openai: e.target.value })
+                      }
                       className="flex-1 px-3 py-2 bg-slate-800/50 border border-slate-600 rounded-lg text-sm"
                       placeholder="sk-..."
                     />
@@ -382,17 +470,25 @@ export function SettingsModal() {
                       onClick={() => setShowApiKey(!showApiKey)}
                       className="p-2 bg-slate-700 hover:bg-slate-600 rounded-lg"
                     >
-                      {showApiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      {showApiKey ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
                     </button>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm text-gray-400 mb-1">Google Gemini API Key</label>
+                  <label className="block text-sm text-gray-400 mb-1">
+                    Google Gemini API Key
+                  </label>
                   <input
-                    type={showApiKey ? 'text' : 'password'}
+                    type={showApiKey ? "text" : "password"}
                     value={apiKeys.gemini}
-                    onChange={(e) => setApiKeys({ ...apiKeys, gemini: e.target.value })}
+                    onChange={(e) =>
+                      setApiKeys({ ...apiKeys, gemini: e.target.value })
+                    }
                     className="w-full px-3 py-2 bg-slate-800/50 border border-slate-600 rounded-lg text-sm"
                     placeholder="AIza..."
                   />
@@ -416,20 +512,22 @@ export function SettingsModal() {
               <ChevronRight className="w-5 h-5 text-gray-400 group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
-        )
+        );
 
-      case 'billing':
+      case "billing":
         return (
           <div className="space-y-4">
             <div className="p-4 bg-slate-700/30 rounded-lg">
               <h3 className="font-medium text-white mb-2">Current Plan</h3>
               <p className="text-2xl font-bold text-blue-400">Free Tier</p>
-              <p className="text-sm text-gray-400 mt-1">Basic features included</p>
+              <p className="text-sm text-gray-400 mt-1">
+                Basic features included
+              </p>
             </div>
 
             <button
               onClick={() => {
-                closeModal()
+                closeModal();
                 // Navigate to pricing
               }}
               className="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold rounded-lg"
@@ -440,29 +538,45 @@ export function SettingsModal() {
             <div className="space-y-2">
               <button className="w-full p-3 bg-slate-700/30 hover:bg-slate-700/50 rounded-lg text-left">
                 <p className="text-white">Payment Methods</p>
-                <p className="text-xs text-gray-400">Manage your payment information</p>
+                <p className="text-xs text-gray-400">
+                  Manage your payment information
+                </p>
               </button>
 
               <button className="w-full p-3 bg-slate-700/30 hover:bg-slate-700/50 rounded-lg text-left">
                 <p className="text-white">Billing History</p>
-                <p className="text-xs text-gray-400">View past invoices and receipts</p>
+                <p className="text-xs text-gray-400">
+                  View past invoices and receipts
+                </p>
               </button>
             </div>
           </div>
-        )
+        );
 
-      case 'help':
+      case "help":
         return (
           <div className="space-y-4">
             <div className="space-y-2">
-              <a href="/docs" target="_blank" className="block p-3 bg-slate-700/30 hover:bg-slate-700/50 rounded-lg">
+              <a
+                href="/docs"
+                target="_blank"
+                className="block p-3 bg-slate-700/30 hover:bg-slate-700/50 rounded-lg"
+              >
                 <p className="text-white">Documentation</p>
-                <p className="text-xs text-gray-400">Learn how to use ClaimGuardian</p>
+                <p className="text-xs text-gray-400">
+                  Learn how to use ClaimGuardian
+                </p>
               </a>
 
-              <a href="/faq" target="_blank" className="block p-3 bg-slate-700/30 hover:bg-slate-700/50 rounded-lg">
+              <a
+                href="/faq"
+                target="_blank"
+                className="block p-3 bg-slate-700/30 hover:bg-slate-700/50 rounded-lg"
+              >
                 <p className="text-white">FAQ</p>
-                <p className="text-xs text-gray-400">Frequently asked questions</p>
+                <p className="text-xs text-gray-400">
+                  Frequently asked questions
+                </p>
               </a>
 
               <button className="w-full p-3 bg-slate-700/30 hover:bg-slate-700/50 rounded-lg text-left">
@@ -476,16 +590,19 @@ export function SettingsModal() {
               </div>
             </div>
           </div>
-        )
+        );
 
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={closeModal} />
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={closeModal}
+      />
 
       <div className="relative bg-gradient-to-b from-slate-800 to-slate-900 rounded-2xl w-full max-w-2xl max-h-[80vh] shadow-2xl overflow-hidden flex">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-cyan-600/5 pointer-events-none" />
@@ -501,8 +618,8 @@ export function SettingsModal() {
                 onClick={() => setActiveTab(id)}
                 className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all ${
                   activeTab === id
-                    ? 'bg-blue-600/20 text-blue-400'
-                    : 'text-gray-400 hover:bg-slate-700/50 hover:text-white'
+                    ? "bg-blue-600/20 text-blue-400"
+                    : "text-gray-400 hover:bg-slate-700/50 hover:text-white"
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -541,7 +658,9 @@ export function SettingsModal() {
           {saveSuccess && (
             <div className="mb-4 p-3 bg-green-500/10 border border-green-500/20 rounded-lg flex items-start gap-2">
               <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-              <p className="text-green-400 text-sm">Settings saved successfully!</p>
+              <p className="text-green-400 text-sm">
+                Settings saved successfully!
+              </p>
             </div>
           )}
 
@@ -549,5 +668,5 @@ export function SettingsModal() {
         </div>
       </div>
     </div>
-  )
+  );
 }

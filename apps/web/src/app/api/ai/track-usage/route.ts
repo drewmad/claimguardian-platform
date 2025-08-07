@@ -8,78 +8,96 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-import { NextRequest, NextResponse } from 'next/server'
-import { logger } from "@/lib/logger/production-logger"
-import { createClient } from '@/lib/supabase/server'
+import { NextRequest, NextResponse } from "next/server";
+import { logger } from "@/lib/logger/production-logger";
+import { createClient } from "@/lib/supabase/server";
 
 interface UsageTrackingData {
-  featureId: string
-  model: string
-  success: boolean
-  responseTime: number
-  cost?: number
-  userId?: string
-  timestamp: string
-  promptId?: string
-  requestMetadata?: Record<string, unknown>
+  featureId: string;
+  model: string;
+  success: boolean;
+  responseTime: number;
+  cost?: number;
+  userId?: string;
+  timestamp: string;
+  promptId?: string;
+  requestMetadata?: Record<string, unknown>;
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const body: UsageTrackingData = await request.json()
-    const { featureId, model, success, responseTime, cost, userId, timestamp, promptId, requestMetadata } = body
-
-    // Validate required fields
-    if (!featureId || !model || typeof success !== 'boolean' || typeof responseTime !== 'number') {
-      return NextResponse.json(
-        { error: 'Missing required fields: featureId, model, success, responseTime' },
-        { status: 400 }
-      )
-    }
-
-    const supabase = await createClient()
-
-    // Get current user if not provided
-    let trackingUserId = userId
-    if (!trackingUserId) {
-      const { data: { user } } = await supabase.auth.getUser()
-      trackingUserId = user?.id || 'anonymous'
-    }
-
-    // Store usage data in database
-    const { error } = await supabase
-      .from('ai_usage_tracking')
-      .insert({
-        feature_id: featureId,
-        model: model,
-        success,
-        response_time: responseTime,
-        cost: cost || 0,
-        user_id: trackingUserId,
-        prompt_id: promptId || null,
-        request_metadata: requestMetadata || {},
-        created_at: timestamp
-      })
-
-    if (error) {
-      throw error
-    }
-
-    logger.info('AI usage tracked', {
+    const body: UsageTrackingData = await request.json();
+    const {
       featureId,
       model,
       success,
       responseTime,
       cost,
-      userId: trackingUserId
-    })
+      userId,
+      timestamp,
+      promptId,
+      requestMetadata,
+    } = body;
 
-    return NextResponse.json({ success: true })
+    // Validate required fields
+    if (
+      !featureId ||
+      !model ||
+      typeof success !== "boolean" ||
+      typeof responseTime !== "number"
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Missing required fields: featureId, model, success, responseTime",
+        },
+        { status: 400 },
+      );
+    }
+
+    const supabase = await createClient();
+
+    // Get current user if not provided
+    let trackingUserId = userId;
+    if (!trackingUserId) {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      trackingUserId = user?.id || "anonymous";
+    }
+
+    // Store usage data in database
+    const { error } = await supabase.from("ai_usage_tracking").insert({
+      feature_id: featureId,
+      model: model,
+      success,
+      response_time: responseTime,
+      cost: cost || 0,
+      user_id: trackingUserId,
+      prompt_id: promptId || null,
+      request_metadata: requestMetadata || {},
+      created_at: timestamp,
+    });
+
+    if (error) {
+      throw error;
+    }
+
+    logger.info("AI usage tracked", {
+      featureId,
+      model,
+      success,
+      responseTime,
+      cost,
+      userId: trackingUserId,
+    });
+
+    return NextResponse.json({ success: true });
   } catch (error) {
-    logger.error('Failed to track AI usage:', error)
+    logger.error("Failed to track AI usage:", error);
     return NextResponse.json(
-      { error: 'Failed to track usage' },
-      { status: 500 }
-    )
+      { error: "Failed to track usage" },
+      { status: 500 },
+    );
   }
 }

@@ -20,22 +20,26 @@ The multi-tenant architecture enables ClaimGuardian to serve multiple enterprise
 #### Core Tables
 
 **`enterprise_organizations`**
+
 - Organization metadata, subscription details, and configuration
 - Usage limits and current counters
 - Geographic scope and compliance requirements
 - Security settings (SSO, 2FA, IP restrictions)
 
 **`organization_users`**
+
 - User-organization relationships with role-based permissions
 - Invitation and status management
 - Activity tracking and audit trails
 
 **`organization_customizations`**
+
 - UI themes, branding, and custom CSS
 - Feature configurations and limits
 - Workflow customizations and integrations
 
 **`organization_billing`**
+
 - Monthly billing cycles and usage tracking
 - Cost calculations and invoice management
 - Overage tracking for resource limits
@@ -59,20 +63,23 @@ This provides complete data isolation while maintaining referential integrity.
 The `TenantManager` class provides centralized tenant operations:
 
 ```typescript
-import { tenantManager } from '@/lib/multi-tenant/tenant-manager'
+import { tenantManager } from "@/lib/multi-tenant/tenant-manager";
 
 // Get organization by subdomain/code
-const org = await tenantManager.getOrganizationByCode('demo')
+const org = await tenantManager.getOrganizationByCode("demo");
 
 // Check user permissions
-const canEdit = await tenantManager.userHasPermission(userId, 'properties.write')
+const canEdit = await tenantManager.userHasPermission(
+  userId,
+  "properties.write",
+);
 
 // Execute tenant-specific query
-const result = await tenantManager.executeTenantQuery('demo', 'properties', {
-  select: '*',
+const result = await tenantManager.executeTenantQuery("demo", "properties", {
+  select: "*",
   match: { user_id: userId },
-  limit: 100
-})
+  limit: 100,
+});
 ```
 
 ### 3. Middleware Layer
@@ -88,24 +95,28 @@ Tenant-aware middleware handles:
 ## Subscription Tiers
 
 ### Standard Tier
+
 - **Limits**: 50 users, 1,000 properties, 5,000 claims, 10,000 AI requests/month
 - **Features**: Basic claims management, damage analysis, document management
 - **Geographic**: Single state (Florida)
 - **Cost**: $99/month base + overages
 
 ### Professional Tier
+
 - **Limits**: 100 users, 2,500 properties, 15,000 claims, 25,000 AI requests/month
 - **Features**: + Advanced AI tools, inventory scanner, custom reports
 - **Geographic**: Up to 3 states
 - **Cost**: $299/month base + overages
 
 ### Enterprise Tier
+
 - **Limits**: 500 users, 10,000 properties, 50,000 claims, 100,000 AI requests/month
 - **Features**: + Predictive modeling, advanced analytics, SSO, custom integrations
 - **Geographic**: Up to 10 states
 - **Cost**: $999/month base + overages
 
 ### Custom Tier
+
 - **Limits**: Negotiated per contract
 - **Features**: All features + custom development
 - **Geographic**: Nationwide
@@ -118,20 +129,21 @@ Tenant-aware middleware handles:
 Create a new enterprise organization:
 
 ```typescript
-import { createOrganization } from '@/actions/multi-tenant'
+import { createOrganization } from "@/actions/multi-tenant";
 
 const result = await createOrganization({
-  organizationName: 'Demo Insurance Corp',
-  organizationCode: 'demo-corp',
-  domain: 'demo-corp.com',
-  primaryContactEmail: 'admin@demo-corp.com',
-  subscriptionTier: 'enterprise',
-  allowedStates: ['FL', 'GA', 'SC'],
-  primaryState: 'FL'
-})
+  organizationName: "Demo Insurance Corp",
+  organizationCode: "demo-corp",
+  domain: "demo-corp.com",
+  primaryContactEmail: "admin@demo-corp.com",
+  subscriptionTier: "enterprise",
+  allowedStates: ["FL", "GA", "SC"],
+  primaryState: "FL",
+});
 ```
 
 This automatically:
+
 - Creates the organization record
 - Sets up the tenant-specific database schema
 - Initializes default customizations
@@ -142,16 +154,17 @@ This automatically:
 Add users to an organization:
 
 ```typescript
-import { inviteUserToOrganization } from '@/actions/multi-tenant'
+import { inviteUserToOrganization } from "@/actions/multi-tenant";
 
 const result = await inviteUserToOrganization({
-  organizationId: 'org-uuid',
-  userEmail: 'user@demo-corp.com',
-  role: 'manager'
-})
+  organizationId: "org-uuid",
+  userEmail: "user@demo-corp.com",
+  role: "manager",
+});
 ```
 
 Role hierarchy:
+
 - **Owner**: Full control, billing access
 - **Admin**: User management, settings, limited billing
 - **Manager**: Properties, claims, user viewing
@@ -181,15 +194,15 @@ function AdvancedAnalytics() {
 Execute queries in tenant context:
 
 ```typescript
-import { executeTenantQuery } from '@/actions/multi-tenant'
+import { executeTenantQuery } from "@/actions/multi-tenant";
 
 // Get properties for the user's organization
-const { data, error } = await executeTenantQuery('demo-corp', 'properties', {
-  select: 'id, property_name, address, value',
+const { data, error } = await executeTenantQuery("demo-corp", "properties", {
+  select: "id, property_name, address, value",
   match: { user_id: userId },
-  order: { column: 'created_at', ascending: false },
-  limit: 50
-})
+  order: { column: "created_at", ascending: false },
+  limit: 50,
+});
 ```
 
 ### 5. Custom Branding
@@ -240,17 +253,17 @@ Support for enterprise SSO providers:
 ```typescript
 // Configure SSO for organization
 await updateOrganization({
-  organizationId: 'org-uuid',
+  organizationId: "org-uuid",
   updates: {
     ssoEnabled: true,
-    ssoProvider: 'okta',
+    ssoProvider: "okta",
     ssoConfiguration: {
-      domain: 'demo-corp.okta.com',
-      clientId: 'client-id',
-      clientSecret: 'encrypted-secret'
-    }
-  }
-})
+      domain: "demo-corp.okta.com",
+      clientId: "client-id",
+      clientSecret: "encrypted-secret",
+    },
+  },
+});
 ```
 
 ### 3. IP Whitelisting
@@ -259,11 +272,11 @@ Restrict access to specific IP ranges:
 
 ```typescript
 await updateOrganization({
-  organizationId: 'org-uuid',
+  organizationId: "org-uuid",
   updates: {
-    ipWhitelist: ['192.168.1.0/24', '10.0.0.0/8']
-  }
-})
+    ipWhitelist: ["192.168.1.0/24", "10.0.0.0/8"],
+  },
+});
 ```
 
 ### 4. Audit Logging
@@ -272,11 +285,11 @@ All actions are automatically logged:
 
 ```typescript
 // View audit log
-const { data: auditLog } = await getOrganizationAuditLog('org-uuid', 100)
+const { data: auditLog } = await getOrganizationAuditLog("org-uuid", 100);
 
-auditLog.forEach(entry => {
-  console.log(`${entry.timestamp}: ${entry.action} on ${entry.resource_type}`)
-})
+auditLog.forEach((entry) => {
+  console.log(`${entry.timestamp}: ${entry.action} on ${entry.resource_type}`);
+});
 ```
 
 ## Billing System
@@ -289,15 +302,15 @@ Usage is automatically tracked for all resources:
 // Track AI request usage
 await tenantManager.updateOrganizationUsage(
   organizationId,
-  'ai_requests',
-  1 // increment by 1
-)
+  "ai_requests",
+  1, // increment by 1
+);
 
 // Check if within limits
 const withinLimits = await tenantManager.checkOrganizationLimit(
   organizationId,
-  'ai_requests'
-)
+  "ai_requests",
+);
 ```
 
 ### Billing Cycles
@@ -317,11 +330,11 @@ When limits are exceeded:
 const limits = {
   standard: {
     users: { base: 50, overage: 5 }, // $5 per additional user
-    properties: { base: 1000, overage: 0.10 }, // $0.10 per additional property
-    aiRequests: { base: 10000, overage: 0.01 } // $0.01 per additional request
-  }
+    properties: { base: 1000, overage: 0.1 }, // $0.10 per additional property
+    aiRequests: { base: 10000, overage: 0.01 }, // $0.01 per additional request
+  },
   // ... other tiers
-}
+};
 ```
 
 ## Geographic Expansion
@@ -332,21 +345,21 @@ Each organization can operate in specific states:
 
 ```typescript
 const organization = {
-  allowedStates: ['FL', 'GA', 'SC', 'NC'],
-  primaryState: 'FL',
+  allowedStates: ["FL", "GA", "SC", "NC"],
+  primaryState: "FL",
   stateConfigurations: {
     FL: {
-      regulatoryRequirements: ['public_adjuster_license'],
+      regulatoryRequirements: ["public_adjuster_license"],
       dataRetentionDays: 2555, // 7 years
-      complianceStandards: ['FL_statute_627']
+      complianceStandards: ["FL_statute_627"],
     },
     GA: {
-      regulatoryRequirements: ['claims_adjuster_license'],
+      regulatoryRequirements: ["claims_adjuster_license"],
       dataRetentionDays: 2190, // 6 years
-      complianceStandards: ['GA_code_33-7']
-    }
-  }
-}
+      complianceStandards: ["GA_code_33-7"],
+    },
+  },
+};
 ```
 
 ### Regulatory Compliance
@@ -363,6 +376,7 @@ Automatic compliance tracking:
 ### 1. Schema-Based Isolation
 
 Each tenant's data is in a separate PostgreSQL schema, providing:
+
 - **Query Performance**: Smaller tables, better indexes
 - **Backup Isolation**: Selective backup/restore per tenant
 - **Migration Safety**: Schema changes don't affect other tenants
@@ -373,12 +387,12 @@ Tenant-aware connection pooling:
 
 ```typescript
 const pool = new Pool({
-  host: 'db.example.com',
-  database: 'claimguardian',
-  searchPath: [`org_${organizationCode}`, 'public'],
+  host: "db.example.com",
+  database: "claimguardian",
+  searchPath: [`org_${organizationCode}`, "public"],
   max: 20,
-  idleTimeoutMillis: 30000
-})
+  idleTimeoutMillis: 30000,
+});
 ```
 
 ### 3. Caching Strategy
@@ -387,13 +401,13 @@ Multi-level caching:
 
 ```typescript
 // Organization cache (15 minutes)
-const orgCache = new Map<string, Organization>()
+const orgCache = new Map<string, Organization>();
 
 // User permissions cache (5 minutes)
-const permissionCache = new Map<string, Permissions>()
+const permissionCache = new Map<string, Permissions>();
 
 // Feature flags cache (30 minutes)
-const featureCache = new Map<string, FeatureFlags>()
+const featureCache = new Map<string, FeatureFlags>();
 ```
 
 ### 4. Resource Monitoring
@@ -440,17 +454,17 @@ Set up alerts for:
 ```typescript
 const alertRules = {
   // Usage approaching limits
-  usageWarning: { threshold: 0.8, action: 'notify_admin' },
-  usageCritical: { threshold: 0.95, action: 'notify_billing' },
+  usageWarning: { threshold: 0.8, action: "notify_admin" },
+  usageCritical: { threshold: 0.95, action: "notify_billing" },
 
   // Performance degradation
-  slowQueries: { threshold: '5s', action: 'notify_engineering' },
-  highErrorRate: { threshold: 0.05, action: 'page_oncall' },
+  slowQueries: { threshold: "5s", action: "notify_engineering" },
+  highErrorRate: { threshold: 0.05, action: "page_oncall" },
 
   // Business metrics
-  churnRisk: { threshold: 'no_activity_30d', action: 'notify_success' },
-  paymentFailed: { action: 'suspend_after_7d' }
-}
+  churnRisk: { threshold: "no_activity_30d", action: "notify_success" },
+  paymentFailed: { action: "suspend_after_7d" },
+};
 ```
 
 ## Migration and Deployment
@@ -519,17 +533,17 @@ Tier-based rate limiting:
 
 ```typescript
 const rateLimits = {
-  '/api/ai/*': {
-    standard: '50/hour',
-    professional: '200/hour',
-    enterprise: '1000/hour'
+  "/api/ai/*": {
+    standard: "50/hour",
+    professional: "200/hour",
+    enterprise: "1000/hour",
   },
-  '/api/properties': {
-    standard: '100/minute',
-    professional: '500/minute',
-    enterprise: '2000/minute'
-  }
-}
+  "/api/properties": {
+    standard: "100/minute",
+    professional: "500/minute",
+    enterprise: "2000/minute",
+  },
+};
 ```
 
 ### Webhook Support
@@ -539,10 +553,10 @@ Tenant-specific webhooks:
 ```typescript
 // Configure webhooks per organization
 const webhooks = {
-  claimCreated: 'https://demo-corp.com/webhooks/claim-created',
-  propertyUpdated: 'https://demo-corp.com/webhooks/property-updated',
-  paymentFailed: 'https://demo-corp.com/webhooks/payment-failed'
-}
+  claimCreated: "https://demo-corp.com/webhooks/claim-created",
+  propertyUpdated: "https://demo-corp.com/webhooks/property-updated",
+  paymentFailed: "https://demo-corp.com/webhooks/payment-failed",
+};
 ```
 
 ## Compliance and Data Protection
@@ -553,10 +567,10 @@ Ensure data stays in required regions:
 
 ```typescript
 const dataResidency = {
-  'us-east-1': ['US', 'CA'], // North America
-  'eu-west-1': ['DE', 'FR', 'IT'], // European Union
-  'ap-southeast-1': ['SG', 'MY'] // Asia Pacific
-}
+  "us-east-1": ["US", "CA"], // North America
+  "eu-west-1": ["DE", "FR", "IT"], // European Union
+  "ap-southeast-1": ["SG", "MY"], // Asia Pacific
+};
 ```
 
 ### GDPR Compliance
@@ -614,15 +628,17 @@ Enterprise-ready security controls:
 ### Common Issues
 
 #### 1. Tenant Context Not Found
+
 ```typescript
 // Check middleware setup
-const tenantContext = await extractTenantContext(request)
+const tenantContext = await extractTenantContext(request);
 if (!tenantContext) {
-  console.log('No tenant context found for:', request.headers.get('host'))
+  console.log("No tenant context found for:", request.headers.get("host"));
 }
 ```
 
 #### 2. Permission Denied Errors
+
 ```sql
 -- Check user organization membership
 SELECT ou.role, ou.status, eo.organization_name
@@ -632,6 +648,7 @@ WHERE ou.user_id = 'user-id';
 ```
 
 #### 3. Schema Not Found
+
 ```sql
 -- Verify tenant schema exists
 SELECT schema_name FROM information_schema.schemata
@@ -642,15 +659,16 @@ SELECT create_organization_schema('demo');
 ```
 
 #### 4. Feature Access Issues
+
 ```typescript
 // Debug feature access
-const hasAccess = checkFeatureAccess('advanced_analytics', tenantContext)
-console.log('Feature access:', {
-  feature: 'advanced_analytics',
+const hasAccess = checkFeatureAccess("advanced_analytics", tenantContext);
+console.log("Feature access:", {
+  feature: "advanced_analytics",
   subscriptionTier: tenantContext.subscriptionTier,
   hasAccess,
-  featureFlags: tenantContext.featureFlags
-})
+  featureFlags: tenantContext.featureFlags,
+});
 ```
 
 This comprehensive multi-tenant architecture provides a robust foundation for serving enterprise customers with complete isolation, security, and customization capabilities.

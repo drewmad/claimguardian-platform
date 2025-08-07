@@ -5,6 +5,7 @@ This guide covers the OCR capabilities added to ClaimGuardian for scanning recei
 ## Overview
 
 The OCR feature allows users to:
+
 - Extract text from images using AI-powered vision models
 - Parse structured data from receipts, invoices, and estimates
 - Track expenses for insurance claims
@@ -47,17 +48,19 @@ The OCR feature allows users to:
 
 OCR usage is limited by subscription plan:
 
-| Plan | Monthly Limit |
-|------|--------------|
-| Free | 10 scans |
-| Essential | 100 scans |
-| Plus | 500 scans |
-| Pro | Unlimited |
+| Plan      | Monthly Limit |
+| --------- | ------------- |
+| Free      | 10 scans      |
+| Essential | 100 scans     |
+| Plus      | 500 scans     |
+| Pro       | Unlimited     |
 
 ## Database Tables
 
 ### ocr_history
+
 Tracks all OCR scanning activity:
+
 - User ID
 - Document type
 - Success/failure status
@@ -65,7 +68,9 @@ Tracks all OCR scanning activity:
 - Timestamp
 
 ### saved_receipts
+
 Stores parsed receipt data:
+
 - Merchant information
 - Date and totals
 - Raw text and structured data
@@ -74,6 +79,7 @@ Stores parsed receipt data:
 ## API Integration
 
 The OCR system uses Google's Gemini 1.5 Flash model:
+
 - High accuracy for text extraction
 - Multi-language support (English and Spanish)
 - Handles various image formats
@@ -84,6 +90,7 @@ The OCR system uses Google's Gemini 1.5 Flash model:
 ### 1. Environment Variables
 
 Ensure your Gemini API key is set:
+
 ```env
 GEMINI_API_KEY=your-api-key-here
 ```
@@ -91,6 +98,7 @@ GEMINI_API_KEY=your-api-key-here
 ### 2. Database Setup
 
 Run the OCR table migrations:
+
 ```sql
 -- Run in Supabase SQL editor
 -- File: supabase/sql/add-ocr-tables.sql
@@ -100,6 +108,7 @@ Run the OCR table migrations:
 ### 3. Deploy Edge Function
 
 Deploy the OCR Edge Function:
+
 ```bash
 supabase functions deploy ocr-document
 ```
@@ -131,37 +140,37 @@ if (result.success) {
 ### Using the OCR Scanner Component
 
 ```tsx
-import { OCRScanner } from '@/components/ocr/ocr-scanner'
+import { OCRScanner } from "@/components/ocr/ocr-scanner";
 
 function MyComponent() {
   const handleScanComplete = (result: OCRResult) => {
     // Handle the scanned data
-    console.log('Scan complete:', result)
-  }
+    console.log("Scan complete:", result);
+  };
 
   return (
-    <OCRScanner
-      documentType="receipt"
-      onScanComplete={handleScanComplete}
-    />
-  )
+    <OCRScanner documentType="receipt" onScanComplete={handleScanComplete} />
+  );
 }
 ```
 
 ## Best Practices
 
 ### Image Quality
+
 - Use well-lit images
 - Avoid blurry or skewed photos
 - Ensure text is clearly visible
 - Minimize background clutter
 
 ### File Size
+
 - Keep images under 10MB
 - Use JPEG or PNG format
 - Resize large images before upload
 
 ### Privacy
+
 - Temporary files are auto-deleted after 1 hour
 - Don't upload sensitive financial documents
 - Review extracted data before saving
@@ -186,9 +195,10 @@ function MyComponent() {
 ### Debug Mode
 
 Enable debug logging:
+
 ```typescript
 // In browser console
-localStorage.setItem('ocr_debug', 'true')
+localStorage.setItem("ocr_debug", "true");
 ```
 
 ## Future Enhancements
@@ -211,11 +221,13 @@ localStorage.setItem('ocr_debug', 'true')
 ## Performance
 
 Typical processing times:
+
 - Simple receipts: 1-2 seconds
 - Complex invoices: 2-4 seconds
 - Multi-item estimates: 3-5 seconds
 
 Factors affecting performance:
+
 - Image size and quality
 - Document complexity
 - Network speed

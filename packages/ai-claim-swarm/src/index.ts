@@ -9,6 +9,6 @@
  * @tags ["patent-worthy", "claimguardian-native", "competitive-advantage"]
  */
 
-export * from './ToolComponent'
-export * from './useClaimSwarm'
-export * from './claimSwarmService'
+export * from "./ToolComponent";
+export * from "./useClaimSwarm";
+export * from "./claimSwarmService";

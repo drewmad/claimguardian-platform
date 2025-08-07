@@ -1,11 +1,13 @@
 # ClaimGuardian Project - Claude.md
 
 ## Project Overview
+
 ClaimGuardian is an AI-powered insurance claim advocacy platform for Florida property owners, built with Next.js 15, Supabase, and a comprehensive monorepo architecture.
 
 **Production Domain**: https://claimguardianai.com
 
 ## Quick Reference Links
+
 - [Main Documentation](../CLAUDE.md) - Primary project documentation
 - [Authentication System](../apps/web/src/app/auth/claude.md)
 - [AI Tools System](../apps/web/src/app/ai-tools/claude.md)
@@ -16,6 +18,7 @@ ClaimGuardian is an AI-powered insurance claim advocacy platform for Florida pro
 ## Architecture Overview
 
 ### Technology Stack
+
 - **Frontend**: Next.js 15.3.5 with App Router, TypeScript 5.8.3
 - **Backend**: Supabase (PostgreSQL 17, PostgREST, GoTrue Auth)
 - **AI Integration**: OpenAI GPT-4, Google Gemini via Edge Functions
@@ -23,6 +26,7 @@ ClaimGuardian is an AI-powered insurance claim advocacy platform for Florida pro
 - **Runtime**: Node.js 24.3.0 (production)
 
 ### Monorepo Structure
+
 ```
 ClaimGuardian/
 ├── apps/web/              # Next.js application
@@ -43,6 +47,7 @@ ClaimGuardian/
 ## Development Workflow
 
 ### Essential Commands
+
 ```bash
 # Development
 pnpm dev            # Start all apps (port 3000)
@@ -63,6 +68,7 @@ git add -A && git commit       # Triggers pre-commit hooks
 ```
 
 ### Pre-commit Workflow
+
 1. **Dependency Check**: Validates lockfile integrity
 2. **Auto-fix**: ESLint fixes applied automatically
 3. **Type Check**: TypeScript validation (warns, doesn't block)
@@ -72,64 +78,76 @@ git add -A && git commit       # Triggers pre-commit hooks
 ## Critical System Patterns
 
 ### Database Access
+
 ```typescript
 // ✅ Correct patterns
-import { createBrowserSupabaseClient } from '@claimguardian/db'
-import { createClient } from '@/lib/supabase/server'
+import { createBrowserSupabaseClient } from "@claimguardian/db";
+import { createClient } from "@/lib/supabase/server";
 
 // Client-side
-const supabase = createBrowserSupabaseClient()
+const supabase = createBrowserSupabaseClient();
 
 // Server-side (server actions)
-const supabase = await createClient()
+const supabase = await createClient();
 ```
 
 ### Component Imports
+
 ```typescript
 // ✅ Always import from package root
-import { Button, Card, Input } from '@claimguardian/ui'
-import { formatDate, cn } from '@claimguardian/utils'
+import { Button, Card, Input } from "@claimguardian/ui";
+import { formatDate, cn } from "@claimguardian/utils";
 
 // ❌ Never import from subpaths
-import { Button } from '@claimguardian/ui/button'
+import { Button } from "@claimguardian/ui/button";
 ```
 
 ### Authentication Flow
+
 ```typescript
 // ✅ Profile creation handled by database triggers
 const { data, error } = await supabase.auth.signUp({
-  email, password,
-  options: { data: { first_name, last_name } }
-})
+  email,
+  password,
+  options: { data: { first_name, last_name } },
+});
 // Profile automatically created - no manual insertion needed
 ```
 
 ### AI Tool Integration
+
 ```typescript
 // ✅ Correct AI service invocation
-const { data, error } = await supabase.functions.invoke('ai-document-extraction', {
-  body: { documentData, propertyId, userId }
-})
+const { data, error } = await supabase.functions.invoke(
+  "ai-document-extraction",
+  {
+    body: { documentData, propertyId, userId },
+  },
+);
 ```
 
 ## Common Issues & Solutions
 
 ### Build Errors
+
 - **TypeScript**: Run `pnpm type-check` to identify issues
 - **Import Errors**: Ensure imports from package roots
 - **Missing Dependencies**: Run `pnpm install` in affected package
 
 ### Database Issues
+
 - **"Database error saving new user"**: Profile creation handled by triggers
 - **RLS Violations**: Check user authentication and policies
 - **Schema Mismatch**: Update types with `pnpm db:generate-types`
 
 ### Authentication Problems
+
 - **Session Loops**: Check middleware public pages configuration
 - **Profile Creation**: Remove manual inserts, rely on triggers
 - **Route Protection**: Use `ProtectedRoute` wrapper component
 
 ### Performance Issues
+
 - **Bundle Size**: Check imports, use root imports only
 - **Build Time**: Use Turborepo caching, selective package builds
 - **Database**: Optimize queries, check indexing
@@ -137,12 +155,14 @@ const { data, error } = await supabase.functions.invoke('ai-document-extraction'
 ## Development Standards
 
 ### Code Style
+
 - **TypeScript**: Strict mode enabled
 - **ESLint**: Auto-fix enabled in pre-commit hooks
 - **Imports**: Always from package roots
 - **Components**: Functional components with hooks
 
 ### Git Workflow
+
 ```bash
 # Use conventional commits
 pnpm cz  # Interactive commit message helper
@@ -154,6 +174,7 @@ git commit -m "docs: update API documentation"
 ```
 
 ### Testing Strategy
+
 - **Unit Tests**: Jest (web app), Vitest (packages)
 - **Integration**: End-to-end user flows
 - **Database**: Test with real Supabase instance
@@ -162,6 +183,7 @@ git commit -m "docs: update API documentation"
 ## Environment Configuration
 
 ### Required Variables
+
 ```bash
 # Supabase Core
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
@@ -182,6 +204,7 @@ SENTRY_AUTH_TOKEN=your-sentry-token
 ```
 
 ### Development Setup
+
 1. Clone repository
 2. Run `pnpm install`
 3. Copy `.env.example` to `.env.local`
@@ -191,12 +214,14 @@ SENTRY_AUTH_TOKEN=your-sentry-token
 ## Deployment Process
 
 ### Vercel Deployment
+
 - **Build Command**: `turbo build`
 - **Install Command**: `pnpm install --no-frozen-lockfile`
 - **Output Directory**: `apps/web/.next`
 - **Node Version**: 24.x
 
 ### Database Deployment
+
 1. Apply schema changes in Supabase Dashboard
 2. Export schema: `./scripts/db.sh schema dump`
 3. Generate types: `pnpm db:generate-types`
@@ -205,11 +230,13 @@ SENTRY_AUTH_TOKEN=your-sentry-token
 ## Monitoring & Analytics
 
 ### Error Tracking
+
 - **Sentry**: Full-stack error monitoring
 - **Custom Logging**: Database-backed error logs
 - **Performance**: Web Vitals collection
 
 ### Analytics
+
 - **User Behavior**: Custom event tracking
 - **AI Usage**: Token consumption and costs
 - **Performance**: Build times, bundle sizes
@@ -217,12 +244,14 @@ SENTRY_AUTH_TOKEN=your-sentry-token
 ## Security Considerations
 
 ### Data Protection
+
 - **RLS**: Row Level Security on all user data
 - **Authentication**: JWT-based with automatic refresh
 - **API Keys**: Stored in Supabase secrets
 - **CORS**: Proper headers for Edge Functions
 
 ### Compliance
+
 - **GDPR**: Consent tracking and data export
 - **Florida Law**: Insurance regulation compliance
 - **Privacy**: Minimal data collection, user control
@@ -230,12 +259,14 @@ SENTRY_AUTH_TOKEN=your-sentry-token
 ## Getting Help
 
 ### Documentation Priority
+
 1. This file for quick reference
 2. `../CLAUDE.md` for comprehensive documentation
 3. Area-specific claude.md files for detailed guidance
 4. Package README files for API documentation
 
 ### Common Debugging Steps
+
 1. Check browser console for client-side errors
 2. Review server logs for API errors
 3. Validate environment variables
@@ -243,6 +274,7 @@ SENTRY_AUTH_TOKEN=your-sentry-token
 5. Check Supabase dashboard for backend issues
 
 ### Support Channels
+
 - GitHub Issues for bug reports
 - Documentation for common problems
 - Code comments for implementation details
@@ -250,6 +282,7 @@ SENTRY_AUTH_TOKEN=your-sentry-token
 ## Project Status
 
 ### Recently Completed
+
 - ✅ TypeScript error resolution
 - ✅ Liquid glass design system
 - ✅ AI tools consolidation (/ai-augmented → /ai-tools)
@@ -257,12 +290,14 @@ SENTRY_AUTH_TOKEN=your-sentry-token
 - ✅ Comprehensive claude.md documentation
 
 ### Active Development
+
 - Performance optimization
 - AI cost management
 - Testing coverage expansion
 - Documentation improvements
 
 ### Future Roadmap
+
 - Mobile application
 - Advanced AI features
 - Multi-state expansion

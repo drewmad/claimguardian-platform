@@ -29,13 +29,15 @@ export default function BlogPage() {
           </h1>
 
           <p className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
-            Expert insights on Florida property management, insurance optimization, and wealth building strategies.
+            Expert insights on Florida property management, insurance
+            optimization, and wealth building strategies.
           </p>
 
           <div className="bg-gray-800/50 rounded-xl p-8 border border-gray-700">
             <h2 className="text-2xl font-semibold mb-4">Coming Soon</h2>
             <p className="text-gray-400">
-              Our blog is currently under development. We'll be sharing valuable content about:
+              Our blog is currently under development. We'll be sharing valuable
+              content about:
             </p>
 
             <div className="grid md:grid-cols-2 gap-4 mt-6 text-left">
@@ -72,5 +74,5 @@ export default function BlogPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

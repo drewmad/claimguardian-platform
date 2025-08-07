@@ -6,268 +6,281 @@
  * @status stable
  */
 
-import { createClient } from '@/lib/supabase/server'
-import type { SupabaseClient } from '@supabase/supabase-js'
+import { createClient } from "@/lib/supabase/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 // Database row types - match actual Supabase schema
 interface StateConfigurationRow {
-  id: string
-  state_code: string
-  state_name: string
-  is_active: boolean
-  insurance_regulations: InsuranceRegulations
-  data_sources: DataSources
-  market_data: MarketData
-  operations: Operations
-  features: Features
-  deployment_status: 'planning' | 'development' | 'testing' | 'staging' | 'production'
-  launch_date?: string
-  migration_complete: boolean
-  data_load_status: DataLoadStatus
-  created_at: string
-  updated_at: string
-  created_by: string
-  last_modified_by?: string
-  notes?: string
+  id: string;
+  state_code: string;
+  state_name: string;
+  is_active: boolean;
+  insurance_regulations: InsuranceRegulations;
+  data_sources: DataSources;
+  market_data: MarketData;
+  operations: Operations;
+  features: Features;
+  deployment_status:
+    | "planning"
+    | "development"
+    | "testing"
+    | "staging"
+    | "production";
+  launch_date?: string;
+  migration_complete: boolean;
+  data_load_status: DataLoadStatus;
+  created_at: string;
+  updated_at: string;
+  created_by: string;
+  last_modified_by?: string;
+  notes?: string;
 }
 
 interface ExpansionPlanRow {
-  id: string
-  phase: number
-  states: string[]
-  timeline_start: string
-  timeline_end: string
-  milestones: Milestone[]
-  resources: Resources
-  risks: Risk[]
-  created_at: string
-  updated_at: string
+  id: string;
+  phase: number;
+  states: string[];
+  timeline_start: string;
+  timeline_end: string;
+  milestones: Milestone[];
+  resources: Resources;
+  risks: Risk[];
+  created_at: string;
+  updated_at: string;
 }
 
 // Strongly typed configuration interfaces
 interface InsuranceRegulations {
-  requiresLicense: boolean
-  regulatoryBody: string
-  complianceRequirements: string[]
-  fillingDeadlines: Record<string, number> // days
+  requiresLicense: boolean;
+  regulatoryBody: string;
+  complianceRequirements: string[];
+  fillingDeadlines: Record<string, number>; // days
 }
 
 interface DataSources {
   parcelData: {
-    provider: string
-    apiEndpoint?: string
-    updateFrequency: 'daily' | 'weekly' | 'monthly'
-    dataFormat: 'api' | 'ftp' | 'manual'
-    cost: number // per record or monthly
-  }
+    provider: string;
+    apiEndpoint?: string;
+    updateFrequency: "daily" | "weekly" | "monthly";
+    dataFormat: "api" | "ftp" | "manual";
+    cost: number; // per record or monthly
+  };
   courthouseData: {
-    available: boolean
-    provider?: string
-    integrationMethod: 'api' | 'scraping' | 'manual'
-  }
+    available: boolean;
+    provider?: string;
+    integrationMethod: "api" | "scraping" | "manual";
+  };
   weatherData: {
-    provider: 'noaa' | 'weatherapi' | 'accuweather'
-    regionCode: string
-  }
+    provider: "noaa" | "weatherapi" | "accuweather";
+    regionCode: string;
+  };
 }
 
 interface MarketData {
-  majorCarriers: string[]
-  averagePremium: number
-  marketPenetration: number
-  catastropheRisk: string[] // hurricane, tornado, earthquake, flood, wildfire
-  seasonalPatterns: Record<string, number> // month -> claim volume multiplier
+  majorCarriers: string[];
+  averagePremium: number;
+  marketPenetration: number;
+  catastropheRisk: string[]; // hurricane, tornado, earthquake, flood, wildfire
+  seasonalPatterns: Record<string, number>; // month -> claim volume multiplier
 }
 
 interface Operations {
-  timezone: string
+  timezone: string;
   businessHours: {
-    start: string // HH:mm
-    end: string   // HH:mm
-    timezone: string
-  }
-  supportLanguages: string[]
+    start: string; // HH:mm
+    end: string; // HH:mm
+    timezone: string;
+  };
+  supportLanguages: string[];
   localOffice?: {
-    address: string
-    phone: string
-    email: string
-  }
+    address: string;
+    phone: string;
+    email: string;
+  };
 }
 
 interface Features {
-  enabledFeatures: string[]
-  disabledFeatures: string[]
-  customizations: Record<string, unknown>
+  enabledFeatures: string[];
+  disabledFeatures: string[];
+  customizations: Record<string, unknown>;
 }
 
 interface DataLoadStatus {
-  parcels: 'pending' | 'loading' | 'complete'
-  historical: 'pending' | 'loading' | 'complete'
-  integrations: 'pending' | 'testing' | 'complete'
+  parcels: "pending" | "loading" | "complete";
+  historical: "pending" | "loading" | "complete";
+  integrations: "pending" | "testing" | "complete";
 }
 
 interface Milestone {
-  name: string
-  date: string
-  dependencies: string[]
-  status: 'pending' | 'in_progress' | 'completed' | 'blocked'
+  name: string;
+  date: string;
+  dependencies: string[];
+  status: "pending" | "in_progress" | "completed" | "blocked";
 }
 
 interface Risk {
-  risk: string
-  impact: 'low' | 'medium' | 'high'
-  probability: 'low' | 'medium' | 'high'
-  mitigation: string
+  risk: string;
+  impact: "low" | "medium" | "high";
+  probability: "low" | "medium" | "high";
+  mitigation: string;
 }
 
 interface Resources {
-  engineeringEffort: number // person-weeks
-  dataAcquisitionCost: number
-  complianceCost: number
-  operationalCost: number
+  engineeringEffort: number; // person-weeks
+  dataAcquisitionCost: number;
+  complianceCost: number;
+  operationalCost: number;
 }
 
 export interface StateConfiguration {
-  stateCode: string
-  stateName: string
-  isActive: boolean
+  stateCode: string;
+  stateName: string;
+  isActive: boolean;
 
   // Legal and regulatory configuration
-  insuranceRegulations: InsuranceRegulations
+  insuranceRegulations: InsuranceRegulations;
 
   // Data sources and integrations
-  dataSources: DataSources
+  dataSources: DataSources;
 
   // Insurance market characteristics
-  marketData: MarketData
+  marketData: MarketData;
 
   // Operational configuration
-  operations: Operations
+  operations: Operations;
 
   // Feature flags and customizations
-  features: Features
+  features: Features;
 
   // Deployment configuration
   deployment: {
-    status: 'planning' | 'development' | 'testing' | 'staging' | 'production'
-    launchDate?: Date
-    migrationComplete: boolean
-    dataLoadStatus: DataLoadStatus
-  }
+    status: "planning" | "development" | "testing" | "staging" | "production";
+    launchDate?: Date;
+    migrationComplete: boolean;
+    dataLoadStatus: DataLoadStatus;
+  };
 
   metadata: {
-    createdAt: Date
-    updatedAt: Date
-    createdBy: string
-    lastModifiedBy: string
-    notes?: string
-  }
+    createdAt: Date;
+    updatedAt: Date;
+    createdBy: string;
+    lastModifiedBy: string;
+    notes?: string;
+  };
 }
 
 export interface StateExpansionPlan {
-  phase: number
-  states: string[]
+  phase: number;
+  states: string[];
   timeline: {
-    start: Date
-    end: Date
+    start: Date;
+    end: Date;
     milestones: Array<{
-      name: string
-      date: Date
-      dependencies: string[]
-      status: 'pending' | 'in_progress' | 'completed' | 'blocked'
-    }>
-  }
-  resources: Resources
-  risks: Risk[]
+      name: string;
+      date: Date;
+      dependencies: string[];
+      status: "pending" | "in_progress" | "completed" | "blocked";
+    }>;
+  };
+  resources: Resources;
+  risks: Risk[];
 }
 
 // Type guards for better runtime safety
-function isValidInsuranceRegulations(obj: unknown): obj is InsuranceRegulations {
-  if (typeof obj !== 'object' || obj === null) return false
-  const reg = obj as InsuranceRegulations
+function isValidInsuranceRegulations(
+  obj: unknown,
+): obj is InsuranceRegulations {
+  if (typeof obj !== "object" || obj === null) return false;
+  const reg = obj as InsuranceRegulations;
   return (
-    typeof reg.requiresLicense === 'boolean' &&
-    typeof reg.regulatoryBody === 'string' &&
+    typeof reg.requiresLicense === "boolean" &&
+    typeof reg.regulatoryBody === "string" &&
     Array.isArray(reg.complianceRequirements) &&
-    typeof reg.fillingDeadlines === 'object'
-  )
+    typeof reg.fillingDeadlines === "object"
+  );
 }
 
 function isValidDataSources(obj: unknown): obj is DataSources {
-  if (typeof obj !== 'object' || obj === null) return false
-  const ds = obj as DataSources
+  if (typeof obj !== "object" || obj === null) return false;
+  const ds = obj as DataSources;
   return (
-    typeof ds.parcelData === 'object' &&
-    typeof ds.courthouseData === 'object' &&
-    typeof ds.weatherData === 'object'
-  )
+    typeof ds.parcelData === "object" &&
+    typeof ds.courthouseData === "object" &&
+    typeof ds.weatherData === "object"
+  );
 }
 
 function isValidMarketData(obj: unknown): obj is MarketData {
-  if (typeof obj !== 'object' || obj === null) return false
-  const md = obj as MarketData
+  if (typeof obj !== "object" || obj === null) return false;
+  const md = obj as MarketData;
   return (
     Array.isArray(md.majorCarriers) &&
-    typeof md.averagePremium === 'number' &&
-    typeof md.marketPenetration === 'number' &&
+    typeof md.averagePremium === "number" &&
+    typeof md.marketPenetration === "number" &&
     Array.isArray(md.catastropheRisk) &&
-    typeof md.seasonalPatterns === 'object'
-  )
+    typeof md.seasonalPatterns === "object"
+  );
 }
 
 class StateExpansionManager {
-  private supabase: SupabaseClient | null = null
-  private configCache = new Map<string, StateConfiguration>()
-  private cacheExpiry = 30 * 60 * 1000 // 30 minutes
+  private supabase: SupabaseClient | null = null;
+  private configCache = new Map<string, StateConfiguration>();
+  private cacheExpiry = 30 * 60 * 1000; // 30 minutes
 
   constructor() {
-    this.initializeSupabase()
+    this.initializeSupabase();
   }
 
   private async initializeSupabase(): Promise<void> {
-    this.supabase = await createClient()
+    this.supabase = await createClient();
   }
 
   /**
    * Get configuration for a specific state
    */
-  async getStateConfiguration(stateCode: string): Promise<StateConfiguration | null> {
+  async getStateConfiguration(
+    stateCode: string,
+  ): Promise<StateConfiguration | null> {
     // Check cache first
-    const cacheKey = `state_${stateCode}`
-    const cached = this.configCache.get(cacheKey)
+    const cacheKey = `state_${stateCode}`;
+    const cached = this.configCache.get(cacheKey);
     if (cached) {
-      return cached
+      return cached;
     }
 
     try {
-      if (!this.supabase) await this.initializeSupabase()
+      if (!this.supabase) await this.initializeSupabase();
 
-      const { data, error } = await this.supabase!
-        .from('state_configurations')
-        .select('*')
-        .eq('state_code', stateCode.toUpperCase())
-        .single()
+      const { data, error } = await this.supabase!.from("state_configurations")
+        .select("*")
+        .eq("state_code", stateCode.toUpperCase())
+        .single();
 
       if (error) {
-        if (error.code === 'PGRST116') {
+        if (error.code === "PGRST116") {
           // No configuration found
-          return null
+          return null;
         }
-        throw error
+        throw error;
       }
 
-      if (!data) return null
+      if (!data) return null;
 
-      const config = this.parseStateConfiguration(data as StateConfigurationRow)
+      const config = this.parseStateConfiguration(
+        data as StateConfigurationRow,
+      );
 
       // Cache the result
-      this.configCache.set(cacheKey, config)
-      setTimeout(() => this.configCache.delete(cacheKey), this.cacheExpiry)
+      this.configCache.set(cacheKey, config);
+      setTimeout(() => this.configCache.delete(cacheKey), this.cacheExpiry);
 
-      return config
+      return config;
     } catch (error) {
-      console.error(`Failed to get state configuration for ${stateCode}:`, error)
-      return null
+      console.error(
+        `Failed to get state configuration for ${stateCode}:`,
+        error,
+      );
+      return null;
     }
   }
 
@@ -276,42 +289,46 @@ class StateExpansionManager {
    */
   async getActiveStates(): Promise<StateConfiguration[]> {
     try {
-      if (!this.supabase) await this.initializeSupabase()
+      if (!this.supabase) await this.initializeSupabase();
 
-      const { data, error } = await this.supabase!
-        .from('state_configurations')
-        .select('*')
-        .eq('is_active', true)
-        .order('state_name')
+      const { data, error } = await this.supabase!.from("state_configurations")
+        .select("*")
+        .eq("is_active", true)
+        .order("state_name");
 
-      if (error) throw error
+      if (error) throw error;
 
-      return (data || []).map((row: StateConfigurationRow) => this.parseStateConfiguration(row))
+      return (data || []).map((row: StateConfigurationRow) =>
+        this.parseStateConfiguration(row),
+      );
     } catch (error) {
-      console.error('Failed to get active states:', error)
-      return []
+      console.error("Failed to get active states:", error);
+      return [];
     }
   }
 
   /**
    * Get states by deployment status
    */
-  async getStatesByStatus(status: StateConfiguration['deployment']['status']): Promise<StateConfiguration[]> {
+  async getStatesByStatus(
+    status: StateConfiguration["deployment"]["status"],
+  ): Promise<StateConfiguration[]> {
     try {
-      if (!this.supabase) await this.initializeSupabase()
+      if (!this.supabase) await this.initializeSupabase();
 
-      const { data, error } = await this.supabase!
-        .from('state_configurations')
-        .select('*')
-        .eq('deployment_status', status)
-        .order('state_name')
+      const { data, error } = await this.supabase!.from("state_configurations")
+        .select("*")
+        .eq("deployment_status", status)
+        .order("state_name");
 
-      if (error) throw error
+      if (error) throw error;
 
-      return (data || []).map((row: StateConfigurationRow) => this.parseStateConfiguration(row))
+      return (data || []).map((row: StateConfigurationRow) =>
+        this.parseStateConfiguration(row),
+      );
     } catch (error) {
-      console.error(`Failed to get states with status ${status}:`, error)
-      return []
+      console.error(`Failed to get states with status ${status}:`, error);
+      return [];
     }
   }
 
@@ -320,30 +337,36 @@ class StateExpansionManager {
    */
   async updateStateConfiguration(config: StateConfiguration): Promise<boolean> {
     try {
-      if (!this.supabase) await this.initializeSupabase()
+      if (!this.supabase) await this.initializeSupabase();
 
-      const dbRecord = this.serializeStateConfiguration(config)
+      const dbRecord = this.serializeStateConfiguration(config);
 
-      const { error } = await this.supabase!
-        .from('state_configurations')
-        .upsert(dbRecord)
+      const { error } = await this.supabase!.from(
+        "state_configurations",
+      ).upsert(dbRecord);
 
-      if (error) throw error
+      if (error) throw error;
 
       // Clear cache for this state
-      this.configCache.delete(`state_${config.stateCode}`)
+      this.configCache.delete(`state_${config.stateCode}`);
 
-      return true
+      return true;
     } catch (error) {
-      console.error(`Failed to update state configuration for ${config.stateCode}:`, error)
-      return false
+      console.error(
+        `Failed to update state configuration for ${config.stateCode}:`,
+        error,
+      );
+      return false;
     }
   }
 
   /**
    * Initialize a new state for expansion
    */
-  async initializeNewState(stateCode: string, stateName: string): Promise<StateConfiguration> {
+  async initializeNewState(
+    stateCode: string,
+    stateName: string,
+  ): Promise<StateConfiguration> {
     const defaultConfig: StateConfiguration = {
       stateCode: stateCode.toUpperCase(),
       stateName,
@@ -353,33 +376,33 @@ class StateExpansionManager {
         requiresLicense: true,
         regulatoryBody: `${stateName} Department of Insurance`,
         complianceRequirements: [
-          'State insurance license',
-          'Claims adjuster certification',
-          'Data privacy compliance',
-          'Consumer protection compliance'
+          "State insurance license",
+          "Claims adjuster certification",
+          "Data privacy compliance",
+          "Consumer protection compliance",
         ],
         fillingDeadlines: {
           initial_notice: 30,
           proof_of_loss: 60,
-          supplemental_claim: 90
-        }
+          supplemental_claim: 90,
+        },
       },
 
       dataSources: {
         parcelData: {
-          provider: 'TBD',
-          updateFrequency: 'monthly',
-          dataFormat: 'manual',
-          cost: 0
+          provider: "TBD",
+          updateFrequency: "monthly",
+          dataFormat: "manual",
+          cost: 0,
         },
         courthouseData: {
           available: false,
-          integrationMethod: 'manual'
+          integrationMethod: "manual",
         },
         weatherData: {
-          provider: 'noaa',
-          regionCode: stateCode.toLowerCase()
-        }
+          provider: "noaa",
+          regionCode: stateCode.toLowerCase(),
+        },
       },
 
       marketData: {
@@ -387,77 +410,74 @@ class StateExpansionManager {
         averagePremium: 0,
         marketPenetration: 0,
         catastropheRisk: [],
-        seasonalPatterns: {}
+        seasonalPatterns: {},
       },
 
       operations: {
-        timezone: 'America/New_York', // Default, to be updated
+        timezone: "America/New_York", // Default, to be updated
         businessHours: {
-          start: '09:00',
-          end: '17:00',
-          timezone: 'America/New_York'
+          start: "09:00",
+          end: "17:00",
+          timezone: "America/New_York",
         },
-        supportLanguages: ['en'],
-        localOffice: undefined
+        supportLanguages: ["en"],
+        localOffice: undefined,
       },
 
       features: {
         enabledFeatures: [
-          'basic_claims',
-          'damage_analysis',
-          'document_management'
+          "basic_claims",
+          "damage_analysis",
+          "document_management",
         ],
-        disabledFeatures: [
-          'advanced_analytics',
-          'predictive_modeling'
-        ],
-        customizations: {}
+        disabledFeatures: ["advanced_analytics", "predictive_modeling"],
+        customizations: {},
       },
 
       deployment: {
-        status: 'planning',
+        status: "planning",
         migrationComplete: false,
         dataLoadStatus: {
-          parcels: 'pending',
-          historical: 'pending',
-          integrations: 'pending'
-        }
+          parcels: "pending",
+          historical: "pending",
+          integrations: "pending",
+        },
       },
 
       metadata: {
         createdAt: new Date(),
         updatedAt: new Date(),
-        createdBy: 'system',
-        lastModifiedBy: 'system',
-        notes: `Initial configuration for ${stateName} expansion`
-      }
-    }
+        createdBy: "system",
+        lastModifiedBy: "system",
+        notes: `Initial configuration for ${stateName} expansion`,
+      },
+    };
 
-    const success = await this.updateStateConfiguration(defaultConfig)
+    const success = await this.updateStateConfiguration(defaultConfig);
     if (!success) {
-      throw new Error(`Failed to initialize configuration for ${stateName}`)
+      throw new Error(`Failed to initialize configuration for ${stateName}`);
     }
 
-    return defaultConfig
+    return defaultConfig;
   }
 
   /**
    * Get expansion readiness score for a state
    */
   async getExpansionReadiness(stateCode: string): Promise<{
-    score: number
-    breakdown: Record<string, number>
-    blockers: string[]
-    recommendations: string[]
+    score: number;
+    breakdown: Record<string, number>;
+    blockers: string[];
+    recommendations: string[];
   }> {
-    const config = await this.getStateConfiguration(stateCode)
+    const config = await this.getStateConfiguration(stateCode);
     if (!config) {
       return {
         score: 0,
         breakdown: {},
-        blockers: ['State configuration not found'],
-        recommendations: ['Initialize state configuration']
-      }
+        blockers: ["State configuration not found"],
+        recommendations: ["Initialize state configuration"],
+      };
     }
 
     const breakdown = {
@@ -466,67 +486,81 @@ class StateExpansionManager {
       marketData: 0,
       operations: 0,
       features: 0,
-      deployment: 0
-    }
+      deployment: 0,
+    };
 
-    const blockers: string[] = []
-    const recommendations: string[] = []
+    const blockers: string[] = [];
+    const recommendations: string[] = [];
 
     // Regulatory readiness (0-20 points)
-    if (config.insuranceRegulations.regulatoryBody !== 'TBD') breakdown.regulatory += 5
-    if (config.insuranceRegulations.complianceRequirements.length > 0) breakdown.regulatory += 5
-    if (Object.keys(config.insuranceRegulations.fillingDeadlines).length > 0) breakdown.regulatory += 10
+    if (config.insuranceRegulations.regulatoryBody !== "TBD")
+      breakdown.regulatory += 5;
+    if (config.insuranceRegulations.complianceRequirements.length > 0)
+      breakdown.regulatory += 5;
+    if (Object.keys(config.insuranceRegulations.fillingDeadlines).length > 0)
+      breakdown.regulatory += 10;
 
     if (breakdown.regulatory < 15) {
-      blockers.push('Incomplete regulatory requirements')
-      recommendations.push('Complete regulatory compliance analysis')
+      blockers.push("Incomplete regulatory requirements");
+      recommendations.push("Complete regulatory compliance analysis");
     }
 
     // Data sources readiness (0-25 points)
-    if (config.dataSources.parcelData.provider !== 'TBD') breakdown.dataSources += 10
-    if (config.dataSources.parcelData.apiEndpoint) breakdown.dataSources += 5
-    if (config.dataSources.courthouseData.available) breakdown.dataSources += 5
-    if (config.dataSources.weatherData.regionCode) breakdown.dataSources += 5
+    if (config.dataSources.parcelData.provider !== "TBD")
+      breakdown.dataSources += 10;
+    if (config.dataSources.parcelData.apiEndpoint) breakdown.dataSources += 5;
+    if (config.dataSources.courthouseData.available) breakdown.dataSources += 5;
+    if (config.dataSources.weatherData.regionCode) breakdown.dataSources += 5;
 
     if (breakdown.dataSources < 15) {
-      blockers.push('Data sources not configured')
-      recommendations.push('Establish data source integrations')
+      blockers.push("Data sources not configured");
+      recommendations.push("Establish data source integrations");
     }
 
     // Market data readiness (0-20 points)
-    if (config.marketData.majorCarriers.length > 0) breakdown.marketData += 8
-    if (config.marketData.averagePremium > 0) breakdown.marketData += 4
-    if (config.marketData.catastropheRisk.length > 0) breakdown.marketData += 8
+    if (config.marketData.majorCarriers.length > 0) breakdown.marketData += 8;
+    if (config.marketData.averagePremium > 0) breakdown.marketData += 4;
+    if (config.marketData.catastropheRisk.length > 0) breakdown.marketData += 8;
 
     if (breakdown.marketData < 15) {
-      recommendations.push('Complete market analysis')
+      recommendations.push("Complete market analysis");
     }
 
     // Operations readiness (0-15 points)
-    if (config.operations.timezone !== 'America/New_York') breakdown.operations += 5
-    if (config.operations.supportLanguages.length > 0) breakdown.operations += 5
-    if (config.operations.localOffice) breakdown.operations += 5
+    if (config.operations.timezone !== "America/New_York")
+      breakdown.operations += 5;
+    if (config.operations.supportLanguages.length > 0)
+      breakdown.operations += 5;
+    if (config.operations.localOffice) breakdown.operations += 5;
 
     // Features readiness (0-10 points)
-    if (config.features.enabledFeatures.length >= 3) breakdown.features += 5
-    if (config.features.customizations && Object.keys(config.features.customizations).length > 0) breakdown.features += 5
+    if (config.features.enabledFeatures.length >= 3) breakdown.features += 5;
+    if (
+      config.features.customizations &&
+      Object.keys(config.features.customizations).length > 0
+    )
+      breakdown.features += 5;
 
     // Deployment readiness (0-10 points)
-    if (config.deployment.status !== 'planning') breakdown.deployment += 5
-    if (config.deployment.dataLoadStatus.parcels === 'complete') breakdown.deployment += 5
+    if (config.deployment.status !== "planning") breakdown.deployment += 5;
+    if (config.deployment.dataLoadStatus.parcels === "complete")
+      breakdown.deployment += 5;
 
-    if (config.deployment.status === 'planning') {
-      blockers.push('Deployment not started')
+    if (config.deployment.status === "planning") {
+      blockers.push("Deployment not started");
     }
 
-    const totalScore = Object.values(breakdown).reduce((sum, score) => sum + score, 0)
+    const totalScore = Object.values(breakdown).reduce(
+      (sum, score) => sum + score,
+      0,
+    );
 
     return {
       score: totalScore,
       breakdown,
       blockers,
-      recommendations
-    }
+      recommendations,
+    };
   }
 
   /**
@@ -534,19 +568,20 @@ class StateExpansionManager {
    */
   async getExpansionPlan(): Promise<StateExpansionPlan[]> {
     try {
-      if (!this.supabase) await this.initializeSupabase()
+      if (!this.supabase) await this.initializeSupabase();
 
-      const { data, error } = await this.supabase!
-        .from('expansion_plans')
-        .select('*')
-        .order('phase')
+      const { data, error } = await this.supabase!.from("expansion_plans")
+        .select("*")
+        .order("phase");
 
-      if (error) throw error
+      if (error) throw error;
 
-      return (data || []).map((row: ExpansionPlanRow) => this.parseExpansionPlan(row))
+      return (data || []).map((row: ExpansionPlanRow) =>
+        this.parseExpansionPlan(row),
+      );
     } catch (error) {
-      console.error('Failed to get expansion plan:', error)
-      return []
+      console.error("Failed to get expansion plan:", error);
+      return [];
     }
   }
 
@@ -557,230 +592,252 @@ class StateExpansionManager {
     const phases: StateExpansionPlan[] = [
       {
         phase: 1,
-        states: ['TX', 'CA', 'NY'],
+        states: ["TX", "CA", "NY"],
         timeline: {
-          start: new Date('2025-03-01'),
-          end: new Date('2025-08-31'),
+          start: new Date("2025-03-01"),
+          end: new Date("2025-08-31"),
           milestones: [
             {
-              name: 'Regulatory approval',
-              date: new Date('2025-04-15'),
-              dependencies: ['compliance_analysis', 'license_application'],
-              status: 'pending'
+              name: "Regulatory approval",
+              date: new Date("2025-04-15"),
+              dependencies: ["compliance_analysis", "license_application"],
+              status: "pending",
             },
             {
-              name: 'Data integration',
-              date: new Date('2025-06-01'),
-              dependencies: ['parcel_data_api', 'courthouse_integration'],
-              status: 'pending'
+              name: "Data integration",
+              date: new Date("2025-06-01"),
+              dependencies: ["parcel_data_api", "courthouse_integration"],
+              status: "pending",
             },
             {
-              name: 'Pilot launch',
-              date: new Date('2025-07-15'),
-              dependencies: ['regulatory_approval', 'data_integration', 'staff_training'],
-              status: 'pending'
+              name: "Pilot launch",
+              date: new Date("2025-07-15"),
+              dependencies: [
+                "regulatory_approval",
+                "data_integration",
+                "staff_training",
+              ],
+              status: "pending",
             },
             {
-              name: 'Full production',
-              date: new Date('2025-08-31'),
-              dependencies: ['pilot_validation', 'support_team', 'marketing_launch'],
-              status: 'pending'
-            }
-          ]
+              name: "Full production",
+              date: new Date("2025-08-31"),
+              dependencies: [
+                "pilot_validation",
+                "support_team",
+                "marketing_launch",
+              ],
+              status: "pending",
+            },
+          ],
         },
         resources: {
           engineeringEffort: 24, // person-weeks
           dataAcquisitionCost: 50000,
           complianceCost: 75000,
-          operationalCost: 100000
+          operationalCost: 100000,
         },
         risks: [
           {
-            risk: 'Regulatory delays in license approval',
-            impact: 'high',
-            probability: 'medium',
-            mitigation: 'Start regulatory process 6 months early, engage regulatory consultants'
+            risk: "Regulatory delays in license approval",
+            impact: "high",
+            probability: "medium",
+            mitigation:
+              "Start regulatory process 6 months early, engage regulatory consultants",
           },
           {
-            risk: 'Data source integration challenges',
-            impact: 'medium',
-            probability: 'medium',
-            mitigation: 'Develop fallback manual data entry processes'
-          }
-        ]
+            risk: "Data source integration challenges",
+            impact: "medium",
+            probability: "medium",
+            mitigation: "Develop fallback manual data entry processes",
+          },
+        ],
       },
       {
         phase: 2,
-        states: ['GA', 'NC', 'SC', 'AL', 'LA'],
+        states: ["GA", "NC", "SC", "AL", "LA"],
         timeline: {
-          start: new Date('2025-09-01'),
-          end: new Date('2026-02-28'),
+          start: new Date("2025-09-01"),
+          end: new Date("2026-02-28"),
           milestones: [
             {
-              name: 'Regional strategy development',
-              date: new Date('2025-10-15'),
-              dependencies: ['phase1_lessons_learned'],
-              status: 'pending'
+              name: "Regional strategy development",
+              date: new Date("2025-10-15"),
+              dependencies: ["phase1_lessons_learned"],
+              status: "pending",
             },
             {
-              name: 'Bulk state setup',
-              date: new Date('2025-12-01'),
-              dependencies: ['regional_strategy', 'automation_tools'],
-              status: 'pending'
+              name: "Bulk state setup",
+              date: new Date("2025-12-01"),
+              dependencies: ["regional_strategy", "automation_tools"],
+              status: "pending",
             },
             {
-              name: 'Coordinated launch',
-              date: new Date('2026-02-01'),
-              dependencies: ['bulk_setup', 'regional_marketing'],
-              status: 'pending'
-            }
-          ]
+              name: "Coordinated launch",
+              date: new Date("2026-02-01"),
+              dependencies: ["bulk_setup", "regional_marketing"],
+              status: "pending",
+            },
+          ],
         },
         resources: {
           engineeringEffort: 16,
           dataAcquisitionCost: 80000,
           complianceCost: 60000,
-          operationalCost: 150000
+          operationalCost: 150000,
         },
         risks: [
           {
-            risk: 'Hurricane season operational disruption',
-            impact: 'high',
-            probability: 'high',
-            mitigation: 'Plan launches outside hurricane season, develop disaster response protocols'
-          }
-        ]
+            risk: "Hurricane season operational disruption",
+            impact: "high",
+            probability: "high",
+            mitigation:
+              "Plan launches outside hurricane season, develop disaster response protocols",
+          },
+        ],
       },
       {
         phase: 3,
-        states: ['AZ', 'NV', 'CO', 'UT', 'NM'],
+        states: ["AZ", "NV", "CO", "UT", "NM"],
         timeline: {
-          start: new Date('2026-03-01'),
-          end: new Date('2026-08-31'),
+          start: new Date("2026-03-01"),
+          end: new Date("2026-08-31"),
           milestones: [
             {
-              name: 'Western region setup',
-              date: new Date('2026-05-01'),
-              dependencies: ['automation_platform', 'regional_customization'],
-              status: 'pending'
+              name: "Western region setup",
+              date: new Date("2026-05-01"),
+              dependencies: ["automation_platform", "regional_customization"],
+              status: "pending",
             },
             {
-              name: 'Multi-state launch',
-              date: new Date('2026-08-01'),
-              dependencies: ['western_setup', 'operational_scaling'],
-              status: 'pending'
-            }
-          ]
+              name: "Multi-state launch",
+              date: new Date("2026-08-01"),
+              dependencies: ["western_setup", "operational_scaling"],
+              status: "pending",
+            },
+          ],
         },
         resources: {
           engineeringEffort: 12,
           dataAcquisitionCost: 60000,
           complianceCost: 45000,
-          operationalCost: 120000
+          operationalCost: 120000,
         },
         risks: [
           {
-            risk: 'Wildfire season impact on claims volume',
-            impact: 'medium',
-            probability: 'high',
-            mitigation: 'Develop wildfire-specific workflows and resource scaling plans'
-          }
-        ]
-      }
-    ]
+            risk: "Wildfire season impact on claims volume",
+            impact: "medium",
+            probability: "high",
+            mitigation:
+              "Develop wildfire-specific workflows and resource scaling plans",
+          },
+        ],
+      },
+    ];
 
     // Save to database
     for (const plan of phases) {
-      await this.saveExpansionPlan(plan)
+      await this.saveExpansionPlan(plan);
     }
 
-    return phases
+    return phases;
   }
 
   /**
    * Check if a state is supported
    */
   isStateSupported(stateCode: string): Promise<boolean> {
-    return this.getStateConfiguration(stateCode).then(config =>
-      config !== null && config.isActive
-    )
+    return this.getStateConfiguration(stateCode).then(
+      (config) => config !== null && config.isActive,
+    );
   }
 
   /**
    * Get state-specific features
    */
   async getStateFeatures(stateCode: string): Promise<string[]> {
-    const config = await this.getStateConfiguration(stateCode)
-    return config?.features.enabledFeatures || []
+    const config = await this.getStateConfiguration(stateCode);
+    return config?.features.enabledFeatures || [];
   }
 
   /**
    * Get business hours for a state
    */
-  async getStateBusinessHours(stateCode: string): Promise<StateConfiguration['operations']['businessHours'] | null> {
-    const config = await this.getStateConfiguration(stateCode)
-    return config?.operations.businessHours || null
+  async getStateBusinessHours(
+    stateCode: string,
+  ): Promise<StateConfiguration["operations"]["businessHours"] | null> {
+    const config = await this.getStateConfiguration(stateCode);
+    return config?.operations.businessHours || null;
   }
 
   /**
    * Validate state data completeness
    */
   async validateStateData(stateCode: string): Promise<{
-    isValid: boolean
-    missingFields: string[]
-    warnings: string[]
+    isValid: boolean;
+    missingFields: string[];
+    warnings: string[];
   }> {
-    const config = await this.getStateConfiguration(stateCode)
+    const config = await this.getStateConfiguration(stateCode);
 
     if (!config) {
       return {
         isValid: false,
-        missingFields: ['state_configuration'],
-        warnings: []
-      }
+        missingFields: ["state_configuration"],
+        warnings: [],
+      };
     }
 
-    const missingFields: string[] = []
-    const warnings: string[] = []
+    const missingFields: string[] = [];
+    const warnings: string[] = [];
 
     // Required fields validation
-    if (config.dataSources.parcelData.provider === 'TBD') {
-      missingFields.push('parcel_data_provider')
+    if (config.dataSources.parcelData.provider === "TBD") {
+      missingFields.push("parcel_data_provider");
     }
 
     if (config.marketData.majorCarriers.length === 0) {
-      warnings.push('No major insurance carriers configured')
+      warnings.push("No major insurance carriers configured");
     }
 
-    if (config.operations.timezone === 'America/New_York' && !['NY', 'NJ', 'CT', 'MA', 'VT', 'NH', 'ME', 'RI'].includes(config.stateCode)) {
-      warnings.push('Timezone may not be correctly set for this state')
+    if (
+      config.operations.timezone === "America/New_York" &&
+      !["NY", "NJ", "CT", "MA", "VT", "NH", "ME", "RI"].includes(
+        config.stateCode,
+      )
+    ) {
+      warnings.push("Timezone may not be correctly set for this state");
     }
 
-    if (config.deployment.status === 'planning') {
-      warnings.push('State is still in planning phase')
+    if (config.deployment.status === "planning") {
+      warnings.push("State is still in planning phase");
     }
 
     return {
       isValid: missingFields.length === 0,
       missingFields,
-      warnings
-    }
+      warnings,
+    };
   }
 
   // Private helper methods
-  private parseStateConfiguration(data: StateConfigurationRow): StateConfiguration {
+  private parseStateConfiguration(
+    data: StateConfigurationRow,
+  ): StateConfiguration {
     // Validate data types with proper fallbacks
-    const insuranceRegulations = isValidInsuranceRegulations(data.insurance_regulations)
+    const insuranceRegulations = isValidInsuranceRegulations(
+      data.insurance_regulations,
+    )
       ? data.insurance_regulations
-      : this.getDefaultInsuranceRegulations()
+      : this.getDefaultInsuranceRegulations();
 
     const dataSources = isValidDataSources(data.data_sources)
       ? data.data_sources
-      : this.getDefaultDataSources()
+      : this.getDefaultDataSources();
 
     const marketData = isValidMarketData(data.market_data)
       ? data.market_data
-      : this.getDefaultMarketData()
+      : this.getDefaultMarketData();
 
     return {
       stateCode: data.state_code,
@@ -792,22 +849,25 @@ class StateExpansionManager {
       operations: data.operations || this.getDefaultOperations(),
       features: data.features || this.getDefaultFeatures(),
       deployment: {
-        status: data.deployment_status || 'planning',
+        status: data.deployment_status || "planning",
         launchDate: data.launch_date ? new Date(data.launch_date) : undefined,
         migrationComplete: data.migration_complete || false,
-        dataLoadStatus: data.data_load_status || this.getDefaultDataLoadStatus()
+        dataLoadStatus:
+          data.data_load_status || this.getDefaultDataLoadStatus(),
       },
       metadata: {
         createdAt: new Date(data.created_at),
         updatedAt: new Date(data.updated_at),
         createdBy: data.created_by,
         lastModifiedBy: data.last_modified_by || data.created_by,
-        notes: data.notes
-      }
-    }
+        notes: data.notes,
+      },
+    };
   }
 
-  private serializeStateConfiguration(config: StateConfiguration): Partial<StateConfigurationRow> {
+  private serializeStateConfiguration(
+    config: StateConfiguration,
+  ): Partial<StateConfigurationRow> {
     return {
       state_code: config.stateCode,
       state_name: config.stateName,
@@ -825,8 +885,8 @@ class StateExpansionManager {
       updated_at: config.metadata.updatedAt.toISOString(),
       created_by: config.metadata.createdBy,
       last_modified_by: config.metadata.lastModifiedBy,
-      notes: config.metadata.notes
-    }
+      notes: config.metadata.notes,
+    };
   }
 
   private parseExpansionPlan(data: ExpansionPlanRow): StateExpansionPlan {
@@ -836,38 +896,39 @@ class StateExpansionManager {
       timeline: {
         start: new Date(data.timeline_start),
         end: new Date(data.timeline_end),
-        milestones: (data.milestones || []).map(milestone => ({
+        milestones: (data.milestones || []).map((milestone) => ({
           ...milestone,
-          date: new Date(milestone.date)
-        }))
+          date: new Date(milestone.date),
+        })),
       },
       resources: data.resources || this.getDefaultResources(),
-      risks: data.risks || []
-    }
+      risks: data.risks || [],
+    };
   }
 
   private async saveExpansionPlan(plan: StateExpansionPlan): Promise<void> {
     try {
-      if (!this.supabase) await this.initializeSupabase()
+      if (!this.supabase) await this.initializeSupabase();
 
-      const { error } = await this.supabase!
-        .from('expansion_plans')
-        .upsert({
-          phase: plan.phase,
-          states: plan.states,
-          timeline_start: plan.timeline.start.toISOString(),
-          timeline_end: plan.timeline.end.toISOString(),
-          milestones: plan.timeline.milestones.map(milestone => ({
-            ...milestone,
-            date: milestone.date.toISOString()
-          })),
-          resources: plan.resources,
-          risks: plan.risks
-        })
+      const { error } = await this.supabase!.from("expansion_plans").upsert({
+        phase: plan.phase,
+        states: plan.states,
+        timeline_start: plan.timeline.start.toISOString(),
+        timeline_end: plan.timeline.end.toISOString(),
+        milestones: plan.timeline.milestones.map((milestone) => ({
+          ...milestone,
+          date: milestone.date.toISOString(),
+        })),
+        resources: plan.resources,
+        risks: plan.risks,
+      });
 
-      if (error) throw error
+      if (error) throw error;
     } catch (error) {
-      console.error(`Failed to save expansion plan for phase ${plan.phase}:`, error)
+      console.error(
+        `Failed to save expansion plan for phase ${plan.phase}:`,
+        error,
+      );
     }
   }
 
@@ -875,29 +936,29 @@ class StateExpansionManager {
   private getDefaultInsuranceRegulations(): InsuranceRegulations {
     return {
       requiresLicense: true,
-      regulatoryBody: 'TBD',
+      regulatoryBody: "TBD",
       complianceRequirements: [],
-      fillingDeadlines: {}
-    }
+      fillingDeadlines: {},
+    };
   }
 
   private getDefaultDataSources(): DataSources {
     return {
       parcelData: {
-        provider: 'TBD',
-        updateFrequency: 'monthly',
-        dataFormat: 'manual',
-        cost: 0
+        provider: "TBD",
+        updateFrequency: "monthly",
+        dataFormat: "manual",
+        cost: 0,
       },
       courthouseData: {
         available: false,
-        integrationMethod: 'manual'
+        integrationMethod: "manual",
       },
       weatherData: {
-        provider: 'noaa',
-        regionCode: 'us'
-      }
-    }
+        provider: "noaa",
+        regionCode: "us",
+      },
+    };
   }
 
   private getDefaultMarketData(): MarketData {
@@ -906,36 +967,36 @@ class StateExpansionManager {
       averagePremium: 0,
       marketPenetration: 0,
       catastropheRisk: [],
-      seasonalPatterns: {}
-    }
+      seasonalPatterns: {},
+    };
   }
 
   private getDefaultOperations(): Operations {
     return {
-      timezone: 'America/New_York',
+      timezone: "America/New_York",
       businessHours: {
-        start: '09:00',
-        end: '17:00',
-        timezone: 'America/New_York'
+        start: "09:00",
+        end: "17:00",
+        timezone: "America/New_York",
       },
-      supportLanguages: ['en']
-    }
+      supportLanguages: ["en"],
+    };
   }
 
   private getDefaultFeatures(): Features {
     return {
       enabledFeatures: [],
       disabledFeatures: [],
-      customizations: {}
-    }
+      customizations: {},
+    };
   }
 
   private getDefaultDataLoadStatus(): DataLoadStatus {
     return {
-      parcels: 'pending',
-      historical: 'pending',
-      integrations: 'pending'
-    }
+      parcels: "pending",
+      historical: "pending",
+      integrations: "pending",
+    };
   }
 
   private getDefaultResources(): Resources {
@@ -943,10 +1004,10 @@ class StateExpansionManager {
       engineeringEffort: 0,
       dataAcquisitionCost: 0,
       complianceCost: 0,
-      operationalCost: 0
-    }
+      operationalCost: 0,
+    };
   }
 }
 
 // Export singleton instance
-export const stateExpansionManager = new StateExpansionManager()
+export const stateExpansionManager = new StateExpansionManager();

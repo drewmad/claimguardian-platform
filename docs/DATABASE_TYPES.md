@@ -20,23 +20,28 @@ pnpm db:sync
 Types are automatically generated in these scenarios:
 
 ### 1. Git Post-Merge Hook
+
 When pulling changes that modify database schema, types are automatically regenerated.
 
 ### 2. GitHub Actions
+
 When schema files change, a workflow generates and commits updated types.
 
 ### 3. VS Code Tasks
+
 Press `Cmd+Shift+P` → "Tasks: Run Task" → "Generate DB Types"
 
 ## Manual Generation
 
 ### From Production Database
+
 ```bash
 cd apps/web
 pnpm db:types
 ```
 
 ### From Local Supabase
+
 ```bash
 supabase start
 cd apps/web
@@ -53,12 +58,14 @@ pnpm db:types:local
 ## Troubleshooting
 
 ### "No such container" Error
+
 ```bash
 supabase stop
 supabase start
 ```
 
 ### Port Already Allocated
+
 ```bash
 supabase stop --project-id mad-monorepo
 supabase stop
@@ -66,6 +73,7 @@ supabase start
 ```
 
 ### Types Not Updating
+
 1. Ensure Supabase CLI is logged in: `supabase login`
 2. Check project is linked: `supabase link --project-ref tmlrvecuwgppbaynesji`
 3. Verify access token in GitHub Actions secrets

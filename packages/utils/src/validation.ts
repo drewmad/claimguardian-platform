@@ -12,24 +12,24 @@
  * @notes Used for client-side form validation.
  */
 export const validateRequired = (value: any): boolean => {
-  if (typeof value === 'string') {
-    return value.trim().length > 0
+  if (typeof value === "string") {
+    return value.trim().length > 0;
   }
-  return value !== null && value !== undefined
-}
+  return value !== null && value !== undefined;
+};
 
 export const validateEmail = (email: string): boolean => {
-  if (!email || typeof email !== 'string') return false
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  return emailRegex.test(email)
-}
+  if (!email || typeof email !== "string") return false;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
 
 export const validatePhone = (phone: string): boolean => {
-  if (!phone || typeof phone !== 'string') return false
-  const digits = phone.replace(/\D/g, '')
-  return digits.length === 10
-}
+  if (!phone || typeof phone !== "string") return false;
+  const digits = phone.replace(/\D/g, "");
+  return digits.length === 10;
+};
 
 export const validatePassword = (password: string): boolean => {
-  return password.length >= 8
-}
+  return password.length >= 8;
+};

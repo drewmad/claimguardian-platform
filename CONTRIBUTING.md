@@ -3,6 +3,7 @@
 Thank you for your interest in contributing to ClaimGuardian! We're excited to have you join our mission to empower Florida homeowners with AI-powered property intelligence.
 
 ## 📋 Table of Contents
+
 - [Code of Conduct](#code-of-conduct)
 - [Getting Started](#getting-started)
 - [Development Process](#development-process)
@@ -24,6 +25,7 @@ We are committed to providing a welcoming and inclusive environment. All contrib
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - Node.js 22+ and pnpm 10.13.1
 - Git with configured user name and email
 - A GitHub account
@@ -32,6 +34,7 @@ We are committed to providing a welcoming and inclusive environment. All contrib
 ### Setup Process
 
 1. **Fork the Repository**
+
    ```bash
    # Fork via GitHub UI, then clone:
    git clone https://github.com/YOUR_USERNAME/claimguardian.git
@@ -39,17 +42,20 @@ We are committed to providing a welcoming and inclusive environment. All contrib
    ```
 
 2. **Install Dependencies**
+
    ```bash
    pnpm install
    ```
 
 3. **Set Up Environment**
+
    ```bash
    cp .env.example .env.local
    # Configure your environment variables
    ```
 
 4. **Run Development Server**
+
    ```bash
    pnpm dev
    ```
@@ -62,22 +68,26 @@ We are committed to providing a welcoming and inclusive environment. All contrib
 ## 💻 Development Process
 
 ### 1. Find or Create an Issue
+
 - Check existing issues or create a new one
 - Comment on the issue to claim it
 - Wait for maintainer approval before starting major work
 
 ### 2. Create a Feature Branch
+
 ```bash
 git checkout -b feature/issue-number-description
 # Example: feature/123-add-policy-upload
 ```
 
 ### 3. Make Your Changes
+
 - Write clean, documented code
 - Follow existing patterns and conventions
 - Keep changes focused and atomic
 
 ### 4. Test Your Changes
+
 ```bash
 pnpm test          # Run tests
 pnpm lint          # Check linting
@@ -86,6 +96,7 @@ pnpm validate      # Run all checks
 ```
 
 ### 5. Commit Your Work
+
 ```bash
 # Use conventional commits
 pnpm cz            # Interactive commit helper
@@ -97,6 +108,7 @@ git commit -m "docs: update API documentation"
 ```
 
 #### Commit Types:
+
 - `feat:` New features
 - `fix:` Bug fixes
 - `docs:` Documentation changes
@@ -109,6 +121,7 @@ git commit -m "docs: update API documentation"
 ## 📏 Code Standards
 
 ### TypeScript
+
 ```typescript
 // ✅ Good: Explicit types, no any
 interface UserProfile {
@@ -122,19 +135,24 @@ const processData = (data: any) => { ... }
 ```
 
 ### React Components
+
 ```typescript
 // ✅ Good: Typed props, clear naming
 interface DamageAnalyzerProps {
-  propertyId: string
-  onComplete: (analysis: DamageAnalysis) => void
+  propertyId: string;
+  onComplete: (analysis: DamageAnalysis) => void;
 }
 
-export function DamageAnalyzer({ propertyId, onComplete }: DamageAnalyzerProps) {
+export function DamageAnalyzer({
+  propertyId,
+  onComplete,
+}: DamageAnalyzerProps) {
   // Component logic
 }
 ```
 
 ### File Organization
+
 ```
 src/
   components/      # React components
@@ -147,32 +165,36 @@ src/
 ```
 
 ### Import Rules
+
 ```typescript
 // ✅ Good: Import from package root
-import { Button, Card } from '@claimguardian/ui'
+import { Button, Card } from "@claimguardian/ui";
 
 // ❌ Bad: Import from subpaths
-import { Button } from '@claimguardian/ui/button'
+import { Button } from "@claimguardian/ui/button";
 ```
 
 ## 🧪 Testing Guidelines
 
 ### Writing Tests
+
 ```typescript
-describe('PropertyAnalyzer', () => {
-  it('should detect hurricane damage correctly', async () => {
-    const result = await analyzeProperty(mockProperty)
-    expect(result.risks).toContain('hurricane')
-  })
-})
+describe("PropertyAnalyzer", () => {
+  it("should detect hurricane damage correctly", async () => {
+    const result = await analyzeProperty(mockProperty);
+    expect(result.risks).toContain("hurricane");
+  });
+});
 ```
 
 ### Test Coverage
+
 - Aim for >80% coverage on new code
 - Focus on critical business logic
 - Test edge cases and error scenarios
 
 ### Running Tests
+
 ```bash
 pnpm test                        # All tests
 pnpm test:watch                  # Watch mode
@@ -182,6 +204,7 @@ pnpm test path/to/file.test.ts   # Specific file
 ## 🔄 Pull Request Process
 
 ### 1. Pre-submission Checklist
+
 - [ ] Code follows project style guide
 - [ ] All tests pass (`pnpm validate`)
 - [ ] Documentation updated if needed
@@ -189,6 +212,7 @@ pnpm test path/to/file.test.ts   # Specific file
 - [ ] Branch is up-to-date with main
 
 ### 2. Create Pull Request
+
 - Use a clear, descriptive title
 - Reference the issue number (#123)
 - Provide detailed description of changes
@@ -196,29 +220,36 @@ pnpm test path/to/file.test.ts   # Specific file
 - List any breaking changes
 
 ### 3. PR Template
+
 ```markdown
 ## Description
+
 Brief description of changes
 
 ## Related Issue
+
 Fixes #123
 
 ## Type of Change
+
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Breaking change
 - [ ] Documentation update
 
 ## Testing
+
 - [ ] Unit tests pass
 - [ ] Manual testing completed
 - [ ] No regressions identified
 
 ## Screenshots (if applicable)
+
 [Add screenshots here]
 ```
 
 ### 4. Review Process
+
 - Maintainers will review within 48 hours
 - Address feedback promptly
 - Keep PR updated with main branch
@@ -227,6 +258,7 @@ Fixes #123
 ## 📚 Documentation
 
 ### Code Documentation
+
 ```typescript
 /**
  * Analyzes property images for potential damage using AI
@@ -236,13 +268,14 @@ Fixes #123
  */
 export async function analyzeDamage(
   images: PropertyImage[],
-  propertyId: string
+  propertyId: string,
 ): Promise<DamageAnalysis> {
   // Implementation
 }
 ```
 
 ### File Headers
+
 ```typescript
 /**
  * @fileMetadata
@@ -253,6 +286,7 @@ export async function analyzeDamage(
 ```
 
 ### Updating Documentation
+
 - Keep README.md current
 - Update API docs for new endpoints
 - Document new environment variables
@@ -261,11 +295,13 @@ export async function analyzeDamage(
 ## 👥 Community
 
 ### Getting Help
+
 - **Discord**: [Join our community](https://discord.gg/claimguardian)
 - **Issues**: Check existing issues or create new ones
 - **Discussions**: Use GitHub Discussions for questions
 
 ### Ways to Contribute
+
 - **Code**: Features, bug fixes, optimizations
 - **Documentation**: Guides, API docs, examples
 - **Testing**: Write tests, report bugs
@@ -273,7 +309,9 @@ export async function analyzeDamage(
 - **Translation**: Help internationalize the platform
 
 ### Recognition
+
 We value all contributions! Contributors will be:
+
 - Listed in our contributors page
 - Mentioned in release notes
 - Invited to contributor-only events
@@ -281,6 +319,7 @@ We value all contributions! Contributors will be:
 ## 🎯 Priority Areas
 
 Current areas where we especially need help:
+
 1. **AI Model Integration** - Implementing new AI features
 2. **Florida Data Sources** - Adding county-specific integrations
 3. **Mobile Responsiveness** - Improving mobile experience

@@ -1,9 +1,11 @@
 # ClaimGuardian Component Patterns Guide
 
 ## Overview
+
 Comprehensive guide to component patterns, conventions, and architectural decisions in the ClaimGuardian application.
 
 ## Table of Contents
+
 - [Architecture Overview](#architecture-overview)
 - [Component Categories](#component-categories)
 - [Design Patterns](#design-patterns)
@@ -18,6 +20,7 @@ Comprehensive guide to component patterns, conventions, and architectural decisi
 ## Architecture Overview
 
 ### Component Hierarchy
+
 ```
 ClaimGuardian App
 ├── Layout Components
@@ -44,6 +47,7 @@ ClaimGuardian App
 ```
 
 ### File Organization
+
 ```
 src/
 ├── components/
@@ -66,6 +70,7 @@ src/
 ## Component Categories
 
 ### 1. Layout Components
+
 Structural components that provide consistent layout and navigation.
 
 ```typescript
@@ -95,6 +100,7 @@ export default function DashboardPage() {
 ```
 
 ### 2. Page Components
+
 Top-level components that represent entire pages or routes.
 
 ```typescript
@@ -126,6 +132,7 @@ export default function InsurancePage() {
 ```
 
 ### 3. Feature Components
+
 Domain-specific components that encapsulate business logic.
 
 ```typescript
@@ -172,6 +179,7 @@ export function PolicyCard({ policy, onUpdate, onDelete }: PolicyCardProps) {
 ```
 
 ### 4. UI Components
+
 Reusable interface components with minimal business logic.
 
 ```typescript
@@ -237,6 +245,7 @@ export function Button({
 ## Design Patterns
 
 ### 1. Compound Components Pattern
+
 For components with multiple related parts.
 
 ```typescript
@@ -312,6 +321,7 @@ export function TabContent({ value, children }: { value: string, children: React
 ```
 
 ### 2. Render Props Pattern
+
 For flexible component composition.
 
 ```typescript
@@ -349,6 +359,7 @@ export function DataFetcher<T>({ url, children }: DataFetcherProps<T>) {
 ```
 
 ### 3. Higher-Order Component (HOC) Pattern
+
 For cross-cutting concerns.
 
 ```typescript
@@ -388,6 +399,7 @@ const PolicyListWithErrorBoundary = withErrorBoundary(
 ```
 
 ### 4. Custom Hook Pattern
+
 For reusable stateful logic.
 
 ```typescript
@@ -448,6 +460,7 @@ function PoliciesPage() {
 ## State Management Patterns
 
 ### 1. Local State Pattern
+
 For component-specific state.
 
 ```typescript
@@ -498,6 +511,7 @@ export function PolicyForm({ policy, onSave }: PolicyFormProps) {
 ```
 
 ### 2. Context Pattern
+
 For sharing state across component trees.
 
 ```typescript
@@ -543,70 +557,73 @@ export function useApp() {
 ```
 
 ### 3. Reducer Pattern
+
 For complex state logic.
 
 ```typescript
 // Reducer Pattern
 interface PolicyState {
-  policies: Policy[]
-  selectedPolicy: Policy | null
-  filters: FilterOptions
-  loading: boolean
-  error: string | null
+  policies: Policy[];
+  selectedPolicy: Policy | null;
+  filters: FilterOptions;
+  loading: boolean;
+  error: string | null;
 }
 
 type PolicyAction =
-  | { type: 'FETCH_START' }
-  | { type: 'FETCH_SUCCESS'; payload: Policy[] }
-  | { type: 'FETCH_ERROR'; payload: string }
-  | { type: 'SELECT_POLICY'; payload: Policy }
-  | { type: 'UPDATE_FILTERS'; payload: Partial<FilterOptions> }
-  | { type: 'ADD_POLICY'; payload: Policy }
-  | { type: 'UPDATE_POLICY'; payload: Policy }
-  | { type: 'DELETE_POLICY'; payload: string }
+  | { type: "FETCH_START" }
+  | { type: "FETCH_SUCCESS"; payload: Policy[] }
+  | { type: "FETCH_ERROR"; payload: string }
+  | { type: "SELECT_POLICY"; payload: Policy }
+  | { type: "UPDATE_FILTERS"; payload: Partial<FilterOptions> }
+  | { type: "ADD_POLICY"; payload: Policy }
+  | { type: "UPDATE_POLICY"; payload: Policy }
+  | { type: "DELETE_POLICY"; payload: string };
 
 function policyReducer(state: PolicyState, action: PolicyAction): PolicyState {
   switch (action.type) {
-    case 'FETCH_START':
-      return { ...state, loading: true, error: null }
+    case "FETCH_START":
+      return { ...state, loading: true, error: null };
 
-    case 'FETCH_SUCCESS':
-      return { ...state, loading: false, policies: action.payload }
+    case "FETCH_SUCCESS":
+      return { ...state, loading: false, policies: action.payload };
 
-    case 'FETCH_ERROR':
-      return { ...state, loading: false, error: action.payload }
+    case "FETCH_ERROR":
+      return { ...state, loading: false, error: action.payload };
 
-    case 'SELECT_POLICY':
-      return { ...state, selectedPolicy: action.payload }
+    case "SELECT_POLICY":
+      return { ...state, selectedPolicy: action.payload };
 
-    case 'UPDATE_FILTERS':
-      return { ...state, filters: { ...state.filters, ...action.payload } }
+    case "UPDATE_FILTERS":
+      return { ...state, filters: { ...state.filters, ...action.payload } };
 
-    case 'ADD_POLICY':
-      return { ...state, policies: [...state.policies, action.payload] }
+    case "ADD_POLICY":
+      return { ...state, policies: [...state.policies, action.payload] };
 
-    case 'UPDATE_POLICY':
+    case "UPDATE_POLICY":
       return {
         ...state,
-        policies: state.policies.map(p =>
-          p.id === action.payload.id ? action.payload : p
+        policies: state.policies.map((p) =>
+          p.id === action.payload.id ? action.payload : p,
         ),
-        selectedPolicy: state.selectedPolicy?.id === action.payload.id
-          ? action.payload
-          : state.selectedPolicy
-      }
+        selectedPolicy:
+          state.selectedPolicy?.id === action.payload.id
+            ? action.payload
+            : state.selectedPolicy,
+      };
 
-    case 'DELETE_POLICY':
+    case "DELETE_POLICY":
       return {
         ...state,
-        policies: state.policies.filter(p => p.id !== action.payload),
-        selectedPolicy: state.selectedPolicy?.id === action.payload
-          ? null
-          : state.selectedPolicy
-      }
+        policies: state.policies.filter((p) => p.id !== action.payload),
+        selectedPolicy:
+          state.selectedPolicy?.id === action.payload
+            ? null
+            : state.selectedPolicy,
+      };
 
     default:
-      return state
+      return state;
   }
 }
 
@@ -616,28 +633,36 @@ export function usePolicyState() {
     selectedPolicy: null,
     filters: defaultFilters,
     loading: false,
-    error: null
-  })
+    error: null,
+  });
 
   // Action creators
-  const actions = useMemo(() => ({
-    fetchPolicies: async () => {
-      dispatch({ type: 'FETCH_START' })
-      try {
-        const policies = await getPolicies()
-        dispatch({ type: 'FETCH_SUCCESS', payload: policies })
-      } catch (error) {
-        dispatch({ type: 'FETCH_ERROR', payload: error.message })
-      }
-    },
-    selectPolicy: (policy: Policy) => dispatch({ type: 'SELECT_POLICY', payload: policy }),
-    updateFilters: (filters: Partial<FilterOptions>) => dispatch({ type: 'UPDATE_FILTERS', payload: filters }),
-    addPolicy: (policy: Policy) => dispatch({ type: 'ADD_POLICY', payload: policy }),
-    updatePolicy: (policy: Policy) => dispatch({ type: 'UPDATE_POLICY', payload: policy }),
-    deletePolicy: (id: string) => dispatch({ type: 'DELETE_POLICY', payload: id })
-  }), [])
+  const actions = useMemo(
+    () => ({
+      fetchPolicies: async () => {
+        dispatch({ type: "FETCH_START" });
+        try {
+          const policies = await getPolicies();
+          dispatch({ type: "FETCH_SUCCESS", payload: policies });
+        } catch (error) {
+          dispatch({ type: "FETCH_ERROR", payload: error.message });
+        }
+      },
+      selectPolicy: (policy: Policy) =>
+        dispatch({ type: "SELECT_POLICY", payload: policy }),
+      updateFilters: (filters: Partial<FilterOptions>) =>
+        dispatch({ type: "UPDATE_FILTERS", payload: filters }),
+      addPolicy: (policy: Policy) =>
+        dispatch({ type: "ADD_POLICY", payload: policy }),
+      updatePolicy: (policy: Policy) =>
+        dispatch({ type: "UPDATE_POLICY", payload: policy }),
+      deletePolicy: (id: string) =>
+        dispatch({ type: "DELETE_POLICY", payload: id }),
+    }),
+    [],
+  );
 
-  return { state, actions }
+  return { state, actions };
 }
 ```
 
@@ -646,6 +671,7 @@ export function usePolicyState() {
 ## Data Fetching Patterns
 
 ### 1. Server Actions Pattern (Next.js App Router)
+
 For server-side data operations.
 
 ```typescript
@@ -707,6 +733,7 @@ export function CreatePolicyForm() {
 ```
 
 ### 2. React Query Pattern
+
 For client-side data fetching and caching.
 
 ```typescript
@@ -768,6 +795,7 @@ export function PoliciesPage() {
 ## Error Handling Patterns
 
 ### 1. Error Boundary Pattern
+
 For catching React errors.
 
 ```typescript
@@ -828,6 +856,7 @@ export function DefaultErrorFallback({ error }: { error: Error }) {
 ```
 
 ### 2. Async Error Handling Pattern
+
 For handling async operations.
 
 ```typescript
@@ -867,6 +896,7 @@ export function DataComponent() {
 ## Performance Patterns
 
 ### 1. Memoization Pattern
+
 For preventing unnecessary re-renders.
 
 ```typescript
@@ -921,6 +951,7 @@ export function ExpensiveComponent({ data }: { data: any[] }) {
 ```
 
 ### 2. Lazy Loading Pattern
+
 For code splitting and on-demand loading.
 
 ```typescript
@@ -960,6 +991,7 @@ export const routes = [
 ```
 
 ### 3. Virtual Scrolling Pattern
+
 For large lists.
 
 ```typescript
@@ -1046,6 +1078,7 @@ export function VirtualList<T>({
 ## Testing Patterns
 
 ### 1. Component Testing Pattern
+
 For testing component behavior.
 
 ```typescript
@@ -1099,58 +1132,60 @@ describe('PolicyCard', () => {
 ```
 
 ### 2. Hook Testing Pattern
+
 For testing custom hooks.
 
 ```typescript
 // Hook Test
-import { renderHook, act } from '@testing-library/react'
-import { usePolicies } from './usePolicies'
+import { renderHook, act } from "@testing-library/react";
+import { usePolicies } from "./usePolicies";
 
 // Mock fetch
-global.fetch = jest.fn()
+global.fetch = jest.fn();
 
-describe('usePolicies', () => {
+describe("usePolicies", () => {
   beforeEach(() => {
-    (fetch as jest.Mock).mockClear()
-  })
+    (fetch as jest.Mock).mockClear();
+  });
 
-  it('fetches policies on mount', async () => {
-    const mockPolicies = [{ id: '1', name: 'Test Policy' }]
-    ;(fetch as jest.Mock).mockResolvedValueOnce({
+  it("fetches policies on mount", async () => {
+    const mockPolicies = [{ id: "1", name: "Test Policy" }];
+    (fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve(mockPolicies)
-    })
+      json: () => Promise.resolve(mockPolicies),
+    });
 
-    const { result } = renderHook(() => usePolicies())
+    const { result } = renderHook(() => usePolicies());
 
-    expect(result.current.loading).toBe(true)
-    expect(result.current.policies).toEqual([])
-
-    await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 0))
-    })
-
-    expect(result.current.loading).toBe(false)
-    expect(result.current.policies).toEqual(mockPolicies)
-  })
-
-  it('handles fetch errors', async () => {
-    const error = new Error('Failed to fetch')
-    ;(fetch as jest.Mock).mockRejectedValueOnce(error)
-
-    const { result } = renderHook(() => usePolicies())
+    expect(result.current.loading).toBe(true);
+    expect(result.current.policies).toEqual([]);
 
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 0))
-    })
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
 
-    expect(result.current.error).toBe(error)
-    expect(result.current.loading).toBe(false)
-  })
-})
+    expect(result.current.loading).toBe(false);
+    expect(result.current.policies).toEqual(mockPolicies);
+  });
+
+  it("handles fetch errors", async () => {
+    const error = new Error("Failed to fetch");
+    (fetch as jest.Mock).mockRejectedValueOnce(error);
+
+    const { result } = renderHook(() => usePolicies());
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    expect(result.current.error).toBe(error);
+    expect(result.current.loading).toBe(false);
+  });
+});
 ```
 
 ### 3. Integration Testing Pattern
+
 For testing component interactions.
 
 ```typescript
@@ -1236,6 +1271,6 @@ describe('PoliciesPage Integration', () => {
 
 ---
 
-*Last updated: August 2025*
-*Version: 1.0*
-*Maintainer: Frontend Team*
+_Last updated: August 2025_
+_Version: 1.0_
+_Maintainer: Frontend Team_

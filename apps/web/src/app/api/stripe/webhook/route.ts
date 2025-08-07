@@ -6,10 +6,10 @@
  * @status stable
  */
 
-import { headers } from 'next/headers'
-import { NextResponse } from 'next/server'
+import { headers } from "next/headers";
+import { NextResponse } from "next/server";
 // import Stripe from 'stripe'
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from "@supabase/supabase-js";
 // import { UserTier } from '@/lib/permissions/permission-checker'
 
 // const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
@@ -31,7 +31,7 @@ import { createClient } from '@supabase/supabase-js'
 // )
 
 export async function POST(request: Request) {
-  return NextResponse.json({ received: true })
+  return NextResponse.json({ received: true });
   // const body = await request.text()
   // const signature = (await headers()).get('stripe-signature')
 

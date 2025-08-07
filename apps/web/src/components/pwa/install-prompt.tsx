@@ -8,135 +8,155 @@
  * @tags ["pwa", "installation", "modal", "mobile"]
  * @status stable
  */
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
-  Smartphone, Monitor, Download, X, Share,
-  Plus, Home, Zap, Shield, Star, ArrowRight
-} from 'lucide-react'
+  Smartphone,
+  Monitor,
+  Download,
+  X,
+  Share,
+  Plus,
+  Home,
+  Zap,
+  Shield,
+  Star,
+  ArrowRight,
+} from "lucide-react";
 
-import { useInstallPrompt, usePWA } from '@/hooks/use-pwa'
-import { TouchButton } from '@/components/ui/touch-button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { logger } from '@/lib/logger'
+import { useInstallPrompt, usePWA } from "@/hooks/use-pwa";
+import { TouchButton } from "@/components/ui/touch-button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { logger } from "@/lib/logger";
 
 interface InstallPromptProps {
-  variant?: 'banner' | 'modal' | 'inline'
-  showBenefits?: boolean
-  autoShow?: boolean
-  delay?: number
-  onInstall?: () => void
-  onDismiss?: () => void
+  variant?: "banner" | "modal" | "inline";
+  showBenefits?: boolean;
+  autoShow?: boolean;
+  delay?: number;
+  onInstall?: () => void;
+  onDismiss?: () => void;
 }
 
 const platformInstructions = {
   ios: {
     icon: Smartphone,
     steps: [
-      'Tap the Share button in Safari',
+      "Tap the Share button in Safari",
       'Scroll down and tap "Add to Home Screen"',
-      'Tap "Add" to install ClaimGuardian'
+      'Tap "Add" to install ClaimGuardian',
     ],
-    shareIcon: Share
+    shareIcon: Share,
   },
   android: {
     icon: Smartphone,
     steps: [
       'Tap "Install" when prompted',
       'Or tap the menu (⋮) and select "Add to Home Screen"',
-      'Confirm installation to add ClaimGuardian to your home screen'
+      "Confirm installation to add ClaimGuardian to your home screen",
     ],
-    shareIcon: Download
+    shareIcon: Download,
   },
   desktop: {
     icon: Monitor,
     steps: [
       'Click "Install" when prompted',
-      'Or click the install icon in the address bar',
-      'Confirm installation to add ClaimGuardian to your applications'
+      "Or click the install icon in the address bar",
+      "Confirm installation to add ClaimGuardian to your applications",
     ],
-    shareIcon: Download
-  }
-}
+    shareIcon: Download,
+  },
+};
 
 const benefits = [
   {
     icon: Zap,
-    title: 'Faster Access',
-    description: 'Launch instantly from your home screen'
+    title: "Faster Access",
+    description: "Launch instantly from your home screen",
   },
   {
     icon: Shield,
-    title: 'Offline Ready',
-    description: 'Access your properties even without internet'
+    title: "Offline Ready",
+    description: "Access your properties even without internet",
   },
   {
     icon: Star,
-    title: 'Native Experience',
-    description: 'Enjoy a full-screen, app-like experience'
-  }
-]
+    title: "Native Experience",
+    description: "Enjoy a full-screen, app-like experience",
+  },
+];
 
 export function InstallPrompt({
-  variant = 'modal',
+  variant = "modal",
   showBenefits = true,
   autoShow = true,
   delay = 3000,
   onInstall,
-  onDismiss
+  onDismiss,
 }: InstallPromptProps) {
-  const { isVisible, installStatus, showInstallPrompt, hideInstallPrompt } = useInstallPrompt()
-  const { platform, isInstalled, canInstall } = usePWA()
-  const [showPrompt, setShowPrompt] = useState(false)
-  const [hasInteracted, setHasInteracted] = useState(false)
+  const { isVisible, installStatus, showInstallPrompt, hideInstallPrompt } =
+    useInstallPrompt();
+  const { platform, isInstalled, canInstall } = usePWA();
+  const [showPrompt, setShowPrompt] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
 
-  const platformInfo = platformInstructions[platform] || platformInstructions.desktop
-  const PlatformIcon = platformInfo.icon
-  const ShareIcon = platformInfo.shareIcon
+  const platformInfo =
+    platformInstructions[platform] || platformInstructions.desktop;
+  const PlatformIcon = platformInfo.icon;
+  const ShareIcon = platformInfo.shareIcon;
 
   useEffect(() => {
-    if (!autoShow || isInstalled || !canInstall) return
+    if (!autoShow || isInstalled || !canInstall) return;
 
     const timer = setTimeout(() => {
       if (isVisible && !hasInteracted) {
-        setShowPrompt(true)
-        logger.track('install_prompt_auto_shown', { platform, variant })
+        setShowPrompt(true);
+        logger.track("install_prompt_auto_shown", { platform, variant });
       }
-    }, delay)
+    }, delay);
 
-    return () => clearTimeout(timer)
-  }, [autoShow, delay, isInstalled, canInstall, isVisible, hasInteracted, platform, variant])
+    return () => clearTimeout(timer);
+  }, [
+    autoShow,
+    delay,
+    isInstalled,
+    canInstall,
+    isVisible,
+    hasInteracted,
+    platform,
+    variant,
+  ]);
 
   const handleInstall = async () => {
-    setHasInteracted(true)
+    setHasInteracted(true);
 
-    if (platform === 'ios') {
+    if (platform === "ios") {
       // For iOS, we can't programmatically trigger installation
       // Just show instructions
-      logger.track('install_prompt_ios_instructions_shown')
-      return
+      logger.track("install_prompt_ios_instructions_shown");
+      return;
     }
 
-    const success = await showInstallPrompt()
+    const success = await showInstallPrompt();
 
     if (success) {
-      onInstall?.()
-      setShowPrompt(false)
+      onInstall?.();
+      setShowPrompt(false);
     }
-  }
+  };
 
   const handleDismiss = () => {
-    setHasInteracted(true)
-    setShowPrompt(false)
-    hideInstallPrompt()
-    onDismiss?.()
-  }
+    setHasInteracted(true);
+    setShowPrompt(false);
+    hideInstallPrompt();
+    onDismiss?.();
+  };
 
   if (isInstalled || !canInstall || (!isVisible && !showPrompt)) {
-    return null
+    return null;
   }
 
   const renderBanner = () => (
@@ -177,7 +197,7 @@ export function InstallPrompt({
         </div>
       </div>
     </motion.div>
-  )
+  );
 
   const renderModal = () => (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -224,7 +244,7 @@ export function InstallPrompt({
           {showBenefits && (
             <div className="space-y-3 mb-6">
               {benefits.map((benefit) => {
-                const Icon = benefit.icon
+                const Icon = benefit.icon;
                 return (
                   <div key={benefit.title} className="flex items-center gap-3">
                     <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
@@ -239,12 +259,12 @@ export function InstallPrompt({
                       </p>
                     </div>
                   </div>
-                )
+                );
               })}
             </div>
           )}
 
-          {platform === 'ios' ? (
+          {platform === "ios" ? (
             <div className="space-y-4">
               <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
                 <p className="font-medium text-blue-900 dark:text-blue-100 mb-2 flex items-center gap-2">
@@ -275,8 +295,8 @@ export function InstallPrompt({
             <div className="flex gap-3">
               <TouchButton
                 onClick={handleInstall}
-                disabled={installStatus === 'installing'}
-                loading={installStatus === 'installing'}
+                disabled={installStatus === "installing"}
+                loading={installStatus === "installing"}
                 loadingText="Installing..."
                 className="flex-1"
               >
@@ -284,10 +304,7 @@ export function InstallPrompt({
                 Install App
               </TouchButton>
 
-              <TouchButton
-                variant="outline"
-                onClick={handleDismiss}
-              >
+              <TouchButton variant="outline" onClick={handleDismiss}>
                 Later
               </TouchButton>
             </div>
@@ -295,7 +312,7 @@ export function InstallPrompt({
         </div>
       </motion.div>
     </div>
-  )
+  );
 
   const renderInline = () => (
     <Card className="border-blue-200 dark:border-blue-800 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20">
@@ -313,7 +330,10 @@ export function InstallPrompt({
             </div>
           </div>
 
-          <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+          <Badge
+            variant="secondary"
+            className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
+          >
             PWA
           </Badge>
         </div>
@@ -339,26 +359,26 @@ export function InstallPrompt({
           <TouchButton
             size="sm"
             onClick={handleInstall}
-            disabled={installStatus === 'installing'}
-            loading={installStatus === 'installing'}
+            disabled={installStatus === "installing"}
+            loading={installStatus === "installing"}
           >
-            {platform === 'ios' ? 'Learn How' : 'Install'}
+            {platform === "ios" ? "Learn How" : "Install"}
             <ArrowRight className="w-3 h-3 ml-1" />
           </TouchButton>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 
   return (
     <AnimatePresence>
       {showPrompt && (
         <>
-          {variant === 'banner' && renderBanner()}
-          {variant === 'modal' && renderModal()}
-          {variant === 'inline' && renderInline()}
+          {variant === "banner" && renderBanner()}
+          {variant === "modal" && renderModal()}
+          {variant === "inline" && renderInline()}
         </>
       )}
     </AnimatePresence>
-  )
+  );
 }

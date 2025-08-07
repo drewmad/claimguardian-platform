@@ -8,185 +8,198 @@
  * @tags ["modal", "signup", "auth", "mobile", "responsive"]
  * @status stable
  */
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import {
-  Mail, Lock, Eye, EyeOff, User, Smartphone,
-  CheckCircle, AlertTriangle, Loader2
-} from 'lucide-react'
-import { toast } from 'sonner'
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  User,
+  Smartphone,
+  CheckCircle,
+  AlertTriangle,
+  Loader2,
+} from "lucide-react";
+import { toast } from "sonner";
 
-import { useAuth } from '@/components/auth/auth-provider'
-import { useModalStore } from '@/stores/modal-store'
-import { ResponsiveModal } from '@/components/ui/responsive-modal'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { logger } from '@/lib/logger'
+import { useAuth } from "@/components/auth/auth-provider";
+import { useModalStore } from "@/stores/modal-store";
+import { ResponsiveModal } from "@/components/ui/responsive-modal";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { logger } from "@/lib/logger";
 
 interface FormData {
-  email: string
-  password: string
-  confirmPassword?: string
+  email: string;
+  password: string;
+  confirmPassword?: string;
 }
 
 interface ValidationErrors {
-  email?: string
-  password?: string
-  confirmPassword?: string
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
 }
 
 export function ResponsiveSignupModal() {
-  const { activeModal, closeModal, openModal } = useModalStore()
-  const { signUp, error: authError } = useAuth()
-  const [loading, setLoading] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [submitted, setSubmitted] = useState(false)
-  const [step, setStep] = useState<'form' | 'verification'>('form')
+  const { activeModal, closeModal, openModal } = useModalStore();
+  const { signUp, error: authError } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [step, setStep] = useState<"form" | "verification">("form");
 
   const [formData, setFormData] = useState<FormData>({
-    email: '',
-    password: '',
-    confirmPassword: ''
-  })
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
 
-  const [errors, setErrors] = useState<ValidationErrors>({})
-  const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set())
+  const [errors, setErrors] = useState<ValidationErrors>({});
+  const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
 
-  const isOpen = activeModal === 'responsive-signup'
+  const isOpen = activeModal === "responsive-signup";
 
   useEffect(() => {
     if (isOpen) {
-      logger.track('signup_modal_opened')
+      logger.track("signup_modal_opened");
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   // Reset form when modal closes
   useEffect(() => {
     if (!isOpen) {
-      setFormData({ email: '', password: '', confirmPassword: '' })
-      setErrors({})
-      setTouchedFields(new Set())
-      setStep('form')
-      setSubmitted(false)
-      setLoading(false)
+      setFormData({ email: "", password: "", confirmPassword: "" });
+      setErrors({});
+      setTouchedFields(new Set());
+      setStep("form");
+      setSubmitted(false);
+      setLoading(false);
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   const validateField = (name: string, value: string): string | undefined => {
     switch (name) {
-      case 'email':
-        if (!value) return 'Email is required'
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Please enter a valid email'
-        return undefined
+      case "email":
+        if (!value) return "Email is required";
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
+          return "Please enter a valid email";
+        return undefined;
 
-      case 'password':
-        if (!value) return 'Password is required'
-        if (value.length < 6) return 'Password must be at least 6 characters'
+      case "password":
+        if (!value) return "Password is required";
+        if (value.length < 6) return "Password must be at least 6 characters";
         if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(value)) {
-          return 'Password must contain uppercase, lowercase, and number'
+          return "Password must contain uppercase, lowercase, and number";
         }
-        return undefined
+        return undefined;
 
-      case 'confirmPassword':
-        if (!value) return 'Please confirm your password'
-        if (value !== formData.password) return 'Passwords do not match'
-        return undefined
+      case "confirmPassword":
+        if (!value) return "Please confirm your password";
+        if (value !== formData.password) return "Passwords do not match";
+        return undefined;
 
       default:
-        return undefined
+        return undefined;
     }
-  }
+  };
 
   const handleFieldChange = (name: keyof FormData, value: string) => {
-    setFormData(prev => ({ ...prev, [name]: value }))
+    setFormData((prev) => ({ ...prev, [name]: value }));
 
     // Clear error when user starts typing
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: undefined }))
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
 
     // Validate confirm password when password changes
-    if (name === 'password' && formData.confirmPassword) {
-      const confirmError = validateField('confirmPassword', formData.confirmPassword)
-      setErrors(prev => ({ ...prev, confirmPassword: confirmError }))
+    if (name === "password" && formData.confirmPassword) {
+      const confirmError = validateField(
+        "confirmPassword",
+        formData.confirmPassword,
+      );
+      setErrors((prev) => ({ ...prev, confirmPassword: confirmError }));
     }
-  }
+  };
 
   const handleFieldBlur = (name: keyof FormData) => {
-    setTouchedFields(prev => new Set([...prev, name]))
-    const error = validateField(name, formData[name] || '')
-    setErrors(prev => ({ ...prev, [name]: error }))
-  }
+    setTouchedFields((prev) => new Set([...prev, name]));
+    const error = validateField(name, formData[name] || "");
+    setErrors((prev) => ({ ...prev, [name]: error }));
+  };
 
   const validateForm = (): boolean => {
-    const newErrors: ValidationErrors = {}
+    const newErrors: ValidationErrors = {};
 
-    Object.keys(formData).forEach(key => {
-      const error = validateField(key, formData[key as keyof FormData] || '')
-      if (error) newErrors[key as keyof ValidationErrors] = error
-    })
+    Object.keys(formData).forEach((key) => {
+      const error = validateField(key, formData[key as keyof FormData] || "");
+      if (error) newErrors[key as keyof ValidationErrors] = error;
+    });
 
-    setErrors(newErrors)
-    setTouchedFields(new Set(Object.keys(formData)))
+    setErrors(newErrors);
+    setTouchedFields(new Set(Object.keys(formData)));
 
-    return Object.keys(newErrors).length === 0
-  }
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!validateForm()) {
-      toast.error('Please fix the errors below')
-      return
+      toast.error("Please fix the errors below");
+      return;
     }
 
-    setLoading(true)
-    logger.track('signup_attempt', { email: formData.email })
+    setLoading(true);
+    logger.track("signup_attempt", { email: formData.email });
 
     try {
       const success = await signUp({
         email: formData.email,
-        password: formData.password
-      })
+        password: formData.password,
+      });
 
       if (success) {
-        setStep('verification')
-        setSubmitted(true)
-        logger.track('signup_success', { email: formData.email })
-        toast.success('Account created! Please check your email.')
+        setStep("verification");
+        setSubmitted(true);
+        logger.track("signup_success", { email: formData.email });
+        toast.success("Account created! Please check your email.");
       }
     } catch (error) {
-      logger.error('Signup failed', { error })
-      toast.error('Failed to create account. Please try again.')
+      logger.error("Signup failed", { error });
+      toast.error("Failed to create account. Please try again.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const getPasswordStrength = (password: string): { score: number; text: string; color: string } => {
-    let score = 0
-    if (password.length >= 6) score++
-    if (password.length >= 10) score++
-    if (/[a-z]/.test(password)) score++
-    if (/[A-Z]/.test(password)) score++
-    if (/\d/.test(password)) score++
-    if (/[^a-zA-Z0-9]/.test(password)) score++
+  const getPasswordStrength = (
+    password: string,
+  ): { score: number; text: string; color: string } => {
+    let score = 0;
+    if (password.length >= 6) score++;
+    if (password.length >= 10) score++;
+    if (/[a-z]/.test(password)) score++;
+    if (/[A-Z]/.test(password)) score++;
+    if (/\d/.test(password)) score++;
+    if (/[^a-zA-Z0-9]/.test(password)) score++;
 
     const levels = [
-      { text: 'Very Weak', color: 'text-red-500' },
-      { text: 'Weak', color: 'text-red-400' },
-      { text: 'Fair', color: 'text-yellow-500' },
-      { text: 'Good', color: 'text-blue-500' },
-      { text: 'Strong', color: 'text-green-500' },
-      { text: 'Very Strong', color: 'text-green-600' }
-    ]
+      { text: "Very Weak", color: "text-red-500" },
+      { text: "Weak", color: "text-red-400" },
+      { text: "Fair", color: "text-yellow-500" },
+      { text: "Good", color: "text-blue-500" },
+      { text: "Strong", color: "text-green-500" },
+      { text: "Very Strong", color: "text-green-600" },
+    ];
 
-    return { score, ...levels[Math.min(score, 5)] }
-  }
+    return { score, ...levels[Math.min(score, 5)] };
+  };
 
   const renderFormContent = () => (
     <div className="p-6 space-y-6">
@@ -214,14 +227,14 @@ export function ResponsiveSignupModal() {
               id="email"
               type="email"
               value={formData.email}
-              onChange={(e) => handleFieldChange('email', e.target.value)}
-              onBlur={() => handleFieldBlur('email')}
+              onChange={(e) => handleFieldChange("email", e.target.value)}
+              onBlur={() => handleFieldBlur("email")}
               placeholder="your@email.com"
-              className={`pl-10 ${errors.email && touchedFields.has('email') ? 'border-red-500 focus:border-red-500' : ''}`}
+              className={`pl-10 ${errors.email && touchedFields.has("email") ? "border-red-500 focus:border-red-500" : ""}`}
               autoFocus
             />
           </div>
-          {errors.email && touchedFields.has('email') && (
+          {errors.email && touchedFields.has("email") && (
             <motion.p
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -242,19 +255,23 @@ export function ResponsiveSignupModal() {
             <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
               id="password"
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               value={formData.password}
-              onChange={(e) => handleFieldChange('password', e.target.value)}
-              onBlur={() => handleFieldBlur('password')}
+              onChange={(e) => handleFieldChange("password", e.target.value)}
+              onBlur={() => handleFieldBlur("password")}
               placeholder="Create a strong password"
-              className={`pl-10 pr-10 ${errors.password && touchedFields.has('password') ? 'border-red-500 focus:border-red-500' : ''}`}
+              className={`pl-10 pr-10 ${errors.password && touchedFields.has("password") ? "border-red-500 focus:border-red-500" : ""}`}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
             >
-              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              {showPassword ? (
+                <EyeOff className="w-4 h-4" />
+              ) : (
+                <Eye className="w-4 h-4" />
+              )}
             </button>
           </div>
 
@@ -275,18 +292,20 @@ export function ResponsiveSignupModal() {
                 <div
                   className={`h-1 rounded-full transition-all ${
                     getPasswordStrength(formData.password).score <= 2
-                      ? 'bg-red-500'
+                      ? "bg-red-500"
                       : getPasswordStrength(formData.password).score <= 4
-                        ? 'bg-yellow-500'
-                        : 'bg-green-500'
+                        ? "bg-yellow-500"
+                        : "bg-green-500"
                   }`}
-                  style={{ width: `${(getPasswordStrength(formData.password).score / 6) * 100}%` }}
+                  style={{
+                    width: `${(getPasswordStrength(formData.password).score / 6) * 100}%`,
+                  }}
                 />
               </div>
             </motion.div>
           )}
 
-          {errors.password && touchedFields.has('password') && (
+          {errors.password && touchedFields.has("password") && (
             <motion.p
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -307,22 +326,28 @@ export function ResponsiveSignupModal() {
             <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
               id="confirmPassword"
-              type={showConfirmPassword ? 'text' : 'password'}
+              type={showConfirmPassword ? "text" : "password"}
               value={formData.confirmPassword}
-              onChange={(e) => handleFieldChange('confirmPassword', e.target.value)}
-              onBlur={() => handleFieldBlur('confirmPassword')}
+              onChange={(e) =>
+                handleFieldChange("confirmPassword", e.target.value)
+              }
+              onBlur={() => handleFieldBlur("confirmPassword")}
               placeholder="Confirm your password"
-              className={`pl-10 pr-10 ${errors.confirmPassword && touchedFields.has('confirmPassword') ? 'border-red-500 focus:border-red-500' : ''}`}
+              className={`pl-10 pr-10 ${errors.confirmPassword && touchedFields.has("confirmPassword") ? "border-red-500 focus:border-red-500" : ""}`}
             />
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
             >
-              {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              {showConfirmPassword ? (
+                <EyeOff className="w-4 h-4" />
+              ) : (
+                <Eye className="w-4 h-4" />
+              )}
             </button>
           </div>
-          {errors.confirmPassword && touchedFields.has('confirmPassword') && (
+          {errors.confirmPassword && touchedFields.has("confirmPassword") && (
             <motion.p
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -353,7 +378,12 @@ export function ResponsiveSignupModal() {
         {/* Submit Button */}
         <Button
           type="submit"
-          disabled={loading || Object.keys(errors).some(key => errors[key as keyof ValidationErrors])}
+          disabled={
+            loading ||
+            Object.keys(errors).some(
+              (key) => errors[key as keyof ValidationErrors],
+            )
+          }
           className="w-full h-12 text-base font-medium"
         >
           {loading ? (
@@ -362,7 +392,7 @@ export function ResponsiveSignupModal() {
               Creating Account...
             </>
           ) : (
-            'Create Account'
+            "Create Account"
           )}
         </Button>
       </form>
@@ -370,11 +400,11 @@ export function ResponsiveSignupModal() {
       {/* Sign In Link */}
       <div className="text-center">
         <p className="text-sm text-gray-600 dark:text-gray-400">
-          Already have an account?{' '}
+          Already have an account?{" "}
           <button
             onClick={() => {
-              closeModal()
-              openModal('responsive-login')
+              closeModal();
+              openModal("responsive-login");
             }}
             className="text-blue-600 hover:text-blue-700 dark:text-blue-400 font-medium hover:underline"
           >
@@ -383,7 +413,7 @@ export function ResponsiveSignupModal() {
         </p>
       </div>
     </div>
-  )
+  );
 
   const renderVerificationContent = () => (
     <div className="p-6 text-center space-y-6">
@@ -405,8 +435,12 @@ export function ResponsiveSignupModal() {
       </div>
 
       <div className="space-y-4 text-sm text-gray-600 dark:text-gray-400">
-        <p>Click the link in the email to verify your account and get started.</p>
-        <p>Didn't receive the email? Check your spam folder or request a new one.</p>
+        <p>
+          Click the link in the email to verify your account and get started.
+        </p>
+        <p>
+          Didn't receive the email? Check your spam folder or request a new one.
+        </p>
       </div>
 
       <div className="space-y-3">
@@ -416,7 +450,7 @@ export function ResponsiveSignupModal() {
         <button
           onClick={() => {
             // TODO: Implement resend verification
-            toast.info('Verification email resent!')
+            toast.info("Verification email resent!");
           }}
           className="text-blue-600 hover:text-blue-700 dark:text-blue-400 text-sm hover:underline"
         >
@@ -424,7 +458,7 @@ export function ResponsiveSignupModal() {
         </button>
       </div>
     </div>
-  )
+  );
 
   return (
     <ResponsiveModal
@@ -437,7 +471,7 @@ export function ResponsiveSignupModal() {
       showHeader={false}
       allowDismiss={!loading}
     >
-      {step === 'form' ? renderFormContent() : renderVerificationContent()}
+      {step === "form" ? renderFormContent() : renderVerificationContent()}
     </ResponsiveModal>
-  )
+  );
 }

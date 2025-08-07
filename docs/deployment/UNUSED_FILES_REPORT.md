@@ -11,15 +11,18 @@ Generated on: 2025-07-28
 ## Unused Files by Category
 
 ### 1. Actions (Server Functions) - 8 files
+
 These server action files are not being imported anywhere:
 
 **apps/web/src/actions/**
+
 - `ai-images.ts` - AI image generation actions
 - `claims.ts` - Claim management actions
 - `debug.ts` - Debug-related actions
 - `demo.ts` - Demo data generation
 
 **apps/web/src/actions/inventory/**
+
 - `ai-analysis.ts` - AI inventory analysis
 - `batch-import.ts` - Batch import functionality
 - `documents.ts` - Document handling
@@ -28,12 +31,14 @@ These server action files are not being imported anywhere:
 ### 2. Components - 24 files
 
 **Layout Components** (apps/web/src/components/layout/)
+
 - `bottom-nav.tsx` - Mobile bottom navigation
 - `footer.tsx` - Layout footer
 - `header.tsx` - Layout header
 - `sidebar.tsx` - Sidebar navigation
 
 **Modal Components** (apps/web/src/components/modals/)
+
 - `add-asset-wizard.tsx` - Asset creation wizard
 - `add-inventory-item-modal.tsx` - Inventory item modal
 - `claim-wizard.tsx` - Claim creation wizard
@@ -42,6 +47,7 @@ These server action files are not being imported anywhere:
 - `session-warning-modal.tsx` - Session timeout warning
 
 **Screen Components** (apps/web/src/components/screens/)
+
 - `asset-detail-screen.tsx` - Asset details view
 - `asset-vault-screen.tsx` - Asset vault screen
 - `claims-screen.tsx` - Claims management
@@ -49,11 +55,13 @@ These server action files are not being imported anywhere:
 - `home-screen.tsx` - Home dashboard
 
 **AI Components** (apps/web/src/components/ai/)
+
 - `ai-chat-button.tsx` - AI chat button
 - `ai-chat-panel.tsx` - AI chat panel
 - `camera-capture.tsx` - Camera capture component
 
 **Other Components**
+
 - `TestCard.tsx` - Test component
 - `error-boundary.tsx` - Error boundary wrapper
 - `admin/parcel-etl-monitor.tsx` - Parcel ETL monitoring
@@ -65,9 +73,11 @@ These server action files are not being imported anywhere:
 - `ui/video-background.tsx` - Video background
 
 ### 3. Hooks - 8 files
+
 Custom React hooks that are not being used:
 
 **apps/web/src/hooks/**
+
 - `use-error-handling.ts` - Error handling utilities
 - `use-file-upload.ts` - File upload logic
 - `use-form.ts` - Form management
@@ -80,6 +90,7 @@ Custom React hooks that are not being used:
 ### 4. Library/Utilities - 8 files
 
 **apps/web/src/lib/**
+
 - `ai-ui-updater.ts` - AI UI pattern generator
 - `supabase.ts` - Supabase client (duplicate?)
 - `auth/legal-guard.tsx` - Legal consent guard
@@ -87,18 +98,22 @@ Custom React hooks that are not being used:
 - `logger/index.ts` - Logger utilities
 
 **apps/web/src/utils/**
+
 - `validation.ts` - Validation utilities
 
 **apps/web/src/types/**
+
 - `database-enhancements.ts` - Enhanced DB types
 
 **apps/web/src/scripts/**
+
 - `deploy-property-schema.ts` - Schema deployment
 - `run-migration.ts` - Migration runner
 
 ### 5. Package Files - 16 files
 
 **Package UI Components** (packages/ui/src/)
+
 - `button.tsx` - Button component (duplicate?)
 - `card.tsx` - Card component (duplicate?)
 - `checkbox.tsx` - Checkbox component
@@ -109,39 +124,47 @@ Custom React hooks that are not being used:
 - `utils.ts` - UI utilities
 
 **Package Utilities** (packages/utils/src/)
+
 - `format.ts` - Formatting utilities
 - `validation.ts` - Validation utilities
 
 **MCP Server Tools** (packages/mcp-server/src/tools/)
+
 - `assessment.ts` - Assessment tools
 - `claim.ts` - Claim tools
 - `property.ts` - Property tools
 
 **Config Files**
+
 - `packages/ai-config/eslint.config.js`
 - `packages/ui/eslint.config.js`
 - `packages/utils/eslint.config.js`
 
 **Database Types**
+
 - `packages/db/src/types/database.types.ts` - Generated DB types
 
 ### 6. Other Files - 1 file
+
 - `apps/web/src/app/error.tsx` - Global error page
 
 ## Recommendations
 
 ### High Priority Removals (Safe to Delete)
+
 1. **Test/Demo files**: `TestCard.tsx`, `demo.ts`, `debug.ts`
 2. **Duplicate UI components** in packages/ui/src/ that exist in apps/web
 3. **Unused ESLint configs** in packages
 4. **Unused hooks** that have no references
 
 ### Medium Priority (Review Before Removing)
+
 1. **Screen components** - May be planned for future use
 2. **Modal components** - Check if they're dynamically imported
 3. **MCP server tools** - May be used by the MCP server runtime
 
 ### Low Priority (Keep for Now)
+
 1. **Error handling files** - May be needed for production
 2. **Auth-related components** - Security features
 3. **Admin components** - May be conditionally imported

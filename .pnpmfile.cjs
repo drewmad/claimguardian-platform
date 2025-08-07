@@ -8,11 +8,11 @@ module.exports = {
     readPackage(pkg) {
       // Approve build scripts for trusted packages
       const trustedPackages = [
-        '@sentry/cli',
-        'core-js-pure',
-        'esbuild',
-        'sharp',
-        'unrs-resolver'
+        "@sentry/cli",
+        "core-js-pure",
+        "esbuild",
+        "sharp",
+        "unrs-resolver",
       ];
 
       if (trustedPackages.includes(pkg.name)) {
@@ -20,6 +20,6 @@ module.exports = {
       }
 
       return pkg;
-    }
-  }
+    },
+  },
 };

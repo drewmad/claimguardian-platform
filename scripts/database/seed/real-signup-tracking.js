@@ -1,4 +1,4 @@
-#\!/usr/bin/env node
+#!/usr/bin/env node
 
 /**
  * Simulate real signup tracking to demonstrate the system works
@@ -11,7 +11,7 @@ require('dotenv').config({ path: '.env.local' })
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
-if (\!supabaseUrl || \!supabaseServiceKey) {
+if (!supabaseUrl || !supabaseServiceKey) {
   console.error('❌ Missing required environment variables')
   process.exit(1)
 }
@@ -23,7 +23,7 @@ async function simulateRealSignup() {
   console.log('======================================\n')
 
   const testEmail = `test-user-${Date.now()}@claimguardian.test`
-  const testPassword = 'TestPassword123\!'
+  const testPassword = 'TestPassword123!'
 
   console.log(`1. Creating test user: ${testEmail}`)
 

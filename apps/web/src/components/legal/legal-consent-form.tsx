@@ -8,30 +8,34 @@
  * @tags ["legal", "consent", "compliance", "form"]
  * @status stable
  */
-'use client'
+"use client";
 
-import type { LegalDocument } from '@claimguardian/db'
-import { ExternalLink, FileText, Shield, AlertCircle, CheckCircle } from 'lucide-react'
-import { useState, useEffect, useCallback } from 'react'
+import type { LegalDocument } from "@claimguardian/db";
+import {
+  ExternalLink,
+  FileText,
+  Shield,
+  AlertCircle,
+  CheckCircle,
+} from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
 
-import { LegalDocumentModal } from './legal-document-modal'
+import { LegalDocumentModal } from "./legal-document-modal";
 
-import { legalServiceClientFix } from '@/lib/legal/legal-service-client-fix'
-import { logger } from '@/lib/logger'
-
-
+import { legalServiceClientFix } from "@/lib/legal/legal-service-client-fix";
+import { logger } from "@/lib/logger";
 
 interface LegalConsentFormProps {
-  userId?: string
-  onConsentChange?: (hasAllConsents: boolean) => void
-  onSubmit?: (acceptedDocuments: string[]) => Promise<void>
-  showSubmitButton?: boolean
-  disabled?: boolean
-  mode?: 'signup' | 'update' | 'view'
+  userId?: string;
+  onConsentChange?: (hasAllConsents: boolean) => void;
+  onSubmit?: (acceptedDocuments: string[]) => Promise<void>;
+  showSubmitButton?: boolean;
+  disabled?: boolean;
+  mode?: "signup" | "update" | "view";
 }
 
 interface DocumentState {
-  [documentId: string]: boolean
+  [documentId: string]: boolean;
 }
 
 export function LegalConsentForm({
@@ -40,130 +44,139 @@ export function LegalConsentForm({
   onSubmit,
   showSubmitButton = true,
   disabled = false,
-  mode = 'signup'
+  mode = "signup",
 }: LegalConsentFormProps) {
-  const [documents, setDocuments] = useState<LegalDocument[]>([])
-  const [acceptedDocs, setAcceptedDocs] = useState<DocumentState>({})
-  const [loading, setLoading] = useState(true)
-  const [submitting, setSubmitting] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState(false)
-  const [selectedDocument, setSelectedDocument] = useState<LegalDocument | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [documents, setDocuments] = useState<LegalDocument[]>([]);
+  const [acceptedDocs, setAcceptedDocs] = useState<DocumentState>({});
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [selectedDocument, setSelectedDocument] =
+    useState<LegalDocument | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const loadDocuments = useCallback(async () => {
     try {
-      setLoading(true)
-      setError('')
+      setLoading(true);
+      setError("");
 
-      let docs: LegalDocument[]
+      let docs: LegalDocument[];
 
-      if (mode === 'update' && userId) {
+      if (mode === "update" && userId) {
         // Load only documents that need acceptance
-        docs = await legalServiceClientFix.getDocumentsNeedingAcceptance(userId)
+        docs =
+          await legalServiceClientFix.getDocumentsNeedingAcceptance(userId);
       } else {
         // Load all active documents (for signup or view)
-        docs = await legalServiceClientFix.getActiveLegalDocuments()
+        docs = await legalServiceClientFix.getActiveLegalDocuments();
       }
 
-      setDocuments(docs)
+      setDocuments(docs);
 
       // Initialize acceptance state
-      const initialState: DocumentState = {}
-      docs.forEach(doc => {
-        initialState[doc.id] = false
-      })
-      setAcceptedDocs(initialState)
-
+      const initialState: DocumentState = {};
+      docs.forEach((doc) => {
+        initialState[doc.id] = false;
+      });
+      setAcceptedDocs(initialState);
     } catch (err) {
-      logger.error('Failed to load legal documents', { userId }, err instanceof Error ? err : new Error(String(err)))
-      setError('Failed to load legal documents. Please try again.')
+      logger.error(
+        "Failed to load legal documents",
+        { userId },
+        err instanceof Error ? err : new Error(String(err)),
+      );
+      setError("Failed to load legal documents. Please try again.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [mode, userId])
+  }, [mode, userId]);
 
   useEffect(() => {
-    loadDocuments()
-  }, [loadDocuments])
+    loadDocuments();
+  }, [loadDocuments]);
 
   useEffect(() => {
-    const allAccepted = documents.length > 0 &&
-      documents.every(doc => acceptedDocs[doc.id] === true)
-    onConsentChange?.(allAccepted)
-  }, [acceptedDocs, documents, onConsentChange])
+    const allAccepted =
+      documents.length > 0 &&
+      documents.every((doc) => acceptedDocs[doc.id] === true);
+    onConsentChange?.(allAccepted);
+  }, [acceptedDocs, documents, onConsentChange]);
 
   const handleDocumentToggle = (documentId: string, accepted: boolean) => {
-    if (disabled) return
+    if (disabled) return;
 
-    setAcceptedDocs(prev => ({
+    setAcceptedDocs((prev) => ({
       ...prev,
-      [documentId]: accepted
-    }))
+      [documentId]: accepted,
+    }));
 
-    logger.track('legal_document_toggled', {
+    logger.track("legal_document_toggled", {
       documentId,
       accepted,
-      userId
-    })
-  }
+      userId,
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    if (!onSubmit || submitting) return
+    if (!onSubmit || submitting) return;
 
     const acceptedDocumentIds = Object.entries(acceptedDocs)
       .filter(([, accepted]) => accepted)
-      .map(([docId]) => docId)
+      .map(([docId]) => docId);
 
     if (acceptedDocumentIds.length !== documents.length) {
-      setError('Please accept all required legal documents to continue.')
-      return
+      setError("Please accept all required legal documents to continue.");
+      return;
     }
 
     try {
-      setSubmitting(true)
-      setError('')
+      setSubmitting(true);
+      setError("");
 
-      await onSubmit(acceptedDocumentIds)
-      setSuccess(true)
+      await onSubmit(acceptedDocumentIds);
+      setSuccess(true);
 
-      logger.track('legal_consent_submitted', {
+      logger.track("legal_consent_submitted", {
         userId,
         documentCount: acceptedDocumentIds.length,
-        mode
-      })
-
+        mode,
+      });
     } catch (err) {
-      logger.error('Failed to submit legal consent', { userId }, err instanceof Error ? err : new Error(String(err)))
-      setError('Failed to record consent. Please try again.')
+      logger.error(
+        "Failed to submit legal consent",
+        { userId },
+        err instanceof Error ? err : new Error(String(err)),
+      );
+      setError("Failed to record consent. Please try again.");
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
-  }
+  };
 
   const openDocument = (doc: LegalDocument) => {
-    setSelectedDocument(doc)
-    setIsModalOpen(true)
-    logger.track('legal_document_viewed', {
+    setSelectedDocument(doc);
+    setIsModalOpen(true);
+    logger.track("legal_document_viewed", {
       documentId: doc.id,
       slug: doc.slug,
       version: doc.version,
-      userId
-    })
-  }
+      userId,
+    });
+  };
 
   const closeModal = () => {
-    setIsModalOpen(false)
-    setSelectedDocument(null)
-  }
+    setIsModalOpen(false);
+    setSelectedDocument(null);
+  };
 
   const handleAcceptFromModal = () => {
     if (selectedDocument) {
-      handleDocumentToggle(selectedDocument.id, true)
+      handleDocumentToggle(selectedDocument.id, true);
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -173,12 +186,12 @@ export function LegalConsentForm({
           <span>Loading legal documents...</span>
         </div>
         <div className="animate-pulse space-y-3">
-          {[1, 2, 3].map(i => (
+          {[1, 2, 3].map((i) => (
             <div key={i} className="h-12 bg-slate-700 rounded-lg"></div>
           ))}
         </div>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -187,7 +200,9 @@ export function LegalConsentForm({
         <div className="flex items-start gap-2">
           <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-red-400 font-medium">Error Loading Legal Documents</p>
+            <p className="text-red-400 font-medium">
+              Error Loading Legal Documents
+            </p>
             <p className="text-red-400/80 text-sm mt-1">{error}</p>
             <button
               onClick={loadDocuments}
@@ -198,7 +213,7 @@ export function LegalConsentForm({
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   if (documents.length === 0) {
@@ -209,7 +224,7 @@ export function LegalConsentForm({
           <p className="text-green-400">All legal documents are up to date!</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (success) {
@@ -220,7 +235,7 @@ export function LegalConsentForm({
           <p className="text-green-400">Legal consent recorded successfully!</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -229,13 +244,14 @@ export function LegalConsentForm({
         <Shield className="w-6 h-6 text-blue-500 flex-shrink-0 mt-0.5" />
         <div>
           <h3 className="font-semibold text-blue-400 mb-1">
-            {mode === 'signup' ? 'Required Consents' : 'Updated Legal Documents'}
+            {mode === "signup"
+              ? "Required Consents"
+              : "Updated Legal Documents"}
           </h3>
           <p className="text-sm text-blue-300/80">
-            {mode === 'signup'
-              ? 'By creating an account, you confirm you have read and agree to:'
-              : 'We\'ve updated our legal documents. Please review and accept the new versions:'
-            }
+            {mode === "signup"
+              ? "By creating an account, you confirm you have read and agree to:"
+              : "We've updated our legal documents. Please review and accept the new versions:"}
           </p>
         </div>
       </div>
@@ -265,11 +281,18 @@ export function LegalConsentForm({
       {showSubmitButton && (
         <button
           type="submit"
-          disabled={submitting || disabled || Object.values(acceptedDocs).some(v => !v)}
+          disabled={
+            submitting ||
+            disabled ||
+            Object.values(acceptedDocs).some((v) => !v)
+          }
           className="w-full btn-primary py-3 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {submitting ? 'Recording Consent...' :
-           mode === 'signup' ? 'Accept and Create Account' : 'Accept Updated Terms'}
+          {submitting
+            ? "Recording Consent..."
+            : mode === "signup"
+              ? "Accept and Create Account"
+              : "Accept Updated Terms"}
         </button>
       )}
 
@@ -284,15 +307,15 @@ export function LegalConsentForm({
         />
       )}
     </form>
-  )
+  );
 }
 
 interface LegalDocumentItemProps {
-  document: LegalDocument
-  accepted: boolean
-  onToggle: (accepted: boolean) => void
-  onView: () => void
-  disabled?: boolean
+  document: LegalDocument;
+  accepted: boolean;
+  onToggle: (accepted: boolean) => void;
+  onView: () => void;
+  disabled?: boolean;
 }
 
 function LegalDocumentItem({
@@ -300,14 +323,16 @@ function LegalDocumentItem({
   accepted,
   onToggle,
   onView,
-  disabled = false
+  disabled = false,
 }: LegalDocumentItemProps) {
   return (
-    <div className={`border rounded-lg p-4 transition-colors ${
-      accepted
-        ? 'border-green-500/30 bg-green-500/5'
-        : 'border-slate-600 hover:border-slate-500'
-    }`}>
+    <div
+      className={`border rounded-lg p-4 transition-colors ${
+        accepted
+          ? "border-green-500/30 bg-green-500/5"
+          : "border-slate-600 hover:border-slate-500"
+      }`}
+    >
       <div className="flex items-start gap-3">
         <div className="relative">
           <input
@@ -333,9 +358,13 @@ function LegalDocumentItem({
           >
             <div className="text-sm mb-2">
               {document.requires_acceptance && (
-                <span className="text-xs font-semibold text-red-400 uppercase mr-2">REQUIRED</span>
+                <span className="text-xs font-semibold text-red-400 uppercase mr-2">
+                  REQUIRED
+                </span>
               )}
-              <span className="text-slate-300">I have read and agree to the </span>
+              <span className="text-slate-300">
+                I have read and agree to the{" "}
+              </span>
               <button
                 type="button"
                 onClick={onView}
@@ -353,7 +382,9 @@ function LegalDocumentItem({
               <FileText className="w-3 h-3" />
               Version {document.version}
             </span>
-            <span>Effective {new Date(document.effective_date).toLocaleDateString()}</span>
+            <span>
+              Effective {new Date(document.effective_date).toLocaleDateString()}
+            </span>
             {accepted && (
               <span className="text-green-400 flex items-center gap-1">
                 <CheckCircle className="w-3 h-3" />
@@ -364,5 +395,5 @@ function LegalDocumentItem({
         </div>
       </div>
     </div>
-  )
+  );
 }

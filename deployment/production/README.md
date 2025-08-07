@@ -65,12 +65,14 @@ This directory contains the complete production deployment configuration for Cla
 ### Installation Steps
 
 #### 1. Clone Repository
+
 ```bash
 git clone https://github.com/yourusername/ClaimGuardian.git
 cd ClaimGuardian/deployment/production
 ```
 
 #### 2. Configure Environment
+
 ```bash
 # Copy environment template
 cp .env.example .env
@@ -83,6 +85,7 @@ nano .env
 ```
 
 #### 3. Set Up SSL Certificates
+
 ```bash
 # Create SSL directory
 mkdir -p ssl
@@ -92,6 +95,7 @@ openssl dhparam -out ssl/dhparam.pem 2048
 ```
 
 #### 4. Deploy Services
+
 ```bash
 # Start all services
 docker-compose up -d
@@ -104,6 +108,7 @@ docker-compose logs -f web
 ```
 
 #### 5. Verify Deployment
+
 ```bash
 # Run health check
 ./scripts/health-check.sh
@@ -116,17 +121,20 @@ curl -f https://grafana.claimguardianai.com
 ## Configuration Files
 
 ### Core Configuration
+
 - `docker-compose.prod.yml` - Main orchestration file
 - `.env.example` - Environment variables template
 - `secrets-management.md` - Secrets handling guide
 
 ### Nginx Configuration
+
 - `nginx/nginx.conf` - Main Nginx configuration
 - SSL termination and load balancing
 - Rate limiting and security headers
 - Static file caching
 
 ### Monitoring Configuration
+
 - `monitoring/prometheus.yml` - Metrics collection
 - `monitoring/alert_rules.yml` - Alert definitions
 - `monitoring/alertmanager.yml` - Alert routing
@@ -134,6 +142,7 @@ curl -f https://grafana.claimguardianai.com
 - `monitoring/promtail.yml` - Log shipping
 
 ### Grafana Setup
+
 - `monitoring/grafana/datasources/` - Data source configuration
 - `monitoring/grafana/dashboards/` - Dashboard provisioning
 - Auto-provisioned dashboards for system and business metrics
@@ -141,6 +150,7 @@ curl -f https://grafana.claimguardianai.com
 ## Environment Variables
 
 ### Required Variables
+
 ```bash
 # Application
 NEXT_PUBLIC_SITE_URL=https://claimguardianai.com
@@ -158,6 +168,7 @@ GRAFANA_PASSWORD=your-grafana-password
 ```
 
 ### Optional Variables
+
 ```bash
 # Payment Processing
 STRIPE_SECRET_KEY=sk_live_your-stripe-key
@@ -176,12 +187,14 @@ BACKUP_AWS_SECRET_ACCESS_KEY=your-aws-secret
 ## Services
 
 ### Web Application
+
 - **Port**: 3000 (internal)
 - **Health Check**: `/api/health`
 - **Features**: Next.js SSR, AI integration, real-time WebSockets
 - **Scaling**: Horizontal scaling supported
 
 ### Redis Cache
+
 - **Port**: 6379 (internal)
 - **Purpose**: Session storage, caching, rate limiting
 - **Persistence**: Enabled with AOF
@@ -190,30 +203,35 @@ BACKUP_AWS_SECRET_ACCESS_KEY=your-aws-secret
 ### Monitoring Stack
 
 #### Prometheus
+
 - **Port**: 9090 (internal)
 - **Metrics**: Application, system, and business metrics
 - **Retention**: 200 hours (8+ days)
 - **Storage**: Local time-series database
 
 #### Grafana
+
 - **Port**: 3001 → 80/443 (via subdomain)
 - **Dashboards**: Auto-provisioned system and business dashboards
 - **Authentication**: Admin user with configurable password
 - **Data Sources**: Prometheus, Loki, AlertManager
 
 #### AlertManager
+
 - **Port**: 9093 (internal)
 - **Channels**: Email, Slack, Discord, webhooks
 - **Routing**: Severity-based alert routing
 - **Inhibition**: Smart alert deduplication
 
 #### Loki + Promtail
+
 - **Loki Port**: 3100 (internal)
 - **Purpose**: Centralized log aggregation
 - **Retention**: 7 days
 - **Integration**: Structured logging from all services
 
 ### Backup System
+
 - **Schedule**: Daily at 4 AM via cron
 - **Retention**: 30 days local, longer-term in S3
 - **Types**: Full, schema-only, data-only, table-specific
@@ -222,12 +240,14 @@ BACKUP_AWS_SECRET_ACCESS_KEY=your-aws-secret
 ## Monitoring & Alerting
 
 ### System Metrics
+
 - CPU, memory, disk usage
 - Network I/O and connections
 - Docker container health
 - SSL certificate expiration
 
 ### Application Metrics
+
 - HTTP request rates and latencies
 - Error rates and status codes
 - AI API usage and costs
@@ -235,17 +255,20 @@ BACKUP_AWS_SECRET_ACCESS_KEY=your-aws-secret
 - Database performance
 
 ### Business Metrics
+
 - User registration and conversion rates
 - Revenue and subscription metrics
 - Claims processing times
 - Feature adoption rates
 
 ### Alert Categories
+
 - **Critical**: Immediate response required
 - **Warning**: Attention needed within hours
 - **Info**: Awareness notifications
 
 ### Alert Channels
+
 - Email: Immediate notifications
 - Slack: Team coordination
 - Dashboard: Visual status updates
@@ -254,6 +277,7 @@ BACKUP_AWS_SECRET_ACCESS_KEY=your-aws-secret
 ## Backup & Recovery
 
 ### Automatic Backups
+
 ```bash
 # Daily backup cron job
 0 4 * * * /app/scripts/backup-supabase.sh
@@ -263,6 +287,7 @@ BACKUP_AWS_SECRET_ACCESS_KEY=your-aws-secret
 ```
 
 ### Manual Backup
+
 ```bash
 # Create manual backup
 ./scripts/backup-supabase.sh
@@ -275,6 +300,7 @@ aws s3 sync /backups/ s3://claimguardian-backups/
 ```
 
 ### Recovery Procedures
+
 ```bash
 # Restore full database
 ./scripts/restore-supabase.sh full backup_file.backup
@@ -291,24 +317,28 @@ tar -xzf backup.tar.gz
 ## Security
 
 ### SSL/TLS
+
 - Let's Encrypt certificates via Traefik
 - TLS 1.2+ with strong cipher suites
 - HSTS headers enabled
 - Certificate auto-renewal
 
 ### Network Security
+
 - Rate limiting on all endpoints
 - CORS configuration
 - Security headers (CSP, X-Frame-Options, etc.)
 - Internal service communication only
 
 ### Access Control
+
 - Basic authentication for monitoring interfaces
 - Role-based access in application
 - Secrets management best practices
 - Regular security updates
 
 ### Monitoring
+
 - Failed authentication tracking
 - Suspicious activity detection
 - SSL certificate monitoring
@@ -317,6 +347,7 @@ tar -xzf backup.tar.gz
 ## Scaling
 
 ### Horizontal Scaling
+
 ```bash
 # Scale web application
 docker-compose up -d --scale web=3
@@ -326,11 +357,13 @@ docker-compose up -d --scale web=3
 ```
 
 ### Database Scaling
+
 - Supabase handles database scaling
 - Read replicas for read-heavy workloads
 - Connection pooling via pgBouncer
 
 ### Resource Monitoring
+
 - Automatic alerting on resource exhaustion
 - Capacity planning dashboards
 - Performance trend analysis
@@ -340,6 +373,7 @@ docker-compose up -d --scale web=3
 ### Common Issues
 
 #### Service Won't Start
+
 ```bash
 # Check logs
 docker-compose logs service-name
@@ -352,6 +386,7 @@ docker stats
 ```
 
 #### SSL Certificate Issues
+
 ```bash
 # Check certificate status
 curl -vI https://claimguardianai.com
@@ -364,6 +399,7 @@ docker-compose logs traefik
 ```
 
 #### Database Connection Issues
+
 ```bash
 # Test Supabase connection
 psql -h your-supabase-host -U postgres -d postgres
@@ -373,6 +409,7 @@ docker-compose logs web | grep -i database
 ```
 
 #### High Resource Usage
+
 ```bash
 # Check system resources
 htop
@@ -384,6 +421,7 @@ docker-compose up -d --scale web=2
 ```
 
 ### Debug Commands
+
 ```bash
 # Enter application container
 docker exec -it claimguardian_web_1 sh
@@ -396,6 +434,7 @@ docker exec web curl -f http://redis:6379
 ```
 
 ### Log Analysis
+
 ```bash
 # Search application logs
 docker exec loki logcli query '{job="claimguardian-web"} |= "ERROR"'
@@ -410,6 +449,7 @@ curl http://localhost:9090/api/v1/label/__name__/values
 ## Maintenance
 
 ### Regular Tasks
+
 - [ ] Monitor backup success (daily)
 - [ ] Review security alerts (daily)
 - [ ] Check system resources (weekly)
@@ -417,6 +457,7 @@ curl http://localhost:9090/api/v1/label/__name__/values
 - [ ] Security audit (quarterly)
 
 ### Update Procedures
+
 ```bash
 # Update application
 git pull origin main
@@ -432,6 +473,7 @@ docker-compose up -d
 ```
 
 ### Health Checks
+
 ```bash
 # Manual health check
 ./scripts/health-check.sh
@@ -443,17 +485,20 @@ docker-compose up -d
 ## Support
 
 ### Documentation
+
 - Production deployment guide (this document)
 - API documentation: `/docs`
 - Monitoring runbooks: `/runbooks`
 - Security procedures: `/security`
 
 ### Contacts
+
 - **Infrastructure Team**: infrastructure@claimguardianai.com
 - **Security Team**: security@claimguardianai.com
 - **On-call Engineer**: See escalation procedures
 
 ### Emergency Procedures
+
 1. Check system status: `./scripts/health-check.sh`
 2. Review recent deployments and changes
 3. Check monitoring dashboards

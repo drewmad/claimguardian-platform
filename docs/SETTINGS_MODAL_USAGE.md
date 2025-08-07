@@ -7,21 +7,19 @@ The settings modal is a pop-out form that can be opened from anywhere in the app
 ### 1. Using the Hook
 
 ```tsx
-import { useSettingsModal } from '@/hooks/use-settings-modal'
-import { SettingsModal } from '@/components/modals/settings-modal'
+import { useSettingsModal } from "@/hooks/use-settings-modal";
+import { SettingsModal } from "@/components/modals/settings-modal";
 
 function MyComponent() {
-  const { isOpen, openSettings, closeSettings } = useSettingsModal()
+  const { isOpen, openSettings, closeSettings } = useSettingsModal();
 
   return (
     <>
-      <button onClick={() => openSettings()}>
-        Open Settings
-      </button>
+      <button onClick={() => openSettings()}>Open Settings</button>
 
       <SettingsModal isOpen={isOpen} onClose={closeSettings} />
     </>
-  )
+  );
 }
 ```
 
@@ -29,25 +27,25 @@ function MyComponent() {
 
 ```tsx
 // Open to profile tab
-openSettings('profile')
+openSettings("profile");
 
 // Open to security tab
-openSettings('security')
+openSettings("security");
 
 // Open to notifications tab
-openSettings('notifications')
+openSettings("notifications");
 
 // Open to preferences tab
-openSettings('preferences')
+openSettings("preferences");
 
 // Open to privacy tab
-openSettings('privacy')
+openSettings("privacy");
 ```
 
 ### 3. Using the Quick Settings Button
 
 ```tsx
-import { QuickSettingsButton } from '@/components/ui/quick-settings-button'
+import { QuickSettingsButton } from "@/components/ui/quick-settings-button";
 
 function MyComponent() {
   return (
@@ -68,7 +66,7 @@ function MyComponent() {
         className="border-blue-500"
       />
     </div>
-  )
+  );
 }
 ```
 
@@ -122,7 +120,7 @@ The settings modal is already integrated into the dashboard layout:
 You can add settings access to AI pages:
 
 ```tsx
-import { QuickSettingsButton } from '@/components/ui/quick-settings-button'
+import { QuickSettingsButton } from "@/components/ui/quick-settings-button";
 
 function AIPage() {
   return (
@@ -133,7 +131,7 @@ function AIPage() {
       </div>
       {/* Rest of your AI page content */}
     </div>
-  )
+  );
 }
 ```
 
@@ -143,23 +141,19 @@ Add quick access to specific settings:
 
 ```tsx
 function UserProfile() {
-  const { openSettings } = useSettingsModal()
+  const { openSettings } = useSettingsModal();
 
   return (
     <div>
-      <button onClick={() => openSettings('security')}>
-        Change Password
-      </button>
+      <button onClick={() => openSettings("security")}>Change Password</button>
 
-      <button onClick={() => openSettings('notifications')}>
+      <button onClick={() => openSettings("notifications")}>
         Notification Settings
       </button>
 
-      <button onClick={() => openSettings('privacy')}>
-        Privacy Settings
-      </button>
+      <button onClick={() => openSettings("privacy")}>Privacy Settings</button>
     </div>
-  )
+  );
 }
 ```
 
@@ -180,22 +174,20 @@ function UserProfile() {
 
 ```tsx
 function CustomSettingsAccess() {
-  const { openSettings } = useSettingsModal()
+  const { openSettings } = useSettingsModal();
 
   const handleSecurityCheck = () => {
     // Perform security check
     if (userHasSecurityClearance) {
-      openSettings('security')
+      openSettings("security");
     } else {
-      toast.error('Security clearance required')
+      toast.error("Security clearance required");
     }
-  }
+  };
 
   return (
-    <button onClick={handleSecurityCheck}>
-      Advanced Security Settings
-    </button>
-  )
+    <button onClick={handleSecurityCheck}>Advanced Security Settings</button>
+  );
 }
 ```
 
@@ -213,9 +205,9 @@ function CustomSettingsAccess() {
 
 ```typescript
 interface UseSettingsModal {
-  isOpen: boolean
-  openSettings: (tab?: SettingsTab) => void
-  closeSettings: () => void
+  isOpen: boolean;
+  openSettings: (tab?: SettingsTab) => void;
+  closeSettings: () => void;
 }
 ```
 
@@ -223,9 +215,9 @@ interface UseSettingsModal {
 
 ```typescript
 interface SettingsModalProps {
-  isOpen: boolean
-  onClose: () => void
-  defaultTab?: SettingsTab
+  isOpen: boolean;
+  onClose: () => void;
+  defaultTab?: SettingsTab;
 }
 ```
 
@@ -233,11 +225,11 @@ interface SettingsModalProps {
 
 ```typescript
 interface QuickSettingsButtonProps {
-  variant?: 'default' | 'outline' | 'ghost'
-  size?: 'sm' | 'md' | 'lg'
-  className?: string
-  showLabel?: boolean
-  defaultTab?: SettingsTab
+  variant?: "default" | "outline" | "ghost";
+  size?: "sm" | "md" | "lg";
+  className?: string;
+  showLabel?: boolean;
+  defaultTab?: SettingsTab;
 }
 ```
 

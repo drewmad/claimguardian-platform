@@ -8,22 +8,21 @@
  * @tags ["legal", "modal", "document", "ui"]
  * @status stable
  */
-'use client'
+"use client";
 
-import type { LegalDocument } from '@claimguardian/db'
-import { X, FileText, Calendar, ExternalLink } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import type { LegalDocument } from "@claimguardian/db";
+import { X, FileText, Calendar, ExternalLink } from "lucide-react";
+import { useState, useEffect } from "react";
 
-import { legalServiceClientFix } from '@/lib/legal/legal-service-client-fix'
-import { logger } from '@/lib/logger'
-
+import { legalServiceClientFix } from "@/lib/legal/legal-service-client-fix";
+import { logger } from "@/lib/logger";
 
 interface LegalDocumentModalProps {
-  document: LegalDocument
-  isOpen: boolean
-  onClose: () => void
-  onAccept?: () => void
-  showAcceptButton?: boolean
+  document: LegalDocument;
+  isOpen: boolean;
+  onClose: () => void;
+  onAccept?: () => void;
+  showAcceptButton?: boolean;
 }
 
 export function LegalDocumentModal({
@@ -31,102 +30,112 @@ export function LegalDocumentModal({
   isOpen,
   onClose,
   onAccept,
-  showAcceptButton = false
+  showAcceptButton = false,
 }: LegalDocumentModalProps) {
-  const [content, setContent] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [content, setContent] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const loadDocumentContent = async () => {
       try {
-        setLoading(true)
-        setError('')
+        setLoading(true);
+        setError("");
 
         // Try to fetch content from Supabase via our legal service
-        const htmlContent = await legalServiceClientFix.getDocumentContent(document.slug)
-        setContent(htmlContent)
+        const htmlContent = await legalServiceClientFix.getDocumentContent(
+          document.slug,
+        );
+        setContent(htmlContent);
 
-        logger.track('legal_document_modal_opened', {
+        logger.track("legal_document_modal_opened", {
           documentId: document.id,
           slug: document.slug,
-          version: document.version
-        })
-
+          version: document.version,
+        });
       } catch (err) {
-        logger.error('Failed to load document content', { documentId: document.id }, err instanceof Error ? err : new Error(String(err)))
-        setError('Failed to load document content.')
+        logger.error(
+          "Failed to load document content",
+          { documentId: document.id },
+          err instanceof Error ? err : new Error(String(err)),
+        );
+        setError("Failed to load document content.");
 
         // Fallback to direct content if available from the document object
         if (document.content) {
-          setContent(document.content)
+          setContent(document.content);
         } else if (document.storage_url) {
           // If we have a storage URL, try to load from there
           try {
-            const response = await fetch(document.storage_url)
+            const response = await fetch(document.storage_url);
             if (response.ok) {
-              const fallbackContent = await response.text()
-              setContent(fallbackContent)
-              setError('') // Clear error if fallback succeeds
+              const fallbackContent = await response.text();
+              setContent(fallbackContent);
+              setError(""); // Clear error if fallback succeeds
             } else {
-              setContent('Document content is not available at this time.')
+              setContent("Document content is not available at this time.");
             }
           } catch {
-            setContent('Document content is not available at this time.')
+            setContent("Document content is not available at this time.");
           }
         } else {
-          setContent('Document content is not available.')
+          setContent("Document content is not available.");
         }
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
     if (isOpen && document) {
-      loadDocumentContent()
+      loadDocumentContent();
     }
-  }, [isOpen, document])
+  }, [isOpen, document]);
 
   const loadDocumentContent = async () => {
     // This function is now only used for retry button
-    if (!document) return
+    if (!document) return;
 
     try {
-      setLoading(true)
-      setError('')
+      setLoading(true);
+      setError("");
 
-      const htmlContent = await legalServiceClientFix.getDocumentContent(document.slug)
-      setContent(htmlContent)
-
+      const htmlContent = await legalServiceClientFix.getDocumentContent(
+        document.slug,
+      );
+      setContent(htmlContent);
     } catch (err) {
-      logger.error('Failed to reload document content', { documentId: document.id }, err instanceof Error ? err : new Error(String(err)))
-      setError('Failed to load document content.')
-      setContent('Document content is not available.')
+      logger.error(
+        "Failed to reload document content",
+        { documentId: document.id },
+        err instanceof Error ? err : new Error(String(err)),
+      );
+      setError("Failed to load document content.");
+      setContent("Document content is not available.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleAccept = () => {
-    onAccept?.()
-    onClose()
-    logger.track('legal_document_accepted_from_modal', {
+    onAccept?.();
+    onClose();
+    logger.track("legal_document_accepted_from_modal", {
       documentId: document.id,
       slug: document.slug,
-      version: document.version
-    })
-  }
+      version: document.version,
+    });
+  };
 
   const openInNewTab = () => {
-    const url = `/legal/${document.slug}`
-    window.open(url, '_blank', 'noopener,noreferrer')
-    logger.track('legal_document_opened_new_tab', {
+    const url = `/legal/${document.slug}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+    logger.track("legal_document_opened_new_tab", {
       documentId: document.id,
-      slug: document.slug
-    })
-  }
+      slug: document.slug,
+    });
+  };
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
@@ -136,13 +145,18 @@ export function LegalDocumentModal({
           <div className="flex items-center gap-3">
             <FileText className="w-6 h-6 text-blue-400" />
             <div>
-              <h2 className="text-xl font-semibold text-white">{document.title}</h2>
+              <h2 className="text-xl font-semibold text-white">
+                {document.title}
+              </h2>
               <div className="flex items-center gap-4 mt-1 text-sm text-slate-400">
                 <span className="flex items-center gap-1">
                   <Calendar className="w-4 h-4" />
                   Version {document.version}
                 </span>
-                <span>Effective: {new Date(document.effective_date).toLocaleDateString()}</span>
+                <span>
+                  Effective:{" "}
+                  {new Date(document.effective_date).toLocaleDateString()}
+                </span>
               </div>
             </div>
           </div>
@@ -214,5 +228,5 @@ export function LegalDocumentModal({
         </div>
       </div>
     </div>
-  )
+  );
 }

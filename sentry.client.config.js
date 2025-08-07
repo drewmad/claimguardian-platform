@@ -1,4 +1,4 @@
-const { withSentryConfig } = require('@sentry/nextjs');
+const { withSentryConfig } = require("@sentry/nextjs");
 
 const moduleExports = {
   // Your existing Next.js config
@@ -23,7 +23,7 @@ const sentryWebpackPluginOptions = {
   project: process.env.SENTRY_PROJECT,
   authToken: process.env.SENTRY_AUTH_TOKEN,
   silent: true, // Suppresses all logs
-  dryRun: process.env.VERCEL_ENV !== 'production', // Don't upload sourcemaps in development
+  dryRun: process.env.VERCEL_ENV !== "production", // Don't upload sourcemaps in development
 };
 
 module.exports = withSentryConfig(moduleExports, sentryWebpackPluginOptions);

@@ -6,102 +6,115 @@
  * @status stable
  */
 
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Progress } from '@/components/ui/progress'
-import { Activity, AlertCircle, ArrowUp, ArrowDown, CheckCircle, TrendingUp, Zap, ExternalLink, Minus } from 'lucide-react'
-import Link from 'next/link'
-import { claudeProductionMonitor } from '@/lib/claude/claude-production-monitor'
-import { claudeABTesting } from '@/lib/claude/claude-ab-testing'
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import {
+  Activity,
+  AlertCircle,
+  ArrowUp,
+  ArrowDown,
+  CheckCircle,
+  TrendingUp,
+  Zap,
+  ExternalLink,
+  Minus,
+} from "lucide-react";
+import Link from "next/link";
+import { claudeProductionMonitor } from "@/lib/claude/claude-production-monitor";
+import { claudeABTesting } from "@/lib/claude/claude-ab-testing";
 
 interface WidgetMetrics {
-  systemStatus: 'healthy' | 'warning' | 'error'
-  successRate: number
-  avgExecutionTime: number
-  activeOptimizations: number
-  performanceGain: number
-  learningEnabled: boolean
-  lastUpdate: Date
+  systemStatus: "healthy" | "warning" | "error";
+  successRate: number;
+  avgExecutionTime: number;
+  activeOptimizations: number;
+  performanceGain: number;
+  learningEnabled: boolean;
+  lastUpdate: Date;
 }
 
 export function ClaudeMonitoringWidget({
   refreshInterval = 30000,
-  compact = false
+  compact = false,
 }: {
-  refreshInterval?: number
-  compact?: boolean
+  refreshInterval?: number;
+  compact?: boolean;
 }) {
-  const [metrics, setMetrics] = useState<WidgetMetrics | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [trend, setTrend] = useState<'up' | 'down' | 'stable'>('stable')
+  const [metrics, setMetrics] = useState<WidgetMetrics | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [trend, setTrend] = useState<"up" | "down" | "stable">("stable");
 
   useEffect(() => {
     const fetchMetrics = async () => {
       try {
         const [productionStatus, abTestReport] = await Promise.all([
           claudeProductionMonitor.getProductionStatus(),
-          claudeABTesting.generateABTestReport('hour')
-        ])
+          claudeABTesting.generateABTestReport("hour"),
+        ]);
 
         const newMetrics: WidgetMetrics = {
-          systemStatus: productionStatus.anomalies.length > 0 ? 'warning' : 'healthy',
+          systemStatus:
+            productionStatus.anomalies.length > 0 ? "warning" : "healthy",
           successRate: productionStatus.metrics.successRate,
           avgExecutionTime: productionStatus.metrics.avgExecutionTime,
-          activeOptimizations: abTestReport.treatmentGroup.avgOptimizations || 0,
+          activeOptimizations:
+            abTestReport.treatmentGroup.avgOptimizations || 0,
           performanceGain: abTestReport.businessMetrics.performanceImprovement,
-          learningEnabled: productionStatus.metrics.learningApplicationRate > 0.5,
-          lastUpdate: new Date()
-        }
+          learningEnabled:
+            productionStatus.metrics.learningApplicationRate > 0.5,
+          lastUpdate: new Date(),
+        };
 
         // Calculate trend
         if (metrics) {
-          const successChange = newMetrics.successRate - metrics.successRate
+          const successChange = newMetrics.successRate - metrics.successRate;
           if (Math.abs(successChange) > 0.02) {
-            setTrend(successChange > 0 ? 'up' : 'down')
+            setTrend(successChange > 0 ? "up" : "down");
           } else {
-            setTrend('stable')
+            setTrend("stable");
           }
         }
 
-        setMetrics(newMetrics)
+        setMetrics(newMetrics);
       } catch (error) {
-        console.error('Failed to fetch monitoring metrics:', error)
+        console.error("Failed to fetch monitoring metrics:", error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchMetrics()
-    const interval = setInterval(fetchMetrics, refreshInterval)
-    return () => clearInterval(interval)
-  }, [refreshInterval, metrics])
+    fetchMetrics();
+    const interval = setInterval(fetchMetrics, refreshInterval);
+    return () => clearInterval(interval);
+  }, [refreshInterval, metrics]);
 
   const getStatusIcon = () => {
-    if (!metrics) return null
+    if (!metrics) return null;
     switch (metrics.systemStatus) {
-      case 'healthy':
-        return <CheckCircle className="h-4 w-4 text-green-500" />
-      case 'warning':
-        return <AlertCircle className="h-4 w-4 text-yellow-500" />
-      case 'error':
-        return <AlertCircle className="h-4 w-4 text-red-500" />
+      case "healthy":
+        return <CheckCircle className="h-4 w-4 text-green-500" />;
+      case "warning":
+        return <AlertCircle className="h-4 w-4 text-yellow-500" />;
+      case "error":
+        return <AlertCircle className="h-4 w-4 text-red-500" />;
     }
-  }
+  };
 
   const getTrendIcon = () => {
     switch (trend) {
-      case 'up':
-        return <ArrowUp className="h-3 w-3 text-green-500" />
-      case 'down':
-        return <ArrowDown className="h-3 w-3 text-red-500" />
-      case 'stable':
-        return <Minus className="h-3 w-3 text-gray-500" />
+      case "up":
+        return <ArrowUp className="h-3 w-3 text-green-500" />;
+      case "down":
+        return <ArrowDown className="h-3 w-3 text-red-500" />;
+      case "stable":
+        return <Minus className="h-3 w-3 text-gray-500" />;
     }
-  }
+  };
 
   if (loading && !metrics) {
     return (
@@ -113,10 +126,10 @@ export function ClaudeMonitoringWidget({
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
-  if (!metrics) return null
+  if (!metrics) return null;
 
   if (compact) {
     // Compact inline version
@@ -124,7 +137,9 @@ export function ClaudeMonitoringWidget({
       <div className="flex items-center gap-4 p-2 bg-gray-800 rounded-lg border border-gray-700">
         <div className="flex items-center gap-2">
           <Zap className="h-4 w-4 text-blue-500" />
-          <span className="text-sm font-medium text-gray-300">Claude Learning</span>
+          <span className="text-sm font-medium text-gray-300">
+            Claude Learning
+          </span>
         </div>
 
         <div className="flex items-center gap-3 text-xs">
@@ -135,14 +150,18 @@ export function ClaudeMonitoringWidget({
 
           <div className="flex items-center gap-1">
             <span className="text-gray-400">Success:</span>
-            <span className="font-medium">{(metrics.successRate * 100).toFixed(0)}%</span>
+            <span className="font-medium">
+              {(metrics.successRate * 100).toFixed(0)}%
+            </span>
             {getTrendIcon()}
           </div>
 
           {metrics.performanceGain > 0 && (
             <div className="flex items-center gap-1">
               <TrendingUp className="h-3 w-3 text-green-500" />
-              <span className="text-green-400">+{metrics.performanceGain.toFixed(0)}%</span>
+              <span className="text-green-400">
+                +{metrics.performanceGain.toFixed(0)}%
+              </span>
             </div>
           )}
         </div>
@@ -153,7 +172,7 @@ export function ClaudeMonitoringWidget({
           </Button>
         </Link>
       </div>
-    )
+    );
   }
 
   // Full widget version
@@ -177,10 +196,12 @@ export function ClaudeMonitoringWidget({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {getStatusIcon()}
-            <span className="text-sm font-medium capitalize">{metrics.systemStatus}</span>
+            <span className="text-sm font-medium capitalize">
+              {metrics.systemStatus}
+            </span>
           </div>
-          <Badge variant={metrics.learningEnabled ? 'default' : 'secondary'}>
-            {metrics.learningEnabled ? 'Active' : 'Disabled'}
+          <Badge variant={metrics.learningEnabled ? "default" : "secondary"}>
+            {metrics.learningEnabled ? "Active" : "Disabled"}
           </Badge>
         </div>
 
@@ -189,21 +210,26 @@ export function ClaudeMonitoringWidget({
           <div>
             <p className="text-xs text-gray-400">Success Rate</p>
             <div className="flex items-center gap-1">
-              <p className="text-lg font-bold">{(metrics.successRate * 100).toFixed(0)}%</p>
+              <p className="text-lg font-bold">
+                {(metrics.successRate * 100).toFixed(0)}%
+              </p>
               {getTrendIcon()}
             </div>
           </div>
 
           <div>
             <p className="text-xs text-gray-400">Avg Time</p>
-            <p className="text-lg font-bold">{(metrics.avgExecutionTime / 1000).toFixed(1)}s</p>
+            <p className="text-lg font-bold">
+              {(metrics.avgExecutionTime / 1000).toFixed(1)}s
+            </p>
           </div>
 
           <div>
             <p className="text-xs text-gray-400">Performance</p>
             <div className="flex items-center gap-1">
               <p className="text-lg font-bold text-green-400">
-                {metrics.performanceGain > 0 ? '+' : ''}{metrics.performanceGain.toFixed(0)}%
+                {metrics.performanceGain > 0 ? "+" : ""}
+                {metrics.performanceGain.toFixed(0)}%
               </p>
             </div>
           </div>
@@ -240,5 +266,5 @@ export function ClaudeMonitoringWidget({
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

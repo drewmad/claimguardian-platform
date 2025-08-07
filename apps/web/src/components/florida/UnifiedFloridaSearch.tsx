@@ -8,10 +8,10 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { Button } from '@claimguardian/ui'
-import { Input } from '@claimguardian/ui'
+import { Button } from "@claimguardian/ui";
+import { Input } from "@claimguardian/ui";
 import {
   Search,
   ExternalLink,
@@ -21,39 +21,38 @@ import {
   MapPin,
   Home,
   Building,
-  Filter
-} from 'lucide-react'
-import { useState } from 'react'
-import { logger } from "@/lib/logger/production-logger"
+  Filter,
+} from "lucide-react";
+import { useState } from "react";
+import { logger } from "@/lib/logger/production-logger";
 
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { createClient } from '@/lib/supabase/client'
-
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { createClient } from "@/lib/supabase/client";
 
 interface PropertyMetadata {
-  city: string
-  county: string
-  property_type?: string
-  property_value?: number
-  hurricane_risk?: number
-  latitude?: number
-  longitude?: number
-  address?: string
-  owner_name?: string
+  city: string;
+  county: string;
+  property_type?: string;
+  property_value?: number;
+  hurricane_risk?: number;
+  latitude?: number;
+  longitude?: number;
+  address?: string;
+  owner_name?: string;
 }
 
 interface FloirMetadata {
-  data_type: string
-  primary_key: string
-  content_snippet?: string
-  similarity: number
-  source_url?: string
+  data_type: string;
+  primary_key: string;
+  content_snippet?: string;
+  similarity: number;
+  source_url?: string;
 }
 
 interface PropertySearchResult {
-  type: 'property';
+  type: "property";
   id: string;
   title: string;
   description: string;
@@ -71,82 +70,86 @@ interface FloirSearchResult {
 }
 
 interface UnifiedSearchResult {
-  type: 'floir' | 'property'
-  id: string
-  title: string
-  description: string
-  similarity?: number
-  metadata: unknown
-  source_url?: string
+  type: "floir" | "property";
+  id: string;
+  title: string;
+  description: string;
+  similarity?: number;
+  metadata: unknown;
+  source_url?: string;
 }
 
 interface UnifiedSearchResponse {
-  query: string
-  results: UnifiedSearchResult[]
-  answer?: string
-  total_results: number
-  search_time_ms: number
-  floir_results: number
-  property_results: number
+  query: string;
+  results: UnifiedSearchResult[];
+  answer?: string;
+  total_results: number;
+  search_time_ms: number;
+  floir_results: number;
+  property_results: number;
 }
 
 export default function UnifiedFloridaSearch() {
-  const [query, setQuery] = useState('')
-  const [results, setResults] = useState<UnifiedSearchResponse | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [searchType, setSearchType] = useState<'all' | 'regulation' | 'property'>('all')
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<UnifiedSearchResponse | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [searchType, setSearchType] = useState<
+    "all" | "regulation" | "property"
+  >("all");
 
-  const supabase = createClient()
+  const supabase = createClient();
 
   const handleSearch = async () => {
-    if (!query.trim()) return
+    if (!query.trim()) return;
 
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
 
     try {
-      const startTime = Date.now()
+      const startTime = Date.now();
 
       // Perform parallel searches
-      const searches = []
+      const searches = [];
 
-      if (searchType === 'all' || searchType === 'regulation') {
+      if (searchType === "all" || searchType === "regulation") {
         searches.push(
-          supabase.functions.invoke('floir-rag-search', {
+          supabase.functions.invoke("floir-rag-search", {
             body: {
               query: query.trim(),
               limit: 10,
               threshold: 0.3,
-              include_context: false
-            }
-          })
-        )
+              include_context: false,
+            },
+          }),
+        );
       } else {
-        searches.push(Promise.resolve({ data: { results: [] } }))
+        searches.push(Promise.resolve({ data: { results: [] } }));
       }
 
-      if (searchType === 'all' || searchType === 'property') {
-        searches.push(searchProperties(query.trim()))
+      if (searchType === "all" || searchType === "property") {
+        searches.push(searchProperties(query.trim()));
       } else {
-        searches.push(Promise.resolve({ results: [] }))
+        searches.push(Promise.resolve({ results: [] }));
       }
 
-      const [floirResponse, propertyResponse] = await Promise.all(searches)
+      const [floirResponse, propertyResponse] = await Promise.all(searches);
 
-      if ('error' in floirResponse && floirResponse.error) throw new Error(`FLOIR search failed: ${floirResponse.error.message}`)
-      if ('error' in propertyResponse && propertyResponse.error) throw new Error(`Property search failed: ${propertyResponse.error}`)
+      if ("error" in floirResponse && floirResponse.error)
+        throw new Error(`FLOIR search failed: ${floirResponse.error.message}`);
+      if ("error" in propertyResponse && propertyResponse.error)
+        throw new Error(`Property search failed: ${propertyResponse.error}`);
 
       // Combine and rank results
       const combinedResults = combineResults(
-        'data' in floirResponse ? floirResponse.data?.results || [] : [],
-        'results' in propertyResponse ? propertyResponse.results || [] : []
-      )
+        "data" in floirResponse ? floirResponse.data?.results || [] : [],
+        "results" in propertyResponse ? propertyResponse.results || [] : [],
+      );
 
       // Generate unified answer if we have both types of results
-      let unifiedAnswer
-      if (searchType === 'all' && combinedResults.length > 0) {
-        unifiedAnswer = await generateUnifiedAnswer(query, combinedResults)
+      let unifiedAnswer;
+      if (searchType === "all" && combinedResults.length > 0) {
+        unifiedAnswer = await generateUnifiedAnswer(query, combinedResults);
       }
 
       const response: UnifiedSearchResponse = {
@@ -155,25 +158,32 @@ export default function UnifiedFloridaSearch() {
         answer: unifiedAnswer,
         total_results: combinedResults.length,
         search_time_ms: Date.now() - startTime,
-        floir_results: 'data' in floirResponse ? floirResponse.data?.results?.length || 0 : 0,
-        property_results: 'results' in propertyResponse ? propertyResponse.results?.length || 0 : 0
-      }
+        floir_results:
+          "data" in floirResponse
+            ? floirResponse.data?.results?.length || 0
+            : 0,
+        property_results:
+          "results" in propertyResponse
+            ? propertyResponse.results?.length || 0
+            : 0,
+      };
 
-      setResults(response)
+      setResults(response);
     } catch (err: unknown) {
-      logger.error('Unified search error:', err)
-      setError(err instanceof Error ? err.message : 'Search failed')
+      logger.error("Unified search error:", err);
+      setError(err instanceof Error ? err.message : "Search failed");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const searchProperties = async (searchQuery: string) => {
     try {
       // Use full-text search on properties
       const { data, error } = await supabase
-        .from('properties_ai_ready')
-        .select(`
+        .from("properties_ai_ready")
+        .select(
+          `
           id,
           parcel_id,
           address,
@@ -187,99 +197,121 @@ export default function UnifiedFloridaSearch() {
           location_type,
           hurricane_risk,
           flood_risk
-        `)
-        .or(`address.ilike.%${searchQuery}%,city.ilike.%${searchQuery}%,county.ilike.%${searchQuery}%,owner_name.ilike.%${searchQuery}%`)
-        .limit(15)
+        `,
+        )
+        .or(
+          `address.ilike.%${searchQuery}%,city.ilike.%${searchQuery}%,county.ilike.%${searchQuery}%,owner_name.ilike.%${searchQuery}%`,
+        )
+        .limit(15);
 
-      if (error) throw error
+      if (error) throw error;
 
-      const results = (data || []).map(property => ({
-        type: 'property' as const,
+      const results = (data || []).map((property) => ({
+        type: "property" as const,
         id: property.id,
         title: property.address || `Parcel ${property.parcel_id}`,
-        description: `${property.property_type || 'Property'} in ${property.city}, ${property.county} County`,
+        description: `${property.property_type || "Property"} in ${property.city}, ${property.county} County`,
         metadata: property,
-        similarity: calculatePropertyRelevance(property, searchQuery)
-      }))
+        similarity: calculatePropertyRelevance(property, searchQuery),
+      }));
 
-      return { results, error: null }
+      return { results, error: null };
     } catch (error: unknown) {
-      return { results: [], error: error instanceof Error ? error.message : String(error) }
+      return {
+        results: [],
+        error: error instanceof Error ? error.message : String(error),
+      };
     }
-  }
+  };
 
-  const combineResults = (floirResults: FloirSearchResult[], propertyResults: PropertySearchResult[]): UnifiedSearchResult[] => {
+  const combineResults = (
+    floirResults: FloirSearchResult[],
+    propertyResults: PropertySearchResult[],
+  ): UnifiedSearchResult[] => {
     const combined: UnifiedSearchResult[] = [
       ...floirResults.map((result) => ({
-        type: 'floir' as const,
+        type: "floir" as const,
         id: result.id,
         title: `${formatDataType(result.data_type)} - ${result.primary_key}`,
-        description: result.content_snippet || 'Florida insurance regulation data',
+        description:
+          result.content_snippet || "Florida insurance regulation data",
         similarity: result.similarity,
         metadata: result,
-        source_url: result.source_url
+        source_url: result.source_url,
       })),
-      ...propertyResults
-    ]
+      ...propertyResults,
+    ];
 
     // Sort by relevance (similarity score)
-    return combined.sort((a, b) => (b.similarity || 0) - (a.similarity || 0))
-  }
+    return combined.sort((a, b) => (b.similarity || 0) - (a.similarity || 0));
+  };
 
-  const generateUnifiedAnswer = async (searchQuery: string, results: UnifiedSearchResult[]): Promise<string | undefined> => {
-    if (results.length === 0) return undefined
+  const generateUnifiedAnswer = async (
+    searchQuery: string,
+    results: UnifiedSearchResult[],
+  ): Promise<string | undefined> => {
+    if (results.length === 0) return undefined;
 
     try {
       // Use a simple summary instead of calling OpenAI again
-      const floirCount = results.filter(r => r.type === 'floir').length
-      const propertyCount = results.filter(r => r.type === 'property').length
+      const floirCount = results.filter((r) => r.type === "floir").length;
+      const propertyCount = results.filter((r) => r.type === "property").length;
 
-      return `Found ${results.length} results for "${searchQuery}": ${floirCount} insurance regulation records and ${propertyCount} property records. The results show relevant Florida insurance data and property information that may help with your inquiry.`
+      return `Found ${results.length} results for "${searchQuery}": ${floirCount} insurance regulation records and ${propertyCount} property records. The results show relevant Florida insurance data and property information that may help with your inquiry.`;
     } catch (error) {
-      logger.error('Failed to generate unified answer:', error)
-      return undefined
+      logger.error("Failed to generate unified answer:", error);
+      return undefined;
     }
-  }
+  };
 
-  const calculatePropertyRelevance = (property: { address?: string; city?: string; county?: string; owner_name?: string; property_type?: string }, searchQuery: string): number => {
-    const query = searchQuery.toLowerCase()
-    let score = 0
+  const calculatePropertyRelevance = (
+    property: {
+      address?: string;
+      city?: string;
+      county?: string;
+      owner_name?: string;
+      property_type?: string;
+    },
+    searchQuery: string,
+  ): number => {
+    const query = searchQuery.toLowerCase();
+    let score = 0;
 
     // Exact matches get higher scores
-    if (property.address?.toLowerCase().includes(query)) score += 0.8
-    if (property.city?.toLowerCase().includes(query)) score += 0.6
-    if (property.county?.toLowerCase().includes(query)) score += 0.4
-    if (property.owner_name?.toLowerCase().includes(query)) score += 0.7
-    if (property.property_type?.toLowerCase().includes(query)) score += 0.3
+    if (property.address?.toLowerCase().includes(query)) score += 0.8;
+    if (property.city?.toLowerCase().includes(query)) score += 0.6;
+    if (property.county?.toLowerCase().includes(query)) score += 0.4;
+    if (property.owner_name?.toLowerCase().includes(query)) score += 0.7;
+    if (property.property_type?.toLowerCase().includes(query)) score += 0.3;
 
-    return Math.min(score, 1.0)
-  }
+    return Math.min(score, 1.0);
+  };
 
   const formatDataType = (dataType: string) => {
-    return dataType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
-  }
+    return dataType.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+  };
 
   const getResultIcon = (type: string) => {
     switch (type) {
-      case 'floir':
-        return <FileText className="h-5 w-5 text-blue-500" />
-      case 'property':
-        return <Home className="h-5 w-5 text-green-500" />
+      case "floir":
+        return <FileText className="h-5 w-5 text-blue-500" />;
+      case "property":
+        return <Home className="h-5 w-5 text-green-500" />;
       default:
-        return <Building className="h-5 w-5 text-gray-500" />
+        return <Building className="h-5 w-5 text-gray-500" />;
     }
-  }
+  };
 
   const getResultTypeColor = (type: string) => {
     switch (type) {
-      case 'floir':
-        return 'bg-blue-100 text-blue-800 border-blue-200'
-      case 'property':
-        return 'bg-green-100 text-green-800 border-green-200'
+      case "floir":
+        return "bg-blue-100 text-blue-800 border-blue-200";
+      case "property":
+        return "bg-green-100 text-green-800 border-green-200";
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200'
+        return "bg-gray-100 text-gray-800 border-gray-200";
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
@@ -290,7 +322,8 @@ export default function UnifiedFloridaSearch() {
             Unified Florida Data Search
           </CardTitle>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Search across Florida insurance regulation data and property records simultaneously
+            Search across Florida insurance regulation data and property records
+            simultaneously
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -300,29 +333,33 @@ export default function UnifiedFloridaSearch() {
                 placeholder="Search for properties, insurance data, companies, regulations..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                onKeyPress={(e) => e.key === "Enter" && handleSearch()}
               />
               <div className="flex items-center space-x-2">
                 <Filter className="h-4 w-4 text-gray-500" />
                 <div className="flex space-x-1">
                   <Button
-                    variant={searchType === 'all' ? 'default' : 'secondary'}
+                    variant={searchType === "all" ? "default" : "secondary"}
                     size="sm"
-                    onClick={() => setSearchType('all')}
+                    onClick={() => setSearchType("all")}
                   >
                     All Data
                   </Button>
                   <Button
-                    variant={searchType === 'regulation' ? 'default' : 'secondary'}
+                    variant={
+                      searchType === "regulation" ? "default" : "secondary"
+                    }
                     size="sm"
-                    onClick={() => setSearchType('regulation')}
+                    onClick={() => setSearchType("regulation")}
                   >
                     Regulation
                   </Button>
                   <Button
-                    variant={searchType === 'property' ? 'default' : 'secondary'}
+                    variant={
+                      searchType === "property" ? "default" : "secondary"
+                    }
                     size="sm"
-                    onClick={() => setSearchType('property')}
+                    onClick={() => setSearchType("property")}
                   >
                     Property
                   </Button>
@@ -379,7 +416,8 @@ export default function UnifiedFloridaSearch() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Found {results.total_results} results in {results.search_time_ms}ms
+                    Found {results.total_results} results in{" "}
+                    {results.search_time_ms}ms
                   </p>
                   <Badge variant="secondary">
                     {results.floir_results} regulation
@@ -395,9 +433,15 @@ export default function UnifiedFloridaSearch() {
           {/* Tabbed Results */}
           <Tabs defaultValue="all" className="space-y-4">
             <TabsList>
-              <TabsTrigger value="all">All Results ({results.total_results})</TabsTrigger>
-              <TabsTrigger value="regulation">Regulation ({results.floir_results})</TabsTrigger>
-              <TabsTrigger value="property">Property ({results.property_results})</TabsTrigger>
+              <TabsTrigger value="all">
+                All Results ({results.total_results})
+              </TabsTrigger>
+              <TabsTrigger value="regulation">
+                Regulation ({results.floir_results})
+              </TabsTrigger>
+              <TabsTrigger value="property">
+                Property ({results.property_results})
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="all" className="space-y-4">
@@ -411,7 +455,7 @@ export default function UnifiedFloridaSearch() {
                       <div className="flex items-center space-x-3">
                         {getResultIcon(result.type)}
                         <Badge className={getResultTypeColor(result.type)}>
-                          {result.type === 'floir' ? 'Regulation' : 'Property'}
+                          {result.type === "floir" ? "Regulation" : "Property"}
                         </Badge>
                         {result.similarity && (
                           <span className="text-sm text-gray-500">
@@ -423,7 +467,9 @@ export default function UnifiedFloridaSearch() {
                         <Button
                           variant="secondary"
                           size="sm"
-                          onClick={() => window.open(result.source_url, '_blank')}
+                          onClick={() =>
+                            window.open(result.source_url, "_blank")
+                          }
                         >
                           <ExternalLink className="h-3 w-3 mr-1" />
                           Source
@@ -439,29 +485,40 @@ export default function UnifiedFloridaSearch() {
                       {result.description}
                     </p>
 
-                    {result.type === 'property' && result.metadata ? (
+                    {result.type === "property" && result.metadata ? (
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
                           <span className="text-gray-500">Location:</span>
-                          <p className="font-medium">{(result.metadata as PropertyMetadata).city}, {(result.metadata as PropertyMetadata).county}</p>
+                          <p className="font-medium">
+                            {(result.metadata as PropertyMetadata).city},{" "}
+                            {(result.metadata as PropertyMetadata).county}
+                          </p>
                         </div>
                         <div>
                           <span className="text-gray-500">Type:</span>
-                          <p className="font-medium">{(result.metadata as PropertyMetadata).property_type || 'N/A'}</p>
+                          <p className="font-medium">
+                            {(result.metadata as PropertyMetadata)
+                              .property_type || "N/A"}
+                          </p>
                         </div>
                         <div>
                           <span className="text-gray-500">Value:</span>
                           <p className="font-medium">
-                            {(result.metadata as PropertyMetadata).property_value
+                            {(result.metadata as PropertyMetadata)
+                              .property_value
                               ? `$${(result.metadata as PropertyMetadata).property_value!.toLocaleString()}`
-                              : 'N/A'
-                            }
+                              : "N/A"}
                           </p>
                         </div>
                         <div>
                           <span className="text-gray-500">Risk:</span>
                           <p className="font-medium">
-                            Hurricane: {Math.round(((result.metadata as PropertyMetadata).hurricane_risk || 0) * 100)}%
+                            Hurricane:{" "}
+                            {Math.round(
+                              ((result.metadata as PropertyMetadata)
+                                .hurricane_risk || 0) * 100,
+                            )}
+                            %
                           </p>
                         </div>
                       </div>
@@ -473,7 +530,7 @@ export default function UnifiedFloridaSearch() {
 
             <TabsContent value="regulation">
               {results.results
-                .filter(r => r.type === 'floir')
+                .filter((r) => r.type === "floir")
                 .map((result) => (
                   <Card
                     key={result.id}
@@ -484,7 +541,9 @@ export default function UnifiedFloridaSearch() {
                         <div className="flex items-center space-x-3">
                           <FileText className="h-5 w-5 text-blue-500" />
                           <Badge className="bg-blue-100 text-blue-800 border-blue-200">
-                            {formatDataType((result.metadata as FloirMetadata).data_type)}
+                            {formatDataType(
+                              (result.metadata as FloirMetadata).data_type,
+                            )}
                           </Badge>
                           <span className="text-sm text-gray-500">
                             {Math.round((result.similarity || 0) * 100)}% match
@@ -494,7 +553,9 @@ export default function UnifiedFloridaSearch() {
                           <Button
                             variant="secondary"
                             size="sm"
-                            onClick={() => window.open(result.source_url, '_blank')}
+                            onClick={() =>
+                              window.open(result.source_url, "_blank")
+                            }
                           >
                             <ExternalLink className="h-3 w-3 mr-1" />
                             Source
@@ -514,7 +575,7 @@ export default function UnifiedFloridaSearch() {
 
             <TabsContent value="property">
               {results.results
-                .filter(r => r.type === 'property')
+                .filter((r) => r.type === "property")
                 .map((result) => (
                   <Card
                     key={result.id}
@@ -534,7 +595,13 @@ export default function UnifiedFloridaSearch() {
                         <div className="flex items-center space-x-2">
                           <MapPin className="h-4 w-4 text-gray-400" />
                           <span className="text-sm text-gray-500">
-                            {(result.metadata as PropertyMetadata).latitude?.toFixed(4) || 'N/A'}, {(result.metadata as PropertyMetadata).longitude?.toFixed(4) || 'N/A'}
+                            {(
+                              result.metadata as PropertyMetadata
+                            ).latitude?.toFixed(4) || "N/A"}
+                            ,{" "}
+                            {(
+                              result.metadata as PropertyMetadata
+                            ).longitude?.toFixed(4) || "N/A"}
                           </span>
                         </div>
                       </div>
@@ -547,25 +614,35 @@ export default function UnifiedFloridaSearch() {
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
                           <span className="text-gray-500">Owner:</span>
-                          <p className="font-medium">{(result.metadata as PropertyMetadata).owner_name || 'N/A'}</p>
+                          <p className="font-medium">
+                            {(result.metadata as PropertyMetadata).owner_name ||
+                              "N/A"}
+                          </p>
                         </div>
                         <div>
                           <span className="text-gray-500">Type:</span>
-                          <p className="font-medium">{(result.metadata as PropertyMetadata).property_type || 'N/A'}</p>
+                          <p className="font-medium">
+                            {(result.metadata as PropertyMetadata)
+                              .property_type || "N/A"}
+                          </p>
                         </div>
                         <div>
                           <span className="text-gray-500">Value:</span>
                           <p className="font-medium">
-                            {(result.metadata as PropertyMetadata).property_value
+                            {(result.metadata as PropertyMetadata)
+                              .property_value
                               ? `$${(result.metadata as PropertyMetadata).property_value!.toLocaleString()}`
-                              : 'N/A'
-                            }
+                              : "N/A"}
                           </p>
                         </div>
                         <div>
                           <span className="text-gray-500">Hurricane Risk:</span>
                           <p className="font-medium">
-                            {Math.round(((result.metadata as PropertyMetadata).hurricane_risk || 0) * 100)}%
+                            {Math.round(
+                              ((result.metadata as PropertyMetadata)
+                                .hurricane_risk || 0) * 100,
+                            )}
+                            %
                           </p>
                         </div>
                       </div>
@@ -591,5 +668,5 @@ export default function UnifiedFloridaSearch() {
         </div>
       )}
     </div>
-  )
+  );
 }

@@ -6,47 +6,49 @@
  * @status stable
  */
 
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import { AlertCircle, Home } from 'lucide-react'
-import { usePermissionLimit } from '@/hooks/use-permissions'
-import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import Link from 'next/link'
+import { useEffect, useState } from "react";
+import { AlertCircle, Home } from "lucide-react";
+import { usePermissionLimit } from "@/hooks/use-permissions";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface PropertyLimitCheckProps {
-  currentPropertyCount: number
-  onCanCreate: (canCreate: boolean) => void
-  showMessage?: boolean
+  currentPropertyCount: number;
+  onCanCreate: (canCreate: boolean) => void;
+  showMessage?: boolean;
 }
 
 export function PropertyLimitCheck({
   currentPropertyCount,
   onCanCreate,
-  showMessage = true
+  showMessage = true,
 }: PropertyLimitCheckProps) {
-  const { limit } = usePermissionLimit('properties.create')
-  const [canCreate, setCanCreate] = useState(true)
-  const [remainingProperties, setRemainingProperties] = useState<number | null>(null)
+  const { limit } = usePermissionLimit("properties.create");
+  const [canCreate, setCanCreate] = useState(true);
+  const [remainingProperties, setRemainingProperties] = useState<number | null>(
+    null,
+  );
 
   useEffect(() => {
     if (limit === null) {
       // No limit (unlimited)
-      setCanCreate(true)
-      setRemainingProperties(null)
+      setCanCreate(true);
+      setRemainingProperties(null);
     } else {
       // Has limit
-      const remaining = limit - currentPropertyCount
-      setCanCreate(remaining > 0)
-      setRemainingProperties(remaining)
+      const remaining = limit - currentPropertyCount;
+      setCanCreate(remaining > 0);
+      setRemainingProperties(remaining);
     }
 
-    onCanCreate(canCreate)
-  }, [limit, currentPropertyCount, canCreate, onCanCreate])
+    onCanCreate(canCreate);
+  }, [limit, currentPropertyCount, canCreate, onCanCreate]);
 
   if (!showMessage) {
-    return null
+    return null;
   }
 
   if (canCreate && remainingProperties !== null && remainingProperties <= 3) {
@@ -61,13 +63,15 @@ export function PropertyLimitCheck({
                 Property Limit Warning
               </p>
               <p className="text-sm text-yellow-300/80 mt-1">
-                You have {remainingProperties} {remainingProperties === 1 ? 'property' : 'properties'} remaining in your current plan.
+                You have {remainingProperties}{" "}
+                {remainingProperties === 1 ? "property" : "properties"}{" "}
+                remaining in your current plan.
               </p>
             </div>
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   if (!canCreate) {
@@ -82,7 +86,8 @@ export function PropertyLimitCheck({
               Property Limit Reached
             </h3>
             <p className="text-sm text-gray-400 mb-4">
-              You've reached the maximum number of properties ({limit}) for your current plan.
+              You've reached the maximum number of properties ({limit}) for your
+              current plan.
             </p>
             <Link href="/pricing">
               <Button className="bg-cyan-600 hover:bg-cyan-700">
@@ -92,41 +97,41 @@ export function PropertyLimitCheck({
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
-  return null
+  return null;
 }
 
 // Hook to check if user can create more properties
 export function useCanCreateProperty(currentPropertyCount: number): {
-  canCreate: boolean
-  remaining: number | null
-  isLoading: boolean
+  canCreate: boolean;
+  remaining: number | null;
+  isLoading: boolean;
 } {
-  const { limit } = usePermissionLimit('properties.create')
+  const { limit } = usePermissionLimit("properties.create");
   const [state, setState] = useState({
     canCreate: true,
     remaining: null as number | null,
-    isLoading: true
-  })
+    isLoading: true,
+  });
 
   useEffect(() => {
     if (limit === null) {
       setState({
         canCreate: true,
         remaining: null,
-        isLoading: false
-      })
+        isLoading: false,
+      });
     } else {
-      const remaining = limit - currentPropertyCount
+      const remaining = limit - currentPropertyCount;
       setState({
         canCreate: remaining > 0,
         remaining,
-        isLoading: false
-      })
+        isLoading: false,
+      });
     }
-  }, [limit, currentPropertyCount])
+  }, [limit, currentPropertyCount]);
 
-  return state
+  return state;
 }

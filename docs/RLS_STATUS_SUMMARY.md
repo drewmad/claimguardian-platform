@@ -22,6 +22,7 @@ Based on the database query results:
 ### ⚠️ Tables to Verify
 
 These tables weren't in the query results and need manual verification:
+
 - damage_assessments
 - policy_documents
 - document_extractions

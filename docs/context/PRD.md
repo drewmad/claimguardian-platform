@@ -1,5 +1,7 @@
 # ClaimGuardian
+
 ## AI-Powered Property Intelligence Platform
+
 ### Product Requirements Document v1.0
 
 **Document Version:** 1.0
@@ -27,6 +29,7 @@ Direct competitors include Nest (home maintenance tracking), Lemonade (AI-powere
 # 3.0 Target Users & Personas
 
 ## Primary Persona: Sarah Chen - The Proactive Protector
+
 - **Demographics:** Age 42, married with two children, household income $125,000
 - **Property:** 3-bedroom home in Miami-Dade County, purchased 2019
 - **Tech Savvy:** High - uses multiple apps daily
@@ -34,6 +37,7 @@ Direct competitors include Nest (home maintenance tracking), Lemonade (AI-powere
 - **Goals:** Protect family assets, minimize insurance premiums, ensure claim readiness
 
 ## Secondary Persona: Robert Martinez - The Retiree
+
 - **Demographics:** Age 68, widowed, fixed income $65,000
 - **Property:** 2-bedroom condo in Fort Myers, owned 15+ years
 - **Tech Savvy:** Medium - comfortable with basic apps
@@ -41,6 +45,7 @@ Direct competitors include Nest (home maintenance tracking), Lemonade (AI-powere
 - **Goals:** Maintain property value, simplify maintenance, avoid claim denials
 
 ## Tertiary Persona: Amanda Foster - The Multi-Property Investor
+
 - **Demographics:** Age 35, single, income $250,000+
 - **Properties:** Primary residence + 3 rental properties across Florida
 - **Tech Savvy:** Very high - seeks automation and efficiency
@@ -105,18 +110,21 @@ ClaimGuardian transforms property ownership from reactive crisis management to p
 ## Business Objectives
 
 **Objective 1:** Achieve 10,000 Monthly Active Users (MAU) by December 31, 2025
+
 - **Baseline:** 0 users (pre-launch)
 - **Target:** 10,000 MAU
 - **Owner:** VP Growth
 - **Measurement:** Amplitude analytics dashboard
 
 **Objective 2:** Maintain 70% Monthly Retention Rate (MRR) by March 31, 2026
+
 - **Baseline:** Industry average 45%
 - **Target:** 70% MRR
 - **Owner:** VP Product
 - **Measurement:** Cohort analysis in Mixpanel
 
 **Objective 3:** Generate $1.2M Annual Recurring Revenue (ARR) by December 31, 2026
+
 - **Baseline:** $0 (pre-launch)
 - **Target:** $1.2M ARR
 - **Owner:** VP Revenue
@@ -125,12 +133,14 @@ ClaimGuardian transforms property ownership from reactive crisis management to p
 ## Product Objectives
 
 **Objective 4:** Achieve 90% AI Classification Accuracy for property damage assessment by June 30, 2026
+
 - **Baseline:** 78% (prototype testing)
 - **Target:** 90% accuracy
 - **Owner:** Head of AI/ML
 - **Measurement:** Confusion matrix analysis on labeled test set
 
 **Objective 5:** Reduce Average Claim Settlement Time to 7 days by September 30, 2026
+
 - **Baseline:** Industry average 23 days
 - **Target:** 7 days
 - **Owner:** VP Insurance Products
@@ -165,17 +175,20 @@ The Property Damage Assessment feature leverages computer vision and machine lea
 #### 7.2.1.2 Primary & Alternate Use Cases
 
 **Primary Use Case (UC-PDA-001): Post-Hurricane Damage Documentation**
+
 - Actor: Homeowner returning after evacuation
 - Preconditions: Property accessible, user has active account
 - Flow: User opens damage wizard → Captures guided photos → AI processes images → Reviews AI findings → Generates assessment report
 - Postconditions: Damage documented with timestamps, report ready for claim
 
 **Alternate Use Case (UC-PDA-002): Pre-Storm Condition Documentation**
+
 - Actor: Homeowner preparing for hurricane
 - Flow: Opens "pre-storm mode" → Captures baseline photos → System timestamps and stores securely
 - Value: Proves pre-existing condition for claim disputes
 
 **Alternate Use Case (UC-PDA-003): Progressive Damage Monitoring**
+
 - Actor: Property manager tracking ongoing issue
 - Flow: Creates damage case → Captures initial state → Adds periodic updates → AI tracks progression
 - Value: Documents deterioration for warranty or legal purposes
@@ -185,6 +198,7 @@ The Property Damage Assessment feature leverages computer vision and machine lea
 **User Story PDA-1:** As a homeowner, I want to quickly document hurricane damage so that I can file an accurate insurance claim.
 
 **Acceptance Criteria:**
+
 - System guides photo capture for each damage type with on-screen overlays
 - AI processes images within 3 seconds with confidence scores
 - Damage types are classified using insurance-standard categories
@@ -194,6 +208,7 @@ The Property Damage Assessment feature leverages computer vision and machine lea
 **User Story PDA-2:** As an insurance adjuster, I want to receive standardized damage assessments so that I can process claims efficiently.
 
 **Acceptance Criteria:**
+
 - Reports follow ISO/IEC claim documentation standards
 - Images include scale references and multiple angles
 - Damage descriptions use industry-standard terminology
@@ -202,7 +217,7 @@ The Property Damage Assessment feature leverages computer vision and machine lea
 
 #### 7.2.1.4 Data Model & Data Contracts
 
-```json
+````json
 {
   "damage_assessment": {
     "assessment_id": "uuid",
@@ -3787,3 +3802,4 @@ Data Retention Policy
 Data TypeRetention PeriodJustificationUser AccountActive + 7 yearsLegal requirementProperty DataActive + 10 yearsClaims historyPhotos/DocumentsActive + 7 yearsInsurance claimsClaims Data7 years post-closeFL statuteAI Training DataAnonymized indefinitelyModel improvementLogs/Analytics13 monthsAnnual comparisonPayment Data7 yearsTax requirementsVendor DataActive + 3 yearsPerformance history
 
 END OF DOCUMENT
+````

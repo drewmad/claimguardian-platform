@@ -11,11 +11,11 @@
  * @status stable
  * @notes Used to associate text labels with form controls.
  */
-'use client'
+"use client";
 
-import * as React from 'react'
+import * as React from "react";
 
-import { cn } from './utils'
+import { cn } from "./utils";
 
 export interface LabelProps
   extends React.LabelHTMLAttributes<HTMLLabelElement> {}
@@ -25,13 +25,13 @@ const Label = React.forwardRef<HTMLLabelElement, LabelProps>(
     <label
       ref={ref}
       className={cn(
-        'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-slate-200',
-        className
+        "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-slate-200",
+        className,
       )}
       {...props}
     />
-  )
-)
-Label.displayName = 'Label'
+  ),
+);
+Label.displayName = "Label";
 
-export { Label }
+export { Label };

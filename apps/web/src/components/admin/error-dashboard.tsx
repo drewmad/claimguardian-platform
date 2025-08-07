@@ -5,145 +5,155 @@
  * @owner monitoring-team
  * @status stable
  */
-'use client'
+"use client";
 
-import { Card } from '@claimguardian/ui'
-import { formatDistanceToNow } from 'date-fns'
-import { AlertCircle, AlertTriangle, Bug, CheckCircle, Clock, Info, RefreshCw, XCircle } from 'lucide-react'
-import React, { useEffect, useState, useCallback } from 'react'
-import { logger } from "@/lib/logger/production-logger"
+import { Card } from "@claimguardian/ui";
+import { formatDistanceToNow } from "date-fns";
+import {
+  AlertCircle,
+  AlertTriangle,
+  Bug,
+  CheckCircle,
+  Clock,
+  Info,
+  RefreshCw,
+  XCircle,
+} from "lucide-react";
+import React, { useEffect, useState, useCallback } from "react";
+import { logger } from "@/lib/logger/production-logger";
 
-import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { createClient } from '@/lib/supabase/client'
-
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { createClient } from "@/lib/supabase/client";
 
 interface ErrorLog {
-  id: string
-  user_id: string
-  error_type: string
-  error_code?: string
-  error_message: string
-  error_stack?: string
-  context?: Record<string, unknown>
-  severity: string
-  url?: string
-  user_agent?: string
-  created_at: string
-  resolved_at?: string
-  resolution_notes?: string
+  id: string;
+  user_id: string;
+  error_type: string;
+  error_code?: string;
+  error_message: string;
+  error_stack?: string;
+  context?: Record<string, unknown>;
+  severity: string;
+  url?: string;
+  user_agent?: string;
+  created_at: string;
+  resolved_at?: string;
+  resolution_notes?: string;
 }
 
 interface ErrorSummary {
-  error_type: string
-  error_code?: string
-  severity: string
-  error_count: number
-  affected_users: number
-  last_occurrence: string
-  first_occurrence: string
+  error_type: string;
+  error_code?: string;
+  severity: string;
+  error_count: number;
+  affected_users: number;
+  last_occurrence: string;
+  first_occurrence: string;
 }
 
 export function ErrorDashboard() {
-  const [errors, setErrors] = useState<ErrorLog[]>([])
-  const [summary, setSummary] = useState<ErrorSummary[]>([])
-  const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState<'all' | 'unresolved' | 'critical'>('unresolved')
-  const supabase = createClient()
+  const [errors, setErrors] = useState<ErrorLog[]>([]);
+  const [summary, setSummary] = useState<ErrorSummary[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<"all" | "unresolved" | "critical">(
+    "unresolved",
+  );
+  const supabase = createClient();
 
   const fetchErrors = useCallback(async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       let query = supabase
-        .from('error_logs')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(100)
+        .from("error_logs")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(100);
 
-      if (filter === 'unresolved') {
-        query = query.is('resolved_at', null)
-      } else if (filter === 'critical') {
-        query = query.eq('severity', 'critical')
+      if (filter === "unresolved") {
+        query = query.is("resolved_at", null);
+      } else if (filter === "critical") {
+        query = query.eq("severity", "critical");
       }
 
-      const { data, error } = await query
+      const { data, error } = await query;
 
-      if (error) throw error
-      setErrors(data || [])
+      if (error) throw error;
+      setErrors(data || []);
     } catch (error) {
-      logger.error('Failed to fetch errors:', error)
+      logger.error("Failed to fetch errors:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [supabase, filter])
+  }, [supabase, filter]);
 
   const fetchSummary = useCallback(async () => {
     try {
       const { data, error } = await supabase
-        .from('error_summary')
-        .select('*')
-        .order('error_count', { ascending: false })
-        .limit(10)
+        .from("error_summary")
+        .select("*")
+        .order("error_count", { ascending: false })
+        .limit(10);
 
-      if (error) throw error
-      setSummary(data || [])
+      if (error) throw error;
+      setSummary(data || []);
     } catch (error) {
-      logger.error('Failed to fetch error summary:', error)
+      logger.error("Failed to fetch error summary:", error);
     }
-  }, [supabase])
+  }, [supabase]);
 
   useEffect(() => {
-    fetchErrors()
-    fetchSummary()
-  }, [filter, fetchErrors, fetchSummary])
+    fetchErrors();
+    fetchSummary();
+  }, [filter, fetchErrors, fetchSummary]);
 
   const resolveError = async (errorId: string) => {
     try {
       const { error } = await supabase
-        .from('error_logs')
+        .from("error_logs")
         .update({
           resolved_at: new Date().toISOString(),
-          resolution_notes: 'Resolved via dashboard'
+          resolution_notes: "Resolved via dashboard",
         })
-        .eq('id', errorId)
+        .eq("id", errorId);
 
-      if (error) throw error
+      if (error) throw error;
 
       // Refresh the list
-      fetchErrors()
+      fetchErrors();
     } catch (error) {
-      logger.error('Failed to resolve error:', error)
+      logger.error("Failed to resolve error:", error);
     }
-  }
+  };
 
   const getSeverityIcon = (severity: string) => {
     switch (severity) {
-      case 'critical':
-        return <XCircle className="w-5 h-5 text-red-500" />
-      case 'error':
-        return <AlertCircle className="w-5 h-5 text-orange-500" />
-      case 'warning':
-        return <AlertTriangle className="w-5 h-5 text-yellow-500" />
-      case 'info':
-        return <Info className="w-5 h-5 text-blue-500" />
+      case "critical":
+        return <XCircle className="w-5 h-5 text-red-500" />;
+      case "error":
+        return <AlertCircle className="w-5 h-5 text-orange-500" />;
+      case "warning":
+        return <AlertTriangle className="w-5 h-5 text-yellow-500" />;
+      case "info":
+        return <Info className="w-5 h-5 text-blue-500" />;
       default:
-        return <Bug className="w-5 h-5 text-gray-500" />
+        return <Bug className="w-5 h-5 text-gray-500" />;
     }
-  }
+  };
 
   const getErrorTypeColor = (type: string) => {
     switch (type) {
-      case 'auth':
-        return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
-      case 'api':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-      case 'database':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-      case 'network':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+      case "auth":
+        return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200";
+      case "api":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
+      case "database":
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+      case "network":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+        return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200";
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
@@ -151,39 +161,39 @@ export function ErrorDashboard() {
         <h1 className="text-2xl font-bold">Error Dashboard</h1>
         <div className="flex gap-2">
           <button
-            onClick={() => setFilter('all')}
+            onClick={() => setFilter("all")}
             className={`px-4 py-2 rounded-lg ${
-              filter === 'all'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 dark:bg-gray-700'
+              filter === "all"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200 dark:bg-gray-700"
             }`}
           >
             All Errors
           </button>
           <button
-            onClick={() => setFilter('unresolved')}
+            onClick={() => setFilter("unresolved")}
             className={`px-4 py-2 rounded-lg ${
-              filter === 'unresolved'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 dark:bg-gray-700'
+              filter === "unresolved"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200 dark:bg-gray-700"
             }`}
           >
             Unresolved
           </button>
           <button
-            onClick={() => setFilter('critical')}
+            onClick={() => setFilter("critical")}
             className={`px-4 py-2 rounded-lg ${
-              filter === 'critical'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 dark:bg-gray-700'
+              filter === "critical"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200 dark:bg-gray-700"
             }`}
           >
             Critical
           </button>
           <button
             onClick={() => {
-              fetchErrors()
-              fetchSummary()
+              fetchErrors();
+              fetchSummary();
             }}
             className="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700"
           >
@@ -217,7 +227,10 @@ export function ErrorDashboard() {
                 {getSeverityIcon(item.severity)}
               </div>
               <p className="text-xs text-gray-500 mt-2">
-                Last: {formatDistanceToNow(new Date(item.last_occurrence), { addSuffix: true })}
+                Last:{" "}
+                {formatDistanceToNow(new Date(item.last_occurrence), {
+                  addSuffix: true,
+                })}
               </p>
             </CardContent>
           </Card>
@@ -250,7 +263,7 @@ export function ErrorDashboard() {
                         <div className="flex items-center gap-2">
                           <span
                             className={`px-2 py-1 rounded-full text-xs font-medium ${getErrorTypeColor(
-                              error.error_type
+                              error.error_type,
                             )}`}
                           >
                             {error.error_type}
@@ -261,7 +274,9 @@ export function ErrorDashboard() {
                             </code>
                           )}
                         </div>
-                        <p className="mt-1 font-medium">{error.error_message}</p>
+                        <p className="mt-1 font-medium">
+                          {error.error_message}
+                        </p>
                         {error.url && (
                           <p className="text-sm text-gray-500 mt-1">
                             URL: {error.url}
@@ -270,7 +285,7 @@ export function ErrorDashboard() {
                         <p className="text-xs text-gray-500 mt-1">
                           <Clock className="inline w-3 h-3 mr-1" />
                           {formatDistanceToNow(new Date(error.created_at), {
-                            addSuffix: true
+                            addSuffix: true,
                           })}
                         </p>
                       </div>
@@ -312,5 +327,5 @@ export function ErrorDashboard() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

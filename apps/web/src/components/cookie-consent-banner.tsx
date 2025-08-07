@@ -5,89 +5,98 @@
  * @owner compliance-team
  * @status stable
  */
-'use client'
+"use client";
 
-import { Cookie, Settings, X } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { logger } from '@/lib/logger'
-import { toError } from '@claimguardian/utils'
+import { Cookie, Settings, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { logger } from "@/lib/logger";
+import { toError } from "@claimguardian/utils";
 
-import { CookiePreferencesModal } from './cookie-preferences-modal'
+import { CookiePreferencesModal } from "./cookie-preferences-modal";
 
 export function CookieConsentBanner() {
-  const [isVisible, setIsVisible] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [showPreferences, setShowPreferences] = useState(false)
+  const [isVisible, setIsVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPreferences, setShowPreferences] = useState(false);
 
   useEffect(() => {
     // Check if user has already made a choice
-    const consent = localStorage.getItem('cookie-consent')
+    const consent = localStorage.getItem("cookie-consent");
     if (!consent) {
       // Show banner after a slight delay to avoid layout shift
-      setTimeout(() => setIsVisible(true), 1000)
+      setTimeout(() => setIsVisible(true), 1000);
     } else {
       // Initialize analytics if consent was given
-      if (consent === 'accepted') {
-        initializeAnalytics()
+      if (consent === "accepted") {
+        initializeAnalytics();
       }
     }
-  }, [])
+  }, []);
 
   const initializeAnalytics = () => {
     // Initialize Google Analytics, Sentry, etc.
-    logger.info('Analytics initialized with user consent')
+    logger.info("Analytics initialized with user consent");
     // Add your analytics initialization code here
-  }
+  };
 
   const handleAccept = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      localStorage.setItem('cookie-consent', 'accepted')
-      localStorage.setItem('cookie-consent-date', new Date().toISOString())
+      localStorage.setItem("cookie-consent", "accepted");
+      localStorage.setItem("cookie-consent-date", new Date().toISOString());
 
-      logger.track('cookie_consent_accepted')
-      initializeAnalytics()
+      logger.track("cookie_consent_accepted");
+      initializeAnalytics();
 
-      setIsVisible(false)
+      setIsVisible(false);
     } catch (error) {
-      logger.error('Failed to save cookie consent:', undefined, toError(error))
+      logger.error("Failed to save cookie consent:", undefined, toError(error));
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleReject = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      localStorage.setItem('cookie-consent', 'rejected')
-      localStorage.setItem('cookie-consent-date', new Date().toISOString())
+      localStorage.setItem("cookie-consent", "rejected");
+      localStorage.setItem("cookie-consent-date", new Date().toISOString());
 
-      logger.track('cookie_consent_rejected')
+      logger.track("cookie_consent_rejected");
 
-      setIsVisible(false)
+      setIsVisible(false);
     } catch (error) {
-      logger.error('Failed to save cookie rejection:', undefined, toError(error))
+      logger.error(
+        "Failed to save cookie rejection:",
+        undefined,
+        toError(error),
+      );
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
-  const handleSavePreferences = (preferences: { necessary: boolean; analytics: boolean; marketing: boolean; functional: boolean }) => {
-    localStorage.setItem('cookie-consent', 'custom')
-    localStorage.setItem('cookie-preferences', JSON.stringify(preferences))
-    localStorage.setItem('cookie-consent-date', new Date().toISOString())
+  const handleSavePreferences = (preferences: {
+    necessary: boolean;
+    analytics: boolean;
+    marketing: boolean;
+    functional: boolean;
+  }) => {
+    localStorage.setItem("cookie-consent", "custom");
+    localStorage.setItem("cookie-preferences", JSON.stringify(preferences));
+    localStorage.setItem("cookie-consent-date", new Date().toISOString());
 
-    logger.track('cookie_preferences_saved', { ...preferences })
+    logger.track("cookie_preferences_saved", { ...preferences });
 
     // Initialize analytics based on preferences
     if (preferences.analytics) {
-      initializeAnalytics()
+      initializeAnalytics();
     }
 
-    setIsVisible(false)
-  }
+    setIsVisible(false);
+  };
 
-  if (!isVisible) return null
+  if (!isVisible) return null;
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 p-4 sm:p-6">
@@ -107,9 +116,9 @@ export function CookieConsentBanner() {
                   We use cookies
                 </h3>
                 <p className="text-sm text-slate-300 leading-relaxed">
-                  We use cookies and similar technologies to help personalize content,
-                  tailor and measure ads, and provide a better experience. By clicking
-                  accept, you agree to this use.
+                  We use cookies and similar technologies to help personalize
+                  content, tailor and measure ads, and provide a better
+                  experience. By clicking accept, you agree to this use.
                 </p>
                 <p className="text-xs text-slate-400">
                   <a
@@ -168,5 +177,5 @@ export function CookieConsentBanner() {
         onSave={handleSavePreferences}
       />
     </div>
-  )
+  );
 }

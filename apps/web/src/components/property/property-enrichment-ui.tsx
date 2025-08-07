@@ -8,104 +8,121 @@
  * @insurance-context properties
  * @florida-specific true
  */
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { TrendingUp, Shield, AlertTriangle, CheckCircle, Clock, BarChart3, PieChart, Target, Lightbulb } from 'lucide-react'
-import { Button } from '@claimguardian/ui'
-import { Progress } from '@/components/ui/progress'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { enrichProperty, EnrichedProperty } from '@/actions/comprehensive-property-enrichment'
+import { useState } from "react";
+import {
+  TrendingUp,
+  Shield,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  BarChart3,
+  PieChart,
+  Target,
+  Lightbulb,
+} from "lucide-react";
+import { Button } from "@claimguardian/ui";
+import { Progress } from "@/components/ui/progress";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  enrichProperty,
+  EnrichedProperty,
+} from "@/actions/comprehensive-property-enrichment";
 
 // Type definitions for property enrichment
 interface RiskFactor {
-  score: number
-  level: 'low' | 'medium' | 'high'
-  description: string
+  score: number;
+  level: "low" | "medium" | "high";
+  description: string;
 }
 
 interface ComparableSale {
-  address: string
-  salePrice: number
-  pricePerSqft: number
-  sqft: number
-  distance: number
+  address: string;
+  salePrice: number;
+  pricePerSqft: number;
+  sqft: number;
+  distance: number;
 }
 
 // Remove duplicate interface - using the one from comprehensive-property-enrichment
 
 interface PropertyEnrichmentUIProps {
-  parcelId: string
-  onEnrichmentComplete?: (result: EnrichedProperty) => void
+  parcelId: string;
+  onEnrichmentComplete?: (result: EnrichedProperty) => void;
 }
 
-export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: PropertyEnrichmentUIProps) {
-  const [enrichedData, setEnrichedData] = useState<EnrichedProperty | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [currentStep, setCurrentStep] = useState<string>('')
+export function PropertyEnrichmentUI({
+  parcelId,
+  onEnrichmentComplete,
+}: PropertyEnrichmentUIProps) {
+  const [enrichedData, setEnrichedData] = useState<EnrichedProperty | null>(
+    null,
+  );
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [currentStep, setCurrentStep] = useState<string>("");
 
   const handleEnrichment = async () => {
-    setLoading(true)
-    setError(null)
-    setCurrentStep('Analyzing property data...')
+    setLoading(true);
+    setError(null);
+    setCurrentStep("Analyzing property data...");
 
     try {
       // Simulate progressive steps
       const steps = [
-        'Analyzing property data...',
-        'Gathering market comparables...',
-        'Assessing risk factors...',
-        'Calculating investment metrics...',
-        'Generating AI insights...',
-        'Compiling final report...'
-      ]
+        "Analyzing property data...",
+        "Gathering market comparables...",
+        "Assessing risk factors...",
+        "Calculating investment metrics...",
+        "Generating AI insights...",
+        "Compiling final report...",
+      ];
 
       for (let i = 0; i < steps.length; i++) {
-        setCurrentStep(steps[i])
-        await new Promise(resolve => setTimeout(resolve, 800))
+        setCurrentStep(steps[i]);
+        await new Promise((resolve) => setTimeout(resolve, 800));
       }
 
-      const result = await enrichProperty(parcelId)
+      const result = await enrichProperty(parcelId);
 
       if (result.error) {
-        setError(result.error.message)
-        return
+        setError(result.error.message);
+        return;
       }
 
       if (result.data) {
-        setEnrichedData(result.data)
-        onEnrichmentComplete?.(result.data)
+        setEnrichedData(result.data);
+        onEnrichmentComplete?.(result.data);
       }
-
     } catch (err) {
-      setError('Enrichment failed. Please try again.')
+      setError("Enrichment failed. Please try again.");
     } finally {
-      setLoading(false)
-      setCurrentStep('')
+      setLoading(false);
+      setCurrentStep("");
     }
-  }
+  };
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0
-    }).format(value || 0)
-  }
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 0,
+    }).format(value || 0);
+  };
 
   const getRiskColor = (risk: number) => {
-    if (risk > 0.7) return 'text-red-400'
-    if (risk > 0.5) return 'text-yellow-400'
-    return 'text-green-400'
-  }
+    if (risk > 0.7) return "text-red-400";
+    if (risk > 0.5) return "text-yellow-400";
+    return "text-green-400";
+  };
 
   const getRiskBgColor = (risk: number) => {
-    if (risk > 0.7) return 'bg-red-500'
-    if (risk > 0.5) return 'bg-yellow-500'
-    return 'bg-green-500'
-  }
+    if (risk > 0.7) return "bg-red-500";
+    if (risk > 0.5) return "bg-yellow-500";
+    return "bg-green-500";
+  };
 
   if (!enrichedData) {
     return (
@@ -120,7 +137,8 @@ export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: Propert
         <CardContent className="space-y-6">
           <div className="text-center space-y-4">
             <div className="text-gray-300">
-              Generate comprehensive property analysis using AI and 9.6M Florida parcel dataset
+              Generate comprehensive property analysis using AI and 9.6M Florida
+              parcel dataset
             </div>
 
             {loading && (
@@ -145,7 +163,7 @@ export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: Propert
               className="bg-blue-600 hover:bg-blue-700"
               size="lg"
             >
-              {loading ? 'Analyzing Property...' : 'Start AI Analysis'}
+              {loading ? "Analyzing Property..." : "Start AI Analysis"}
             </Button>
           </div>
 
@@ -158,17 +176,21 @@ export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: Propert
             <div className="text-center">
               <Shield className="w-8 h-8 text-green-400 mx-auto mb-2" />
               <h4 className="text-white font-medium">Risk Assessment</h4>
-              <p className="text-gray-400 text-sm">Insurance & hazard analysis</p>
+              <p className="text-gray-400 text-sm">
+                Insurance & hazard analysis
+              </p>
             </div>
             <div className="text-center">
               <Lightbulb className="w-8 h-8 text-yellow-400 mx-auto mb-2" />
               <h4 className="text-white font-medium">AI Insights</h4>
-              <p className="text-gray-400 text-sm">Investment recommendations</p>
+              <p className="text-gray-400 text-sm">
+                Investment recommendations
+              </p>
             </div>
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -181,9 +203,7 @@ export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: Propert
               <h2 className="text-2xl font-bold text-white mb-2">
                 Property Analysis Complete
               </h2>
-              <p className="text-gray-300">
-                {enrichedData.parcelData.address}
-              </p>
+              <p className="text-gray-300">{enrichedData.parcelData.address}</p>
               <div className="flex items-center gap-4 mt-4">
                 <Badge variant="secondary">
                   Data Quality: {enrichedData.dataQualityScore}%
@@ -192,7 +212,8 @@ export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: Propert
                   {enrichedData.aiInsights.investmentRecommendation.toUpperCase()}
                 </Badge>
                 <Badge variant="secondary">
-                  Confidence: {(enrichedData.aiInsights.confidenceScore * 100).toFixed(0)}%
+                  Confidence:{" "}
+                  {(enrichedData.aiInsights.confidenceScore * 100).toFixed(0)}%
                 </Badge>
               </div>
             </div>
@@ -223,31 +244,35 @@ export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: Propert
           </div>
 
           <div className="grid md:grid-cols-2 gap-4">
-            {Object.entries(enrichedData.riskProfile).filter(([key]) => key !== 'overallRiskScore').map(([key, riskFactor]) => {
-              const factor = riskFactor as RiskFactor
-              return (
-                <div key={key} className="bg-gray-700 rounded-lg p-4">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-white capitalize">
-                      {key.replace(/([A-Z])/g, ' $1').replace('Risk', '')}
-                    </span>
-                    <Badge
-                      variant="secondary"
-                      className={`${getRiskColor(factor.score)} border-current`}
-                    >
-                      {factor.level.toUpperCase()}
-                    </Badge>
+            {Object.entries(enrichedData.riskProfile)
+              .filter(([key]) => key !== "overallRiskScore")
+              .map(([key, riskFactor]) => {
+                const factor = riskFactor as RiskFactor;
+                return (
+                  <div key={key} className="bg-gray-700 rounded-lg p-4">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-white capitalize">
+                        {key.replace(/([A-Z])/g, " $1").replace("Risk", "")}
+                      </span>
+                      <Badge
+                        variant="secondary"
+                        className={`${getRiskColor(factor.score)} border-current`}
+                      >
+                        {factor.level.toUpperCase()}
+                      </Badge>
+                    </div>
+                    <div className="w-full bg-gray-600 rounded-full h-2 mb-2">
+                      <div
+                        className={`h-2 rounded-full ${getRiskBgColor(factor.score)}`}
+                        style={{ width: `${factor.score * 100}%` }}
+                      />
+                    </div>
+                    <p className="text-sm text-gray-400">
+                      {factor.description}
+                    </p>
                   </div>
-                  <div className="w-full bg-gray-600 rounded-full h-2 mb-2">
-                    <div
-                      className={`h-2 rounded-full ${getRiskBgColor(factor.score)}`}
-                      style={{ width: `${factor.score * 100}%` }}
-                    />
-                  </div>
-                  <p className="text-sm text-gray-400">{factor.description}</p>
-                </div>
-              )
-            })}
+                );
+              })}
           </div>
         </CardContent>
       </Card>
@@ -289,20 +314,34 @@ export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: Propert
           </div>
 
           <div>
-            <h4 className="text-white font-medium mb-3">Recent Comparable Sales</h4>
+            <h4 className="text-white font-medium mb-3">
+              Recent Comparable Sales
+            </h4>
             <div className="space-y-2">
-              {enrichedData.marketAnalysis.comparableSales.slice(0, 5).map((sale, index) => (
-                <div key={index} className="flex justify-between items-center bg-gray-700 rounded-lg p-3">
-                  <div>
-                    <div className="text-white">{sale.address}</div>
-                    <div className="text-gray-400 text-sm">{sale.sqft.toLocaleString()} sqft • {sale.distance.toFixed(1)} miles</div>
+              {enrichedData.marketAnalysis.comparableSales
+                .slice(0, 5)
+                .map((sale, index) => (
+                  <div
+                    key={index}
+                    className="flex justify-between items-center bg-gray-700 rounded-lg p-3"
+                  >
+                    <div>
+                      <div className="text-white">{sale.address}</div>
+                      <div className="text-gray-400 text-sm">
+                        {sale.sqft.toLocaleString()} sqft •{" "}
+                        {sale.distance.toFixed(1)} miles
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-white font-medium">
+                        {formatCurrency(sale.salePrice)}
+                      </div>
+                      <div className="text-gray-400 text-sm">
+                        ${sale.pricePerSqft.toFixed(0)}/sqft
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-white font-medium">{formatCurrency(sale.salePrice)}</div>
-                    <div className="text-gray-400 text-sm">${sale.pricePerSqft.toFixed(0)}/sqft</div>
-                  </div>
-                </div>
-              ))}
+                ))}
             </div>
           </div>
         </CardContent>
@@ -320,7 +359,8 @@ export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: Propert
           <div className="grid md:grid-cols-3 gap-6">
             <div className="text-center">
               <div className="text-3xl font-bold text-blue-400 mb-2">
-                {enrichedData.investmentMetrics.estimatedRentalYield.toFixed(1)}%
+                {enrichedData.investmentMetrics.estimatedRentalYield.toFixed(1)}
+                %
               </div>
               <div className="text-gray-400">Rental Yield</div>
             </div>
@@ -351,27 +391,47 @@ export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: Propert
         <CardContent className="space-y-4">
           <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <h4 className="text-white font-medium mb-3">Estimated Annual Premiums</h4>
+              <h4 className="text-white font-medium mb-3">
+                Estimated Annual Premiums
+              </h4>
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-gray-400">Homeowners:</span>
-                  <span className="text-white">{formatCurrency(enrichedData.insuranceRecommendations.estimatedPremium.homeowners)}</span>
+                  <span className="text-white">
+                    {formatCurrency(
+                      enrichedData.insuranceRecommendations.estimatedPremium
+                        .homeowners,
+                    )}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Flood:</span>
-                  <span className="text-white">{formatCurrency(enrichedData.insuranceRecommendations.estimatedPremium.flood)}</span>
+                  <span className="text-white">
+                    {formatCurrency(
+                      enrichedData.insuranceRecommendations.estimatedPremium
+                        .flood,
+                    )}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Windstorm:</span>
-                  <span className="text-white">{formatCurrency(enrichedData.insuranceRecommendations.estimatedPremium.windstorm)}</span>
+                  <span className="text-white">
+                    {formatCurrency(
+                      enrichedData.insuranceRecommendations.estimatedPremium
+                        .windstorm,
+                    )}
+                  </span>
                 </div>
                 <div className="flex justify-between font-medium border-t border-gray-600 pt-2">
                   <span className="text-white">Total:</span>
                   <span className="text-white">
                     {formatCurrency(
-                      enrichedData.insuranceRecommendations.estimatedPremium.homeowners +
-                      enrichedData.insuranceRecommendations.estimatedPremium.flood +
-                      enrichedData.insuranceRecommendations.estimatedPremium.windstorm
+                      enrichedData.insuranceRecommendations.estimatedPremium
+                        .homeowners +
+                        enrichedData.insuranceRecommendations.estimatedPremium
+                          .flood +
+                        enrichedData.insuranceRecommendations.estimatedPremium
+                          .windstorm,
                     )}
                   </span>
                 </div>
@@ -379,14 +439,18 @@ export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: Propert
             </div>
 
             <div>
-              <h4 className="text-white font-medium mb-3">Discount Opportunities</h4>
+              <h4 className="text-white font-medium mb-3">
+                Discount Opportunities
+              </h4>
               <div className="space-y-1">
-                {enrichedData.insuranceRecommendations.discountOpportunities.map((discount, index) => (
-                  <div key={index} className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-400 text-sm">{discount}</span>
-                  </div>
-                ))}
+                {enrichedData.insuranceRecommendations.discountOpportunities.map(
+                  (discount, index) => (
+                    <div key={index} className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-400 text-sm">{discount}</span>
+                    </div>
+                  ),
+                )}
               </div>
             </div>
           </div>
@@ -410,9 +474,13 @@ export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: Propert
                   Strengths
                 </h4>
                 <ul className="space-y-1">
-                  {enrichedData.aiInsights.strengthsWeaknessesOpportunitiesThreats.strengths.map((item, index) => (
-                    <li key={index} className="text-gray-400 text-sm">• {item}</li>
-                  ))}
+                  {enrichedData.aiInsights.strengthsWeaknessesOpportunitiesThreats.strengths.map(
+                    (item, index) => (
+                      <li key={index} className="text-gray-400 text-sm">
+                        • {item}
+                      </li>
+                    ),
+                  )}
                 </ul>
               </div>
 
@@ -422,9 +490,13 @@ export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: Propert
                   Opportunities
                 </h4>
                 <ul className="space-y-1">
-                  {enrichedData.aiInsights.strengthsWeaknessesOpportunitiesThreats.opportunities.map((item, index) => (
-                    <li key={index} className="text-gray-400 text-sm">• {item}</li>
-                  ))}
+                  {enrichedData.aiInsights.strengthsWeaknessesOpportunitiesThreats.opportunities.map(
+                    (item, index) => (
+                      <li key={index} className="text-gray-400 text-sm">
+                        • {item}
+                      </li>
+                    ),
+                  )}
                 </ul>
               </div>
             </div>
@@ -436,9 +508,13 @@ export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: Propert
                   Weaknesses
                 </h4>
                 <ul className="space-y-1">
-                  {enrichedData.aiInsights.strengthsWeaknessesOpportunitiesThreats.weaknesses.map((item, index) => (
-                    <li key={index} className="text-gray-400 text-sm">• {item}</li>
-                  ))}
+                  {enrichedData.aiInsights.strengthsWeaknessesOpportunitiesThreats.weaknesses.map(
+                    (item, index) => (
+                      <li key={index} className="text-gray-400 text-sm">
+                        • {item}
+                      </li>
+                    ),
+                  )}
                 </ul>
               </div>
 
@@ -448,9 +524,13 @@ export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: Propert
                   Threats
                 </h4>
                 <ul className="space-y-1">
-                  {enrichedData.aiInsights.strengthsWeaknessesOpportunitiesThreats.threats.map((item, index) => (
-                    <li key={index} className="text-gray-400 text-sm">• {item}</li>
-                  ))}
+                  {enrichedData.aiInsights.strengthsWeaknessesOpportunitiesThreats.threats.map(
+                    (item, index) => (
+                      <li key={index} className="text-gray-400 text-sm">
+                        • {item}
+                      </li>
+                    ),
+                  )}
                 </ul>
               </div>
             </div>
@@ -460,7 +540,10 @@ export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: Propert
             <h4 className="text-white font-medium mb-3">Key Action Items</h4>
             <div className="space-y-2">
               {enrichedData.aiInsights.actionItems.map((action, index) => (
-                <div key={index} className="flex items-start gap-3 bg-gray-700 rounded-lg p-3">
+                <div
+                  key={index}
+                  className="flex items-start gap-3 bg-gray-700 rounded-lg p-3"
+                >
                   <Clock className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
                   <span className="text-gray-300">{action}</span>
                 </div>
@@ -470,5 +553,5 @@ export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: Propert
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

@@ -8,77 +8,72 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { BrowserMultiFormatReader } from '@zxing/library'
-import { X, Scan } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
-import { toast } from 'sonner'
-import { logger } from "@/lib/logger/production-logger"
+import { BrowserMultiFormatReader } from "@zxing/library";
+import { X, Scan } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
+import { logger } from "@/lib/logger/production-logger";
 
-import { Button } from './button'
-import { Card } from './card'
-
+import { Button } from "./button";
+import { Card } from "./card";
 
 interface BarcodeScannerProps {
-  onScan: (code: string, format: string) => void
-  onClose: () => void
+  onScan: (code: string, format: string) => void;
+  onClose: () => void;
 }
 
 export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const [isScanning, setIsScanning] = useState(false)
-  const [reader] = useState(() => new BrowserMultiFormatReader())
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isScanning, setIsScanning] = useState(false);
+  const [reader] = useState(() => new BrowserMultiFormatReader());
 
   useEffect(() => {
-    startScanning()
+    startScanning();
 
     return () => {
-      reader.reset()
-    }
+      reader.reset();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reader])
+  }, [reader]);
 
   const startScanning = async () => {
     try {
-      setIsScanning(true)
+      setIsScanning(true);
 
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' }
-      })
+        video: { facingMode: "environment" },
+      });
 
       if (videoRef.current && stream) {
-        videoRef.current.srcObject = stream
+        videoRef.current.srcObject = stream;
 
-        await reader.decodeFromVideoDevice(
-          null,
-          videoRef.current,
-          (result) => {
-            if (result) {
-              const code = result.getText()
-              const format = result.getBarcodeFormat()
-              toast.success(`Scanned: ${code}`)
-              onScan(code, format.toString())
-              handleClose()
-            }
+        await reader.decodeFromVideoDevice(null, videoRef.current, (result) => {
+          if (result) {
+            const code = result.getText();
+            const format = result.getBarcodeFormat();
+            toast.success(`Scanned: ${code}`);
+            onScan(code, format.toString());
+            handleClose();
           }
-        )
+        });
       }
     } catch (error) {
-      logger.error('Failed to start scanner:', error)
-      toast.error('Failed to access camera')
-      setIsScanning(false)
+      logger.error("Failed to start scanner:", error);
+      toast.error("Failed to access camera");
+      setIsScanning(false);
     }
-  }
+  };
 
   const handleClose = () => {
-    reader.reset()
+    reader.reset();
     if (videoRef.current && videoRef.current.srcObject) {
-      const stream = videoRef.current.srcObject as MediaStream
-      stream.getTracks().forEach(track => track.stop())
+      const stream = videoRef.current.srcObject as MediaStream;
+      stream.getTracks().forEach((track) => track.stop());
     }
-    onClose()
-  }
+    onClose();
+  };
 
   return (
     <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -89,11 +84,7 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
               <Scan className="h-5 w-5 text-blue-400" />
               Barcode Scanner
             </h3>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={handleClose}
-            >
+            <Button size="sm" variant="ghost" onClick={handleClose}>
               <X className="h-4 w-4" />
             </Button>
           </div>
@@ -120,5 +111,5 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
         </div>
       </Card>
     </div>
-  )
+  );
 }

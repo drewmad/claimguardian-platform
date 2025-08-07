@@ -9,114 +9,127 @@
  * @status stable
  */
 
-import { NextRequest, NextResponse } from 'next/server'
-import { createHash } from 'crypto'
-import { partnerApiAuth } from './auth'
-import { partnerRateLimiter } from './rate-limiter'
-import { validatePartnerRequest } from './validation'
-import { logger } from '@/lib/logger/production-logger'
+import { NextRequest, NextResponse } from "next/server";
+import { createHash } from "crypto";
+import { partnerApiAuth } from "./auth";
+import { partnerRateLimiter } from "./rate-limiter";
+import { validatePartnerRequest } from "./validation";
+import { logger } from "@/lib/logger/production-logger";
 import type {
   PartnerApiKey,
   PartnerOrganization,
   PartnerApiResponse,
-  PartnerApiErrorCode
-} from '@claimguardian/db/types/partner-api.types'
+} from "@claimguardian/db/types/partner-api.types";
+import { PartnerApiErrorCode } from "@claimguardian/db/types/partner-api.types";
 
 export interface PartnerApiContext {
-  partner: PartnerOrganization
-  apiKey: PartnerApiKey
-  requestId: string
-  startTime: number
-  userId?: string
+  partner: PartnerOrganization;
+  apiKey: PartnerApiKey;
+  requestId: string;
+  startTime: number;
+  userId?: string;
   metadata: {
-    ip: string
-    userAgent: string
-    origin?: string
-    requestSize: number
-  }
+    ip: string;
+    userAgent: string;
+    origin?: string;
+    requestSize: number;
+    rateLimit?: {
+      limit: number;
+      remaining: number;
+      reset: number;
+    };
+  };
 }
 
 export interface PartnerMiddlewareOptions {
-  requireAuth?: boolean
-  permissions?: string[]
+  requireAuth?: boolean;
+  permissions?: string[];
   rateLimit?: {
-    override?: boolean
-    customLimit?: number
-  }
+    override?: boolean;
+    customLimit?: number;
+  };
   validation?: {
-    schema?: any
-    validateBody?: boolean
-    validateQuery?: boolean
-  }
+    schema?: any;
+    validateBody?: boolean;
+    validateQuery?: boolean;
+  };
   logging?: {
-    logRequest?: boolean
-    logResponse?: boolean
-    logErrors?: boolean
-  }
+    logRequest?: boolean;
+    logResponse?: boolean;
+    logErrors?: boolean;
+  };
 }
 
 type PartnerApiHandler<T = any> = (
   request: NextRequest,
-  context: PartnerApiContext
-) => Promise<PartnerApiResponse<T>>
+  context: PartnerApiContext,
+) => Promise<PartnerApiResponse<T>>;
 
 /**
  * Enhanced Partner API middleware with comprehensive security and monitoring
  */
 export function withPartnerAuth<T = any>(
   handler: PartnerApiHandler<T>,
-  options: PartnerMiddlewareOptions = {}
+  options: PartnerMiddlewareOptions = {},
 ) {
   return async (request: NextRequest): Promise<NextResponse> => {
-    const startTime = Date.now()
-    const requestId = generateRequestId()
+    const startTime = Date.now();
+    const requestId = generateRequestId();
 
     // Extract request metadata
-    const ip = extractClientIp(request)
-    const userAgent = request.headers.get('user-agent') || 'unknown'
-    const origin = request.headers.get('origin')
-    const contentLength = parseInt(request.headers.get('content-length') || '0', 10)
+    const ip = extractClientIp(request);
+    const userAgent = request.headers.get("user-agent") || "unknown";
+    const origin = request.headers.get("origin");
+    const contentLength = parseInt(
+      request.headers.get("content-length") || "0",
+      10,
+    );
 
     const requestMetadata = {
       ip,
       userAgent,
       origin,
-      requestSize: contentLength
-    }
+      requestSize: contentLength,
+    };
+
+    // Declare partnerContext outside try block for error logging
+    let partnerContext: PartnerApiContext | null = null;
 
     try {
       // 1. Basic request validation
-      const basicValidation = await validateBasicRequest(request, requestMetadata)
+      const basicValidation = await validateBasicRequest(
+        request,
+        requestMetadata,
+      );
       if (!basicValidation.valid) {
         return createErrorResponse({
           code: basicValidation.errorCode!,
           message: basicValidation.error!,
           requestId,
-          startTime
-        })
+          startTime,
+        });
       }
 
       // 2. Partner authentication
-      let partnerContext: PartnerApiContext | null = null
 
       if (options.requireAuth !== false) {
-        const authResult = await partnerApiAuth.authenticate(request)
+        const authResult = await partnerApiAuth.authenticate(request);
 
         if (!authResult.success) {
           await logSecurityEvent({
-            type: 'auth_failure',
+            type: "auth_failure",
             ip,
             userAgent,
             error: authResult.error,
-            requestId
-          })
+            requestId,
+          });
 
           return createErrorResponse({
             code: authResult.errorCode!,
             message: authResult.error!,
             requestId,
-            startTime
-          })
+            startTime,
+          });
         }
 
         partnerContext = {
@@ -124,30 +137,30 @@ export function withPartnerAuth<T = any>(
           apiKey: authResult.apiKey!,
           requestId,
           startTime,
-          metadata: requestMetadata
-        }
+          metadata: requestMetadata,
+        };
 
         // 3. Permission validation
         if (options.permissions && options.permissions.length > 0) {
           const hasPermission = await validatePermissions(
             partnerContext.apiKey.permissions,
-            options.permissions
-          )
+            options.permissions,
+          );
 
           if (!hasPermission) {
             await logSecurityEvent({
-              type: 'permission_denied',
+              type: "permission_denied",
               partnerId: partnerContext.partner.id,
               permissions: options.permissions,
-              requestId
-            })
+              requestId,
+            });
 
             return createErrorResponse({
-              code: 'insufficient_permissions',
-              message: 'Insufficient permissions for this operation',
+              code: "insufficient_permissions",
+              message: "Insufficient permissions for this operation",
               requestId,
-              startTime
-            })
+              startTime,
+            });
           }
         }
 
@@ -158,29 +171,32 @@ export function withPartnerAuth<T = any>(
           ip,
           endpoint: request.nextUrl.pathname,
           override: options.rateLimit?.override,
-          customLimit: options.rateLimit?.customLimit
-        })
+          customLimit: options.rateLimit?.customLimit,
+        });
 
         if (!rateLimitResult.allowed) {
           await logSecurityEvent({
-            type: 'rate_limit_exceeded',
+            type: "rate_limit_exceeded",
             partnerId: partnerContext.partner.id,
             limit: rateLimitResult.limit,
             current: rateLimitResult.current,
-            requestId
-          })
+            requestId,
+          });
 
           return createErrorResponse({
-            code: 'rate_limit_exceeded',
+            code: "rate_limit_exceeded",
             message: `Rate limit exceeded. Limit: ${rateLimitResult.limit}, Reset: ${rateLimitResult.resetTime}`,
             requestId,
             startTime,
             headers: {
-              'X-RateLimit-Limit': rateLimitResult.limit.toString(),
-              'X-RateLimit-Remaining': Math.max(0, rateLimitResult.limit - rateLimitResult.current).toString(),
-              'X-RateLimit-Reset': rateLimitResult.resetTime!.toString()
-            }
-          })
+              "X-RateLimit-Limit": rateLimitResult.limit.toString(),
+              "X-RateLimit-Remaining": Math.max(
+                0,
+                rateLimitResult.limit - rateLimitResult.current,
+              ).toString(),
+              "X-RateLimit-Reset": rateLimitResult.resetTime!.toString(),
+            },
+          });
         }
 
         // Add rate limit headers to context for response
@@ -188,23 +204,29 @@ export function withPartnerAuth<T = any>(
           ...partnerContext.metadata,
           rateLimit: {
             limit: rateLimitResult.limit,
-            remaining: Math.max(0, rateLimitResult.limit - rateLimitResult.current),
-            reset: rateLimitResult.resetTime!
-          }
-        }
+            remaining: Math.max(
+              0,
+              rateLimitResult.limit - rateLimitResult.current,
+            ),
+            reset: rateLimitResult.resetTime!,
+          },
+        };
       }
 
       // 5. Request validation (schema, body, query)
       if (options.validation) {
-        const validationResult = await validatePartnerRequest(request, options.validation)
+        const validationResult = await validatePartnerRequest(
+          request,
+          options.validation,
+        );
         if (!validationResult.valid) {
           return createErrorResponse({
-            code: 'invalid_request',
+            code: PartnerApiErrorCode.INVALID_REQUEST,
             message: validationResult.error!,
             details: validationResult.details,
             requestId,
-            startTime
-          })
+            startTime,
+          });
         }
       }
 
@@ -216,19 +238,23 @@ export function withPartnerAuth<T = any>(
           endpoint: request.nextUrl.pathname,
           method: request.method,
           requestSize: contentLength,
-          timestamp: new Date().toISOString()
-        })
+          timestamp: new Date().toISOString(),
+        });
       }
 
       // 7. Execute handler
-      const response = await handler(request, partnerContext!)
+      const response = await handler(request, partnerContext!);
 
       // 8. Process response
-      const processedResponse = await processResponse(response, partnerContext, {
-        requestId,
-        startTime,
-        options
-      })
+      const processedResponse = await processResponse(
+        response,
+        partnerContext,
+        {
+          requestId,
+          startTime,
+          options,
+        },
+      );
 
       // 9. Log successful request
       if (options.logging?.logRequest !== false && partnerContext) {
@@ -240,25 +266,25 @@ export function withPartnerAuth<T = any>(
           responseTime: Date.now() - startTime,
           statusCode: 200,
           requestSize: contentLength,
-          responseSize: JSON.stringify(response).length
-        })
+          responseSize: JSON.stringify(response).length,
+        });
       }
 
-      return processedResponse
-
+      return processedResponse;
     } catch (error) {
       // Global error handling
-      const errorMessage = error instanceof Error ? error.message : 'Internal server error'
+      const errorMessage =
+        error instanceof Error ? error.message : "Internal server error";
 
-      logger.error('Partner API error', {
+      logger.error("Partner API error", {
         error,
         requestId,
         endpoint: request.nextUrl.pathname,
         method: request.method,
         ip,
         userAgent,
-        responseTime: Date.now() - startTime
-      })
+        responseTime: Date.now() - startTime,
+      });
 
       if (options.logging?.logErrors !== false) {
         await logApiRequest({
@@ -269,79 +295,90 @@ export function withPartnerAuth<T = any>(
           responseTime: Date.now() - startTime,
           statusCode: 500,
           error: errorMessage,
-          requestSize: contentLength
-        })
+          requestSize: contentLength,
+        });
       }
 
       return createErrorResponse({
-        code: 'internal_error',
-        message: 'An internal error occurred',
+        code: PartnerApiErrorCode.INTERNAL_ERROR,
+        message: "An internal error occurred",
         requestId,
-        startTime
-      })
+        startTime,
+      });
     }
-  }
+  };
 }
 
 // Helper Functions
 
 async function validateBasicRequest(
   request: NextRequest,
-  metadata: { ip: string; userAgent: string; requestSize: number }
-): Promise<{ valid: boolean; error?: string; errorCode?: PartnerApiErrorCode }> {
+  metadata: { ip: string; userAgent: string; requestSize: number },
+): Promise<{
+  valid: boolean;
+  error?: string;
+  errorCode?: PartnerApiErrorCode;
+}> {
   // Check request size limits
-  if (metadata.requestSize > 50 * 1024 * 1024) { // 50MB limit
+  if (metadata.requestSize > 50 * 1024 * 1024) {
+    // 50MB limit
     return {
       valid: false,
-      error: 'Request body too large',
-      errorCode: 'invalid_request'
-    }
+      error: "Request body too large",
+      errorCode: PartnerApiErrorCode.INVALID_REQUEST,
+    };
   }
 
   // Check for required headers
-  const contentType = request.headers.get('content-type')
-  if (request.method !== 'GET' && !contentType) {
+  const contentType = request.headers.get("content-type");
+  if (request.method !== "GET" && !contentType) {
     return {
       valid: false,
-      error: 'Content-Type header required for non-GET requests',
-      errorCode: 'invalid_request'
-    }
+      error: "Content-Type header required for non-GET requests",
+      errorCode: PartnerApiErrorCode.INVALID_REQUEST,
+    };
   }
 
   // Basic security checks
-  if (metadata.userAgent.toLowerCase().includes('bot') &&
-      !metadata.userAgent.toLowerCase().includes('legitimate-bot-identifier')) {
+  if (
+    metadata.userAgent.toLowerCase().includes("bot") &&
+    !metadata.userAgent.toLowerCase().includes("legitimate-bot-identifier")
+  ) {
     return {
       valid: false,
-      error: 'Automated requests not allowed',
-      errorCode: 'invalid_request'
-    }
+      error: "Automated requests not allowed",
+      errorCode: PartnerApiErrorCode.INVALID_REQUEST,
+    };
   }
 
-  return { valid: true }
+  return { valid: true };
 }
 
 async function validatePermissions(
   apiPermissions: any,
-  requiredPermissions: string[]
+  requiredPermissions: string[],
 ): Promise<boolean> {
   for (const permission of requiredPermissions) {
-    const [resource, action] = permission.split('.')
+    const [resource, action] = permission.split(".");
 
     if (!apiPermissions[resource] || !apiPermissions[resource][action]) {
-      return false
+      return false;
     }
   }
 
-  return true
+  return true;
 }
 
 async function processResponse<T>(
   response: PartnerApiResponse<T>,
   context: PartnerApiContext | null,
-  meta: { requestId: string; startTime: number; options: PartnerMiddlewareOptions }
+  meta: {
+    requestId: string;
+    startTime: number;
+    options: PartnerMiddlewareOptions;
+  },
 ): Promise<NextResponse> {
-  const processingTime = Date.now() - meta.startTime
+  const processingTime = Date.now() - meta.startTime;
 
   // Enrich response with metadata
   const enrichedResponse: PartnerApiResponse<T> = {
@@ -350,56 +387,75 @@ async function processResponse<T>(
       requestId: meta.requestId,
       timestamp: new Date().toISOString(),
       processingTime,
-      rateLimit: context?.metadata.rateLimit ? {
-        remaining: context.metadata.rateLimit.remaining,
-        reset: new Date(context.metadata.rateLimit.reset * 1000).toISOString()
-      } : {
-        remaining: 0,
-        reset: new Date().toISOString()
-      }
-    }
-  }
+      rateLimit: context?.metadata.rateLimit
+        ? {
+            remaining: context.metadata.rateLimit.remaining,
+            reset: new Date(
+              context.metadata.rateLimit.reset * 1000,
+            ).toISOString(),
+          }
+        : {
+            remaining: 0,
+            reset: new Date().toISOString(),
+          },
+    },
+  };
 
   const headers = new Headers({
-    'Content-Type': 'application/json',
-    'X-Request-ID': meta.requestId,
-    'X-Processing-Time': processingTime.toString()
-  })
+    "Content-Type": "application/json",
+    "X-Request-ID": meta.requestId,
+    "X-Processing-Time": processingTime.toString(),
+  });
 
   // Add rate limit headers if available
   if (context?.metadata.rateLimit) {
-    headers.set('X-RateLimit-Limit', context.metadata.rateLimit.limit.toString())
-    headers.set('X-RateLimit-Remaining', context.metadata.rateLimit.remaining.toString())
-    headers.set('X-RateLimit-Reset', context.metadata.rateLimit.reset.toString())
+    headers.set(
+      "X-RateLimit-Limit",
+      context.metadata.rateLimit.limit.toString(),
+    );
+    headers.set(
+      "X-RateLimit-Remaining",
+      context.metadata.rateLimit.remaining.toString(),
+    );
+    headers.set(
+      "X-RateLimit-Reset",
+      context.metadata.rateLimit.reset.toString(),
+    );
   }
 
   // Add CORS headers for browser requests
   if (context?.metadata.origin) {
-    headers.set('Access-Control-Allow-Origin', context.metadata.origin)
-    headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
-    headers.set('Access-Control-Allow-Headers', 'Authorization, Content-Type, X-Request-ID')
+    headers.set("Access-Control-Allow-Origin", context.metadata.origin);
+    headers.set(
+      "Access-Control-Allow-Methods",
+      "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+    );
+    headers.set(
+      "Access-Control-Allow-Headers",
+      "Authorization, Content-Type, X-Request-ID",
+    );
   }
 
   return NextResponse.json(enrichedResponse, {
     status: response.success ? 200 : 400,
-    headers
-  })
+    headers,
+  });
 }
 
 function createErrorResponse(params: {
-  code: string
-  message: string
-  details?: Record<string, unknown>
-  requestId: string
-  startTime: number
-  headers?: Record<string, string>
+  code: PartnerApiErrorCode | string;
+  message: string;
+  details?: Record<string, unknown>;
+  requestId: string;
+  startTime: number;
+  headers?: Record<string, string>;
 }): NextResponse {
   const errorResponse: PartnerApiResponse = {
     success: false,
     error: {
       code: params.code,
       message: params.message,
-      details: params.details
+      details: params.details,
     },
     metadata: {
       requestId: params.requestId,
@@ -407,90 +463,90 @@ function createErrorResponse(params: {
       processingTime: Date.now() - params.startTime,
       rateLimit: {
         remaining: 0,
-        reset: new Date().toISOString()
-      }
-    }
-  }
+        reset: new Date().toISOString(),
+      },
+    },
+  };
 
   const headers = new Headers({
-    'Content-Type': 'application/json',
-    'X-Request-ID': params.requestId
-  })
+    "Content-Type": "application/json",
+    "X-Request-ID": params.requestId,
+  });
 
   // Add any additional headers
   if (params.headers) {
     Object.entries(params.headers).forEach(([key, value]) => {
-      headers.set(key, value)
-    })
+      headers.set(key, value);
+    });
   }
 
-  const statusCode = getStatusCodeForError(params.code)
+  const statusCode = getStatusCodeForError(params.code);
 
   return NextResponse.json(errorResponse, {
     status: statusCode,
-    headers
-  })
+    headers,
+  });
 }
 
 function getStatusCodeForError(errorCode: string): number {
   switch (errorCode) {
-    case 'invalid_api_key':
-    case 'expired_api_key':
-      return 401
-    case 'insufficient_permissions':
-      return 403
-    case 'resource_not_found':
-      return 404
-    case 'rate_limit_exceeded':
-    case 'quota_exceeded':
-      return 429
-    case 'invalid_request':
-    case 'missing_required_field':
-    case 'invalid_field_value':
-      return 400
-    case 'resource_already_exists':
-      return 409
-    case 'document_too_large':
-      return 413
-    case 'service_unavailable':
-      return 503
-    case 'internal_error':
+    case "invalid_api_key":
+    case "expired_api_key":
+      return 401;
+    case "insufficient_permissions":
+      return 403;
+    case "resource_not_found":
+      return 404;
+    case "rate_limit_exceeded":
+    case "quota_exceeded":
+      return 429;
+    case "invalid_request":
+    case "missing_required_field":
+    case "invalid_field_value":
+      return 400;
+    case "resource_already_exists":
+      return 409;
+    case "document_too_large":
+      return 413;
+    case "service_unavailable":
+      return 503;
+    case "internal_error":
     default:
-      return 500
+      return 500;
   }
 }
 
 function generateRequestId(): string {
-  return `req_${Date.now()}_${createHash('sha256')
+  return `req_${Date.now()}_${createHash("sha256")
     .update(Math.random().toString())
-    .digest('hex')
-    .substring(0, 8)}`
+    .digest("hex")
+    .substring(0, 8)}`;
 }
 
 function extractClientIp(request: NextRequest): string {
-  const forwarded = request.headers.get('x-forwarded-for')
-  const real = request.headers.get('x-real-ip')
-  const cf = request.headers.get('cf-connecting-ip')
+  const forwarded = request.headers.get("x-forwarded-for");
+  const real = request.headers.get("x-real-ip");
+  const cf = request.headers.get("cf-connecting-ip");
 
-  if (cf) return cf
-  if (real) return real
-  if (forwarded) return forwarded.split(',')[0].trim()
+  if (cf) return cf;
+  if (real) return real;
+  if (forwarded) return forwarded.split(",")[0].trim();
 
-  return 'unknown'
+  return "unknown";
 }
 
 // Logging and tracking functions (to be implemented)
 async function logSecurityEvent(event: any): Promise<void> {
-  logger.warn('Partner API security event', event)
+  logger.warn("Partner API security event", event);
   // Implementation would log to security audit system
 }
 
 async function trackApiUsage(usage: any): Promise<void> {
-  logger.debug('Partner API usage', usage)
+  logger.debug("Partner API usage", usage);
   // Implementation would track usage for billing
 }
 
 async function logApiRequest(log: any): Promise<void> {
-  logger.info('Partner API request', log)
+  logger.info("Partner API request", log);
   // Implementation would log request for analytics
 }

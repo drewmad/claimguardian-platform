@@ -9,15 +9,15 @@
  * @status stable
  * @notes Redirects unauthenticated users to landing page.
  */
-'use client'
+"use client";
 
-import { useRouter } from 'next/navigation';
-import React, { useEffect } from 'react';
-import { logger } from '@/lib/logger';
+import { useRouter } from "next/navigation";
+import React, { useEffect } from "react";
+import { logger } from "@/lib/logger";
 
-import { AuthLoading } from './auth-loading';
-import { useAuth } from './auth-provider';
-import { ClientOnlyAuth } from './client-only-auth';
+import { AuthLoading } from "./auth-loading";
+import { useAuth } from "./auth-provider";
+import { ClientOnlyAuth } from "./client-only-auth";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -29,16 +29,17 @@ function ProtectedRouteInner({ children }: ProtectedRouteProps) {
 
   // Use secure debug logging only in development
   useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      import('@/lib/logger').then(({ logger }) => {
-        logger.authDebug('ProtectedRoute', {
+    if (process.env.NODE_ENV === "development") {
+      import("@/lib/logger").then(({ logger }) => {
+        logger.authDebug("ProtectedRoute", {
           loading,
           hasUser: !!user,
-          pathname: typeof window !== 'undefined' ? window.location.pathname : 'server'
-        })
-      })
+          pathname:
+            typeof window !== "undefined" ? window.location.pathname : "server",
+        });
+      });
     }
-  }, [user, loading])
+  }, [user, loading]);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -49,16 +50,22 @@ function ProtectedRouteInner({ children }: ProtectedRouteProps) {
         referrer: document.referrer,
       };
 
-      logger.info('Unauthenticated user attempted to access protected route', redirectInfo);
-      logger.warn('Route blocked - unauthenticated user', {
+      logger.info(
+        "Unauthenticated user attempted to access protected route",
+        redirectInfo,
+      );
+      logger.warn("Route blocked - unauthenticated user", {
         path: window.location.pathname,
-        reason: 'unauthenticated',
+        reason: "unauthenticated",
         userId: undefined,
-        ...redirectInfo
+        ...redirectInfo,
       });
 
-      logger.warn('[ProtectedRoute] REDIRECT TO "/" - No authenticated user', redirectInfo);
-      router.push('/');
+      logger.warn(
+        '[ProtectedRoute] REDIRECT TO "/" - No authenticated user',
+        redirectInfo,
+      );
+      router.push("/");
     }
   }, [user, loading, router]);
 

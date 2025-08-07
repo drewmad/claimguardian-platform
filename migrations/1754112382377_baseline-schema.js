@@ -5,11 +5,10 @@
  * @status active
  */
 
-
 exports.shorthands = undefined;
 
-exports.up = pgm => {
-    pgm.sql(`
+exports.up = (pgm) => {
+  pgm.sql(`
 --
 -- Name: error_log_status; Type: TYPE; Schema: public; Owner: -
 --
@@ -67,10 +66,10 @@ $function$;
     `);
 };
 
-exports.down = pgm => {
-    // Reverting the baseline schema is not supported.
-    // This migration file establishes the initial state of the database.
-    pgm.sql(`
+exports.down = (pgm) => {
+  // Reverting the baseline schema is not supported.
+  // This migration file establishes the initial state of the database.
+  pgm.sql(`
         -- Drop the function
         DROP FUNCTION IF EXISTS public.log_error(character varying, character varying, text, text, jsonb, character varying, text, text);
 

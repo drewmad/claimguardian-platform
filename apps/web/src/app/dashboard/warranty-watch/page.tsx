@@ -8,91 +8,113 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { ShieldCheck, Clock, AlertCircle, Calendar, FileText, Phone, Mail, ExternalLink, Package, Home, Car, Tv, Smartphone, ChevronRight, Plus, Upload } from 'lucide-react'
-import { useState } from 'react'
+import {
+  ShieldCheck,
+  Clock,
+  AlertCircle,
+  Calendar,
+  FileText,
+  Phone,
+  Mail,
+  ExternalLink,
+  Package,
+  Home,
+  Car,
+  Tv,
+  Smartphone,
+  ChevronRight,
+  Plus,
+  Upload,
+} from "lucide-react";
+import { useState } from "react";
 
-import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 
 export default function WarrantyWatchPage() {
-  const [filter, setFilter] = useState('all')
+  const [filter, setFilter] = useState("all");
 
   const warranties = [
     {
       id: 1,
-      item: 'Samsung Refrigerator',
-      category: 'Appliances',
+      item: "Samsung Refrigerator",
+      category: "Appliances",
       icon: Package,
-      purchaseDate: '2023-03-15',
-      warrantyEnd: '2025-03-15',
-      status: 'active',
-      coverage: 'Full Parts & Labor',
+      purchaseDate: "2023-03-15",
+      warrantyEnd: "2025-03-15",
+      status: "active",
+      coverage: "Full Parts & Labor",
       monthsRemaining: 14,
-      documents: ['receipt.pdf', 'warranty.pdf']
+      documents: ["receipt.pdf", "warranty.pdf"],
     },
     {
       id: 2,
-      item: 'HVAC System',
-      category: 'Home Systems',
+      item: "HVAC System",
+      category: "Home Systems",
       icon: Home,
-      purchaseDate: '2021-06-20',
-      warrantyEnd: '2024-06-20',
-      status: 'expiring',
-      coverage: 'Parts Only',
+      purchaseDate: "2021-06-20",
+      warrantyEnd: "2024-06-20",
+      status: "expiring",
+      coverage: "Parts Only",
       monthsRemaining: 5,
-      documents: ['installation.pdf', 'warranty.pdf']
+      documents: ["installation.pdf", "warranty.pdf"],
     },
     {
       id: 3,
-      item: 'Tesla Model 3',
-      category: 'Vehicles',
+      item: "Tesla Model 3",
+      category: "Vehicles",
       icon: Car,
-      purchaseDate: '2022-11-10',
-      warrantyEnd: '2026-11-10',
-      status: 'active',
-      coverage: 'Comprehensive',
+      purchaseDate: "2022-11-10",
+      warrantyEnd: "2026-11-10",
+      status: "active",
+      coverage: "Comprehensive",
       monthsRemaining: 46,
-      documents: ['purchase.pdf', 'warranty.pdf']
+      documents: ["purchase.pdf", "warranty.pdf"],
     },
     {
       id: 4,
-      item: 'LG OLED TV',
-      category: 'Electronics',
+      item: "LG OLED TV",
+      category: "Electronics",
       icon: Tv,
-      purchaseDate: '2023-12-25',
-      warrantyEnd: '2024-12-25',
-      status: 'active',
-      coverage: 'Limited',
+      purchaseDate: "2023-12-25",
+      warrantyEnd: "2024-12-25",
+      status: "active",
+      coverage: "Limited",
       monthsRemaining: 11,
-      documents: ['receipt.pdf']
+      documents: ["receipt.pdf"],
     },
     {
       id: 5,
-      item: 'iPhone 15 Pro',
-      category: 'Electronics',
+      item: "iPhone 15 Pro",
+      category: "Electronics",
       icon: Smartphone,
-      purchaseDate: '2023-09-22',
-      warrantyEnd: '2024-03-22',
-      status: 'expired',
-      coverage: 'AppleCare+',
+      purchaseDate: "2023-09-22",
+      warrantyEnd: "2024-03-22",
+      status: "expired",
+      coverage: "AppleCare+",
       monthsRemaining: 0,
-      documents: ['receipt.pdf', 'applecare.pdf']
-    }
-  ]
+      documents: ["receipt.pdf", "applecare.pdf"],
+    },
+  ];
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'text-green-400 bg-green-500/20'
-      case 'expiring': return 'text-orange-400 bg-orange-500/20'
-      case 'expired': return 'text-red-400 bg-red-500/20'
-      default: return 'text-gray-400 bg-gray-500/20'
+      case "active":
+        return "text-green-400 bg-green-500/20";
+      case "expiring":
+        return "text-orange-400 bg-orange-500/20";
+      case "expired":
+        return "text-red-400 bg-red-500/20";
+      default:
+        return "text-gray-400 bg-gray-500/20";
     }
-  }
+  };
 
-  const filteredWarranties = filter === 'all'
-    ? warranties
-    : warranties.filter(w => w.status === filter)
+  const filteredWarranties =
+    filter === "all"
+      ? warranties
+      : warranties.filter((w) => w.status === filter);
 
   return (
     <DashboardLayout>
@@ -105,7 +127,9 @@ export default function WarrantyWatchPage() {
                 <ShieldCheck className="w-8 h-8 text-cyan-400" />
                 Warranty Watch
               </h1>
-              <p className="text-gray-400">Track and manage all your warranties in one place</p>
+              <p className="text-gray-400">
+                Track and manage all your warranties in one place
+              </p>
             </div>
             <button className="mt-4 md:mt-0 px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg transition-colors flex items-center gap-2">
               <Plus className="w-5 h-5" />
@@ -151,41 +175,41 @@ export default function WarrantyWatchPage() {
           {/* Filter Tabs */}
           <div className="flex gap-2 mb-6">
             <button
-              onClick={() => setFilter('all')}
+              onClick={() => setFilter("all")}
               className={`px-4 py-2 rounded-lg transition-colors ${
-                filter === 'all'
-                  ? 'bg-cyan-600 text-white'
-                  : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                filter === "all"
+                  ? "bg-cyan-600 text-white"
+                  : "bg-gray-700 text-gray-400 hover:bg-gray-600"
               }`}
             >
               All Warranties
             </button>
             <button
-              onClick={() => setFilter('active')}
+              onClick={() => setFilter("active")}
               className={`px-4 py-2 rounded-lg transition-colors ${
-                filter === 'active'
-                  ? 'bg-cyan-600 text-white'
-                  : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                filter === "active"
+                  ? "bg-cyan-600 text-white"
+                  : "bg-gray-700 text-gray-400 hover:bg-gray-600"
               }`}
             >
               Active
             </button>
             <button
-              onClick={() => setFilter('expiring')}
+              onClick={() => setFilter("expiring")}
               className={`px-4 py-2 rounded-lg transition-colors ${
-                filter === 'expiring'
-                  ? 'bg-cyan-600 text-white'
-                  : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                filter === "expiring"
+                  ? "bg-cyan-600 text-white"
+                  : "bg-gray-700 text-gray-400 hover:bg-gray-600"
               }`}
             >
               Expiring Soon
             </button>
             <button
-              onClick={() => setFilter('expired')}
+              onClick={() => setFilter("expired")}
               className={`px-4 py-2 rounded-lg transition-colors ${
-                filter === 'expired'
-                  ? 'bg-cyan-600 text-white'
-                  : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                filter === "expired"
+                  ? "bg-cyan-600 text-white"
+                  : "bg-gray-700 text-gray-400 hover:bg-gray-600"
               }`}
             >
               Expired
@@ -195,33 +219,51 @@ export default function WarrantyWatchPage() {
           {/* Warranties List */}
           <div className="space-y-4">
             {filteredWarranties.map((warranty) => {
-              const Icon = warranty.icon
+              const Icon = warranty.icon;
               return (
-                <div key={warranty.id} className="bg-gray-800 rounded-lg p-6 border border-gray-700 hover:border-gray-600 transition-colors">
+                <div
+                  key={warranty.id}
+                  className="bg-gray-800 rounded-lg p-6 border border-gray-700 hover:border-gray-600 transition-colors"
+                >
                   <div className="flex items-start justify-between">
                     <div className="flex items-start gap-4">
                       <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center">
                         <Icon className="w-6 h-6 text-cyan-400" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-semibold text-white">{warranty.item}</h3>
-                        <p className="text-sm text-gray-400 mb-2">{warranty.category}</p>
+                        <h3 className="text-lg font-semibold text-white">
+                          {warranty.item}
+                        </h3>
+                        <p className="text-sm text-gray-400 mb-2">
+                          {warranty.category}
+                        </p>
 
                         <div className="flex items-center gap-4 text-sm">
                           <span className="text-gray-400">
-                            Purchased: {new Date(warranty.purchaseDate).toLocaleDateString()}
+                            Purchased:{" "}
+                            {new Date(
+                              warranty.purchaseDate,
+                            ).toLocaleDateString()}
                           </span>
                           <span className="text-gray-400">•</span>
                           <span className="text-gray-400">
-                            Expires: {new Date(warranty.warrantyEnd).toLocaleDateString()}
+                            Expires:{" "}
+                            {new Date(
+                              warranty.warrantyEnd,
+                            ).toLocaleDateString()}
                           </span>
                         </div>
 
                         <div className="flex items-center gap-4 mt-3">
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(warranty.status)}`}>
-                            {warranty.status.charAt(0).toUpperCase() + warranty.status.slice(1)}
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(warranty.status)}`}
+                          >
+                            {warranty.status.charAt(0).toUpperCase() +
+                              warranty.status.slice(1)}
                           </span>
-                          <span className="text-sm text-gray-400">{warranty.coverage}</span>
+                          <span className="text-sm text-gray-400">
+                            {warranty.coverage}
+                          </span>
                           {warranty.monthsRemaining > 0 && (
                             <span className="text-sm text-gray-400">
                               {warranty.monthsRemaining} months remaining
@@ -239,7 +281,7 @@ export default function WarrantyWatchPage() {
                             <Phone className="w-4 h-4" />
                             Contact Support
                           </button>
-                          {warranty.status === 'expiring' && (
+                          {warranty.status === "expiring" && (
                             <button className="text-sm text-orange-400 hover:text-orange-300 flex items-center gap-1">
                               <Calendar className="w-4 h-4" />
                               Set Reminder
@@ -252,14 +294,16 @@ export default function WarrantyWatchPage() {
                     <ChevronRight className="w-5 h-5 text-gray-400" />
                   </div>
                 </div>
-              )
+              );
             })}
           </div>
 
           {/* Quick Actions */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
             <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-              <h3 className="text-lg font-semibold text-white mb-4">Quick Actions</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">
+                Quick Actions
+              </h3>
               <div className="space-y-3">
                 <button className="w-full flex items-center justify-between p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors">
                   <div className="flex items-center gap-3">
@@ -288,22 +332,32 @@ export default function WarrantyWatchPage() {
             </div>
 
             <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-              <h3 className="text-lg font-semibold text-white mb-4">Extended Coverage</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">
+                Extended Coverage
+              </h3>
               <p className="text-gray-400 mb-4">
                 Protect your investments with extended warranty options
               </p>
               <div className="space-y-3">
                 <div className="p-4 bg-cyan-900/20 border border-cyan-500/30 rounded-lg">
-                  <p className="text-cyan-300 font-medium">Home Systems Protection</p>
-                  <p className="text-sm text-gray-400 mt-1">Cover all major home systems</p>
+                  <p className="text-cyan-300 font-medium">
+                    Home Systems Protection
+                  </p>
+                  <p className="text-sm text-gray-400 mt-1">
+                    Cover all major home systems
+                  </p>
                   <button className="mt-3 text-sm text-cyan-400 hover:text-cyan-300 flex items-center gap-1">
                     Learn More <ExternalLink className="w-3 h-3" />
                   </button>
                 </div>
 
                 <div className="p-4 bg-blue-900/20 border border-blue-500/30 rounded-lg">
-                  <p className="text-blue-300 font-medium">Electronics Care Plan</p>
-                  <p className="text-sm text-gray-400 mt-1">Comprehensive electronics coverage</p>
+                  <p className="text-blue-300 font-medium">
+                    Electronics Care Plan
+                  </p>
+                  <p className="text-sm text-gray-400 mt-1">
+                    Comprehensive electronics coverage
+                  </p>
                   <button className="mt-3 text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1">
                     Learn More <ExternalLink className="w-3 h-3" />
                   </button>
@@ -314,5 +368,5 @@ export default function WarrantyWatchPage() {
         </div>
       </div>
     </DashboardLayout>
-  )
+  );
 }

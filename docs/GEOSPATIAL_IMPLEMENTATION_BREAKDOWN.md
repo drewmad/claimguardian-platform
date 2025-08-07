@@ -1,11 +1,13 @@
 # Geospatial Features Implementation - Complete Breakdown
 
 ## Overview
+
 The geospatial features implementation involves integrating Florida property parcel data, hazard zones, and real-time event monitoring into ClaimGuardian for enhanced risk assessment and claims processing.
 
 ## Task Breakdown
 
 ### 1. Database Infrastructure (Foundation)
+
 - [ ] **1.1 Enable PostGIS Extension**
   - Enable spatial data support in PostgreSQL
   - Add geometry column types
@@ -32,6 +34,7 @@ The geospatial features implementation involves integrating Florida property par
   - `active_events` - Real-time hazards
 
 ### 2. Data Import Pipeline
+
 - [ ] **2.1 Download Source Data**
   - Florida Statewide Parcels (FDOT)
   - FEMA Flood Zones
@@ -65,6 +68,7 @@ The geospatial features implementation involves integrating Florida property par
     - `verify-parcels-columns.sql`
 
 ### 3. Edge Functions (API Layer)
+
 - [ ] **3.1 Parcel Lookup Functions**
   - `florida-parcel-ingest` - Import management
   - `florida-parcel-monitor` - Status tracking
@@ -81,6 +85,7 @@ The geospatial features implementation involves integrating Florida property par
   - `noaa-weather-intelligence` - NOAA integration
 
 ### 4. Application Integration
+
 - [ ] **4.1 Server Actions**
   - Create `geospatial.ts` actions
   - Property-parcel linking
@@ -101,6 +106,7 @@ The geospatial features implementation involves integrating Florida property par
   - Show hazard information
 
 ### 5. Data Synchronization
+
 - [ ] **5.1 Automated Updates**
   - Cron jobs for data refresh
   - Script: `geospatial-cron.conf`
@@ -118,6 +124,7 @@ The geospatial features implementation involves integrating Florida property par
     - `upload-parcels-to-supabase.py`
 
 ### 6. Performance Optimization
+
 - [ ] **6.1 Query Optimization**
   - Spatial indexes (GIST)
   - Text search indexes (GIN)
@@ -135,6 +142,7 @@ The geospatial features implementation involves integrating Florida property par
   - Queue management
 
 ### 7. Security & Compliance
+
 - [ ] **7.1 Row Level Security**
   - Secure parcel data access
   - User-property relationships
@@ -151,6 +159,7 @@ The geospatial features implementation involves integrating Florida property par
   - Input validation
 
 ### 8. Testing & Validation
+
 - [ ] **8.1 Unit Tests**
   - Spatial functions
   - Import processes
@@ -167,6 +176,7 @@ The geospatial features implementation involves integrating Florida property par
   - Load testing
 
 ### 9. Documentation
+
 - [ ] **9.1 Technical Documentation**
   - API documentation
   - Database schema docs
@@ -178,6 +188,7 @@ The geospatial features implementation involves integrating Florida property par
   - Dashboard usage
 
 ### 10. Deployment
+
 - [ ] **10.1 Staging Deployment**
   - Test with sample data
   - Verify all functions
@@ -196,21 +207,25 @@ The geospatial features implementation involves integrating Florida property par
 ## Implementation Priority
 
 ### Phase 1: Foundation (Week 1)
+
 1. Database infrastructure (1.1-1.4)
 2. Basic import pipeline (2.1-2.2)
 3. Core Edge Functions (3.1)
 
 ### Phase 2: Integration (Week 2)
+
 4. Application integration (4.1-4.3)
 5. Import verification (2.4)
 6. Risk assessment functions (3.2)
 
 ### Phase 3: Enhancement (Week 3)
+
 7. Real-time monitoring (3.3)
 8. Performance optimization (6.1-6.3)
 9. Security implementation (7.1-7.3)
 
 ### Phase 4: Production (Week 4)
+
 10. Testing & validation (8.1-8.3)
 11. Documentation (9.1-9.2)
 12. Deployment (10.1-10.3)
@@ -218,32 +233,38 @@ The geospatial features implementation involves integrating Florida property par
 ## Key Scripts by Category
 
 ### Schema Management
+
 - `apply-florida-parcels-schema.sh`
 - `apply-geospatial-schema.sh`
 - `scripts/utils/database/apply-florida-counties-migration.js`
 
 ### Data Import
+
 - `batch-load-geospatial-data.js`
 - `load-florida-parcels-clean.js`
 - `import-parcels-by-county.sh`
 - `load-parcels-authenticated.js`
 
 ### Data Processing
+
 - `process-gdb-to-geojson.sh`
 - `clean_parcels_csv.py`
 - `process-parcels-for-ai.py`
 
 ### Monitoring & Verification
+
 - `florida-parcels-complete-workflow.sh`
 - `verify-florida-parcels-live.js`
 - `geospatial-sync-workflow.sh`
 
 ### Edge Functions
+
 - `florida-parcel-ingest`
 - `florida-parcel-monitor`
 - `property-ai-enrichment`
 
 ## Success Criteria
+
 - [ ] All 67 Florida counties' parcel data imported
 - [ ] Risk scores calculated for all properties
 - [ ] Real-time hazard monitoring active

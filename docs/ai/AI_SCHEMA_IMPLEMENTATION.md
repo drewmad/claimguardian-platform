@@ -7,27 +7,32 @@ The AI-first schema enhancements have been successfully applied to ClaimGuardian
 ## What Was Implemented
 
 ### 1. Extensions Enabled
+
 - **pgvector** (v0.8.0) - For vector embeddings and similarity search
 - **pg_trgm** (v1.6) - For text similarity matching
 
 ### 2. Core AI Tables Created
 
 #### `ai_models`
+
 - Registry of AI models used in the system
 - Tracks versions, capabilities, and costs
 - Pre-seeded with OpenAI, Anthropic, and Google models
 
 #### `ai_analyses`
+
 - Complete history of all AI processing
 - Stores embeddings for semantic search
 - Tracks costs, performance metrics, and confidence scores
 
 #### `ai_conversations`
+
 - Manages AI chat interactions with users
 - Context-aware conversations tied to claims/properties
 - Token usage and cost tracking
 
 #### `ai_feedback`
+
 - User feedback on AI results
 - Enables continuous improvement
 - Tracks accuracy and helpfulness
@@ -35,6 +40,7 @@ The AI-first schema enhancements have been successfully applied to ClaimGuardian
 ### 3. Enhanced Existing Tables
 
 #### Properties Table
+
 - `property_embedding` - 1536-dimension vector for similarity search
 - `ai_risk_score` - AI-calculated risk assessment
 - `ai_risk_factors` - Detailed risk analysis
@@ -42,6 +48,7 @@ The AI-first schema enhancements have been successfully applied to ClaimGuardian
 - `ai_insights` - General AI-generated insights
 
 #### Claims Table
+
 - `claim_embedding` - For semantic claim search
 - `ai_complexity_score` - Claim complexity assessment
 - `ai_fraud_risk_score` - Fraud detection
@@ -49,6 +56,7 @@ The AI-first schema enhancements have been successfully applied to ClaimGuardian
 - `ai_recommended_actions` - Next steps suggestions
 
 #### Property Damage Table
+
 - `damage_embedding` - For damage pattern matching
 - `ai_severity_score` - Damage severity (0-10)
 - `ai_repair_estimate_low/high` - Cost estimates
@@ -58,18 +66,21 @@ The AI-first schema enhancements have been successfully applied to ClaimGuardian
 ### 4. AI-Specific Features
 
 #### Property AI Insights
+
 - Risk predictions
 - Value assessments
 - Maintenance recommendations
 - Market analysis
 
 #### Damage AI Detections
+
 - Image analysis results
 - Object detection with bounding boxes
 - Material identification
 - Severity scoring
 
 #### Document AI Extractions
+
 - Policy document parsing
 - Key term extraction
 - Coverage analysis
@@ -78,6 +89,7 @@ The AI-first schema enhancements have been successfully applied to ClaimGuardian
 ### 5. Functions Created
 
 #### `find_similar_properties(property_id, limit)`
+
 ```sql
 -- Example usage:
 SELECT * FROM find_similar_properties(
@@ -87,6 +99,7 @@ SELECT * FROM find_similar_properties(
 ```
 
 #### `get_ai_usage_stats(user_id, start_date, end_date)`
+
 ```sql
 -- Example usage:
 SELECT * FROM get_ai_usage_stats(
@@ -107,28 +120,32 @@ SELECT * FROM get_ai_usage_stats(
 ### Immediate Actions
 
 1. **Generate Embeddings for Existing Data**
+
    ```typescript
    // Example: Generate property embeddings
    const embedding = await openai.embeddings.create({
      model: "text-embedding-3-large",
-     input: `${property.address} ${property.type} ${property.squareFootage}sqft built ${property.yearBuilt}`
+     input: `${property.address} ${property.type} ${property.squareFootage}sqft built ${property.yearBuilt}`,
    });
 
    // Update property with embedding
    await supabase
-     .from('properties')
+     .from("properties")
      .update({ property_embedding: embedding.data[0].embedding })
-     .eq('id', property.id);
+     .eq("id", property.id);
    ```
 
 2. **Implement Similarity Search**
+
    ```typescript
    // Find similar properties
-   const { data: similarProperties } = await supabase
-     .rpc('find_similar_properties', {
+   const { data: similarProperties } = await supabase.rpc(
+     "find_similar_properties",
+     {
        p_property_id: currentPropertyId,
-       p_limit: 5
-     });
+       p_limit: 5,
+     },
+   );
    ```
 
 3. **Start Tracking AI Usage**
@@ -184,6 +201,7 @@ SELECT * FROM get_ai_usage_stats(
 ## Migration Files
 
 All AI schema migrations are stored in `/supabase/migrations_ai/`:
+
 - `001_enable_extensions.sql`
 - `002_create_ai_models_table.sql`
 - `003_create_ai_analyses_table.sql`

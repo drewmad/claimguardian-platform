@@ -5,50 +5,50 @@
  * @owner compliance-team
  * @status stable
  */
-'use client'
+"use client";
 
-import { Cookie } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { Cookie } from "lucide-react";
+import { useEffect, useState } from "react";
 
-import { logger } from '@/lib/logger'
+import { logger } from "@/lib/logger";
 
 export function CookieConsentSimple() {
-  const [isVisible, setIsVisible] = useState(false)
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const consent = localStorage.getItem('cookie-consent')
+    const consent = localStorage.getItem("cookie-consent");
     if (!consent) {
-      setTimeout(() => setIsVisible(true), 1000)
+      setTimeout(() => setIsVisible(true), 1000);
     }
-  }, [])
+  }, []);
 
   const handleAccept = () => {
     // Accept ALL cookies with single click
-    localStorage.setItem('cookie-consent', 'accepted')
-    localStorage.setItem('cookie-consent-date', new Date().toISOString())
+    localStorage.setItem("cookie-consent", "accepted");
+    localStorage.setItem("cookie-consent-date", new Date().toISOString());
 
-    logger.track('cookie_consent_accepted_simple')
+    logger.track("cookie_consent_accepted_simple");
 
     // Initialize all analytics/tracking
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       // Google Analytics, Sentry, etc.
-      logger.info('All tracking initialized')
+      logger.info("All tracking initialized");
     }
 
-    setIsVisible(false)
-  }
+    setIsVisible(false);
+  };
 
   const handleReject = () => {
     // Reject ALL optional cookies (only necessary cookies remain)
-    localStorage.setItem('cookie-consent', 'necessary-only')
-    localStorage.setItem('cookie-consent-date', new Date().toISOString())
+    localStorage.setItem("cookie-consent", "necessary-only");
+    localStorage.setItem("cookie-consent-date", new Date().toISOString());
 
-    logger.track('cookie_consent_necessary_only')
+    logger.track("cookie_consent_necessary_only");
 
-    setIsVisible(false)
-  }
+    setIsVisible(false);
+  };
 
-  if (!isVisible) return null
+  if (!isVisible) return null;
 
   return (
     <div className="fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-6 md:max-w-md">
@@ -57,7 +57,7 @@ export function CookieConsentSimple() {
           <Cookie className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
           <div className="flex-1 space-y-3">
             <p className="text-sm text-slate-300">
-              We use cookies for analytics, personalization, and ads.{' '}
+              We use cookies for analytics, personalization, and ads.{" "}
               <a
                 href="/legal/privacy-policy"
                 className="text-blue-400 hover:text-blue-300 underline"
@@ -83,5 +83,5 @@ export function CookieConsentSimple() {
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,10 +1,11 @@
-import { Metadata } from 'next';
-import { FraudDetectionDashboard } from '@/components/fraud/FraudDetectionDashboard';
-import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
+import { Metadata } from "next";
+import { FraudDetectionDashboard } from "@/components/fraud/FraudDetectionDashboard";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 
 export const metadata: Metadata = {
-  title: 'Fraud Detection System | ClaimGuardian',
-  description: 'AI-powered fraud detection and prevention system for insurance claims',
+  title: "Fraud Detection System | ClaimGuardian",
+  description:
+    "AI-powered fraud detection and prevention system for insurance claims",
 };
 
 export default function FraudDetectionPage() {

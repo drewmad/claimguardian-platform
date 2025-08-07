@@ -5,42 +5,44 @@
  * Usage: node import-parallel-optimal.js [START] [END]
  */
 
-const fs = require('fs');
-const path = require('path');
-const { createClient } = require('@supabase/supabase-js');
-const { Worker } = require('worker_threads');
-const os = require('os');
+const fs = require("fs");
+const path = require("path");
+const { createClient } = require("@supabase/supabase-js");
+const { Worker } = require("worker_threads");
+const os = require("os");
 
 // Load environment
-const dotenv = require('dotenv');
-dotenv.config({ path: path.join(__dirname, '..', '.env.local') });
+const dotenv = require("dotenv");
+dotenv.config({ path: path.join(__dirname, "..", ".env.local") });
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const BATCH_SIZE = parseInt(process.env.BATCH_SIZE) || 1000;
-const CLEANED_SPLIT_DIR = process.env.TEST_MODE ? path.join(process.cwd(), 'CleanedSplit_test') : path.join(process.cwd(), 'CleanedSplit');
+const CLEANED_SPLIT_DIR = process.env.TEST_MODE
+  ? path.join(process.cwd(), "CleanedSplit_test")
+  : path.join(process.cwd(), "CleanedSplit");
 
 // Parse arguments
 const start = parseInt(process.argv[2]) || 0;
 const end = parseInt(process.argv[3]) || 999;
-const workerMode = process.argv[4] === 'worker';
+const workerMode = process.argv[4] === "worker";
 
 // Column mapping cache (will be populated on first file)
 let columnMapping = null;
 
 // Colors for terminal
 const colors = {
-  reset: '\x1b[0m',
-  bright: '\x1b[1m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  red: '\x1b[31m',
-  cyan: '\x1b[36m'
+  reset: "\x1b[0m",
+  bright: "\x1b[1m",
+  green: "\x1b[32m",
+  yellow: "\x1b[33m",
+  red: "\x1b[31m",
+  cyan: "\x1b[36m",
 };
 
 // Create Supabase client
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {
-  auth: { persistSession: false, autoRefreshToken: false }
+  auth: { persistSession: false, autoRefreshToken: false },
 });
 
 // Get column mapping between CSV headers and staging table columns
@@ -50,8 +52,8 @@ async function getColumnMapping(csvHeaders) {
   try {
     // Get staging table structure
     const { data, error } = await supabase
-      .from('stg_florida_parcels')
-      .select('*')
+      .from("stg_florida_parcels")
+      .select("*")
       .limit(1);
 
     if (error) throw error;
@@ -61,8 +63,8 @@ async function getColumnMapping(csvHeaders) {
 
     // Map CSV headers to staging columns (case-insensitive match)
     for (const csvHeader of csvHeaders) {
-      const stagingMatch = stagingColumns.find(col =>
-        col.toLowerCase() === csvHeader.toLowerCase()
+      const stagingMatch = stagingColumns.find(
+        (col) => col.toLowerCase() === csvHeader.toLowerCase(),
       );
       if (stagingMatch) {
         mapping[csvHeader] = stagingMatch;
@@ -70,9 +72,10 @@ async function getColumnMapping(csvHeaders) {
     }
 
     columnMapping = mapping;
-    console.log(`   📋 Mapped ${Object.keys(mapping).length}/${csvHeaders.length} columns`);
+    console.log(
+      `   📋 Mapped ${Object.keys(mapping).length}/${csvHeaders.length} columns`,
+    );
     return mapping;
-
   } catch (error) {
     throw new Error(`Failed to get column mapping: ${error.message}`);
   }
@@ -81,7 +84,7 @@ async function getColumnMapping(csvHeaders) {
 // Fast CSV parser
 function parseCSVLine(line) {
   const result = [];
-  let current = '';
+  let current = "";
   let inQuotes = false;
 
   for (let i = 0; i < line.length; i++) {
@@ -94,9 +97,9 @@ function parseCSVLine(line) {
       } else {
         inQuotes = !inQuotes;
       }
-    } else if (char === ',' && !inQuotes) {
+    } else if (char === "," && !inQuotes) {
       result.push(current.trim());
-      current = '';
+      current = "";
     } else {
       current += char;
     }
@@ -112,7 +115,9 @@ async function processFile(filePath, fileIndex, totalFiles) {
   const fileSize = (fs.statSync(filePath).size / 1024 / 1024).toFixed(1);
   const processId = `[${process.pid}]`;
 
-  console.log(`${colors.cyan}${processId} [${fileIndex}/${totalFiles}] ${fileName} (${fileSize} MB)${colors.reset}`);
+  console.log(
+    `${colors.cyan}${processId} [${fileIndex}/${totalFiles}] ${fileName} (${fileSize} MB)${colors.reset}`,
+  );
 
   const startTime = Date.now();
   let recordCount = 0;
@@ -120,15 +125,17 @@ async function processFile(filePath, fileIndex, totalFiles) {
 
   try {
     // Read entire file for maximum speed
-    const content = fs.readFileSync(filePath, 'utf8');
-    const lines = content.trim().split('\n');
+    const content = fs.readFileSync(filePath, "utf8");
+    const lines = content.trim().split("\n");
 
     if (lines.length < 2) {
-      throw new Error('File has no data');
+      throw new Error("File has no data");
     }
 
     // Parse headers (keep original case for mapping)
-    const csvHeaders = parseCSVLine(lines[0]).map(h => h.trim().replace(/"/g, ''));
+    const csvHeaders = parseCSVLine(lines[0]).map((h) =>
+      h.trim().replace(/"/g, ""),
+    );
 
     // Get column mapping
     const mapping = await getColumnMapping(csvHeaders);
@@ -149,9 +156,9 @@ async function processFile(filePath, fileIndex, totalFiles) {
         // Create CSV record first
         const csvRecord = {};
         csvHeaders.forEach((header, idx) => {
-          let value = values[idx] || '';
-          value = value.replace(/^"|"$/g, '').trim();
-          csvRecord[header] = value === '' ? null : value;
+          let value = values[idx] || "";
+          value = value.replace(/^"|"$/g, "").trim();
+          csvRecord[header] = value === "" ? null : value;
         });
 
         // Map to staging table columns
@@ -177,44 +184,58 @@ async function processFile(filePath, fileIndex, totalFiles) {
       const batch = records.slice(i, i + BATCH_SIZE);
       const progress = Math.min(i + BATCH_SIZE, records.length);
 
-      process.stdout.write(`\r${processId}    Progress: ${progress}/${recordCount} (${Math.round(progress/recordCount*100)}%)`);
+      process.stdout.write(
+        `\r${processId}    Progress: ${progress}/${recordCount} (${Math.round((progress / recordCount) * 100)}%)`,
+      );
 
       // Add ETL metadata to each record
       const batchWithMetadata = batch.map((record, idx) => ({
         ...record,
         stg_source_file: fileName,
-        stg_row_number: i + idx + 2 // +2 for header row and 1-based indexing
+        stg_row_number: i + idx + 2, // +2 for header row and 1-based indexing
       }));
 
       // Insert into staging table
       const { error } = await supabase
-        .from('stg_florida_parcels')
+        .from("stg_florida_parcels")
         .insert(batchWithMetadata);
 
       if (error) {
-        console.error(`${processId}    ❌ Supabase error details:`, JSON.stringify(error, null, 2));
-        throw new Error(`Batch insert failed: ${error.message || error.details || JSON.stringify(error)}`);
+        console.error(
+          `${processId}    ❌ Supabase error details:`,
+          JSON.stringify(error, null, 2),
+        );
+        throw new Error(
+          `Batch insert failed: ${error.message || error.details || JSON.stringify(error)}`,
+        );
       }
 
       // Small delay to prevent rate limiting
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
 
     // Note: Data now in staging table - transfer to main table will be done separately
-    console.log(`\n${processId}    📋 Data loaded to staging table (stg_florida_parcels)`);
+    console.log(
+      `\n${processId}    📋 Data loaded to staging table (stg_florida_parcels)`,
+    );
 
     const duration = ((Date.now() - startTime) / 1000).toFixed(1);
     const rate = Math.round(recordCount / duration);
 
-    console.log(`${processId}    ${colors.green}✅ Success! ${recordCount} records in ${duration}s (${rate} rec/s)${colors.reset}`);
+    console.log(
+      `${processId}    ${colors.green}✅ Success! ${recordCount} records in ${duration}s (${rate} rec/s)${colors.reset}`,
+    );
     if (errorCount > 0) {
-      console.log(`${processId}    ${colors.yellow}⚠️  Skipped ${errorCount} malformed rows${colors.reset}`);
+      console.log(
+        `${processId}    ${colors.yellow}⚠️  Skipped ${errorCount} malformed rows${colors.reset}`,
+      );
     }
 
     return { success: true, recordCount, duration: parseFloat(duration) };
-
   } catch (error) {
-    console.error(`${processId}    ${colors.red}❌ Failed: ${error.message}${colors.reset}`);
+    console.error(
+      `${processId}    ${colors.red}❌ Failed: ${error.message}${colors.reset}`,
+    );
     return { success: false, recordCount: 0, duration: 0 };
   }
 }
@@ -222,14 +243,15 @@ async function processFile(filePath, fileIndex, totalFiles) {
 // Main function
 async function main() {
   // Get files in range
-  const allFiles = fs.readdirSync(CLEANED_SPLIT_DIR)
-    .filter(f => f.endsWith('.csv'))
+  const allFiles = fs
+    .readdirSync(CLEANED_SPLIT_DIR)
+    .filter((f) => f.endsWith(".csv"))
     .sort();
 
   const files = allFiles.slice(start, end);
 
   if (files.length === 0) {
-    console.log('No files in specified range');
+    console.log("No files in specified range");
     return;
   }
 
@@ -255,12 +277,14 @@ async function main() {
   // Summary
   const totalDuration = ((Date.now() - startTime) / 60000).toFixed(1);
 
-  console.log(`\n${'='.repeat(60)}`);
+  console.log(`\n${"=".repeat(60)}`);
   console.log(`${colors.bright}📊 SUBSET COMPLETE${colors.reset}`);
   console.log(`✅ Files: ${successCount}/${files.length}`);
   console.log(`📈 Records: ${totalRecords.toLocaleString()}`);
   console.log(`⏱️  Time: ${totalDuration} minutes`);
-  console.log(`⚡ Rate: ${Math.round(totalRecords / (totalDuration * 60))} records/second`);
+  console.log(
+    `⚡ Rate: ${Math.round(totalRecords / (totalDuration * 60))} records/second`,
+  );
 }
 
 // Run

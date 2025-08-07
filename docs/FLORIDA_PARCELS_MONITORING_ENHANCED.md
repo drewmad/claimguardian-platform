@@ -1,11 +1,13 @@
 # Florida Parcels Enhanced Monitoring System
 
 ## Overview
+
 The enhanced Florida Parcels monitoring system provides comprehensive real-time tracking, analytics, and control for processing all 67 Florida counties' cadastral data (approximately 10 million parcels).
 
 ## Access the Dashboard
 
 ### Local Development
+
 ```bash
 cd /Users/madengineering/ClaimGuardian
 pnpm dev
@@ -13,11 +15,13 @@ pnpm dev
 ```
 
 ### Production
+
 Navigate to: `https://claimguardianai.com/admin/florida-parcels`
 
 ## Enhanced Features
 
 ### 1. **Real-Time Monitoring Dashboard**
+
 - **Auto-refresh**: Configurable intervals (5-60 seconds)
 - **Live Progress Tracking**: See parcels processing in real-time
 - **Multi-view Interface**: Overview, Counties, Analytics, Timeline tabs
@@ -25,6 +29,7 @@ Navigate to: `https://claimguardianai.com/admin/florida-parcels`
 - **Batch Controls**: Select multiple counties for targeted processing
 
 ### 2. **Performance Analytics**
+
 - **Processing Speed Metrics**: Parcels per minute, per county
 - **Cost Estimation**: Real-time cost tracking ($0.50 per million parcels)
 - **Storage Usage**: Estimated database storage (2.5KB per parcel)
@@ -33,6 +38,7 @@ Navigate to: `https://claimguardianai.com/admin/florida-parcels`
 - **Optimization Recommendations**: AI-driven suggestions for better performance
 
 ### 3. **Regional Analysis**
+
 - **7 Florida Regions**: Panhandle, North Central, Northeast, Central, West Central, East Central, Southeast, Southwest, South Central
 - **Regional Progress**: Track completion by geographic area
 - **Population Coverage**: See how many residents are covered
@@ -40,6 +46,7 @@ Navigate to: `https://claimguardianai.com/admin/florida-parcels`
 - **Major Cities**: View processing status for metropolitan areas
 
 ### 4. **Error Management**
+
 - **Smart Error Detection**: Pattern recognition for common issues
 - **Recovery Suggestions**: Automated recommendations for fixing errors
 - **Error Timeline**: Track when and where errors occur
@@ -47,12 +54,14 @@ Navigate to: `https://claimguardianai.com/admin/florida-parcels`
 - **Error Analytics**: Identify systemic issues across counties
 
 ### 5. **Predictive Analytics**
+
 - **Completion Estimates**: AI-powered predictions for processing time
 - **Resource Planning**: Forecast CPU, memory, and storage needs
 - **Cost Projections**: Estimate total processing costs
 - **Bottleneck Detection**: Identify slow counties before they impact timeline
 
 ### 6. **Advanced Controls**
+
 - **Parallel Processing**: Configure 1-10 counties simultaneously
 - **Batch Size Optimization**: Adjust from 100-5000 records per batch
 - **Priority Processing**: Start with 20 most populous counties
@@ -62,12 +71,14 @@ Navigate to: `https://claimguardianai.com/admin/florida-parcels`
 ## Dashboard Components
 
 ### Summary Cards
+
 1. **Overall Progress**: Visual progress bar with percentage
 2. **Processing Speed**: Current parcels/minute rate
 3. **Storage Usage**: Estimated GB used in database
 4. **Estimated Cost**: Running total of processing costs
 
 ### County List Features
+
 - **Expandable Details**: Click to see processing history, errors, logs
 - **Status Badges**: Color-coded with icons (Processing, Completed, Error, Pending)
 - **Progress Bars**: Visual representation with exact percentages
@@ -75,12 +86,14 @@ Navigate to: `https://claimguardianai.com/admin/florida-parcels`
 - **Action Buttons**: Retry, Reset, View Logs per county
 
 ### Analytics Charts
+
 1. **County Status Distribution**: Pie chart of processing states
 2. **Top Counties by Progress**: Bar chart of leading counties
 3. **Processing Timeline**: Line chart of activity over time
 4. **Regional Heatmap**: Visual map of Florida showing progress
 
 ### Timeline View
+
 - **Recent Activity Log**: Last 50 processing events
 - **Event Types**: Started, Progress Update, Completed, Failed
 - **Timestamps**: Exact time of each event
@@ -89,6 +102,7 @@ Navigate to: `https://claimguardianai.com/admin/florida-parcels`
 ## Processing Workflow
 
 ### Starting Processing
+
 1. **Check Storage**: Ensure Cadastral_Statewide.zip is uploaded to Storage
 2. **Select Mode**:
    - **Priority**: 20 largest counties by population
@@ -100,6 +114,7 @@ Navigate to: `https://claimguardianai.com/admin/florida-parcels`
 4. **Monitor Progress**: Watch real-time updates on dashboard
 
 ### Error Recovery
+
 1. **Identify Error**: Check error type and affected county
 2. **Review Suggestions**: Follow automated recovery recommendations
 3. **Retry Options**:
@@ -108,6 +123,7 @@ Navigate to: `https://claimguardianai.com/admin/florida-parcels`
    - Adjust batch size and retry
 
 ### Performance Optimization
+
 1. **Monitor Speed**: Track parcels/minute rates
 2. **Adjust Settings**:
    - Increase batch size for faster counties
@@ -118,6 +134,7 @@ Navigate to: `https://claimguardianai.com/admin/florida-parcels`
 ## API Endpoints
 
 ### Edge Functions
+
 ```typescript
 // Processor - Handle individual counties
 POST /functions/v1/florida-parcels-processor
@@ -151,22 +168,26 @@ POST /functions/v1/florida-parcels-monitor
 ## Database Tables
 
 ### florida_parcels
+
 - 138 columns matching Florida DOR schema
 - PostGIS geometry support
 - Indexes on key fields
 - RLS policies for security
 
 ### florida_parcels_processing_log
+
 - County-level processing status
 - Error tracking and recovery points
 - Performance metrics
 
 ### florida_parcels_orchestrator
+
 - Multi-county job management
 - Parallel processing control
 - Job history and status
 
 ### florida_parcels_processing_stats
+
 - Aggregate performance data
 - Historical trends
 - System metrics
@@ -174,12 +195,14 @@ POST /functions/v1/florida-parcels-monitor
 ## Performance Benchmarks
 
 ### Expected Processing Rates
+
 - **Small Counties** (<50k parcels): 500-800 parcels/minute
 - **Medium Counties** (50k-200k parcels): 400-600 parcels/minute
 - **Large Counties** (>200k parcels): 300-500 parcels/minute
 - **Miami-Dade** (950k parcels): 250-400 parcels/minute
 
 ### Optimization Tips
+
 1. **Batch Size**:
    - Small counties: 500-1000
    - Large counties: 1000-2000
@@ -198,6 +221,7 @@ POST /functions/v1/florida-parcels-monitor
 ## Troubleshooting
 
 ### Common Issues
+
 1. **Slow Processing**
    - Check batch size settings
    - Verify network connectivity
@@ -214,6 +238,7 @@ POST /functions/v1/florida-parcels-monitor
    - Reset affected counties
 
 ### Debug Commands
+
 ```bash
 # Check Edge Function logs
 supabase functions logs florida-parcels-processor --follow
@@ -227,12 +252,14 @@ SELECT * FROM florida_parcels_import_status;
 ## Cost Management
 
 ### Pricing Model
+
 - **Processing**: $0.50 per million parcels
 - **Storage**: ~2.5KB per parcel
 - **Edge Functions**: Included in Supabase plan
 - **Estimated Total**: $5-10 for all Florida
 
 ### Cost Optimization
+
 1. Process during off-peak hours
 2. Use optimal batch sizes
 3. Minimize error retries
@@ -241,12 +268,14 @@ SELECT * FROM florida_parcels_import_status;
 ## Security Considerations
 
 ### Access Control
+
 - Admin-only dashboard access
 - Service role for Edge Functions
 - RLS policies on all tables
 - Audit logging enabled
 
 ### Data Protection
+
 - No PII in logs
 - Encrypted storage
 - Secure API endpoints
@@ -255,6 +284,7 @@ SELECT * FROM florida_parcels_import_status;
 ## Future Enhancements
 
 ### Planned Features
+
 1. **ML-Powered Optimization**: Auto-adjust settings based on performance
 2. **Mobile Dashboard**: Responsive design for tablet/phone monitoring
 3. **Email Alerts**: Notifications for errors or completion
@@ -265,6 +295,7 @@ SELECT * FROM florida_parcels_import_status;
 8. **Backup/Restore**: Automated backup of processed data
 
 ### Integration Opportunities
+
 - Connect to property enrichment services
 - Link to assessment databases
 - Integrate with GIS mapping tools
@@ -273,12 +304,14 @@ SELECT * FROM florida_parcels_import_status;
 ## Support
 
 ### Resources
+
 - Edge Function logs in Supabase Dashboard
 - Database queries for troubleshooting
 - Performance analytics in monitoring dashboard
 - Error patterns in timeline view
 
 ### Best Practices
+
 1. Start with small test batch
 2. Monitor first few counties closely
 3. Adjust settings based on performance

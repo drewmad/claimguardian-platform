@@ -8,13 +8,13 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { ArrowLeft, Receipt } from 'lucide-react'
-import Link from 'next/link'
+import { ArrowLeft, Receipt } from "lucide-react";
+import Link from "next/link";
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function ReceiptScannerPage() {
   return (
@@ -37,12 +37,13 @@ export default function ReceiptScannerPage() {
           </CardHeader>
           <CardContent>
             <p className="text-slate-300">
-              The receipt scanner feature is currently being updated and will be available soon.
-              This tool will help you scan and organize receipts for your property claims.
+              The receipt scanner feature is currently being updated and will be
+              available soon. This tool will help you scan and organize receipts
+              for your property claims.
             </p>
           </CardContent>
         </Card>
       </div>
     </div>
-  )
+  );
 }

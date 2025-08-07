@@ -6,65 +6,70 @@
  * @status stable
  */
 
-'use client'
+"use client";
 
-import { Button } from '@claimguardian/ui'
-import { Brain, Search, Lightbulb, AlertCircle, ChevronRight } from 'lucide-react'
-import React, { useState } from 'react'
-import { logger } from "@/lib/logger/production-logger"
+import { Button } from "@claimguardian/ui";
+import {
+  Brain,
+  Search,
+  Lightbulb,
+  AlertCircle,
+  ChevronRight,
+} from "lucide-react";
+import React, { useState } from "react";
+import { logger } from "@/lib/logger/production-logger";
 
-import { learningAssistant } from '@/lib/learning/learning-assistant'
-
+import { learningAssistant } from "@/lib/learning/learning-assistant";
 
 interface LearningResult {
-  id?: string
-  title: string
-  problem: string
-  solution: string
-  category: string
-  confidence: number
+  id?: string;
+  title: string;
+  problem: string;
+  solution: string;
+  category: string;
+  confidence: number;
 }
 
 export function LearningWidget() {
-  const [isOpen, setIsOpen] = useState(false)
-  const [query, setQuery] = useState('')
-  const [results, setResults] = useState<LearningResult[]>([])
-  const [loading, setLoading] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<LearningResult[]>([]);
+  const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState<{
-    totalIssues: number
-    bySeverity: Record<string, number>
-    byCategory: Record<string, number>
-    recentTrends: string
-  } | null>(null)
+    totalIssues: number;
+    bySeverity: Record<string, number>;
+    byCategory: Record<string, number>;
+    recentTrends: string;
+  } | null>(null);
 
   const handleSearch = async () => {
-    if (!query.trim()) return
+    if (!query.trim()) return;
 
-    setLoading(true)
+    setLoading(true);
     try {
-      const searchResults = await learningAssistant.searchLearnings({ query })
-      setResults(searchResults)
+      const searchResults = await learningAssistant.searchLearnings({ query });
+      setResults(searchResults);
     } catch (error) {
-      logger.error('Failed to search learnings:', error)
+      logger.error("Failed to search learnings:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const loadStats = async () => {
     try {
-      const weeklyStats = await learningAssistant.getStats('week')
-      setStats(weeklyStats)
+      const weeklyStats = await learningAssistant.getStats("week");
+      setStats(weeklyStats);
     } catch (error) {
-      logger.error('Failed to load stats:', error)
+      logger.error("Failed to load stats:", error);
     }
-  }
+  };
 
   React.useEffect(() => {
     if (isOpen && !stats) {
-      loadStats()
+      loadStats();
     }
-  }, [isOpen, stats])
+  }, [isOpen, stats]);
 
   if (!isOpen) {
     return (
@@ -75,7 +80,7 @@ export function LearningWidget() {
       >
         <Brain className="w-6 h-6 group-hover:scale-110 transition-transform" />
       </button>
-    )
+    );
   }
 
   return (
@@ -84,7 +89,9 @@ export function LearningWidget() {
       <div className="p-4 border-b border-gray-700 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Brain className="w-5 h-5 text-purple-400" />
-          <h3 className="text-lg font-semibold text-white">Learning Assistant</h3>
+          <h3 className="text-lg font-semibold text-white">
+            Learning Assistant
+          </h3>
         </div>
         <button
           onClick={() => setIsOpen(false)}
@@ -101,7 +108,7 @@ export function LearningWidget() {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             placeholder="Search for errors or solutions..."
             className="flex-1 bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-purple-400"
           />
@@ -122,15 +129,21 @@ export function LearningWidget() {
           <div className="grid grid-cols-2 gap-2 text-sm">
             <div>
               <span className="text-gray-400">Issues:</span>
-              <span className="text-white ml-1 font-medium">{stats.totalIssues}</span>
+              <span className="text-white ml-1 font-medium">
+                {stats.totalIssues}
+              </span>
             </div>
             <div>
               <span className="text-gray-400">Trend:</span>
-              <span className={`ml-1 font-medium ${
-                stats.recentTrends === 'increasing' ? 'text-orange-400' :
-                stats.recentTrends === 'decreasing' ? 'text-green-400' :
-                'text-gray-300'
-              }`}>
+              <span
+                className={`ml-1 font-medium ${
+                  stats.recentTrends === "increasing"
+                    ? "text-orange-400"
+                    : stats.recentTrends === "decreasing"
+                      ? "text-green-400"
+                      : "text-gray-300"
+                }`}
+              >
                 {stats.recentTrends}
               </span>
             </div>
@@ -155,13 +168,21 @@ export function LearningWidget() {
                 <div className="flex items-start gap-2">
                   <Lightbulb className="w-4 h-4 text-yellow-400 mt-1 flex-shrink-0" />
                   <div className="flex-1">
-                    <h4 className="text-sm font-medium text-white mb-1">{result.title}</h4>
-                    <p className="text-xs text-gray-400 mb-2">{result.problem}</p>
+                    <h4 className="text-sm font-medium text-white mb-1">
+                      {result.title}
+                    </h4>
+                    <p className="text-xs text-gray-400 mb-2">
+                      {result.problem}
+                    </p>
                     <div className="bg-gray-700 rounded p-2">
-                      <p className="text-xs text-green-400">{result.solution}</p>
+                      <p className="text-xs text-green-400">
+                        {result.solution}
+                      </p>
                     </div>
                     <div className="flex items-center gap-4 mt-2">
-                      <span className="text-xs text-gray-500">{result.category}</span>
+                      <span className="text-xs text-gray-500">
+                        {result.category}
+                      </span>
                       <span className="text-xs text-gray-500">
                         {Math.round(result.confidence * 100)}% match
                       </span>
@@ -182,19 +203,25 @@ export function LearningWidget() {
             <div className="space-y-2">
               <button className="w-full text-left p-3 hover:bg-gray-700 rounded-lg transition-colors group">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-300">Quick Reference Guide</span>
+                  <span className="text-sm text-gray-300">
+                    Quick Reference Guide
+                  </span>
                   <ChevronRight className="w-4 h-4 text-gray-500 group-hover:text-gray-300" />
                 </div>
               </button>
               <button className="w-full text-left p-3 hover:bg-gray-700 rounded-lg transition-colors group">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-300">Error Pattern Guide</span>
+                  <span className="text-sm text-gray-300">
+                    Error Pattern Guide
+                  </span>
                   <ChevronRight className="w-4 h-4 text-gray-500 group-hover:text-gray-300" />
                 </div>
               </button>
               <button className="w-full text-left p-3 hover:bg-gray-700 rounded-lg transition-colors group">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-300">VS Code Snippets</span>
+                  <span className="text-sm text-gray-300">
+                    VS Code Snippets
+                  </span>
                   <ChevronRight className="w-4 h-4 text-gray-500 group-hover:text-gray-300" />
                 </div>
               </button>
@@ -203,5 +230,5 @@ export function LearningWidget() {
         )}
       </div>
     </div>
-  )
+  );
 }

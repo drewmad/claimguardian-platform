@@ -6,14 +6,14 @@
  * @status stable
  */
 
-import { Metadata } from 'next'
+import { Metadata } from "next";
 
-import { LegalDocumentView } from '@/components/legal/legal-document-view'
+import { LegalDocumentView } from "@/components/legal/legal-document-view";
 
 export const metadata: Metadata = {
-  title: 'Terms of Service | ClaimGuardian',
-  description: 'Terms and conditions for using ClaimGuardian services',
-}
+  title: "Terms of Service | ClaimGuardian",
+  description: "Terms and conditions for using ClaimGuardian services",
+};
 
 export default function TermsOfServicePage() {
   return (
@@ -22,5 +22,5 @@ export default function TermsOfServicePage() {
         <LegalDocumentView documentType="terms_of_service" />
       </div>
     </div>
-  )
+  );
 }

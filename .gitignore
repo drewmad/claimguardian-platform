@@ -640,3 +640,20 @@ feature-flags.local.json
 
 # A/B testing configuration
 ab-test-config.local.json
+
+# Large data files
+data/florida/Cadastral_Statewide.zip
+data/florida/Cadastral_Statewide.gdb/
+data/florida/csv_output/*.csv
+data/florida/charlotte_chunks/
+*.geojson
+*.gdb
+*.gdbtable
+*.gdbtablx
+
+# Turbo cache (can be regenerated)
+.turbo/cache/
+
+# Cleanup script (temporary)
+cleanup-project.sh
+cleanup-data-files.sh

@@ -5,11 +5,13 @@
 Your Supabase connection is now fully configured and working.
 
 ### 📋 Configuration Files Created:
+
 - `.env.local` - Environment variables for Next.js
 - `supabase/config.toml` - Supabase CLI configuration
 - `scripts/supabase-examples.sh` - API usage examples
 
 ### 🔑 Credentials Configured:
+
 - **Project URL**: `https://tmlrvecuwgppbaynesji.supabase.co`
 - **Anon Key**: ✅ Configured
 - **Service Role Key**: ✅ Configured
@@ -47,25 +49,22 @@ curl -X DELETE "https://tmlrvecuwgppbaynesji.supabase.co/rest/v1/forms?id=eq.REC
 ### 2. **Using JavaScript/TypeScript (In Your App)**
 
 ```typescript
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-export const supabase = createClient(supabaseUrl, supabaseKey)
+export const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Read data
-const { data, error } = await supabase
-  .from('forms')
-  .select('*')
-  .limit(10)
+const { data, error } = await supabase.from("forms").select("*").limit(10);
 
 // Create data
 const { data, error } = await supabase
-  .from('forms')
+  .from("forms")
   .insert([
-    { filing_id: 'TEST', form_number: 'HO-3', company: 'Test Company' }
-  ])
+    { filing_id: "TEST", form_number: "HO-3", company: "Test Company" },
+  ]);
 ```
 
 ### 3. **Supabase CLI Commands**
@@ -90,6 +89,7 @@ supabase db push
 ## 📊 Your Database Schema
 
 Your database contains these tables:
+
 - **forms** - Main insurance forms data
 - **forms_clauses** - Form sections/clauses
 - **forms_embeddings** - AI embeddings for search
@@ -115,7 +115,9 @@ Your database contains these tables:
 ## 🤖 Connecting with Gemini CLI
 
 ### Prerequisites
+
 1. **Install Supabase CLI**:
+
    ```bash
    brew install supabase/tap/supabase
    ```
@@ -129,11 +131,13 @@ Your database contains these tables:
 ### Connection Steps for Gemini CLI
 
 1. **Login to Supabase**:
+
    ```bash
    supabase login --token "$SUPABASE_ACCESS_TOKEN"
    ```
 
 2. **Link to Project**:
+
    ```bash
    supabase link --project-ref tmlrvecuwgppbaynesji
    ```
@@ -228,6 +232,7 @@ supabase gen types typescript --project-id tmlrvecuwgppbaynesji > types/supabase
 ### Environment Setup for Gemini
 
 Create a `.gemini.env` file:
+
 ```bash
 # Supabase Configuration
 SUPABASE_URL=https://tmlrvecuwgppbaynesji.supabase.co

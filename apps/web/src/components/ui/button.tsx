@@ -11,40 +11,44 @@
  * @status stable
  * @notes Enhanced with loading spinner, icon support, and proper ARIA attributes. Updated for WCAG 2.1 AA compliance.
  */
-'use client'
+"use client";
 
-import { cva, type VariantProps } from 'class-variance-authority'
-import * as React from 'react'
+import { cva, type VariantProps } from "class-variance-authority";
+import * as React from "react";
 
-import { cn } from '@/lib/utils'
+import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center rounded-lg text-sm font-medium backdrop-blur-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-border focus-visible:ring-offset-2 focus:ring-2 focus:ring-accent-border focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 touch-manipulation',
+  "inline-flex items-center justify-center rounded-lg text-sm font-medium backdrop-blur-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-border focus-visible:ring-offset-2 focus:ring-2 focus:ring-accent-border focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 touch-manipulation",
   {
     variants: {
       variant: {
-        default: 'bg-accent text-text-primary hover:bg-accent-hover shadow-lg border border-accent-border',
-        secondary: 'bg-panel text-text-primary hover:bg-panel/80 border border-border',
-        outline: 'border border-border bg-transparent text-text-primary hover:bg-panel',
-        ghost: 'hover:bg-panel text-text-primary',
-        link: 'text-accent underline-offset-4 hover:underline',
-        success: 'bg-success text-text-primary hover:bg-success/90 shadow-lg',
-        error: 'bg-error text-text-primary hover:bg-error/90 shadow-lg',
-        destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-lg'
+        default:
+          "bg-accent text-text-primary hover:bg-accent-hover shadow-lg border border-accent-border",
+        secondary:
+          "bg-panel text-text-primary hover:bg-panel/80 border border-border",
+        outline:
+          "border border-border bg-transparent text-text-primary hover:bg-panel",
+        ghost: "hover:bg-panel text-text-primary",
+        link: "text-accent underline-offset-4 hover:underline",
+        success: "bg-success text-text-primary hover:bg-success/90 shadow-lg",
+        error: "bg-error text-text-primary hover:bg-error/90 shadow-lg",
+        destructive:
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-lg",
       },
       size: {
-        default: 'h-10 px-4 py-2 min-h-[44px]', // Updated for minimum touch target
-        sm: 'h-9 rounded-lg px-3 min-h-[44px]', // Updated for minimum touch target
-        lg: 'h-11 rounded-lg px-8 text-base min-h-[48px]', // Updated for minimum touch target
-        icon: 'h-10 w-10 min-h-[44px] min-w-[44px]' // Updated for minimum touch target
-      }
+        default: "h-10 px-4 py-2 min-h-[44px]", // Updated for minimum touch target
+        sm: "h-9 rounded-lg px-3 min-h-[44px]", // Updated for minimum touch target
+        lg: "h-11 rounded-lg px-8 text-base min-h-[48px]", // Updated for minimum touch target
+        icon: "h-10 w-10 min-h-[44px] min-w-[44px]", // Updated for minimum touch target
+      },
     },
     defaultVariants: {
-      variant: 'default',
-      size: 'default'
-    }
-  }
-)
+      variant: "default",
+      size: "default",
+    },
+  },
+);
 
 // Loading spinner component with accessibility attributes
 const LoadingSpinner = ({ className }: { className?: string }) => (
@@ -72,68 +76,77 @@ const LoadingSpinner = ({ className }: { className?: string }) => (
       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
     />
   </svg>
-)
+);
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
-  loading?: boolean
-  loadingText?: string
-  leftIcon?: React.ReactNode
-  rightIcon?: React.ReactNode
-  asChild?: boolean
-  'data-testid'?: string
+  loading?: boolean;
+  loadingText?: string;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+  asChild?: boolean;
+  "data-testid"?: string;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({
-    className,
-    variant,
-    size,
-    children,
-    loading = false,
-    loadingText,
-    leftIcon,
-    rightIcon,
-    asChild = false,
-    disabled,
-    onClick,
-    type = 'button',
-    'aria-label': ariaLabel,
-    'aria-describedby': ariaDescribedby,
-    'data-testid': testId,
-    ...props
-  }, ref) => {
-    const [isProcessing, setIsProcessing] = React.useState(false)
+  (
+    {
+      className,
+      variant,
+      size,
+      children,
+      loading = false,
+      loadingText,
+      leftIcon,
+      rightIcon,
+      asChild = false,
+      disabled,
+      onClick,
+      type = "button",
+      "aria-label": ariaLabel,
+      "aria-describedby": ariaDescribedby,
+      "data-testid": testId,
+      ...props
+    },
+    ref,
+  ) => {
+    const [isProcessing, setIsProcessing] = React.useState(false);
 
-    const isDisabled = disabled || loading || isProcessing
+    const isDisabled = disabled || loading || isProcessing;
 
-    const handleClick = React.useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-      if (isProcessing || loading) return
+    const handleClick = React.useCallback(
+      (e: React.MouseEvent<HTMLButtonElement>) => {
+        if (isProcessing || loading) return;
 
-      // Allow default behavior for reset and submit buttons if no custom onClick
-      if ((type === 'reset' || type === 'submit') && !onClick) {
-        return // Let the browser handle the default behavior
-      }
+        // Allow default behavior for reset and submit buttons if no custom onClick
+        if ((type === "reset" || type === "submit") && !onClick) {
+          return; // Let the browser handle the default behavior
+        }
 
-      setIsProcessing(true)
-      onClick?.(e)
+        setIsProcessing(true);
+        onClick?.(e);
 
-      // Reset processing state after a short delay to prevent double-clicks
-      setTimeout(() => setIsProcessing(false), 300)
-    }, [onClick, isProcessing, loading, type])
+        // Reset processing state after a short delay to prevent double-clicks
+        setTimeout(() => setIsProcessing(false), 300);
+      },
+      [onClick, isProcessing, loading, type],
+    );
 
     // Handle keyboard navigation
-    const handleKeyDown = React.useCallback((e: React.KeyboardEvent<HTMLButtonElement>) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault()
-        if (!isDisabled) {
-          handleClick(e as unknown as React.MouseEvent<HTMLButtonElement>)
+    const handleKeyDown = React.useCallback(
+      (e: React.KeyboardEvent<HTMLButtonElement>) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          if (!isDisabled) {
+            handleClick(e as unknown as React.MouseEvent<HTMLButtonElement>);
+          }
         }
-      }
-    }, [handleClick, isDisabled])
+      },
+      [handleClick, isDisabled],
+    );
 
-    const Component = asChild ? 'span' : 'button'
+    const Component = asChild ? "span" : "button";
 
     return React.createElement(
       Component,
@@ -141,33 +154,37 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         type: asChild ? undefined : type,
         className: cn(buttonVariants({ variant, size, className })),
         disabled: asChild ? undefined : isDisabled,
-        'aria-disabled': isDisabled,
-        'aria-busy': loading,
-        'aria-label': ariaLabel,
-        'aria-describedby': ariaDescribedby,
-        'data-testid': testId,
+        "aria-disabled": isDisabled,
+        "aria-busy": loading,
+        "aria-label": ariaLabel,
+        "aria-describedby": ariaDescribedby,
+        "data-testid": testId,
         ref,
         onClick: handleClick,
         onKeyDown: asChild ? undefined : handleKeyDown,
-        role: asChild ? 'button' : undefined,
+        role: asChild ? "button" : undefined,
         tabIndex: asChild ? 0 : undefined,
-        ...props
+        ...props,
       },
       loading && React.createElement(LoadingSpinner, { className: "mr-2" }),
-      !loading && leftIcon && React.createElement(
-        'span',
-        { className: "mr-2", 'aria-hidden': 'true' },
-        leftIcon
-      ),
-      loading ? (loadingText || 'Loading...') : children,
-      !loading && rightIcon && React.createElement(
-        'span',
-        { className: "ml-2", 'aria-hidden': 'true' },
-        rightIcon
-      )
-    )
-  }
-)
-Button.displayName = 'Button'
+      !loading &&
+        leftIcon &&
+        React.createElement(
+          "span",
+          { className: "mr-2", "aria-hidden": "true" },
+          leftIcon,
+        ),
+      loading ? loadingText || "Loading..." : children,
+      !loading &&
+        rightIcon &&
+        React.createElement(
+          "span",
+          { className: "ml-2", "aria-hidden": "true" },
+          rightIcon,
+        ),
+    );
+  },
+);
+Button.displayName = "Button";
 
-export { Button, buttonVariants }
+export { Button, buttonVariants };

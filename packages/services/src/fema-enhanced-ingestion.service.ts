@@ -1,8 +1,8 @@
-import { createClient } from '@supabase/supabase-js';
-import axios, { AxiosInstance } from 'axios';
-import pLimit from 'p-limit';
-import { logger } from '@/lib/logger';
-import { addDays, subDays, format } from 'date-fns';
+import { createClient } from "@supabase/supabase-js";
+import axios, { AxiosInstance } from "axios";
+import pLimit from "p-limit";
+import { logger } from "@/lib/logger";
+import { addDays, subDays, format } from "date-fns";
 
 // =====================================================
 // TYPE DEFINITIONS
@@ -14,7 +14,7 @@ interface FEMADataset {
   endpoint: string;
   timeField: string;
   primaryKey: string[];
-  refreshInterval: 'daily' | 'weekly' | 'monthly';
+  refreshInterval: "daily" | "weekly" | "monthly";
   maxRecords?: number;
 }
 
@@ -45,101 +45,101 @@ export class FEMAEnhancedIngestionService {
   // Dataset configurations
   private readonly DATASETS: Record<string, FEMADataset> = {
     DISASTER_DECLARATIONS_V2: {
-      name: 'DisasterDeclarationsSummaries',
-      version: 'v2',
-      endpoint: '/v2/DisasterDeclarationsSummaries',
-      timeField: 'declarationDate',
-      primaryKey: ['disasterNumber', 'placeCode'],
-      refreshInterval: 'daily'
+      name: "DisasterDeclarationsSummaries",
+      version: "v2",
+      endpoint: "/v2/DisasterDeclarationsSummaries",
+      timeField: "declarationDate",
+      primaryKey: ["disasterNumber", "placeCode"],
+      refreshInterval: "daily",
     },
     PA_PROJECTS_V1: {
-      name: 'PublicAssistanceFundedProjectsDetails',
-      version: 'v1',
-      endpoint: '/v1/PublicAssistanceFundedProjectsDetails',
-      timeField: 'dateApproved',
-      primaryKey: ['disasterNumber', 'projectNumber'],
-      refreshInterval: 'weekly'
+      name: "PublicAssistanceFundedProjectsDetails",
+      version: "v1",
+      endpoint: "/v1/PublicAssistanceFundedProjectsDetails",
+      timeField: "dateApproved",
+      primaryKey: ["disasterNumber", "projectNumber"],
+      refreshInterval: "weekly",
     },
     IA_HOUSING_V2: {
-      name: 'IndividualAssistanceHousingRegistrantsLargeDisasters',
-      version: 'v2',
-      endpoint: '/v2/IndividualAssistanceHousingRegistrantsLargeDisasters',
-      timeField: 'registrationDate',
-      primaryKey: ['registrationId'],
-      refreshInterval: 'weekly',
-      maxRecords: 100000 // Large dataset
+      name: "IndividualAssistanceHousingRegistrantsLargeDisasters",
+      version: "v2",
+      endpoint: "/v2/IndividualAssistanceHousingRegistrantsLargeDisasters",
+      timeField: "registrationDate",
+      primaryKey: ["registrationId"],
+      refreshInterval: "weekly",
+      maxRecords: 100000, // Large dataset
     },
     HMA_PROJECTS_V3: {
-      name: 'HazardMitigationAssistanceProjects',
-      version: 'v3',
-      endpoint: '/v3/HazardMitigationAssistanceProjects',
-      timeField: 'dateApproved',
-      primaryKey: ['projectIdentifier'],
-      refreshInterval: 'monthly'
+      name: "HazardMitigationAssistanceProjects",
+      version: "v3",
+      endpoint: "/v3/HazardMitigationAssistanceProjects",
+      timeField: "dateApproved",
+      primaryKey: ["projectIdentifier"],
+      refreshInterval: "monthly",
     },
     IPAWS_ALERTS_V1: {
-      name: 'IpawsArchivedAlerts',
-      version: 'v1',
-      endpoint: '/v1/IpawsArchivedAlerts',
-      timeField: 'sent',
-      primaryKey: ['id'],
-      refreshInterval: 'daily'
+      name: "IpawsArchivedAlerts",
+      version: "v1",
+      endpoint: "/v1/IpawsArchivedAlerts",
+      timeField: "sent",
+      primaryKey: ["id"],
+      refreshInterval: "daily",
     },
     EMPG_V2: {
-      name: 'EmergencyManagementPerformanceGrants',
-      version: 'v2',
-      endpoint: '/v2/EmergencyManagementPerformanceGrants',
-      timeField: 'fiscalYear',
-      primaryKey: ['fiscalYear', 'state'],
-      refreshInterval: 'monthly'
+      name: "EmergencyManagementPerformanceGrants",
+      version: "v2",
+      endpoint: "/v2/EmergencyManagementPerformanceGrants",
+      timeField: "fiscalYear",
+      primaryKey: ["fiscalYear", "state"],
+      refreshInterval: "monthly",
     },
     FMAG_V1: {
-      name: 'FireManagementAssistanceGrantDeclarations',
-      version: 'v1',
-      endpoint: '/v1/FireManagementAssistanceGrantDeclarations',
-      timeField: 'declarationDate',
-      primaryKey: ['declarationNumber'],
-      refreshInterval: 'weekly'
+      name: "FireManagementAssistanceGrantDeclarations",
+      version: "v1",
+      endpoint: "/v1/FireManagementAssistanceGrantDeclarations",
+      timeField: "declarationDate",
+      primaryKey: ["declarationNumber"],
+      refreshInterval: "weekly",
     },
     HM_PLANS_V1: {
-      name: 'HazardMitigationPlanStatuses',
-      version: 'v1',
-      endpoint: '/v1/HazardMitigationPlanStatuses',
-      timeField: 'approvalDate',
-      primaryKey: ['state', 'communityName'],
-      refreshInterval: 'monthly'
+      name: "HazardMitigationPlanStatuses",
+      version: "v1",
+      endpoint: "/v1/HazardMitigationPlanStatuses",
+      timeField: "approvalDate",
+      primaryKey: ["state", "communityName"],
+      refreshInterval: "monthly",
     },
     MISSION_ASSIGNMENTS_V1: {
-      name: 'MissionAssignments',
-      version: 'v1',
-      endpoint: '/v1/MissionAssignments',
-      timeField: 'requestDate',
-      primaryKey: ['missionNumber'],
-      refreshInterval: 'daily'
+      name: "MissionAssignments",
+      version: "v1",
+      endpoint: "/v1/MissionAssignments",
+      timeField: "requestDate",
+      primaryKey: ["missionNumber"],
+      refreshInterval: "daily",
     },
     FIREFIGHTER_GRANTS_V1: {
-      name: 'NonDisasterAssistanceFirefighterGrants',
-      version: 'v1',
-      endpoint: '/v1/NonDisasterAssistanceFirefighterGrants',
-      timeField: 'awardDate',
-      primaryKey: ['grantId'],
-      refreshInterval: 'weekly'
-    }
+      name: "NonDisasterAssistanceFirefighterGrants",
+      version: "v1",
+      endpoint: "/v1/NonDisasterAssistanceFirefighterGrants",
+      timeField: "awardDate",
+      primaryKey: ["grantId"],
+      refreshInterval: "weekly",
+    },
   };
 
   constructor() {
     this.supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
     );
 
     this.femaClient = axios.create({
-      baseURL: 'https://www.fema.gov/api/open',
+      baseURL: "https://www.fema.gov/api/open",
       headers: {
-        'Accept': 'application/json',
-        'User-Agent': 'ClaimGuardian/1.0 (claimguardianai.com)'
+        Accept: "application/json",
+        "User-Agent": "ClaimGuardian/1.0 (claimguardianai.com)",
       },
-      timeout: 120000 // 2 minutes for large datasets
+      timeout: 120000, // 2 minutes for large datasets
     });
   }
 
@@ -154,22 +154,24 @@ export class FEMAEnhancedIngestionService {
       startDate?: Date;
       endDate?: Date;
       fullSync?: boolean;
-    } = {}
+    } = {},
   ): Promise<SyncResult[]> {
     const startTime = Date.now();
     const results: SyncResult[] = [];
 
     const datasetsToSync = options.datasets || Object.keys(this.DATASETS);
 
-    logger.info('Starting comprehensive FEMA sync', {
+    logger.info("Starting comprehensive FEMA sync", {
       datasets: datasetsToSync,
       state: options.state,
-      fullSync: options.fullSync
+      fullSync: options.fullSync,
     });
 
     // Process datasets in parallel groups
-    const priorityDatasets = ['DISASTER_DECLARATIONS_V2', 'IPAWS_ALERTS_V1'];
-    const standardDatasets = datasetsToSync.filter(d => !priorityDatasets.includes(d));
+    const priorityDatasets = ["DISASTER_DECLARATIONS_V2", "IPAWS_ALERTS_V1"];
+    const standardDatasets = datasetsToSync.filter(
+      (d) => !priorityDatasets.includes(d),
+    );
 
     // Sync priority datasets first
     for (const datasetKey of priorityDatasets) {
@@ -181,13 +183,13 @@ export class FEMAEnhancedIngestionService {
 
     // Sync remaining datasets in parallel
     const parallelResults = await Promise.allSettled(
-      standardDatasets.map(datasetKey =>
-        this.limit(() => this.syncDataset(datasetKey, options))
-      )
+      standardDatasets.map((datasetKey) =>
+        this.limit(() => this.syncDataset(datasetKey, options)),
+      ),
     );
 
     parallelResults.forEach((result, index) => {
-      if (result.status === 'fulfilled') {
+      if (result.status === "fulfilled") {
         results.push(result.value);
       } else {
         results.push({
@@ -196,16 +198,16 @@ export class FEMAEnhancedIngestionService {
           recordsInserted: 0,
           recordsUpdated: 0,
           errors: [result.reason.message],
-          duration: 0
+          duration: 0,
         });
       }
     });
 
     const totalDuration = Date.now() - startTime;
-    logger.info('Comprehensive sync completed', {
+    logger.info("Comprehensive sync completed", {
       duration: totalDuration,
       totalRecords: results.reduce((sum, r) => sum + r.recordsProcessed, 0),
-      datasetsSuccessful: results.filter(r => r.errors.length === 0).length
+      datasetsSuccessful: results.filter((r) => r.errors.length === 0).length,
     });
 
     // Update metadata
@@ -216,7 +218,7 @@ export class FEMAEnhancedIngestionService {
 
   private async syncDataset(
     datasetKey: string,
-    options: any
+    options: any,
   ): Promise<SyncResult> {
     const startTime = Date.now();
     const dataset = this.DATASETS[datasetKey];
@@ -235,7 +237,7 @@ export class FEMAEnhancedIngestionService {
       const records = await this.fetchAllRecords(
         dataset.endpoint,
         filter,
-        dataset.maxRecords
+        dataset.maxRecords,
       );
 
       logger.info(`Fetched ${records.length} records from ${dataset.name}`);
@@ -244,19 +246,19 @@ export class FEMAEnhancedIngestionService {
       let processor: BatchProcessor<any>;
 
       switch (datasetKey) {
-        case 'DISASTER_DECLARATIONS_V2':
+        case "DISASTER_DECLARATIONS_V2":
           processor = new DisasterDeclarationsProcessor(this.supabase);
           break;
-        case 'PA_PROJECTS_V1':
+        case "PA_PROJECTS_V1":
           processor = new PAProjectsProcessor(this.supabase);
           break;
-        case 'IA_HOUSING_V2':
+        case "IA_HOUSING_V2":
           processor = new IAHousingProcessor(this.supabase);
           break;
-        case 'IPAWS_ALERTS_V1':
+        case "IPAWS_ALERTS_V1":
           processor = new IPAWSAlertsProcessor(this.supabase);
           break;
-        case 'HMA_PROJECTS_V3':
+        case "HMA_PROJECTS_V3":
           processor = new HMAProjectsProcessor(this.supabase);
           break;
         default:
@@ -274,7 +276,9 @@ export class FEMAEnhancedIngestionService {
         // Track metrics (simplified - actual implementation would track properly)
         inserted += batch.length;
 
-        logger.info(`Processed batch ${Math.floor(i / this.BATCH_SIZE) + 1} of ${Math.ceil(records.length / this.BATCH_SIZE)}`);
+        logger.info(
+          `Processed batch ${Math.floor(i / this.BATCH_SIZE) + 1} of ${Math.ceil(records.length / this.BATCH_SIZE)}`,
+        );
       }
 
       const duration = Date.now() - startTime;
@@ -285,9 +289,8 @@ export class FEMAEnhancedIngestionService {
         recordsInserted: inserted,
         recordsUpdated: updated,
         errors: [],
-        duration
+        duration,
       };
-
     } catch (error: any) {
       logger.error(`Failed to sync ${dataset.name}`, error);
 
@@ -297,7 +300,7 @@ export class FEMAEnhancedIngestionService {
         recordsInserted: 0,
         recordsUpdated: 0,
         errors: [error.message],
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       };
     }
   }
@@ -309,7 +312,7 @@ export class FEMAEnhancedIngestionService {
   private async fetchAllRecords(
     endpoint: string,
     filter?: string,
-    maxRecords?: number
+    maxRecords?: number,
   ): Promise<any[]> {
     const allRecords: any[] = [];
     let skip = 0;
@@ -318,18 +321,18 @@ export class FEMAEnhancedIngestionService {
 
     while (hasMore && allRecords.length < limit) {
       const params: any = {
-        '$top': Math.min(this.MAX_RECORDS_PER_REQUEST, limit - allRecords.length),
-        '$skip': skip,
-        '$count': skip === 0 ? 'true' : 'false' // Only count on first request
+        $top: Math.min(this.MAX_RECORDS_PER_REQUEST, limit - allRecords.length),
+        $skip: skip,
+        $count: skip === 0 ? "true" : "false", // Only count on first request
       };
 
       if (filter) {
-        params['$filter'] = filter;
+        params["$filter"] = filter;
       }
 
       // Add format for better performance
-      params['$format'] = 'json';
-      params['$metadata'] = 'off'; // Skip metadata for better performance
+      params["$format"] = "json";
+      params["$metadata"] = "off"; // Skip metadata for better performance
 
       try {
         const response = await this.femaClient.get(endpoint, { params });
@@ -341,9 +344,11 @@ export class FEMAEnhancedIngestionService {
 
         if (Array.isArray(data)) {
           records = data;
-        } else if (data && typeof data === 'object') {
+        } else if (data && typeof data === "object") {
           // Find the array of records
-          const possibleArrays = Object.values(data).filter(v => Array.isArray(v));
+          const possibleArrays = Object.values(data).filter((v) =>
+            Array.isArray(v),
+          );
           if (possibleArrays.length > 0) {
             records = possibleArrays[0] as any[];
           }
@@ -368,14 +373,13 @@ export class FEMAEnhancedIngestionService {
 
         // Rate limiting
         if (hasMore) {
-          await new Promise(resolve => setTimeout(resolve, 100));
+          await new Promise((resolve) => setTimeout(resolve, 100));
         }
 
         // Progress logging for large datasets
         if (allRecords.length % 10000 === 0 && allRecords.length > 0) {
           logger.info(`Fetched ${allRecords.length} records from ${endpoint}`);
         }
-
       } catch (error) {
         logger.error(`Failed to fetch records from ${endpoint}`, error);
         throw error;
@@ -421,15 +425,19 @@ export class FEMAEnhancedIngestionService {
       filters.push(`lastRefresh ge '${lastRefreshDate.toISOString()}'`);
     }
 
-    return filters.join(' and ');
+    return filters.join(" and ");
   }
 
   private getLookbackDays(interval: string): number {
     switch (interval) {
-      case 'daily': return 2;
-      case 'weekly': return 8;
-      case 'monthly': return 35;
-      default: return 7;
+      case "daily":
+        return 2;
+      case "weekly":
+        return 8;
+      case "monthly":
+        return 35;
+      default:
+        return 7;
     }
   }
 
@@ -438,7 +446,7 @@ export class FEMAEnhancedIngestionService {
   // =====================================================
 
   private async updateDatasetMetadata(results: SyncResult[]): Promise<void> {
-    const metadataUpdates = results.map(result => ({
+    const metadataUpdates = results.map((result) => ({
       dataset_name: result.dataset,
       last_updated: new Date().toISOString(),
       record_count: result.recordsProcessed,
@@ -448,18 +456,16 @@ export class FEMAEnhancedIngestionService {
         recordsInserted: result.recordsInserted,
         recordsUpdated: result.recordsUpdated,
         syncDuration: result.duration,
-        errors: result.errors
-      }
+        errors: result.errors,
+      },
     }));
 
-    await this.supabase
-      .from('fema.dataset_metadata')
-      .upsert(metadataUpdates, {
-        onConflict: 'dataset_name'
-      });
+    await this.supabase.from("fema.dataset_metadata").upsert(metadataUpdates, {
+      onConflict: "dataset_name",
+    });
 
     // Record quality metrics
-    const qualityMetrics = results.map(result => ({
+    const qualityMetrics = results.map((result) => ({
       dataset_name: result.dataset,
       check_date: new Date().toISOString(),
       completeness_score: result.errors.length === 0 ? 1.0 : 0.5,
@@ -467,11 +473,11 @@ export class FEMAEnhancedIngestionService {
       timeliness_score: result.duration < 60000 ? 1.0 : 0.8,
       consistency_score: 0.9,
       sync_duration_seconds: Math.floor(result.duration / 1000),
-      records_processed: result.recordsProcessed
+      records_processed: result.recordsProcessed,
     }));
 
     await this.supabase
-      .from('fema.data_quality_metrics')
+      .from("fema.data_quality_metrics")
       .insert(qualityMetrics);
   }
 
@@ -480,34 +486,49 @@ export class FEMAEnhancedIngestionService {
   // =====================================================
 
   async performScheduledSync(): Promise<void> {
-    logger.info('Starting scheduled FEMA sync');
+    logger.info("Starting scheduled FEMA sync");
 
     const now = new Date();
     const dayOfWeek = now.getDay();
     const dayOfMonth = now.getDate();
 
     // Daily syncs
-    const dailyDatasets = ['DISASTER_DECLARATIONS_V2', 'IPAWS_ALERTS_V1', 'MISSION_ASSIGNMENTS_V1'];
+    const dailyDatasets = [
+      "DISASTER_DECLARATIONS_V2",
+      "IPAWS_ALERTS_V1",
+      "MISSION_ASSIGNMENTS_V1",
+    ];
 
     // Weekly syncs (on Sunday)
-    const weeklyDatasets = dayOfWeek === 0 ?
-      ['PA_PROJECTS_V1', 'IA_HOUSING_V2', 'FMAG_V1', 'FIREFIGHTER_GRANTS_V1'] : [];
+    const weeklyDatasets =
+      dayOfWeek === 0
+        ? [
+            "PA_PROJECTS_V1",
+            "IA_HOUSING_V2",
+            "FMAG_V1",
+            "FIREFIGHTER_GRANTS_V1",
+          ]
+        : [];
 
     // Monthly syncs (on the 1st)
-    const monthlyDatasets = dayOfMonth === 1 ?
-      ['HMA_PROJECTS_V3', 'EMPG_V2', 'HM_PLANS_V1'] : [];
+    const monthlyDatasets =
+      dayOfMonth === 1 ? ["HMA_PROJECTS_V3", "EMPG_V2", "HM_PLANS_V1"] : [];
 
-    const datasetsToSync = [...dailyDatasets, ...weeklyDatasets, ...monthlyDatasets];
+    const datasetsToSync = [
+      ...dailyDatasets,
+      ...weeklyDatasets,
+      ...monthlyDatasets,
+    ];
 
     const results = await this.performComprehensiveSync({
       datasets: datasetsToSync,
-      state: 'FL', // Focus on Florida
-      fullSync: false
+      state: "FL", // Focus on Florida
+      fullSync: false,
     });
 
-    logger.info('Scheduled sync completed', {
+    logger.info("Scheduled sync completed", {
       datasetsProcessed: results.length,
-      totalRecords: results.reduce((sum, r) => sum + r.recordsProcessed, 0)
+      totalRecords: results.reduce((sum, r) => sum + r.recordsProcessed, 0),
     });
   }
 }
@@ -520,7 +541,7 @@ class DisasterDeclarationsProcessor implements BatchProcessor<any> {
   constructor(private supabase: any) {}
 
   async process(records: any[]): Promise<void> {
-    const data = records.map(record => ({
+    const data = records.map((record) => ({
       disaster_number: record.disasterNumber,
       update_date: new Date().toISOString(),
       state: record.state,
@@ -544,14 +565,14 @@ class DisasterDeclarationsProcessor implements BatchProcessor<any> {
       tribal_request: record.tribalRequest,
       id: record.id,
       hash: record.hash,
-      last_refresh: record.lastRefresh || new Date().toISOString()
+      last_refresh: record.lastRefresh || new Date().toISOString(),
     }));
 
     const { error } = await this.supabase
-      .from('fema.disaster_declarations_v2')
+      .from("fema.disaster_declarations_v2")
       .upsert(data, {
-        onConflict: 'disaster_number,place_code,update_date',
-        ignoreDuplicates: false
+        onConflict: "disaster_number,place_code,update_date",
+        ignoreDuplicates: false,
       });
 
     if (error) throw error;
@@ -562,10 +583,13 @@ class PAProjectsProcessor implements BatchProcessor<any> {
   constructor(private supabase: any) {}
 
   async process(records: any[]): Promise<void> {
-    const data = records.map(record => ({
+    const data = records.map((record) => ({
       disaster_number: record.disasterNumber,
       project_number: record.projectNumber,
-      application_date: record.applicationDate || record.dateApproved || new Date().toISOString(),
+      application_date:
+        record.applicationDate ||
+        record.dateApproved ||
+        new Date().toISOString(),
       applicant_id: record.applicantId,
       applicant_name: record.applicantName,
       applicant_type: record.applicantType,
@@ -593,14 +617,14 @@ class PAProjectsProcessor implements BatchProcessor<any> {
       percent_completed: record.percentCompleted,
       days_to_complete: record.daysToComplete,
       hash: record.hash,
-      last_refresh: record.lastRefresh || new Date().toISOString()
+      last_refresh: record.lastRefresh || new Date().toISOString(),
     }));
 
     const { error } = await this.supabase
-      .from('fema.pa_projects_v1')
+      .from("fema.pa_projects_v1")
       .upsert(data, {
-        onConflict: 'disaster_number,project_number,application_date',
-        ignoreDuplicates: false
+        onConflict: "disaster_number,project_number,application_date",
+        ignoreDuplicates: false,
       });
 
     if (error) throw error;
@@ -611,7 +635,7 @@ class IAHousingProcessor implements BatchProcessor<any> {
   constructor(private supabase: any) {}
 
   async process(records: any[]): Promise<void> {
-    const data = records.map(record => ({
+    const data = records.map((record) => ({
       disaster_number: record.disasterNumber,
       registration_date: record.registrationDate || new Date().toISOString(),
       damaged_state: record.damagedState,
@@ -635,7 +659,7 @@ class IAHousingProcessor implements BatchProcessor<any> {
       sba_approved: record.sbaApproved,
       sba_loan_amount: record.sbaLoanAmount,
       hash: record.hash,
-      last_refresh: record.lastRefresh || new Date().toISOString()
+      last_refresh: record.lastRefresh || new Date().toISOString(),
     }));
 
     // Process in smaller chunks for large datasets
@@ -644,10 +668,10 @@ class IAHousingProcessor implements BatchProcessor<any> {
       const chunk = data.slice(i, i + chunkSize);
 
       const { error } = await this.supabase
-        .from('fema.ia_housing_v2')
+        .from("fema.ia_housing_v2")
         .upsert(chunk, {
-          onConflict: 'disaster_number,registration_date,registration_id',
-          ignoreDuplicates: false
+          onConflict: "disaster_number,registration_date,registration_id",
+          ignoreDuplicates: false,
         });
 
       if (error) throw error;
@@ -659,20 +683,23 @@ class IPAWSAlertsProcessor implements BatchProcessor<any> {
   constructor(private supabase: any) {}
 
   async process(records: any[]): Promise<void> {
-    const data = records.map(record => {
+    const data = records.map((record) => {
       // Extract geometry from various formats
       let geometry = null;
       if (record.info?.[0]?.area?.[0]?.polygon) {
         const polygonStr = record.info[0].area[0].polygon;
-        const coords = polygonStr.split(' ').map((pair: string) => {
-          const [lat, lon] = pair.split(',');
-          return `${lon} ${lat}`;
-        }).join(',');
+        const coords = polygonStr
+          .split(" ")
+          .map((pair: string) => {
+            const [lat, lon] = pair.split(",");
+            return `${lon} ${lat}`;
+          })
+          .join(",");
         geometry = `SRID=4326;POLYGON((${coords}))`;
       } else if (record.info?.[0]?.area?.[0]?.circle) {
         const circleStr = record.info[0].area[0].circle;
-        const [center] = circleStr.split(' ');
-        const [lat, lon] = center.split(',');
+        const [center] = circleStr.split(" ");
+        const [lat, lon] = center.split(",");
         geometry = `SRID=4326;POINT(${lon} ${lat})`;
       }
 
@@ -716,15 +743,15 @@ class IPAWSAlertsProcessor implements BatchProcessor<any> {
         resource: record.info?.[0]?.resource,
         cap_raw_message: record.rawMessage,
         hash: record.hash,
-        last_refresh: record.lastRefresh || new Date().toISOString()
+        last_refresh: record.lastRefresh || new Date().toISOString(),
       };
     });
 
     const { error } = await this.supabase
-      .from('fema.ipaws_alerts_v1')
+      .from("fema.ipaws_alerts_v1")
       .upsert(data, {
-        onConflict: 'alert_id',
-        ignoreDuplicates: false
+        onConflict: "alert_id",
+        ignoreDuplicates: false,
       });
 
     if (error) throw error;
@@ -735,10 +762,13 @@ class HMAProjectsProcessor implements BatchProcessor<any> {
   constructor(private supabase: any) {}
 
   async process(records: any[]): Promise<void> {
-    const data = records.map(record => ({
+    const data = records.map((record) => ({
       project_identifier: record.projectIdentifier,
       program_fy: record.programFY,
-      application_date: record.applicationDate || record.dateApproved || new Date().toISOString(),
+      application_date:
+        record.applicationDate ||
+        record.dateApproved ||
+        new Date().toISOString(),
       program_area: record.programArea,
       project_type: record.projectType,
       project_status: record.projectStatus || record.status,
@@ -750,7 +780,8 @@ class HMAProjectsProcessor implements BatchProcessor<any> {
       project_title: record.projectTitle,
       project_description: record.projectDescription,
       mitigation_activity: record.mitigationActivity,
-      federal_share_requested: record.federalShareRequested || record.federalShare,
+      federal_share_requested:
+        record.federalShareRequested || record.federalShare,
       non_federal_share: record.nonFederalShare || record.localShare,
       total_project_cost: record.totalProjectCost || record.totalCost,
       actual_federal_share: record.actualFederalShare,
@@ -763,14 +794,14 @@ class HMAProjectsProcessor implements BatchProcessor<any> {
       construction_start_date: record.constructionStartDate,
       construction_end_date: record.constructionEndDate,
       hash: record.hash,
-      last_refresh: record.lastRefresh || new Date().toISOString()
+      last_refresh: record.lastRefresh || new Date().toISOString(),
     }));
 
     const { error } = await this.supabase
-      .from('fema.hma_projects_v3')
+      .from("fema.hma_projects_v3")
       .upsert(data, {
-        onConflict: 'project_identifier',
-        ignoreDuplicates: false
+        onConflict: "project_identifier",
+        ignoreDuplicates: false,
       });
 
     if (error) throw error;
@@ -780,7 +811,7 @@ class HMAProjectsProcessor implements BatchProcessor<any> {
 class GenericProcessor implements BatchProcessor<any> {
   constructor(
     private supabase: any,
-    private datasetKey: string
+    private datasetKey: string,
   ) {}
 
   async process(records: any[]): Promise<void> {
@@ -792,9 +823,9 @@ class GenericProcessor implements BatchProcessor<any> {
     let data: any[];
 
     switch (this.datasetKey) {
-      case 'EMPG_V2':
-        tableName = 'fema.empg_v2';
-        data = records.map(r => ({
+      case "EMPG_V2":
+        tableName = "fema.empg_v2";
+        data = records.map((r) => ({
           fiscal_year: r.fiscalYear,
           reporting_period: r.reportingPeriod || new Date().toISOString(),
           state: r.state,
@@ -805,13 +836,13 @@ class GenericProcessor implements BatchProcessor<any> {
           state_local_share: r.stateLocalShare,
           total_allocation: r.totalAllocation,
           hash: r.hash,
-          last_refresh: r.lastRefresh || new Date().toISOString()
+          last_refresh: r.lastRefresh || new Date().toISOString(),
         }));
         break;
 
-      case 'FMAG_V1':
-        tableName = 'fema.fmag_v1';
-        data = records.map(r => ({
+      case "FMAG_V1":
+        tableName = "fema.fmag_v1";
+        data = records.map((r) => ({
           declaration_number: r.declarationNumber,
           declaration_date: r.declarationDate,
           fire_name: r.fireName,
@@ -824,7 +855,7 @@ class GenericProcessor implements BatchProcessor<any> {
           federal_share_obligated: r.federalShareObligated,
           total_obligated: r.totalObligated,
           hash: r.hash,
-          last_refresh: r.lastRefresh || new Date().toISOString()
+          last_refresh: r.lastRefresh || new Date().toISOString(),
         }));
         break;
 
@@ -833,11 +864,9 @@ class GenericProcessor implements BatchProcessor<any> {
         return;
     }
 
-    const { error } = await this.supabase
-      .from(tableName)
-      .upsert(data, {
-        ignoreDuplicates: false
-      });
+    const { error } = await this.supabase.from(tableName).upsert(data, {
+      ignoreDuplicates: false,
+    });
 
     if (error) throw error;
   }

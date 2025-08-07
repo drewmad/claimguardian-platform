@@ -8,9 +8,9 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-import { Usage, CostEntry, UserCosts } from '../types/index';
+import { Usage, CostEntry, UserCosts } from "../types/index";
 
 export class CostTracker {
   private supabase: SupabaseClient | null = null;
@@ -22,14 +22,17 @@ export class CostTracker {
   constructor(
     supabaseUrl?: string,
     supabaseKey?: string,
-    autoFlush: boolean = true
+    autoFlush: boolean = true,
   ) {
     if (supabaseUrl && supabaseKey) {
       this.supabase = createClient(supabaseUrl, supabaseKey);
-    } else if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    } else if (
+      process.env.NEXT_PUBLIC_SUPABASE_URL &&
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    ) {
       this.supabase = createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL,
-        process.env.SUPABASE_SERVICE_ROLE_KEY
+        process.env.SUPABASE_SERVICE_ROLE_KEY,
       );
     }
 
@@ -42,7 +45,7 @@ export class CostTracker {
     userId: string,
     usage: Usage,
     feature: string,
-    provider: string = 'unknown'
+    provider: string = "unknown",
   ): Promise<void> {
     const entry: CostEntry = {
       userId,
@@ -52,7 +55,7 @@ export class CostTracker {
       totalCost: usage.totalCost,
       provider: provider,
       model: usage.model,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
     this.costBuffer.push(entry);
@@ -71,7 +74,7 @@ export class CostTracker {
 
     try {
       // Transform entries for database
-      const dbEntries = entries.map(entry => ({
+      const dbEntries = entries.map((entry) => ({
         user_id: entry.userId,
         feature: entry.feature,
         prompt_tokens: entry.promptTokens,
@@ -79,15 +82,15 @@ export class CostTracker {
         total_cost: entry.totalCost,
         provider: entry.provider,
         model: entry.model,
-        created_at: entry.timestamp.toISOString()
+        created_at: entry.timestamp.toISOString(),
       }));
 
       const { error } = await this.supabase
-        .from('ai_interactions')
+        .from("ai_interactions")
         .insert(dbEntries);
 
       if (error) {
-        console.error('[CostTracker] Failed to insert costs:', error);
+        console.error("[CostTracker] Failed to insert costs:", error);
         // Re-add to buffer for retry
         this.costBuffer.unshift(...entries);
       } else {
@@ -97,7 +100,7 @@ export class CostTracker {
       // Also update aggregated costs
       await this.updateAggregatedCosts(entries);
     } catch (error) {
-      console.error('[CostTracker] Error flushing costs:', error);
+      console.error("[CostTracker] Error flushing costs:", error);
       // Re-add to buffer for retry
       this.costBuffer.unshift(...entries);
     }
@@ -107,17 +110,20 @@ export class CostTracker {
     if (!this.supabase) return;
 
     // Group by user, feature, and period
-    const aggregated = new Map<string, {
-      userId: string;
-      feature: string;
-      period: string;
-      totalCost: number;
-      requestCount: number;
-      totalTokens: number;
-    }>();
+    const aggregated = new Map<
+      string,
+      {
+        userId: string;
+        feature: string;
+        period: string;
+        totalCost: number;
+        requestCount: number;
+        totalTokens: number;
+      }
+    >();
 
     for (const entry of entries) {
-      const period = entry.timestamp.toISOString().split('T')[0]; // Daily aggregation
+      const period = entry.timestamp.toISOString().split("T")[0]; // Daily aggregation
       const key = `${entry.userId}:${entry.feature}:${period}`;
 
       if (!aggregated.has(key)) {
@@ -127,7 +133,7 @@ export class CostTracker {
           period,
           totalCost: 0,
           requestCount: 0,
-          totalTokens: 0
+          totalTokens: 0,
         });
       }
 
@@ -140,32 +146,36 @@ export class CostTracker {
     // Upsert aggregated data
     for (const agg of aggregated.values()) {
       try {
-        const { error } = await this.supabase
-          .from('ai_usage_costs')
-          .upsert({
+        const { error } = await this.supabase.from("ai_usage_costs").upsert(
+          {
             user_id: agg.userId,
             period_start: agg.period,
             feature: agg.feature,
             request_count: agg.requestCount,
             total_tokens: agg.totalTokens,
-            total_cost: agg.totalCost
-          }, {
-            onConflict: 'user_id,period_start,feature',
-            count: 'exact'
-          });
+            total_cost: agg.totalCost,
+          },
+          {
+            onConflict: "user_id,period_start,feature",
+            count: "exact",
+          },
+        );
 
         if (error) {
-          console.error('[CostTracker] Failed to update aggregated costs:', error);
+          console.error(
+            "[CostTracker] Failed to update aggregated costs:",
+            error,
+          );
         }
       } catch (error) {
-        console.error('[CostTracker] Error updating aggregated costs:', error);
+        console.error("[CostTracker] Error updating aggregated costs:", error);
       }
     }
   }
 
   async getUserCosts(
     userId: string,
-    period: 'day' | 'week' | 'month' = 'day'
+    period: "day" | "week" | "month" = "day",
   ): Promise<UserCosts> {
     if (!this.supabase) {
       return { period, total: 0, byFeature: {} };
@@ -175,25 +185,30 @@ export class CostTracker {
 
     try {
       const { data, error } = await this.supabase
-        .from('ai_usage_costs')
-        .select('feature, total_cost, request_count')
-        .eq('user_id', userId)
-        .gte('period_start', startDate.toISOString().split('T')[0]);
+        .from("ai_usage_costs")
+        .select("feature, total_cost, request_count")
+        .eq("user_id", userId)
+        .gte("period_start", startDate.toISOString().split("T")[0]);
 
       if (error) throw error;
 
-      const total = data?.reduce((sum, row) => sum + (row.total_cost || 0), 0) || 0;
-      const byFeature = data?.reduce((acc, row) => ({
-        ...acc,
-        [row.feature]: {
-          cost: row.total_cost || 0,
-          requests: row.request_count || 0
-        }
-      }), {}) || {};
+      const total =
+        data?.reduce((sum, row) => sum + (row.total_cost || 0), 0) || 0;
+      const byFeature =
+        data?.reduce(
+          (acc, row) => ({
+            ...acc,
+            [row.feature]: {
+              cost: row.total_cost || 0,
+              requests: row.request_count || 0,
+            },
+          }),
+          {},
+        ) || {};
 
       return { period, total, byFeature };
     } catch (error) {
-      console.error('[CostTracker] Error getting user costs:', error);
+      console.error("[CostTracker] Error getting user costs:", error);
       return { period, total: 0, byFeature: {} };
     }
   }
@@ -203,16 +218,16 @@ export class CostTracker {
 
     try {
       const { data, error } = await this.supabase
-        .from('ai_interactions')
-        .select('total_cost')
-        .gte('created_at', start.toISOString())
-        .lte('created_at', end.toISOString());
+        .from("ai_interactions")
+        .select("total_cost")
+        .gte("created_at", start.toISOString())
+        .lte("created_at", end.toISOString());
 
       if (error) throw error;
 
       return data?.reduce((sum, row) => sum + (row.total_cost || 0), 0) || 0;
     } catch (error) {
-      console.error('[CostTracker] Error getting total cost:', error);
+      console.error("[CostTracker] Error getting total cost:", error);
       return 0;
     }
   }
@@ -230,67 +245,83 @@ export class CostTracker {
       // Project to 30 days
       return (weekCost / 7) * 30;
     } catch (error) {
-      console.error('[CostTracker] Error calculating projected cost:', error);
+      console.error("[CostTracker] Error calculating projected cost:", error);
       return 0;
     }
   }
 
-  async getCostByProvider(period: 'day' | 'week' | 'month' = 'day'): Promise<Record<string, number>> {
+  async getCostByProvider(
+    period: "day" | "week" | "month" = "day",
+  ): Promise<Record<string, number>> {
     if (!this.supabase) return {};
 
     const startDate = this.getPeriodStart(period);
 
     try {
       const { data, error } = await this.supabase
-        .from('ai_interactions')
-        .select('provider, total_cost')
-        .gte('created_at', startDate.toISOString());
+        .from("ai_interactions")
+        .select("provider, total_cost")
+        .gte("created_at", startDate.toISOString());
 
       if (error) throw error;
 
-      return data?.reduce((acc, row) => ({
-        ...acc,
-        [row.provider]: (acc[row.provider] || 0) + (row.total_cost || 0)
-      }), {} as Record<string, number>) || {};
+      return (
+        data?.reduce(
+          (acc, row) => ({
+            ...acc,
+            [row.provider]: (acc[row.provider] || 0) + (row.total_cost || 0),
+          }),
+          {} as Record<string, number>,
+        ) || {}
+      );
     } catch (error) {
-      console.error('[CostTracker] Error getting cost by provider:', error);
+      console.error("[CostTracker] Error getting cost by provider:", error);
       return {};
     }
   }
 
-  async getCostByFeature(period: 'day' | 'week' | 'month' = 'day'): Promise<Record<string, number>> {
+  async getCostByFeature(
+    period: "day" | "week" | "month" = "day",
+  ): Promise<Record<string, number>> {
     if (!this.supabase) return {};
 
     const startDate = this.getPeriodStart(period);
 
     try {
       const { data, error } = await this.supabase
-        .from('ai_usage_costs')
-        .select('feature, total_cost')
-        .gte('period_start', startDate.toISOString().split('T')[0]);
+        .from("ai_usage_costs")
+        .select("feature, total_cost")
+        .gte("period_start", startDate.toISOString().split("T")[0]);
 
       if (error) throw error;
 
-      return data?.reduce((acc, row) => ({
-        ...acc,
-        [row.feature]: (acc[row.feature] || 0) + (row.total_cost || 0)
-      }), {} as Record<string, number>) || {};
+      return (
+        data?.reduce(
+          (acc, row) => ({
+            ...acc,
+            [row.feature]: (acc[row.feature] || 0) + (row.total_cost || 0),
+          }),
+          {} as Record<string, number>,
+        ) || {}
+      );
     } catch (error) {
-      console.error('[CostTracker] Error getting cost by feature:', error);
+      console.error("[CostTracker] Error getting cost by feature:", error);
       return {};
     }
   }
 
-  async getAverageCostPerUser(period: 'day' | 'week' | 'month' = 'day'): Promise<number> {
+  async getAverageCostPerUser(
+    period: "day" | "week" | "month" = "day",
+  ): Promise<number> {
     if (!this.supabase) return 0;
 
     const startDate = this.getPeriodStart(period);
 
     try {
       const { data, error } = await this.supabase
-        .from('ai_usage_costs')
-        .select('user_id, total_cost')
-        .gte('period_start', startDate.toISOString().split('T')[0]);
+        .from("ai_usage_costs")
+        .select("user_id, total_cost")
+        .gte("period_start", startDate.toISOString().split("T")[0]);
 
       if (error) throw error;
 
@@ -303,27 +334,33 @@ export class CostTracker {
         userCosts.set(row.user_id, current + (row.total_cost || 0));
       }
 
-      const totalCost = Array.from(userCosts.values()).reduce((sum, cost) => sum + cost, 0);
+      const totalCost = Array.from(userCosts.values()).reduce(
+        (sum, cost) => sum + cost,
+        0,
+      );
       return totalCost / userCosts.size;
     } catch (error) {
-      console.error('[CostTracker] Error calculating average cost per user:', error);
+      console.error(
+        "[CostTracker] Error calculating average cost per user:",
+        error,
+      );
       return 0;
     }
   }
 
-  private getPeriodStart(period: 'day' | 'week' | 'month'): Date {
+  private getPeriodStart(period: "day" | "week" | "month"): Date {
     const now = new Date();
     const start = new Date(now);
 
     switch (period) {
-      case 'day':
+      case "day":
         start.setHours(0, 0, 0, 0);
         break;
-      case 'week':
+      case "week":
         start.setDate(now.getDate() - 7);
         start.setHours(0, 0, 0, 0);
         break;
-      case 'month':
+      case "month":
         start.setMonth(now.getMonth() - 1);
         start.setHours(0, 0, 0, 0);
         break;
@@ -334,8 +371,8 @@ export class CostTracker {
 
   private startAutoFlush(): void {
     this.flushTimer = setInterval(() => {
-      this.flush().catch(error => {
-        console.error('[CostTracker] Auto-flush error:', error);
+      this.flush().catch((error) => {
+        console.error("[CostTracker] Auto-flush error:", error);
       });
     }, this.flushInterval);
   }

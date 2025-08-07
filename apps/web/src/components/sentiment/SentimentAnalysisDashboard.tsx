@@ -1,16 +1,22 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { createClient } from '@/lib/supabase/client';
-import { toast } from 'sonner';
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
 import {
   Brain,
   TrendingUp,
@@ -31,8 +37,8 @@ import {
   RefreshCw,
   Download,
   Filter,
-  Sparkles
-} from 'lucide-react';
+  Sparkles,
+} from "lucide-react";
 import {
   LineChart,
   Line,
@@ -50,8 +56,8 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  ResponsiveContainer
-} from 'recharts';
+  ResponsiveContainer,
+} from "recharts";
 
 interface SentimentScore {
   overall: number;
@@ -71,14 +77,14 @@ interface EmotionBreakdown {
 
 interface CommunicationAnalysis {
   id: string;
-  type: 'email' | 'call' | 'chat' | 'review' | 'social';
+  type: "email" | "call" | "chat" | "review" | "social";
   timestamp: string;
   content: string;
   sentiment: SentimentScore;
   emotions: EmotionBreakdown;
   topics: string[];
   actionRequired: boolean;
-  priority: 'low' | 'medium' | 'high' | 'urgent';
+  priority: "low" | "medium" | "high" | "urgent";
   suggestedResponse?: string;
 }
 
@@ -94,25 +100,27 @@ interface TopicInsight {
   topic: string;
   mentions: number;
   sentiment: number;
-  trend: 'improving' | 'declining' | 'stable';
+  trend: "improving" | "declining" | "stable";
 }
 
 const COLORS = {
-  positive: '#22c55e',
-  negative: '#ef4444',
-  neutral: '#64748b',
-  satisfaction: '#3b82f6',
-  frustration: '#f97316',
-  confusion: '#eab308',
-  urgency: '#dc2626',
-  trust: '#10b981'
+  positive: "#22c55e",
+  negative: "#ef4444",
+  neutral: "#64748b",
+  satisfaction: "#3b82f6",
+  frustration: "#f97316",
+  confusion: "#eab308",
+  urgency: "#dc2626",
+  trust: "#10b981",
 };
 
 export function SentimentAnalysisDashboard() {
   const [analyzing, setAnalyzing] = useState(false);
-  const [testMessage, setTestMessage] = useState('');
-  const [selectedTimeRange, setSelectedTimeRange] = useState('7d');
-  const [communications, setCommunications] = useState<CommunicationAnalysis[]>([]);
+  const [testMessage, setTestMessage] = useState("");
+  const [selectedTimeRange, setSelectedTimeRange] = useState("7d");
+  const [communications, setCommunications] = useState<CommunicationAnalysis[]>(
+    [],
+  );
   const supabase = createClient();
 
   const [overallSentiment, setOverallSentiment] = useState<SentimentScore>({
@@ -120,7 +128,7 @@ export function SentimentAnalysisDashboard() {
     positive: 0,
     negative: 0,
     neutral: 0,
-    confidence: 0
+    confidence: 0,
   });
 
   const [emotionalProfile, setEmotionalProfile] = useState<EmotionBreakdown>({
@@ -128,12 +136,14 @@ export function SentimentAnalysisDashboard() {
     frustration: 0,
     confusion: 0,
     urgency: 0,
-    trust: 0
+    trust: 0,
   });
 
   const [sentimentTrends, setSentimentTrends] = useState<SentimentTrend[]>([]);
   const [topicInsights, setTopicInsights] = useState<TopicInsight[]>([]);
-  const [recentCommunications, setRecentCommunications] = useState<CommunicationAnalysis[]>([]);
+  const [recentCommunications, setRecentCommunications] = useState<
+    CommunicationAnalysis[]
+  >([]);
   const [channelDistribution, setChannelDistribution] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -144,35 +154,42 @@ export function SentimentAnalysisDashboard() {
   const loadSentimentData = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('sentiment-analyzer', {
-        body: { timeRange: selectedTimeRange }
-      });
+      const { data, error } = await supabase.functions.invoke(
+        "sentiment-analyzer",
+        {
+          body: { timeRange: selectedTimeRange },
+        },
+      );
 
       if (error) throw error;
 
       if (data) {
-        setOverallSentiment(data.overallSentiment || {
-          overall: 0,
-          positive: 0,
-          negative: 0,
-          neutral: 0,
-          confidence: 0
-        });
-        setEmotionalProfile(data.emotionalProfile || {
-          satisfaction: 0,
-          frustration: 0,
-          confusion: 0,
-          urgency: 0,
-          trust: 0
-        });
+        setOverallSentiment(
+          data.overallSentiment || {
+            overall: 0,
+            positive: 0,
+            negative: 0,
+            neutral: 0,
+            confidence: 0,
+          },
+        );
+        setEmotionalProfile(
+          data.emotionalProfile || {
+            satisfaction: 0,
+            frustration: 0,
+            confusion: 0,
+            urgency: 0,
+            trust: 0,
+          },
+        );
         setSentimentTrends(data.trends || []);
         setTopicInsights(data.topics || []);
         setRecentCommunications(data.recentCommunications || []);
         setChannelDistribution(data.channels || []);
       }
     } catch (error) {
-      console.error('Error loading sentiment data:', error);
-      toast.error('Failed to load sentiment analysis data');
+      console.error("Error loading sentiment data:", error);
+      toast.error("Failed to load sentiment analysis data");
     } finally {
       setLoading(false);
     }
@@ -180,29 +197,32 @@ export function SentimentAnalysisDashboard() {
 
   const analyzeSentiment = async () => {
     if (!testMessage.trim()) {
-      toast.error('Please enter a message to analyze');
+      toast.error("Please enter a message to analyze");
       return;
     }
 
     setAnalyzing(true);
     try {
-      const { data, error } = await supabase.functions.invoke('sentiment-analyzer', {
-        body: {
-          message: testMessage,
-          type: 'real-time'
-        }
-      });
+      const { data, error } = await supabase.functions.invoke(
+        "sentiment-analyzer",
+        {
+          body: {
+            message: testMessage,
+            type: "real-time",
+          },
+        },
+      );
 
       if (error) throw error;
 
       if (data?.analysis) {
-        setCommunications(prev => [data.analysis, ...prev]);
-        toast.success('Sentiment analysis complete');
-        setTestMessage('');
+        setCommunications((prev) => [data.analysis, ...prev]);
+        toast.success("Sentiment analysis complete");
+        setTestMessage("");
       }
     } catch (error) {
-      console.error('Error analyzing sentiment:', error);
-      toast.error('Failed to analyze sentiment');
+      console.error("Error analyzing sentiment:", error);
+      toast.error("Failed to analyze sentiment");
     } finally {
       setAnalyzing(false);
     }
@@ -215,28 +235,37 @@ export function SentimentAnalysisDashboard() {
   };
 
   const getSentimentColor = (score: number) => {
-    if (score >= 70) return 'text-green-500';
-    if (score >= 40) return 'text-yellow-500';
-    return 'text-red-500';
+    if (score >= 70) return "text-green-500";
+    if (score >= 40) return "text-yellow-500";
+    return "text-red-500";
   };
 
   const getPriorityBadge = (priority: string) => {
     const colors = {
-      urgent: 'bg-red-500',
-      high: 'bg-orange-500',
-      medium: 'bg-yellow-500',
-      low: 'bg-green-500'
+      urgent: "bg-red-500",
+      high: "bg-orange-500",
+      medium: "bg-yellow-500",
+      low: "bg-green-500",
     };
-    return <Badge className={colors[priority as keyof typeof colors]}>{priority}</Badge>;
+    return (
+      <Badge className={colors[priority as keyof typeof colors]}>
+        {priority}
+      </Badge>
+    );
   };
 
   const getChannelIcon = (type: string) => {
     switch (type) {
-      case 'email': return <Mail className="h-4 w-4" />;
-      case 'call': return <Phone className="h-4 w-4" />;
-      case 'chat': return <MessageSquare className="h-4 w-4" />;
-      case 'review': return <FileText className="h-4 w-4" />;
-      default: return <MessageSquare className="h-4 w-4" />;
+      case "email":
+        return <Mail className="h-4 w-4" />;
+      case "call":
+        return <Phone className="h-4 w-4" />;
+      case "chat":
+        return <MessageSquare className="h-4 w-4" />;
+      case "review":
+        return <FileText className="h-4 w-4" />;
+      default:
+        return <MessageSquare className="h-4 w-4" />;
     }
   };
 
@@ -249,7 +278,9 @@ export function SentimentAnalysisDashboard() {
             <Brain className="h-6 w-6" />
             <span>Sentiment Analysis Dashboard</span>
           </h2>
-          <p className="text-gray-600">AI-powered analysis of customer communications and feedback</p>
+          <p className="text-gray-600">
+            AI-powered analysis of customer communications and feedback
+          </p>
         </div>
         <div className="flex space-x-2">
           <Button variant="outline" size="sm">
@@ -272,7 +303,9 @@ export function SentimentAnalysisDashboard() {
               <Badge variant="outline">Overall</Badge>
             </div>
             <div className="space-y-2">
-              <p className={`text-3xl font-bold ${getSentimentColor(overallSentiment.overall)}`}>
+              <p
+                className={`text-3xl font-bold ${getSentimentColor(overallSentiment.overall)}`}
+              >
                 {overallSentiment.overall}%
               </p>
               <p className="text-sm text-gray-500">Sentiment Score</p>
@@ -287,7 +320,9 @@ export function SentimentAnalysisDashboard() {
               <Smile className="h-5 w-5 text-green-500" />
               <TrendingUp className="h-4 w-4 text-green-500" />
             </div>
-            <p className="text-3xl font-bold text-green-500">{overallSentiment.positive}%</p>
+            <p className="text-3xl font-bold text-green-500">
+              {overallSentiment.positive}%
+            </p>
             <p className="text-sm text-gray-500">Positive</p>
             <p className="text-xs text-green-600 mt-1">↑ 5% from last week</p>
           </CardContent>
@@ -299,7 +334,9 @@ export function SentimentAnalysisDashboard() {
               <Frown className="h-5 w-5 text-red-500" />
               <TrendingDown className="h-4 w-4 text-green-500" />
             </div>
-            <p className="text-3xl font-bold text-red-500">{overallSentiment.negative}%</p>
+            <p className="text-3xl font-bold text-red-500">
+              {overallSentiment.negative}%
+            </p>
             <p className="text-sm text-gray-500">Negative</p>
             <p className="text-xs text-green-600 mt-1">↓ 3% from last week</p>
           </CardContent>
@@ -355,9 +392,30 @@ export function SentimentAnalysisDashboard() {
                     <YAxis />
                     <Tooltip />
                     <Legend />
-                    <Area type="monotone" dataKey="positive" stackId="1" stroke={COLORS.positive} fill={COLORS.positive} fillOpacity={0.6} />
-                    <Area type="monotone" dataKey="neutral" stackId="1" stroke={COLORS.neutral} fill={COLORS.neutral} fillOpacity={0.6} />
-                    <Area type="monotone" dataKey="negative" stackId="1" stroke={COLORS.negative} fill={COLORS.negative} fillOpacity={0.6} />
+                    <Area
+                      type="monotone"
+                      dataKey="positive"
+                      stackId="1"
+                      stroke={COLORS.positive}
+                      fill={COLORS.positive}
+                      fillOpacity={0.6}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="neutral"
+                      stackId="1"
+                      stroke={COLORS.neutral}
+                      fill={COLORS.neutral}
+                      fillOpacity={0.6}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="negative"
+                      stackId="1"
+                      stroke={COLORS.negative}
+                      fill={COLORS.negative}
+                      fillOpacity={0.6}
+                    />
                   </AreaChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -366,7 +424,9 @@ export function SentimentAnalysisDashboard() {
             <Card>
               <CardHeader>
                 <CardTitle>Channel Distribution</CardTitle>
-                <CardDescription>Communication channels breakdown</CardDescription>
+                <CardDescription>
+                  Communication channels breakdown
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
@@ -376,13 +436,26 @@ export function SentimentAnalysisDashboard() {
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={(entry) => `${entry.channel}: ${entry.percentage}%`}
+                      label={(entry) =>
+                        `${entry.channel}: ${entry.percentage}%`
+                      }
                       outerRadius={80}
                       fill="#8884d8"
                       dataKey="count"
                     >
                       {channelDistribution.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444'][index]} />
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={
+                            [
+                              "#3b82f6",
+                              "#10b981",
+                              "#f59e0b",
+                              "#8b5cf6",
+                              "#ef4444",
+                            ][index]
+                          }
+                        />
                       ))}
                     </Pie>
                     <Tooltip />
@@ -397,7 +470,9 @@ export function SentimentAnalysisDashboard() {
           <Card>
             <CardHeader>
               <CardTitle>Sentiment Trends Analysis</CardTitle>
-              <CardDescription>Detailed sentiment patterns over time</CardDescription>
+              <CardDescription>
+                Detailed sentiment patterns over time
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={400}>
@@ -407,10 +482,30 @@ export function SentimentAnalysisDashboard() {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Line type="monotone" dataKey="positive" stroke={COLORS.positive} strokeWidth={2} />
-                  <Line type="monotone" dataKey="negative" stroke={COLORS.negative} strokeWidth={2} />
-                  <Line type="monotone" dataKey="neutral" stroke={COLORS.neutral} strokeWidth={2} />
-                  <Line type="monotone" dataKey="volume" stroke="#8884d8" strokeDasharray="5 5" />
+                  <Line
+                    type="monotone"
+                    dataKey="positive"
+                    stroke={COLORS.positive}
+                    strokeWidth={2}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="negative"
+                    stroke={COLORS.negative}
+                    strokeWidth={2}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="neutral"
+                    stroke={COLORS.neutral}
+                    strokeWidth={2}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="volume"
+                    stroke="#8884d8"
+                    strokeDasharray="5 5"
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </CardContent>
@@ -421,28 +516,35 @@ export function SentimentAnalysisDashboard() {
           <Card>
             <CardHeader>
               <CardTitle>Emotional Analysis</CardTitle>
-              <CardDescription>Customer emotion breakdown from communications</CardDescription>
+              <CardDescription>
+                Customer emotion breakdown from communications
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div>
                   <h4 className="font-medium mb-4">Emotion Levels</h4>
                   <div className="space-y-4">
-                    {Object.entries(emotionalProfile).map(([emotion, value]) => (
-                      <div key={emotion} className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="capitalize">{emotion}</span>
-                          <span className="font-medium">{value}%</span>
+                    {Object.entries(emotionalProfile).map(
+                      ([emotion, value]) => (
+                        <div key={emotion} className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span className="capitalize">{emotion}</span>
+                            <span className="font-medium">{value}%</span>
+                          </div>
+                          <Progress
+                            value={value}
+                            className="h-2"
+                            style={
+                              {
+                                "--progress-background":
+                                  COLORS[emotion as keyof typeof COLORS],
+                              } as React.CSSProperties
+                            }
+                          />
                         </div>
-                        <Progress
-                          value={value}
-                          className="h-2"
-                          style={{
-                            '--progress-background': COLORS[emotion as keyof typeof COLORS]
-                          } as React.CSSProperties}
-                        />
-                      </div>
-                    ))}
+                      ),
+                    )}
                   </div>
                 </div>
 
@@ -454,11 +556,13 @@ export function SentimentAnalysisDashboard() {
                       cy="50%"
                       innerRadius="10%"
                       outerRadius="90%"
-                      data={Object.entries(emotionalProfile).map(([key, value], index) => ({
-                        name: key,
-                        value,
-                        fill: Object.values(COLORS)[index + 3]
-                      }))}
+                      data={Object.entries(emotionalProfile).map(
+                        ([key, value], index) => ({
+                          name: key,
+                          value,
+                          fill: Object.values(COLORS)[index + 3],
+                        }),
+                      )}
                     >
                       <RadialBar dataKey="value" />
                       <Legend />
@@ -475,32 +579,53 @@ export function SentimentAnalysisDashboard() {
           <Card>
             <CardHeader>
               <CardTitle>Topic Analysis</CardTitle>
-              <CardDescription>Most discussed topics and their sentiment</CardDescription>
+              <CardDescription>
+                Most discussed topics and their sentiment
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {topicInsights.map((topic) => (
-                  <div key={topic.topic} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div
+                    key={topic.topic}
+                    className="flex items-center justify-between p-4 border rounded-lg"
+                  >
                     <div className="flex-1">
                       <div className="flex items-center space-x-3">
                         <h4 className="font-medium">{topic.topic}</h4>
-                        <Badge variant="outline">{topic.mentions} mentions</Badge>
-                        <Badge variant={
-                          topic.trend === 'improving' ? 'default' :
-                          topic.trend === 'declining' ? 'destructive' :
-                          'secondary'
-                        }>
-                          {topic.trend === 'improving' ? '↑' : topic.trend === 'declining' ? '↓' : '→'} {topic.trend}
+                        <Badge variant="outline">
+                          {topic.mentions} mentions
+                        </Badge>
+                        <Badge
+                          variant={
+                            topic.trend === "improving"
+                              ? "default"
+                              : topic.trend === "declining"
+                                ? "destructive"
+                                : "secondary"
+                          }
+                        >
+                          {topic.trend === "improving"
+                            ? "↑"
+                            : topic.trend === "declining"
+                              ? "↓"
+                              : "→"}{" "}
+                          {topic.trend}
                         </Badge>
                       </div>
                       <div className="mt-2 flex items-center space-x-4">
                         <div className="flex items-center space-x-2">
                           {getSentimentIcon(topic.sentiment)}
-                          <span className={`text-sm font-medium ${getSentimentColor(topic.sentiment)}`}>
+                          <span
+                            className={`text-sm font-medium ${getSentimentColor(topic.sentiment)}`}
+                          >
                             {topic.sentiment}% positive
                           </span>
                         </div>
-                        <Progress value={topic.sentiment} className="flex-1 h-2" />
+                        <Progress
+                          value={topic.sentiment}
+                          className="flex-1 h-2"
+                        />
                       </div>
                     </div>
                   </div>
@@ -516,7 +641,9 @@ export function SentimentAnalysisDashboard() {
             <Card>
               <CardHeader>
                 <CardTitle>Test Sentiment Analyzer</CardTitle>
-                <CardDescription>Enter a message to analyze its sentiment in real-time</CardDescription>
+                <CardDescription>
+                  Enter a message to analyze its sentiment in real-time
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -551,7 +678,9 @@ export function SentimentAnalysisDashboard() {
             <Card>
               <CardHeader>
                 <CardTitle>Recent Communications</CardTitle>
-                <CardDescription>Latest analyzed customer interactions</CardDescription>
+                <CardDescription>
+                  Latest analyzed customer interactions
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -562,10 +691,16 @@ export function SentimentAnalysisDashboard() {
                           {getChannelIcon(comm.type)}
                           <div>
                             <div className="flex items-center space-x-2">
-                              <span className="font-medium capitalize">{comm.type}</span>
-                              <span className="text-sm text-gray-500">{comm.timestamp}</span>
+                              <span className="font-medium capitalize">
+                                {comm.type}
+                              </span>
+                              <span className="text-sm text-gray-500">
+                                {comm.timestamp}
+                              </span>
                               {comm.actionRequired && (
-                                <Badge className="bg-orange-500">Action Required</Badge>
+                                <Badge className="bg-orange-500">
+                                  Action Required
+                                </Badge>
                               )}
                               {getPriorityBadge(comm.priority)}
                             </div>
@@ -573,25 +708,35 @@ export function SentimentAnalysisDashboard() {
                         </div>
                         <div className="flex items-center space-x-2">
                           {getSentimentIcon(comm.sentiment.overall)}
-                          <span className={`font-bold ${getSentimentColor(comm.sentiment.overall)}`}>
+                          <span
+                            className={`font-bold ${getSentimentColor(comm.sentiment.overall)}`}
+                          >
                             {Math.round(comm.sentiment.overall)}%
                           </span>
                         </div>
                       </div>
 
-                      <p className="text-sm text-gray-700 mb-3">{comm.content}</p>
+                      <p className="text-sm text-gray-700 mb-3">
+                        {comm.content}
+                      </p>
 
                       <div className="flex items-center justify-between">
                         <div className="flex flex-wrap gap-2">
                           {comm.topics.map((topic) => (
-                            <Badge key={topic} variant="outline" className="text-xs">
+                            <Badge
+                              key={topic}
+                              variant="outline"
+                              className="text-xs"
+                            >
                               {topic}
                             </Badge>
                           ))}
                         </div>
 
                         <div className="flex items-center space-x-2 text-xs text-gray-500">
-                          <span>Confidence: {Math.round(comm.sentiment.confidence)}%</span>
+                          <span>
+                            Confidence: {Math.round(comm.sentiment.confidence)}%
+                          </span>
                         </div>
                       </div>
 
@@ -599,7 +744,10 @@ export function SentimentAnalysisDashboard() {
                         <Alert className="mt-3">
                           <AlertTriangle className="h-4 w-4" />
                           <AlertDescription>
-                            <span className="font-medium">Suggested Action:</span> {comm.suggestedResponse}
+                            <span className="font-medium">
+                              Suggested Action:
+                            </span>{" "}
+                            {comm.suggestedResponse}
                           </AlertDescription>
                         </Alert>
                       )}

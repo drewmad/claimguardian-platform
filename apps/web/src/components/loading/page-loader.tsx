@@ -8,30 +8,34 @@
  * @tags ["loading", "page", "full-screen"]
  * @status stable
  */
-'use client'
+"use client";
 
-import { motion, AnimatePresence } from 'framer-motion'
-import { Sparkles, Home, Shield, Zap } from 'lucide-react'
-import { LoadingSpinner, ProgressIndicator, StepIndicator } from '@/components/ui/loading-overlay'
-import { usePageLoading } from '@/hooks/use-loading-state'
-import { cn } from '@/lib/utils'
+import { motion, AnimatePresence } from "framer-motion";
+import { Sparkles, Home, Shield, Zap } from "lucide-react";
+import {
+  LoadingSpinner,
+  ProgressIndicator,
+  StepIndicator,
+} from "@/components/ui/loading-overlay";
+import { usePageLoading } from "@/hooks/use-loading-state";
+import { cn } from "@/lib/utils";
 
 export interface PageLoaderProps {
-  isLoading?: boolean
-  message?: string
-  showProgress?: boolean
-  variant?: 'default' | 'branded' | 'minimal'
-  className?: string
+  isLoading?: boolean;
+  message?: string;
+  showProgress?: boolean;
+  variant?: "default" | "branded" | "minimal";
+  className?: string;
 }
 
 export function PageLoader({
   isLoading = true,
-  message = 'Loading ClaimGuardian...',
+  message = "Loading ClaimGuardian...",
   showProgress = true,
-  variant = 'branded',
-  className
+  variant = "branded",
+  className,
 }: PageLoaderProps) {
-  const { loadingProgress, loadingStage } = usePageLoading()
+  const { loadingProgress, loadingStage } = usePageLoading();
 
   return (
     <AnimatePresence>
@@ -44,11 +48,12 @@ export function PageLoader({
           className={cn(
             "fixed inset-0 z-50 flex items-center justify-center",
             {
-              "bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900": variant === 'branded',
-              "bg-white dark:bg-gray-900": variant === 'default',
-              "bg-black/50 backdrop-blur-sm": variant === 'minimal'
+              "bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900":
+                variant === "branded",
+              "bg-white dark:bg-gray-900": variant === "default",
+              "bg-black/50 backdrop-blur-sm": variant === "minimal",
             },
-            className
+            className,
           )}
         >
           <motion.div
@@ -58,7 +63,7 @@ export function PageLoader({
             transition={{ duration: 0.5, ease: "easeOut" }}
             className="flex flex-col items-center space-y-8 p-8 text-center max-w-md"
           >
-            {variant === 'branded' && (
+            {variant === "branded" && (
               <div className="relative">
                 {/* Animated logo/brand element */}
                 <motion.div
@@ -73,7 +78,11 @@ export function PageLoader({
                   {/* Orbiting elements */}
                   <motion.div
                     animate={{ rotate: -360 }}
-                    transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+                    transition={{
+                      duration: 6,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
                     className="absolute -top-2 -right-2"
                   >
                     <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
@@ -83,7 +92,12 @@ export function PageLoader({
 
                   <motion.div
                     animate={{ rotate: -360 }}
-                    transition={{ duration: 4, repeat: Infinity, ease: "linear", delay: 1 }}
+                    transition={{
+                      duration: 4,
+                      repeat: Infinity,
+                      ease: "linear",
+                      delay: 1,
+                    }}
                     className="absolute -bottom-2 -left-2"
                   >
                     <div className="w-4 h-4 bg-purple-500 rounded-full flex items-center justify-center">
@@ -95,33 +109,33 @@ export function PageLoader({
                 {/* Pulsing ring */}
                 <motion.div
                   animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.8, 0.5] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
                   className="absolute inset-0 border-2 border-blue-400 rounded-full"
                 />
               </div>
             )}
 
-            {variant === 'default' && (
-              <LoadingSpinner size="lg" />
-            )}
+            {variant === "default" && <LoadingSpinner size="lg" />}
 
-            {variant === 'minimal' && (
+            {variant === "minimal" && (
               <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
                 <LoadingSpinner size="md" />
               </div>
             )}
 
             {/* Brand name */}
-            {variant === 'branded' && (
+            {variant === "branded" && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3, duration: 0.5 }}
                 className="space-y-2"
               >
-                <h1 className="text-3xl font-bold text-white">
-                  ClaimGuardian
-                </h1>
+                <h1 className="text-3xl font-bold text-white">ClaimGuardian</h1>
                 <p className="text-blue-200 text-sm">
                   AI-Powered Property Protection
                 </p>
@@ -135,10 +149,14 @@ export function PageLoader({
               transition={{ delay: 0.5 }}
               className="space-y-4 w-full"
             >
-              <p className={cn(
-                "text-sm font-medium",
-                variant === 'branded' ? "text-blue-100" : "text-gray-600 dark:text-gray-300"
-              )}>
+              <p
+                className={cn(
+                  "text-sm font-medium",
+                  variant === "branded"
+                    ? "text-blue-100"
+                    : "text-gray-600 dark:text-gray-300",
+                )}
+              >
                 {loadingStage || message}
               </p>
 
@@ -146,14 +164,14 @@ export function PageLoader({
                 <ProgressIndicator
                   progress={loadingProgress}
                   showPercentage={false}
-                  color={variant === 'branded' ? 'blue' : 'blue'}
+                  color={variant === "branded" ? "blue" : "blue"}
                   className="w-full max-w-xs mx-auto"
                 />
               )}
             </motion.div>
 
             {/* Floating sparkles for branded version */}
-            {variant === 'branded' && (
+            {variant === "branded" && (
               <div className="absolute inset-0 pointer-events-none">
                 {[...Array(6)].map((_, i) => (
                   <motion.div
@@ -161,18 +179,18 @@ export function PageLoader({
                     className="absolute w-1 h-1 bg-blue-400 rounded-full"
                     style={{
                       left: `${20 + Math.random() * 60}%`,
-                      top: `${20 + Math.random() * 60}%`
+                      top: `${20 + Math.random() * 60}%`,
                     }}
                     animate={{
                       opacity: [0, 1, 0],
                       scale: [0, 1, 0],
-                      y: [-20, -40, -20]
+                      y: [-20, -40, -20],
                     }}
                     transition={{
                       duration: 3,
                       repeat: Infinity,
                       delay: i * 0.5,
-                      ease: "easeInOut"
+                      ease: "easeInOut",
                     }}
                   />
                 ))}
@@ -182,18 +200,18 @@ export function PageLoader({
         </motion.div>
       )}
     </AnimatePresence>
-  )
+  );
 }
 
 // Dashboard-specific loader
 export function DashboardLoader({ isLoading = true }: { isLoading?: boolean }) {
   const steps = [
-    'Authenticating user',
-    'Loading property data',
-    'Fetching AI insights',
-    'Preparing dashboard',
-    'Ready!'
-  ]
+    "Authenticating user",
+    "Loading property data",
+    "Fetching AI insights",
+    "Preparing dashboard",
+    "Ready!",
+  ];
 
   return (
     <PageLoader
@@ -202,18 +220,18 @@ export function DashboardLoader({ isLoading = true }: { isLoading?: boolean }) {
       message="Preparing your property dashboard..."
       showProgress={true}
     />
-  )
+  );
 }
 
 // Modal-specific loader
 export function ModalLoader({
   isLoading = true,
-  message = 'Processing...',
-  variant = 'default'
+  message = "Processing...",
+  variant = "default",
 }: {
-  isLoading?: boolean
-  message?: string
-  variant?: 'default' | 'slim'
+  isLoading?: boolean;
+  message?: string;
+  variant?: "default" | "slim";
 }) {
   return (
     <AnimatePresence>
@@ -224,23 +242,23 @@ export function ModalLoader({
           exit={{ opacity: 0 }}
           className="flex items-center justify-center space-x-3 py-4"
         >
-          <LoadingSpinner size={variant === 'slim' ? 'sm' : 'md'} />
+          <LoadingSpinner size={variant === "slim" ? "sm" : "md"} />
           <span className="text-sm text-gray-600 dark:text-gray-300">
             {message}
           </span>
         </motion.div>
       )}
     </AnimatePresence>
-  )
+  );
 }
 
 // Component-level loading wrapper
 export interface ComponentLoaderProps {
-  isLoading: boolean
-  children: React.ReactNode
-  skeleton?: React.ReactNode
-  className?: string
-  overlay?: boolean
+  isLoading: boolean;
+  children: React.ReactNode;
+  skeleton?: React.ReactNode;
+  className?: string;
+  overlay?: boolean;
 }
 
 export function ComponentLoader({
@@ -248,7 +266,7 @@ export function ComponentLoader({
   children,
   skeleton,
   className,
-  overlay = false
+  overlay = false,
 }: ComponentLoaderProps) {
   if (overlay) {
     return (
@@ -267,7 +285,7 @@ export function ComponentLoader({
           )}
         </AnimatePresence>
       </div>
-    )
+    );
   }
 
   return (
@@ -293,5 +311,5 @@ export function ComponentLoader({
         </motion.div>
       )}
     </AnimatePresence>
-  )
+  );
 }

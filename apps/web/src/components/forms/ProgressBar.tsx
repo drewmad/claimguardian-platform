@@ -8,20 +8,24 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import React from 'react'
+import React from "react";
 
-import { cn } from '@/lib/utils'
+import { cn } from "@/lib/utils";
 
 interface ProgressBarProps {
-  currentStep: number
-  totalSteps: number
-  className?: string
+  currentStep: number;
+  totalSteps: number;
+  className?: string;
 }
 
-export function ProgressBar({ currentStep, totalSteps, className }: ProgressBarProps) {
-  const progress = (currentStep / totalSteps) * 100
+export function ProgressBar({
+  currentStep,
+  totalSteps,
+  className,
+}: ProgressBarProps) {
+  const progress = (currentStep / totalSteps) * 100;
 
   return (
     <div className={cn("w-full", className)}>
@@ -44,9 +48,9 @@ export function ProgressBar({ currentStep, totalSteps, className }: ProgressBarP
       {/* Step indicators */}
       <div className="flex justify-between mt-4">
         {Array.from({ length: totalSteps }, (_, i) => {
-          const stepNumber = i + 1
-          const isCompleted = stepNumber < currentStep
-          const isCurrent = stepNumber === currentStep
+          const stepNumber = i + 1;
+          const isCompleted = stepNumber < currentStep;
+          const isCurrent = stepNumber === currentStep;
 
           return (
             <div
@@ -55,14 +59,14 @@ export function ProgressBar({ currentStep, totalSteps, className }: ProgressBarP
                 "flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium transition-colors",
                 isCompleted && "bg-green-500 text-white",
                 isCurrent && "bg-cyan-500 text-white",
-                !isCompleted && !isCurrent && "bg-gray-700 text-gray-400"
+                !isCompleted && !isCurrent && "bg-gray-700 text-gray-400",
               )}
             >
               {stepNumber}
             </div>
-          )
+          );
         })}
       </div>
     </div>
-  )
+  );
 }

@@ -32,49 +32,55 @@ declare global {
     google?: {
       maps: {
         places: {
-          Autocomplete: new (input: HTMLInputElement, options: Record<string, unknown>) => {
-            addListener: (event: string, callback: () => void) => void
+          Autocomplete: new (
+            input: HTMLInputElement,
+            options: Record<string, unknown>,
+          ) => {
+            addListener: (event: string, callback: () => void) => void;
             getPlace: () => {
               address_components?: Array<{
-                types: string[]
-                long_name: string
-                short_name: string
-              }>
-              formatted_address?: string
-              geometry?: { location: { lat: () => number, lng: () => number } }
-            }
-          }
-        }
+                types: string[];
+                long_name: string;
+                short_name: string;
+              }>;
+              formatted_address?: string;
+              geometry?: { location: { lat: () => number; lng: () => number } };
+            };
+          };
+        };
         event: {
-          clearInstanceListeners: (instance: object) => void
-        }
-      }
-    }
-    initGooglePlaces?: () => void
+          clearInstanceListeners: (instance: object) => void;
+        };
+      };
+    };
+    initGooglePlaces?: () => void;
   }
 
   namespace google {
     namespace maps {
       namespace places {
         class Autocomplete {
-          constructor(input: HTMLInputElement, options?: Record<string, unknown>)
-          addListener(event: string, callback: () => void): void
+          constructor(
+            input: HTMLInputElement,
+            options?: Record<string, unknown>,
+          );
+          addListener(event: string, callback: () => void): void;
           getPlace(): {
             address_components?: Array<{
-              types: string[]
-              long_name: string
-              short_name: string
-            }>
-            formatted_address?: string
-            geometry?: { location: { lat: () => number, lng: () => number } }
-          }
+              types: string[];
+              long_name: string;
+              short_name: string;
+            }>;
+            formatted_address?: string;
+            geometry?: { location: { lat: () => number; lng: () => number } };
+          };
         }
       }
       namespace event {
-        function clearInstanceListeners(instance: object): void
+        function clearInstanceListeners(instance: object): void;
       }
     }
   }
 }
 
-export {}
+export {};

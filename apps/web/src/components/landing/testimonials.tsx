@@ -8,62 +8,67 @@
  * @tags ["landing", "testimonials", "social-proof"]
  * @status stable
  */
-'use client'
+"use client";
 
-import { Star } from 'lucide-react'
-import Image from 'next/image'
-import { useState, useEffect, useRef } from 'react'
+import { Star } from "lucide-react";
+import Image from "next/image";
+import { useState, useEffect, useRef } from "react";
 
 // Animation hook reused
 const useInView = (options: IntersectionObserverInit) => {
-  const ref = useRef<HTMLDivElement>(null)
-  const [isInView, setIsInView] = useState(false)
+  const ref = useRef<HTMLDivElement>(null);
+  const [isInView, setIsInView] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
-        setIsInView(true)
-        observer.unobserve(entry.target)
+        setIsInView(true);
+        observer.unobserve(entry.target);
       }
-    }, options)
+    }, options);
 
-    const currentRef = ref.current
+    const currentRef = ref.current;
     if (currentRef) {
-      observer.observe(currentRef)
+      observer.observe(currentRef);
     }
 
     return () => {
       if (currentRef) {
-        observer.unobserve(currentRef)
+        observer.unobserve(currentRef);
       }
-    }
-  }, [ref, options])
+    };
+  }, [ref, options]);
 
-  return [ref, isInView] as const
-}
+  return [ref, isInView] as const;
+};
 
-const AnimatedSection: React.FC<{ children: React.ReactNode; className?: string; delay?: number }> = ({ children, className = '', delay = 0 }) => {
-  const [ref, isInView] = useInView({ threshold: 0.1 })
+const AnimatedSection: React.FC<{
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+}> = ({ children, className = "", delay = 0 }) => {
+  const [ref, isInView] = useInView({ threshold: 0.1 });
 
   return (
     <div
       ref={ref}
-      className={`${className} transition-all duration-1000 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+      className={`${className} transition-all duration-1000 ${isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
       style={{ transitionDelay: `${delay}ms` }}
     >
       {children}
     </div>
-  )
-}
+  );
+};
 
 export function Testimonials() {
   const testimonial = {
-    quote: "ClaimGuardian has greatly improved my productivity and quality. The AI has been impressively accurate, and the UI is clean and intuitive. This is the best AI-powered property management tool I've used, and I believe it will be the leading solution for Florida homeowners. Keep up the great work!",
+    quote:
+      "ClaimGuardian has greatly improved my productivity and quality. The AI has been impressively accurate, and the UI is clean and intuitive. This is the best AI-powered property management tool I've used, and I believe it will be the leading solution for Florida homeowners. Keep up the great work!",
     author: "A. Richards",
     location: "Florida",
     userSince: "Beta Tester",
-    highlight: "Best AI-powered property management tool"
-  }
+    highlight: "Best AI-powered property management tool",
+  };
 
   return (
     <section className="px-4 md:px-8 py-20 bg-gradient-to-b from-gray-900 to-black">
@@ -77,7 +82,14 @@ export function Testimonials() {
           {/* Main Testimonial Display */}
           <div className="bg-gradient-to-br from-gray-800/60 to-gray-900/40 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-8 md:p-12 mb-8">
             <div className="flex justify-center mb-6">
-              {[...Array(5)].map((_, i) => <Star key={i} size={28} className="text-yellow-400" fill="currentColor" />)}
+              {[...Array(5)].map((_, i) => (
+                <Star
+                  key={i}
+                  size={28}
+                  className="text-yellow-400"
+                  fill="currentColor"
+                />
+              ))}
             </div>
 
             <blockquote className="font-slab text-xl md:text-2xl lg:text-3xl font-medium italic text-white text-center max-w-4xl mx-auto leading-relaxed">
@@ -85,9 +97,13 @@ export function Testimonials() {
             </blockquote>
 
             <div className="mt-8 text-center">
-              <p className="text-lg font-semibold text-white">{testimonial.author}, {testimonial.location}</p>
+              <p className="text-lg font-semibold text-white">
+                {testimonial.author}, {testimonial.location}
+              </p>
               <p className="text-sm text-gray-400">{testimonial.userSince}</p>
-              <p className="mt-2 text-green-400 font-semibold">{testimonial.highlight}</p>
+              <p className="mt-2 text-green-400 font-semibold">
+                {testimonial.highlight}
+              </p>
             </div>
           </div>
         </div>
@@ -113,5 +129,5 @@ export function Testimonials() {
         </div>
       </AnimatedSection>
     </section>
-  )
+  );
 }

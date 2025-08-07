@@ -8,10 +8,10 @@ name: Database CI
 on:
   pull_request:
     paths:
-      - 'supabase/schema.sql'
-      - 'supabase/sql/**'
-      - 'packages/db/**'
-      - 'scripts/db.sh'
+      - "supabase/schema.sql"
+      - "supabase/sql/**"
+      - "packages/db/**"
+      - "scripts/db.sh"
 
 jobs:
   schema-validation:
@@ -30,10 +30,10 @@ jobs:
       - name: Setup PostgreSQL
         uses: harmon758/postgresql-action@v1
         with:
-          postgresql version: '17'
-          postgresql db: 'test_db'
-          postgresql user: 'postgres'
-          postgresql password: 'postgres'
+          postgresql version: "17"
+          postgresql db: "test_db"
+          postgresql user: "postgres"
+          postgresql password: "postgres"
 
       - name: Analyze schema changes
         id: analyze

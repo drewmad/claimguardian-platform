@@ -8,48 +8,48 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { X } from 'lucide-react'
-import { useState } from 'react'
+import { X } from "lucide-react";
+import { useState } from "react";
 
-import { useAuth } from '@/components/auth/auth-provider'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { useModalStore } from '@/stores/modal-store'
-import { SocialLoginPanel } from '@/components/auth/social-login-enhanced'
+import { useAuth } from "@/components/auth/auth-provider";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useModalStore } from "@/stores/modal-store";
+import { SocialLoginPanel } from "@/components/auth/social-login-enhanced";
 
 export function SimpleSignupModal() {
-  const { activeModal, closeModal, openModal } = useModalStore()
-  const { signUp, error } = useAuth()
-  const [loading, setLoading] = useState(false)
-  const [submitted, setSubmitted] = useState(false)
+  const { activeModal, closeModal, openModal } = useModalStore();
+  const { signUp, error } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  })
+    email: "",
+    password: "",
+  });
 
-  if (activeModal !== 'signup') return null
+  if (activeModal !== "signup") return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    setLoading(true)
+    setLoading(true);
     try {
       const success = await signUp({
         email: formData.email,
-        password: formData.password
-      })
+        password: formData.password,
+      });
 
       if (success) {
-        setSubmitted(true)
+        setSubmitted(true);
       }
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   if (submitted) {
     return (
@@ -68,7 +68,7 @@ export function SimpleSignupModal() {
           </Button>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -90,7 +90,7 @@ export function SimpleSignupModal() {
           <SocialLoginPanel
             mode="signup"
             onSuccess={() => closeModal()}
-            onError={(error) => console.error('Social signup error:', error)}
+            onError={(error) => console.error("Social signup error:", error)}
           />
         </div>
 
@@ -99,7 +99,9 @@ export function SimpleSignupModal() {
             <div className="w-full border-t border-gray-200"></div>
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-white px-2 text-gray-500">Or continue with email</span>
+            <span className="bg-white px-2 text-gray-500">
+              Or continue with email
+            </span>
           </div>
         </div>
 
@@ -110,7 +112,9 @@ export function SimpleSignupModal() {
               id="email"
               type="email"
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
               required
               autoFocus
             />
@@ -122,7 +126,9 @@ export function SimpleSignupModal() {
               id="password"
               type="password"
               value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
               required
               minLength={6}
             />
@@ -136,7 +142,7 @@ export function SimpleSignupModal() {
           )}
 
           <Button type="submit" disabled={loading} className="w-full">
-            {loading ? 'Creating Account...' : 'Create Account'}
+            {loading ? "Creating Account..." : "Create Account"}
           </Button>
         </form>
 
@@ -144,8 +150,8 @@ export function SimpleSignupModal() {
           <span className="text-gray-500">Already have an account? </span>
           <button
             onClick={() => {
-              closeModal()
-              openModal('login')
+              closeModal();
+              openModal("login");
             }}
             className="text-blue-600 hover:underline"
           >
@@ -154,5 +160,5 @@ export function SimpleSignupModal() {
         </div>
       </div>
     </div>
-  )
+  );
 }

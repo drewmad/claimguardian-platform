@@ -3,7 +3,7 @@
 /* Viewport fixes for mobile browsers */
 @viewport {
   width: device-width;
-  zoom: 1.0;
+  zoom: 1;
 }
 
 /* Mobile viewport meta improvements */
@@ -88,7 +88,8 @@ html {
   }
 
   /* Improve readability */
-  p, li {
+  p,
+  li {
     line-height: 1.6;
   }
 
@@ -114,7 +115,8 @@ html {
   }
 
   /* Prevent horizontal scroll */
-  html, body {
+  html,
+  body {
     overflow-x: hidden;
     width: 100%;
     height: 100%;
@@ -168,17 +170,36 @@ html {
 /* Small device optimizations */
 @media (max-width: 375px) {
   /* Reduce font sizes slightly */
-  h1 { font-size: 1.75rem; line-height: 1.2; }
-  h2 { font-size: 1.5rem; line-height: 1.3; }
-  h3 { font-size: 1.25rem; line-height: 1.4; }
+  h1 {
+    font-size: 1.75rem;
+    line-height: 1.2;
+  }
+  h2 {
+    font-size: 1.5rem;
+    line-height: 1.3;
+  }
+  h3 {
+    font-size: 1.25rem;
+    line-height: 1.4;
+  }
 
   /* Better mobile spacing */
-  .px-4 { padding-left: 1rem; padding-right: 1rem; }
-  .py-4 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+  .px-4 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  .py-4 {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
 
   /* Mobile card improvements */
-  .rounded-lg { border-radius: 0.75rem; }
-  .rounded-xl { border-radius: 1rem; }
+  .rounded-lg {
+    border-radius: 0.75rem;
+  }
+  .rounded-xl {
+    border-radius: 1rem;
+  }
 
   /* Adjust button padding */
   .btn-sm {
@@ -206,7 +227,9 @@ html {
   }
 
   /* Fix iOS form zoom */
-  input, textarea, select {
+  input,
+  textarea,
+  select {
     font-size: 16px !important;
   }
 
@@ -278,7 +301,8 @@ html {
 
   /* High contrast mode support */
   @media (prefers-contrast: high) {
-    button, a {
+    button,
+    a {
       border: 1px solid currentColor;
     }
   }
@@ -306,7 +330,8 @@ html {
   }
 
   /* Fix Safari button appearance */
-  button, input[type="submit"] {
+  button,
+  input[type="submit"] {
     -webkit-appearance: none;
     background-color: transparent;
     border-radius: 0;

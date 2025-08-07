@@ -5,7 +5,9 @@ This directory contains ClaimGuardian's foundational documents that define our c
 ## Contents
 
 ### 📜 [MISSION.md](./MISSION.md)
+
 Our comprehensive mission statement, vision, and philosophy. This document defines:
+
 - Core purpose and values
 - Our story and founding principles
 - Privacy and security commitments

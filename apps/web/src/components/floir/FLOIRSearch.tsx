@@ -8,97 +8,108 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { Button } from '@claimguardian/ui'
-import { Input } from '@claimguardian/ui'
-import { Search, ExternalLink, Loader2, FileText, AlertTriangle } from 'lucide-react'
-import { useState } from 'react'
-import { logger } from "@/lib/logger/production-logger"
+import { Button } from "@claimguardian/ui";
+import { Input } from "@claimguardian/ui";
+import {
+  Search,
+  ExternalLink,
+  Loader2,
+  FileText,
+  AlertTriangle,
+} from "lucide-react";
+import { useState } from "react";
+import { logger } from "@/lib/logger/production-logger";
 
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { createClient } from '@/lib/supabase/client'
-
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { createClient } from "@/lib/supabase/client";
 
 interface SearchResult {
-  id: string
-  data_type: string
-  primary_key: string
-  normalized_data: unknown
-  source_url: string
-  similarity: number
-  content_snippet?: string
+  id: string;
+  data_type: string;
+  primary_key: string;
+  normalized_data: unknown;
+  source_url: string;
+  similarity: number;
+  content_snippet?: string;
 }
 
 interface SearchResponse {
-  query: string
-  results: SearchResult[]
-  context: string
-  answer?: string
-  total_results: number
-  search_time_ms: number
+  query: string;
+  results: SearchResult[];
+  context: string;
+  answer?: string;
+  total_results: number;
+  search_time_ms: number;
 }
 
 const DATA_TYPE_COLORS = {
-  catastrophe: 'bg-red-100 text-red-800 border-red-200',
-  rate_filings: 'bg-blue-100 text-blue-800 border-blue-200',
-  professional_liability: 'bg-purple-100 text-purple-800 border-purple-200',
-  news_bulletins: 'bg-green-100 text-green-800 border-green-200',
-  receivership: 'bg-orange-100 text-orange-800 border-orange-200',
-  industry_reports: 'bg-indigo-100 text-indigo-800 border-indigo-200',
-  financial_reports: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-  data_call: 'bg-pink-100 text-pink-800 border-pink-200',
-  licensee_search: 'bg-teal-100 text-teal-800 border-teal-200',
-  surplus_lines: 'bg-gray-100 text-gray-800 border-gray-200',
-}
+  catastrophe: "bg-red-100 text-red-800 border-red-200",
+  rate_filings: "bg-blue-100 text-blue-800 border-blue-200",
+  professional_liability: "bg-purple-100 text-purple-800 border-purple-200",
+  news_bulletins: "bg-green-100 text-green-800 border-green-200",
+  receivership: "bg-orange-100 text-orange-800 border-orange-200",
+  industry_reports: "bg-indigo-100 text-indigo-800 border-indigo-200",
+  financial_reports: "bg-yellow-100 text-yellow-800 border-yellow-200",
+  data_call: "bg-pink-100 text-pink-800 border-pink-200",
+  licensee_search: "bg-teal-100 text-teal-800 border-teal-200",
+  surplus_lines: "bg-gray-100 text-gray-800 border-gray-200",
+};
 
 export default function FLOIRSearch() {
-  const [query, setQuery] = useState('')
-  const [results, setResults] = useState<SearchResponse | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<SearchResponse | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const supabase = createClient()
+  const supabase = createClient();
 
   const handleSearch = async () => {
-    if (!query.trim()) return
+    if (!query.trim()) return;
 
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
 
     try {
-      const { data, error: funcError } = await supabase.functions.invoke('floir-rag-search', {
-        body: {
-          query: query.trim(),
-          limit: 20,
-          threshold: 0.3,
-          include_context: true
-        }
-      })
+      const { data, error: funcError } = await supabase.functions.invoke(
+        "floir-rag-search",
+        {
+          body: {
+            query: query.trim(),
+            limit: 20,
+            threshold: 0.3,
+            include_context: true,
+          },
+        },
+      );
 
-      if (funcError) throw funcError
+      if (funcError) throw funcError;
 
-      setResults(data)
+      setResults(data);
     } catch (err: unknown) {
-      logger.error('Search error:', err)
-      setError(err instanceof Error ? err.message : 'Search failed')
+      logger.error("Search error:", err);
+      setError(err instanceof Error ? err.message : "Search failed");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const formatDataType = (dataType: string) => {
-    return dataType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
-  }
+    return dataType.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+  };
 
   const getDataTypeColor = (dataType: string) => {
-    return DATA_TYPE_COLORS[dataType as keyof typeof DATA_TYPE_COLORS] || DATA_TYPE_COLORS.surplus_lines
-  }
+    return (
+      DATA_TYPE_COLORS[dataType as keyof typeof DATA_TYPE_COLORS] ||
+      DATA_TYPE_COLORS.surplus_lines
+    );
+  };
 
   const formatSimilarity = (similarity: number) => {
-    return `${(similarity * 100).toFixed(1)}%`
-  }
+    return `${(similarity * 100).toFixed(1)}%`;
+  };
 
   return (
     <div className="space-y-6">
@@ -109,7 +120,8 @@ export default function FLOIRSearch() {
             FLOIR Data Search
           </CardTitle>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Search across Florida Office of Insurance Regulation data using AI-powered semantic search
+            Search across Florida Office of Insurance Regulation data using
+            AI-powered semantic search
           </p>
         </CardHeader>
         <CardContent>
@@ -118,13 +130,10 @@ export default function FLOIRSearch() {
               placeholder="Search for catastrophe losses, rate filings, company information..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              onKeyPress={(e) => e.key === "Enter" && handleSearch()}
               className="flex-1"
             />
-            <Button
-              onClick={handleSearch}
-              disabled={loading || !query.trim()}
-            >
+            <Button onClick={handleSearch} disabled={loading || !query.trim()}>
               {loading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
@@ -172,11 +181,10 @@ export default function FLOIRSearch() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Found {results.total_results} results in {results.search_time_ms}ms
+                    Found {results.total_results} results in{" "}
+                    {results.search_time_ms}ms
                   </p>
-                  <Badge variant="outline">
-                    Query: "{results.query}"
-                  </Badge>
+                  <Badge variant="outline">Query: "{results.query}"</Badge>
                 </div>
               </div>
             </CardContent>
@@ -206,7 +214,7 @@ export default function FLOIRSearch() {
                       <Button
                         variant="secondary"
                         size="sm"
-                        onClick={() => window.open(result.source_url, '_blank')}
+                        onClick={() => window.open(result.source_url, "_blank")}
                       >
                         <ExternalLink className="h-3 w-3 mr-1" />
                         Source
@@ -247,7 +255,8 @@ export default function FLOIRSearch() {
                   No results found
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  Try adjusting your search terms or using different keywords related to Florida insurance regulation.
+                  Try adjusting your search terms or using different keywords
+                  related to Florida insurance regulation.
                 </p>
               </CardContent>
             </Card>
@@ -255,5 +264,5 @@ export default function FLOIRSearch() {
         </div>
       )}
     </div>
-  )
+  );
 }

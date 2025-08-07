@@ -1,10 +1,11 @@
-import { Metadata } from 'next';
-import { WorkflowManagement } from '@/components/workflows/WorkflowManagement';
-import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
+import { Metadata } from "next";
+import { WorkflowManagement } from "@/components/workflows/WorkflowManagement";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 
 export const metadata: Metadata = {
-  title: 'Workflow Automation | ClaimGuardian',
-  description: 'Automate repetitive tasks and streamline your insurance processes',
+  title: "Workflow Automation | ClaimGuardian",
+  description:
+    "Automate repetitive tasks and streamline your insurance processes",
 };
 
 export default function WorkflowsPage() {

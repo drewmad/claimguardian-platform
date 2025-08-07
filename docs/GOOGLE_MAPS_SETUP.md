@@ -5,6 +5,7 @@ This guide helps you set up Google Maps API for address verification in ClaimGua
 ## Why You Need This
 
 The onboarding flow uses Google Places Autocomplete to:
+
 - Verify property addresses
 - Auto-complete addresses as users type
 - Get accurate coordinates for properties
@@ -22,6 +23,7 @@ The onboarding flow uses Google Places Autocomplete to:
 ### 2. Enable Billing
 
 Google requires billing to be enabled, but provides $200 free credit:
+
 1. In the console, go to "Billing"
 2. Add a payment method
 3. The free tier is usually sufficient for development
@@ -65,12 +67,15 @@ Google requires billing to be enabled, but provides $200 free credit:
 ### 6. Add to Your Environment
 
 #### Local Development
+
 Edit `/apps/web/.env.local`:
+
 ```env
 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your-actual-api-key-here
 ```
 
 #### Vercel Production
+
 1. Go to your Vercel project settings
 2. Navigate to "Environment Variables"
 3. Add:
@@ -88,16 +93,19 @@ NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your-actual-api-key-here
 ## Troubleshooting
 
 ### "Address verification is loading..." never goes away
+
 - Check that your API key is correctly set in `.env.local`
 - Make sure you restarted the dev server after adding the key
 - Check browser console for errors
 
 ### "This API key is not authorized"
+
 - Make sure you enabled all 3 required APIs
 - Check that your domain is in the allowed referrers
 - For Vercel deployments, add `https://*.vercel.app/*` to referrers
 
 ### Autocomplete not showing
+
 - Verify the Places API is enabled
 - Check that your API key has access to Places API
 - Look for errors in the browser console

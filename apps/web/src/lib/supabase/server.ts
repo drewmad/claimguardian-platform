@@ -8,13 +8,13 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
-import { authLogger } from '@/lib/logger'
+import { authLogger } from "@/lib/logger";
 
 export async function createClient() {
-  const cookieStore = await cookies()
+  const cookieStore = await cookies();
 
   try {
     const client = createServerClient(
@@ -23,11 +23,11 @@ export async function createClient() {
       {
         cookies: {
           get(name: string) {
-            return cookieStore.get(name)?.value
+            return cookieStore.get(name)?.value;
           },
           set(name: string, value: string, options: Record<string, any>) {
             try {
-              cookieStore.set({ name, value, ...options })
+              cookieStore.set({ name, value, ...options });
             } catch {
               // The `set` method was called from a Server Component.
               // This can be ignored if you have middleware refreshing
@@ -36,7 +36,7 @@ export async function createClient() {
           },
           remove(name: string, options: Record<string, any>) {
             try {
-              cookieStore.set({ name, value: '', ...options })
+              cookieStore.set({ name, value: "", ...options });
             } catch {
               // The `delete` method was called from a Server Component.
               // This can be ignored if you have middleware refreshing
@@ -44,12 +44,16 @@ export async function createClient() {
             }
           },
         },
-      }
-    )
-    authLogger.info('Supabase server client initialized')
-    return client
+      },
+    );
+    authLogger.info("Supabase server client initialized");
+    return client;
   } catch (error) {
-    authLogger.error('Failed to initialize Supabase server client', {}, error as Error)
-    throw error
+    authLogger.error(
+      "Failed to initialize Supabase server client",
+      {},
+      error as Error,
+    );
+    throw error;
   }
 }

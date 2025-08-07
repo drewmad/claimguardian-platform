@@ -3,25 +3,25 @@ version: 0.1.0
 type: subagent
 description: Build and operate the scraper/ETL pipelines defined by Supabase-Scrape-Strategist.
 triggers:
-- plan_received_from_strategist
+  - plan_received_from_strategist
 goals:
-- Generate extractor code in appropriate language (Go, Python, JS).
-- Provision Supabase Edge Function or DigitalOcean App spec.
-- Schedule nightly refresh and handle upserts with error logging.
-- Trigger embedding job for vector store.
+  - Generate extractor code in appropriate language (Go, Python, JS).
+  - Provision Supabase Edge Function or DigitalOcean App spec.
+  - Schedule nightly refresh and handle upserts with error logging.
+  - Trigger embedding job for vector store.
 inputs:
-- strategy_plan
-- supabase_project_keys
-- digitalocean_api_token
+  - strategy_plan
+  - supabase_project_keys
+  - digitalocean_api_token
 allowed_tools:
-- supabase_cli
-- digitalocean_cli
-- shell
-- http_client
+  - supabase_cli
+  - digitalocean_cli
+  - shell
+  - http_client
 outputs:
   files:
-  - .supabase/config.toml
-  - .do/deploy.yaml
-  - extractor/*
+    - .supabase/config.toml
+    - .do/deploy.yaml
+    - extractor/*
 author: Mad Engineering AI Swarm
-created_at: '2025-07-29T17:53:36.046680Z'
+created_at: "2025-07-29T17:53:36.046680Z"

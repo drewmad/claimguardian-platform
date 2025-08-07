@@ -22,42 +22,45 @@ pnpm add @claimguardian/realtime
 ### Basic Table Subscription
 
 ```tsx
-import { useRealtimeTable } from '@claimguardian/realtime'
-import { createClient } from '@claimguardian/db'
+import { useRealtimeTable } from "@claimguardian/realtime";
+import { createClient } from "@claimguardian/db";
 
 function ClaimsList() {
-  const supabase = createClient()
+  const supabase = createClient();
 
-  const { events, isConnected } = useRealtimeTable(supabase, 'claims', {
+  const { events, isConnected } = useRealtimeTable(supabase, "claims", {
     onInsert: (claim) => {
-      console.log('New claim created:', claim)
-      toast.success('New claim added!')
+      console.log("New claim created:", claim);
+      toast.success("New claim added!");
     },
     onUpdate: ({ old, new: updated }) => {
-      console.log('Claim updated:', { old, updated })
+      console.log("Claim updated:", { old, updated });
     },
     onDelete: (claim) => {
-      console.log('Claim deleted:', claim)
-    }
-  })
+      console.log("Claim deleted:", claim);
+    },
+  });
 
   return (
     <div>
-      <div>Connection: {isConnected ? '🟢 Connected' : '🔴 Disconnected'}</div>
+      <div>Connection: {isConnected ? "🟢 Connected" : "🔴 Disconnected"}</div>
       <div>Recent events: {events.length}</div>
     </div>
-  )
+  );
 }
 ```
 
 ### Record-Specific Updates
 
 ```tsx
-import { useClaimUpdates } from '@claimguardian/realtime'
+import { useClaimUpdates } from "@claimguardian/realtime";
 
 function ClaimDetails({ claimId }: { claimId: string }) {
-  const supabase = createClient()
-  const { updates, latestStatus, currentClaim } = useClaimUpdates(supabase, claimId)
+  const supabase = createClient();
+  const { updates, latestStatus, currentClaim } = useClaimUpdates(
+    supabase,
+    claimId,
+  );
 
   return (
     <div>
@@ -71,18 +74,21 @@ function ClaimDetails({ claimId }: { claimId: string }) {
         ))}
       </div>
     </div>
-  )
+  );
 }
 ```
 
 ### Real-time Notifications
 
 ```tsx
-import { useNotifications } from '@claimguardian/realtime'
+import { useNotifications } from "@claimguardian/realtime";
 
 function NotificationBell({ userId }: { userId: string }) {
-  const supabase = createClient()
-  const { notifications, unreadCount, markAsRead } = useNotifications(supabase, userId)
+  const supabase = createClient();
+  const { notifications, unreadCount, markAsRead } = useNotifications(
+    supabase,
+    userId,
+  );
 
   return (
     <div className="relative">
@@ -96,10 +102,10 @@ function NotificationBell({ userId }: { userId: string }) {
       </button>
 
       <div className="absolute right-0 mt-2 w-80 bg-white shadow-lg rounded-lg">
-        {notifications.map(notif => (
+        {notifications.map((notif) => (
           <div
             key={notif.id}
-            className={`p-4 ${notif.read ? '' : 'bg-blue-50'}`}
+            className={`p-4 ${notif.read ? "" : "bg-blue-50"}`}
             onClick={() => markAsRead(notif.id)}
           >
             <h4>{notif.title}</h4>
@@ -108,51 +114,51 @@ function NotificationBell({ userId }: { userId: string }) {
         ))}
       </div>
     </div>
-  )
+  );
 }
 ```
 
 ### Collaborative Editing with Presence
 
 ```tsx
-import { usePresence, useTypingIndicator } from '@claimguardian/realtime'
+import { usePresence, useTypingIndicator } from "@claimguardian/realtime";
 
 function CollaborativeClaimEditor({ claimId, userId, userEmail }: Props) {
-  const supabase = createClient()
+  const supabase = createClient();
 
   // Track who's viewing/editing
   const { activeUsers, updateStatus } = usePresence(
     supabase,
     `claim-${claimId}`,
     userId,
-    { email: userEmail }
-  )
+    { email: userEmail },
+  );
 
   // Show typing indicators
   const { typingUsers, setTyping } = useTypingIndicator(
     supabase,
     `claim-${claimId}`,
     userId,
-    userEmail
-  )
+    userEmail,
+  );
 
   const handleInputChange = (field: string) => {
-    setTyping(true, field)
+    setTyping(true, field);
     // Your input handling logic
-  }
+  };
 
   useEffect(() => {
     updateStatus({
-      action: 'editing',
-      lastActive: new Date().toISOString()
-    })
-  }, [])
+      action: "editing",
+      lastActive: new Date().toISOString(),
+    });
+  }, []);
 
   return (
     <div>
       <div className="flex items-center gap-2 mb-4">
         <span>Active users:</span>
-        {activeUsers.map(user => (
+        {activeUsers.map((user) => (
           <div key={user} className="flex items-center gap-1">
             <div className="w-2 h-2 bg-green-500 rounded-full" />
             <span>{user}</span>
@@ -162,44 +168,44 @@ function CollaborativeClaimEditor({ claimId, userId, userEmail }: Props) {
 
       {typingUsers.length > 0 && (
         <div className="text-sm text-gray-500">
-          {typingUsers.map(u => u.user_name).join(', ')}
-          {typingUsers.length === 1 ? ' is' : ' are'} typing...
+          {typingUsers.map((u) => u.user_name).join(", ")}
+          {typingUsers.length === 1 ? " is" : " are"} typing...
         </div>
       )}
 
       <input
-        onChange={() => handleInputChange('description')}
+        onChange={() => handleInputChange("description")}
         onBlur={() => setTyping(false)}
       />
     </div>
-  )
+  );
 }
 ```
 
 ### Broadcasting Messages
 
 ```tsx
-import { useBroadcast } from '@claimguardian/realtime'
+import { useBroadcast } from "@claimguardian/realtime";
 
 function ClaimChat({ claimId }: { claimId: string }) {
-  const supabase = createClient()
-  const { messages, broadcast } = useBroadcast(supabase, `chat-${claimId}`)
-  const [input, setInput] = useState('')
+  const supabase = createClient();
+  const { messages, broadcast } = useBroadcast(supabase, `chat-${claimId}`);
+  const [input, setInput] = useState("");
 
   const sendMessage = async () => {
-    await broadcast('message', {
+    await broadcast("message", {
       text: input,
       userId: currentUser.id,
-      timestamp: new Date().toISOString()
-    })
-    setInput('')
-  }
+      timestamp: new Date().toISOString(),
+    });
+    setInput("");
+  };
 
   return (
     <div>
       <div className="messages">
         {messages
-          .filter(m => m.event === 'message')
+          .filter((m) => m.event === "message")
           .map((msg, i) => (
             <div key={i}>{msg.payload.text}</div>
           ))}
@@ -208,26 +214,29 @@ function ClaimChat({ claimId }: { claimId: string }) {
       <input
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+        onKeyPress={(e) => e.key === "Enter" && sendMessage()}
       />
     </div>
-  )
+  );
 }
 ```
 
 ### Document Processing Updates
 
 ```tsx
-import { useDocumentProcessing } from '@claimguardian/realtime'
+import { useDocumentProcessing } from "@claimguardian/realtime";
 
 function DocumentStatus({ documentId }: { documentId: string }) {
-  const supabase = createClient()
-  const { processingStatus, extractedData } = useDocumentProcessing(supabase, documentId)
+  const supabase = createClient();
+  const { processingStatus, extractedData } = useDocumentProcessing(
+    supabase,
+    documentId,
+  );
 
   return (
     <div>
       <div className="flex items-center gap-2">
-        {processingStatus === 'processing' && <Spinner />}
+        {processingStatus === "processing" && <Spinner />}
         <span>Status: {processingStatus}</span>
       </div>
 
@@ -238,39 +247,39 @@ function DocumentStatus({ documentId }: { documentId: string }) {
         </div>
       )}
     </div>
-  )
+  );
 }
 ```
 
 ### Using the RealtimeClient Directly
 
 ```tsx
-import { RealtimeClient } from '@claimguardian/realtime'
+import { RealtimeClient } from "@claimguardian/realtime";
 
 // For advanced use cases
-const client = new RealtimeClient(supabase, userId)
+const client = new RealtimeClient(supabase, userId);
 
 // Subscribe to custom events
-client.on('claims:insert', (claim) => {
-  console.log('New claim:', claim)
-})
+client.on("claims:insert", (claim) => {
+  console.log("New claim:", claim);
+});
 
 // Create custom channels
-const channel = client.createBroadcastChannel('custom-events')
+const channel = client.createBroadcastChannel("custom-events");
 
 // Clean up
-client.unsubscribeAll()
+client.unsubscribeAll();
 ```
 
 ## Channel Naming Conventions
 
 ```typescript
-import { channels } from '@claimguardian/realtime'
+import { channels } from "@claimguardian/realtime";
 
 // Pre-defined channel names
-const claimChannel = channels.claim('claim-123')
-const userNotifs = channels.userNotifications('user-456')
-const orgPresence = channels.orgPresence('org-789')
+const claimChannel = channels.claim("claim-123");
+const userNotifs = channels.userNotifications("user-456");
+const orgPresence = channels.orgPresence("org-789");
 ```
 
 ## Performance Considerations
@@ -289,6 +298,6 @@ import type {
   RealtimeEvent,
   ClaimUpdate,
   NotificationEvent,
-  PresenceState
-} from '@claimguardian/realtime'
+  PresenceState,
+} from "@claimguardian/realtime";
 ```

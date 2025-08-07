@@ -15,7 +15,7 @@ overrides:
   lodash.get: npm:lodash@4.17.21
   source-map: 0.7.4
 
-pnpmfileChecksum: sha256-0mriHQEk4Ihgbw+2LoHsT/0VyLYm83c7uGwK7itzZrc=
+pnpmfileChecksum: sha256-Q2E06/Z1jpS+ttvB4Frq9JOg7KR5Y/6wDWVXBEdiDdU=
 
 importers:
 

@@ -8,10 +8,10 @@
  * @tags ["auth", "verification", "banner", "component"]
  * @status stable
  */
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Mail,
   CheckCircle,
@@ -19,30 +19,30 @@ import {
   AlertTriangle,
   RefreshCw,
   Clock,
-  ExternalLink
-} from 'lucide-react'
+  ExternalLink,
+} from "lucide-react";
 
-import { Button } from '@/components/ui/button'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Progress } from '@/components/ui/progress'
-import { useEmailVerification } from '@/hooks/use-email-verification'
-import { cn } from '@/lib/utils'
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Progress } from "@/components/ui/progress";
+import { useEmailVerification } from "@/hooks/use-email-verification";
+import { cn } from "@/lib/utils";
 
 interface VerificationBannerProps {
-  variant?: 'default' | 'compact' | 'inline'
-  showDismiss?: boolean
-  className?: string
-  onVerified?: () => void
+  variant?: "default" | "compact" | "inline";
+  showDismiss?: boolean;
+  className?: string;
+  onVerified?: () => void;
 }
 
 export function VerificationBanner({
-  variant = 'default',
+  variant = "default",
   showDismiss = true,
   className,
-  onVerified
+  onVerified,
 }: VerificationBannerProps) {
-  const [isDismissed, setIsDismissed] = useState(false)
-  const [isResending, setIsResending] = useState(false)
+  const [isDismissed, setIsDismissed] = useState(false);
+  const [isResending, setIsResending] = useState(false);
 
   const {
     isVerified,
@@ -53,70 +53,70 @@ export function VerificationBanner({
     attempts,
     error,
     resendEmail,
-    clearError
-  } = useEmailVerification()
+    clearError,
+  } = useEmailVerification();
 
   // Don't show if verified, loading, dismissed, or no email
   if (isVerified || isLoading || isDismissed || !email) {
-    return null
+    return null;
   }
 
   const handleResend = async () => {
-    if (!canResend) return
+    if (!canResend) return;
 
-    setIsResending(true)
+    setIsResending(true);
     try {
-      const success = await resendEmail()
+      const success = await resendEmail();
       if (success && onVerified) {
         // Don't call onVerified immediately, but set up for when verification completes
       }
     } finally {
-      setIsResending(false)
+      setIsResending(false);
     }
-  }
+  };
 
   const handleDismiss = () => {
-    setIsDismissed(true)
-    clearError()
-  }
+    setIsDismissed(true);
+    clearError();
+  };
 
   const openEmailClient = () => {
-    const emailDomain = email.split('@')[1]?.toLowerCase() || ''
+    const emailDomain = email.split("@")[1]?.toLowerCase() || "";
     const emailUrls: Record<string, string> = {
-      'gmail.com': 'https://gmail.com',
-      'yahoo.com': 'https://mail.yahoo.com',
-      'outlook.com': 'https://outlook.live.com',
-      'hotmail.com': 'https://outlook.live.com',
-      'icloud.com': 'https://icloud.com/mail'
-    }
-    const url = emailUrls[emailDomain] || `mailto:${email}`
-    window.open(url, '_blank')
-  }
+      "gmail.com": "https://gmail.com",
+      "yahoo.com": "https://mail.yahoo.com",
+      "outlook.com": "https://outlook.live.com",
+      "hotmail.com": "https://outlook.live.com",
+      "icloud.com": "https://icloud.com/mail",
+    };
+    const url = emailUrls[emailDomain] || `mailto:${email}`;
+    window.open(url, "_blank");
+  };
 
   const getVariantStyles = () => {
     switch (variant) {
-      case 'compact':
-        return 'p-3'
-      case 'inline':
-        return 'p-4 rounded-lg'
+      case "compact":
+        return "p-3";
+      case "inline":
+        return "p-4 rounded-lg";
       default:
-        return 'p-4 rounded-lg'
+        return "p-4 rounded-lg";
     }
-  }
+  };
 
-  const cooldownSeconds = Math.ceil(resendCooldown / 1000)
+  const cooldownSeconds = Math.ceil(resendCooldown / 1000);
 
-  if (variant === 'compact') {
+  if (variant === "compact") {
     return (
       <AnimatePresence>
         <motion.div
           initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
+          animate={{ opacity: 1, height: "auto" }}
           exit={{ opacity: 0, height: 0 }}
           className={cn(
             "bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800",
             getVariantStyles(),
-            className
+            className,
           )}
         >
           <div className="flex items-center justify-between">
@@ -145,7 +145,7 @@ export function VerificationBanner({
                 ) : cooldownSeconds > 0 ? (
                   `${cooldownSeconds}s`
                 ) : (
-                  'Resend'
+                  "Resend"
                 )}
               </Button>
 
@@ -163,7 +163,7 @@ export function VerificationBanner({
           </div>
         </motion.div>
       </AnimatePresence>
-    )
+    );
   }
 
   return (
@@ -194,9 +194,9 @@ export function VerificationBanner({
                   </div>
 
                   <p className="text-orange-700 dark:text-orange-300 text-sm mb-3">
-                    We sent a verification email to{' '}
-                    <span className="font-medium">{email}</span>.
-                    Please check your inbox and spam folder.
+                    We sent a verification email to{" "}
+                    <span className="font-medium">{email}</span>. Please check
+                    your inbox and spam folder.
                   </p>
 
                   {error && (
@@ -236,7 +236,7 @@ export function VerificationBanner({
                       ) : (
                         <>
                           <Mail className="w-3 h-3 mr-1" />
-                          {attempts === 0 ? 'Send Email' : 'Resend Email'}
+                          {attempts === 0 ? "Send Email" : "Resend Email"}
                         </>
                       )}
                     </Button>
@@ -284,16 +284,16 @@ export function VerificationBanner({
         </div>
       </motion.div>
     </AnimatePresence>
-  )
+  );
 }
 
 // Success banner when verification completes
 export function VerificationSuccessBanner({
   onDismiss,
-  className
+  className,
 }: {
-  onDismiss?: () => void
-  className?: string
+  onDismiss?: () => void;
+  className?: string;
 }) {
   return (
     <motion.div
@@ -313,7 +313,8 @@ export function VerificationSuccessBanner({
                 Email Verified Successfully!
               </h4>
               <p className="text-green-700 dark:text-green-300 text-sm">
-                Your account is now fully activated and you have access to all features.
+                Your account is now fully activated and you have access to all
+                features.
               </p>
             </div>
 
@@ -331,5 +332,5 @@ export function VerificationSuccessBanner({
         </AlertDescription>
       </Alert>
     </motion.div>
-  )
+  );
 }

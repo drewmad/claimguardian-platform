@@ -6,48 +6,48 @@
  * @status stable
  */
 
-import { useState, useRef, useEffect } from 'react'
-import { View, Text, TouchableOpacity, Alert, StyleSheet } from 'react-native'
-import { CameraView, CameraType, useCameraPermissions } from 'expo-camera'
-import * as Location from 'expo-location'
-import * as FileSystem from 'expo-file-system'
-import { router, useLocalSearchParams } from 'expo-router'
-import { useDispatch, useSelector } from 'react-redux'
-import { MaterialCommunityIcons } from '@expo/vector-icons'
-import { StatusBar } from 'expo-status-bar'
+import { useState, useRef, useEffect } from "react";
+import { View, Text, TouchableOpacity, Alert, StyleSheet } from "react-native";
+import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
+import * as Location from "expo-location";
+import * as FileSystem from "expo-file-system";
+import { router, useLocalSearchParams } from "expo-router";
+import { useDispatch, useSelector } from "react-redux";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { StatusBar } from "expo-status-bar";
 
-import { selectLocation, selectUser } from '../shared/store'
-import { addToQueue } from '../shared/store/slices/syncSlice'
-import type { Photo } from '../shared/types'
+import { selectLocation, selectUser } from "../shared/store";
+import { addToQueue } from "../shared/store/slices/syncSlice";
+import type { Photo } from "../shared/types";
 
 export default function CameraScreen() {
   const params = useLocalSearchParams<{
-    assessment_id?: string
-    damage_item_id?: string
-    return_screen: string
-  }>()
+    assessment_id?: string;
+    damage_item_id?: string;
+    return_screen: string;
+  }>();
 
-  const dispatch = useDispatch()
-  const location = useSelector(selectLocation)
-  const user = useSelector(selectUser)
+  const dispatch = useDispatch();
+  const location = useSelector(selectLocation);
+  const user = useSelector(selectUser);
 
-  const [permission, requestPermission] = useCameraPermissions()
-  const [facing, setFacing] = useState<CameraType>('back')
-  const [isCapturing, setIsCapturing] = useState(false)
-  const [flashMode, setFlashMode] = useState<'off' | 'on' | 'auto'>('auto')
+  const [permission, requestPermission] = useCameraPermissions();
+  const [facing, setFacing] = useState<CameraType>("back");
+  const [isCapturing, setIsCapturing] = useState(false);
+  const [flashMode, setFlashMode] = useState<"off" | "on" | "auto">("auto");
 
-  const cameraRef = useRef<CameraView>(null)
+  const cameraRef = useRef<CameraView>(null);
 
   useEffect(() => {
-    requestPermission()
-  }, [])
+    requestPermission();
+  }, []);
 
   if (!permission) {
     return (
       <View style={styles.container}>
         <Text style={styles.message}>Requesting camera permissions...</Text>
       </View>
-    )
+    );
   }
 
   if (!permission.granted) {
@@ -55,52 +55,61 @@ export default function CameraScreen() {
       <View style={styles.container}>
         <View style={styles.permissionContainer}>
           <MaterialCommunityIcons name="camera-off" size={64} color="#9CA3AF" />
-          <Text style={styles.message}>Camera access is required to capture damage photos</Text>
-          <TouchableOpacity style={styles.permissionButton} onPress={requestPermission}>
+          <Text style={styles.message}>
+            Camera access is required to capture damage photos
+          </Text>
+          <TouchableOpacity
+            style={styles.permissionButton}
+            onPress={requestPermission}
+          >
             <Text style={styles.permissionButtonText}>Grant Camera Access</Text>
           </TouchableOpacity>
         </View>
       </View>
-    )
+    );
   }
 
   const toggleCameraFacing = () => {
-    setFacing(current => (current === 'back' ? 'front' : 'back'))
-  }
+    setFacing((current) => (current === "back" ? "front" : "back"));
+  };
 
   const toggleFlash = () => {
-    setFlashMode(current => {
+    setFlashMode((current) => {
       switch (current) {
-        case 'off': return 'auto'
-        case 'auto': return 'on'
-        case 'on': return 'off'
-        default: return 'auto'
+        case "off":
+          return "auto";
+        case "auto":
+          return "on";
+        case "on":
+          return "off";
+        default:
+          return "auto";
       }
-    })
-  }
+    });
+  };
 
   const capturePhoto = async () => {
-    if (!cameraRef.current || isCapturing) return
+    if (!cameraRef.current || isCapturing) return;
 
     try {
-      setIsCapturing(true)
+      setIsCapturing(true);
 
       // Get current location if available
-      let currentLocation = location.current
+      let currentLocation = location.current;
       if (!currentLocation && location.hasPermission) {
         try {
           const locationResult = await Location.getCurrentPositionAsync({
             accuracy: Location.Accuracy.High,
             maximumAge: 30000, // 30 seconds
-          })
+          });
           currentLocation = {
             latitude: locationResult.coords.latitude,
             longitude: locationResult.coords.longitude,
             accuracy: locationResult.coords.accuracy || 0,
-            timestamp: Date.now()
-          }
+            timestamp: Date.now(),
+          };
         } catch (error) {
-          console.warn('Failed to get location:', error)
+          console.warn("Failed to get location:", error);
         }
       }
 
@@ -109,29 +118,31 @@ export default function CameraScreen() {
         quality: 0.8,
         base64: false,
         exif: true,
-      })
+      });
 
-      if (!photo) throw new Error('Failed to capture photo')
+      if (!photo) throw new Error("Failed to capture photo");
 
       // Generate unique filename
-      const timestamp = new Date().toISOString()
-      const filename = `damage_photo_${Date.now()}.jpg`
+      const timestamp = new Date().toISOString();
+      const filename = `damage_photo_${Date.now()}.jpg`;
 
       // Create permanent file path
-      const documentsDir = FileSystem.documentDirectory
-      const permanentUri = `${documentsDir}photos/${filename}`
+      const documentsDir = FileSystem.documentDirectory;
+      const permanentUri = `${documentsDir}photos/${filename}`;
 
       // Ensure photos directory exists
-      await FileSystem.makeDirectoryAsync(`${documentsDir}photos/`, { intermediates: true })
+      await FileSystem.makeDirectoryAsync(`${documentsDir}photos/`, {
+        intermediates: true,
+      });
 
       // Move photo to permanent location
       await FileSystem.moveAsync({
         from: photo.uri,
-        to: permanentUri
-      })
+        to: permanentUri,
+      });
 
       // Get file info
-      const fileInfo = await FileSystem.getInfoAsync(permanentUri)
+      const fileInfo = await FileSystem.getInfoAsync(permanentUri);
 
       // Create photo record
       const photoRecord: Photo = {
@@ -141,63 +152,68 @@ export default function CameraScreen() {
         local_uri: permanentUri,
         filename,
         file_size: fileInfo.size || 0,
-        mime_type: 'image/jpeg',
+        mime_type: "image/jpeg",
         width: photo.width || 0,
         height: photo.height || 0,
         latitude: currentLocation?.latitude,
         longitude: currentLocation?.longitude,
         timestamp,
-        upload_status: 'pending',
+        upload_status: "pending",
         created_at: timestamp,
-        synced: false
-      }
+        synced: false,
+      };
 
       // Add to sync queue
-      dispatch(addToQueue({
-        entity_type: 'photo',
-        entity_id: photoRecord.id,
-        operation: 'create',
-        data: photoRecord
-      }))
+      dispatch(
+        addToQueue({
+          entity_type: "photo",
+          entity_id: photoRecord.id,
+          operation: "create",
+          data: photoRecord,
+        }),
+      );
 
       // Navigate to photo review
       router.replace({
-        pathname: '/photo-review',
+        pathname: "/photo-review",
         params: {
           uri: permanentUri,
           assessment_id: params.assessment_id,
           damage_item_id: params.damage_item_id,
-        }
-      })
-
+        },
+      });
     } catch (error) {
-      console.error('Failed to capture photo:', error)
+      console.error("Failed to capture photo:", error);
       Alert.alert(
-        'Capture Failed',
-        'Failed to capture photo. Please try again.',
-        [{ text: 'OK' }]
-      )
+        "Capture Failed",
+        "Failed to capture photo. Please try again.",
+        [{ text: "OK" }],
+      );
     } finally {
-      setIsCapturing(false)
+      setIsCapturing(false);
     }
-  }
+  };
 
   const handleClose = () => {
-    if (params.return_screen === 'dashboard') {
-      router.replace('/(tabs)/')
+    if (params.return_screen === "dashboard") {
+      router.replace("/(tabs)/");
     } else {
-      router.back()
+      router.back();
     }
-  }
+  };
 
   const getFlashIcon = () => {
     switch (flashMode) {
-      case 'on': return 'flash'
-      case 'off': return 'flash-off'
-      case 'auto': return 'flash-auto'
-      default: return 'flash-auto'
+      case "on":
+        return "flash";
+      case "off":
+        return "flash-off";
+      case "auto":
+        return "flash-auto";
+      default:
+        return "flash-auto";
     }
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -216,8 +232,15 @@ export default function CameraScreen() {
           </TouchableOpacity>
 
           <View style={styles.rightControls}>
-            <TouchableOpacity style={styles.controlButton} onPress={toggleFlash}>
-              <MaterialCommunityIcons name={getFlashIcon()} size={24} color="white" />
+            <TouchableOpacity
+              style={styles.controlButton}
+              onPress={toggleFlash}
+            >
+              <MaterialCommunityIcons
+                name={getFlashIcon()}
+                size={24}
+                color="white"
+              />
             </TouchableOpacity>
           </View>
         </View>
@@ -232,7 +255,10 @@ export default function CameraScreen() {
           <View style={styles.controlSpacer} />
 
           <TouchableOpacity
-            style={[styles.captureButton, isCapturing && styles.captureButtonDisabled]}
+            style={[
+              styles.captureButton,
+              isCapturing && styles.captureButtonDisabled,
+            ]}
             onPress={capturePhoto}
             disabled={isCapturing}
           >
@@ -243,8 +269,15 @@ export default function CameraScreen() {
             )}
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.controlButton} onPress={toggleCameraFacing}>
-            <MaterialCommunityIcons name="camera-flip" size={24} color="white" />
+          <TouchableOpacity
+            style={styles.controlButton}
+            onPress={toggleCameraFacing}
+          >
+            <MaterialCommunityIcons
+              name="camera-flip"
+              size={24}
+              color="white"
+            />
           </TouchableOpacity>
         </View>
 
@@ -263,91 +296,99 @@ export default function CameraScreen() {
 
           {params.assessment_id && (
             <View style={styles.infoItem}>
-              <MaterialCommunityIcons name="clipboard-check" size={16} color="#3B82F6" />
+              <MaterialCommunityIcons
+                name="clipboard-check"
+                size={16}
+                color="#3B82F6"
+              />
               <Text style={styles.infoText}>Assessment Photo</Text>
             </View>
           )}
 
           {params.damage_item_id && (
             <View style={styles.infoItem}>
-              <MaterialCommunityIcons name="alert-circle" size={16} color="#F59E0B" />
+              <MaterialCommunityIcons
+                name="alert-circle"
+                size={16}
+                color="#F59E0B"
+              />
               <Text style={styles.infoText}>Damage Item Photo</Text>
             </View>
           )}
         </View>
       </CameraView>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: "#000",
   },
   camera: {
     flex: 1,
   },
   permissionContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
   },
   message: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 20,
   },
   permissionButton: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: "#3B82F6",
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 8,
   },
   permissionButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   topControls: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: 20,
     paddingTop: 60,
     paddingBottom: 20,
   },
   rightControls: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   controlButton: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
     borderRadius: 25,
     width: 50,
     height: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginLeft: 10,
   },
   captureOverlay: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   viewfinder: {
     width: 280,
     height: 280,
     borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.7)',
+    borderColor: "rgba(255, 255, 255, 0.7)",
     borderRadius: 20,
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
   },
   bottomControls: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: 40,
     paddingBottom: 40,
   },
@@ -355,37 +396,37 @@ const styles = StyleSheet.create({
     width: 50,
   },
   captureButton: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 40,
     width: 80,
     height: 80,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     borderWidth: 4,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderColor: "rgba(255, 255, 255, 0.3)",
   },
   captureButtonDisabled: {
     opacity: 0.7,
   },
   captureButtonInner: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 30,
     width: 60,
     height: 60,
   },
   infoBar: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 120,
     left: 20,
     right: 20,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    justifyContent: "center",
+    flexWrap: "wrap",
   },
   infoItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
@@ -393,8 +434,8 @@ const styles = StyleSheet.create({
     marginVertical: 2,
   },
   infoText: {
-    color: 'white',
+    color: "white",
     fontSize: 12,
     marginLeft: 4,
   },
-})
+});

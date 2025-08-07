@@ -1,6 +1,7 @@
 # Florida Parcels Processing Plan
 
 ## Current State
+
 - **Source Data**: Cadastral_Statewide.gdb (FileGeodatabase)
 - **Total Parcels**: 10,711,337 across 67 counties
 - **Data Location**: Local filesystem at `/Users/madengineering/ClaimGuardian/data/florida/`
@@ -8,6 +9,7 @@
 ## Processing Strategy
 
 ### Phase 1: Data Preparation (Local)
+
 1. **Convert GDB to GeoJSON by County**
    - Use ogr2ogr to extract each county (CO_NO = 1-67)
    - Convert from Florida State Plane to WGS84 (EPSG:4326)
@@ -20,7 +22,9 @@
    - Large counties (>500MB): Split into chunks or stream upload
 
 ### Phase 2: Storage Upload
+
 1. **Create Storage Structure**
+
    ```
    parcels/
    ├── counties/
@@ -37,6 +41,7 @@
    - Alternative: Use Supabase CLI for bulk uploads
 
 ### Phase 3: Database Processing
+
 1. **Priority Order** (by population/importance):
    - Miami-Dade (13) - 950k parcels
    - Broward (6) - 720k parcels
@@ -52,6 +57,7 @@
    - Progress tracking: Real-time dashboard updates
 
 ### Phase 4: Quality Assurance
+
 1. **Data Validation**
    - Verify parcel counts match source
    - Check geometry validity
@@ -67,6 +73,7 @@
 ## Implementation Scripts
 
 ### 1. Convert All Counties (convert-all-counties.sh)
+
 ```bash
 #!/bin/bash
 for i in {1..67}; do
@@ -75,6 +82,7 @@ done
 ```
 
 ### 2. Upload Counties (upload-counties.py)
+
 ```python
 import os
 import asyncio
@@ -94,6 +102,7 @@ async def main():
 ```
 
 ### 3. Process Counties (process-counties.sh)
+
 ```bash
 # Start with priority counties
 curl -X POST $ORCHESTRATOR_URL \
@@ -140,6 +149,7 @@ watch -n 10 "curl -s $MONITOR_URL | jq '.summary'"
 
 1. **Real-time Dashboard**: http://localhost:3000/admin/florida-parcels
 2. **Database Queries**:
+
    ```sql
    -- Check progress by county
    SELECT * FROM florida_parcels_import_status;

@@ -8,26 +8,26 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { Loader2, Camera, FileText, Sparkles } from 'lucide-react'
+import { Loader2, Camera, FileText, Sparkles } from "lucide-react";
 
-import { Card, CardContent } from '@/components/ui/card'
-import { Progress } from '@/components/ui/progress'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export interface LoadingStateProps {
-  message?: string
-  progress?: number
-  showProgress?: boolean
-  className?: string
+  message?: string;
+  progress?: number;
+  showProgress?: boolean;
+  className?: string;
 }
 
 export function AILoadingState({
-  message = 'Processing...',
+  message = "Processing...",
   progress = 0,
   showProgress = false,
-  className = ''
+  className = "",
 }: LoadingStateProps) {
   return (
     <Card className={`bg-gray-800 border-gray-700 ${className}`}>
@@ -50,19 +50,19 @@ export function AILoadingState({
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 export function ImageAnalysisLoading({
   currentImage = 1,
   totalImages = 1,
-  className = ''
+  className = "",
 }: {
-  currentImage?: number
-  totalImages?: number
-  className?: string
+  currentImage?: number;
+  totalImages?: number;
+  className?: string;
 }) {
-  const progress = (currentImage / totalImages) * 100
+  const progress = (currentImage / totalImages) * 100;
 
   return (
     <Card className={`bg-gray-800 border-gray-700 ${className}`}>
@@ -91,10 +91,10 @@ export function ImageAnalysisLoading({
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
-export function ChatLoadingState({ className = '' }: { className?: string }) {
+export function ChatLoadingState({ className = "" }: { className?: string }) {
   return (
     <div className={`flex items-start gap-3 ${className}`}>
       <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
@@ -111,15 +111,15 @@ export function ChatLoadingState({ className = '' }: { className?: string }) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export function DocumentProcessingLoading({
-  fileName = 'document',
-  className = ''
+  fileName = "document",
+  className = "",
 }: {
-  fileName?: string
-  className?: string
+  fileName?: string;
+  className?: string;
 }) {
   return (
     <Card className={`bg-gray-800 border-gray-700 ${className}`}>
@@ -130,16 +130,18 @@ export function DocumentProcessingLoading({
             <Loader2 className="h-3 w-3 animate-spin text-blue-400 absolute -top-1 -right-1" />
           </div>
           <div className="flex-1">
-            <p className="text-sm font-medium text-white">Processing Document</p>
+            <p className="text-sm font-medium text-white">
+              Processing Document
+            </p>
             <p className="text-xs text-gray-400 truncate">{fileName}</p>
           </div>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
-export function SkeletonCard({ className = '' }: { className?: string }) {
+export function SkeletonCard({ className = "" }: { className?: string }) {
   return (
     <Card className={`bg-gray-800 border-gray-700 ${className}`}>
       <CardContent className="p-6">
@@ -159,5 +161,5 @@ export function SkeletonCard({ className = '' }: { className?: string }) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

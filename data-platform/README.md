@@ -1,10 +1,12 @@
 # Data Platform
 
 ## Overview
+
 Centralized data management platform for Florida property and parcel data processing.
 
 ## Structure
-```
+
+````
 data-platform/
 ├── raw/                   # Unprocessed source data
 │   ├── gis/              # GIS data files (shapefiles, GDB)
@@ -38,9 +40,10 @@ node validation/verify-import-complete.js
 
 # Export processed data
 ./export/export-to-csv.sh
-```
+````
 
 ## Data Sources
+
 - Florida Department of Revenue (FDOR)
 - County Property Appraisers
 - GIS Cadastral databases

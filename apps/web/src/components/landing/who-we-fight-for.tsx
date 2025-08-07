@@ -8,27 +8,27 @@
  * @tags ["landing", "advocacy", "gallery"]
  * @status stable
  */
-'use client'
+"use client";
 
-import Image from 'next/image'
+import Image from "next/image";
 
 const images = [
   {
-    src: '/landingpage/Families Fighting for Fair Settlements.png',
-    alt: 'Family home with ClaimGuardian protection',
-    title: 'Families Fighting for Fair Settlements'
+    src: "/landingpage/Families Fighting for Fair Settlements.png",
+    alt: "Family home with ClaimGuardian protection",
+    title: "Families Fighting for Fair Settlements",
   },
   {
-    src: '/landingpage/Businesses Protecting Their Future .png',
-    alt: 'Business property with comprehensive coverage',
-    title: 'Businesses Protecting Their Future'
+    src: "/landingpage/Businesses Protecting Their Future .png",
+    alt: "Business property with comprehensive coverage",
+    title: "Businesses Protecting Their Future",
   },
   {
-    src: '/landingpage/Communities.png',
-    alt: 'Community recovering from natural disaster',
-    title: 'Communities Recovering from Disasters'
-  }
-]
+    src: "/landingpage/Communities.png",
+    alt: "Community recovering from natural disaster",
+    title: "Communities Recovering from Disasters",
+  },
+];
 
 export function WhoWeFightFor() {
   return (
@@ -38,7 +38,8 @@ export function WhoWeFightFor() {
           Who We Fight For
         </h2>
         <p className="text-lg text-slate-400 text-center max-w-3xl mx-auto mb-12">
-          Behind every claim is a story. We're here to ensure your story ends with the settlement you deserve.
+          Behind every claim is a story. We're here to ensure your story ends
+          with the settlement you deserve.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -47,7 +48,7 @@ export function WhoWeFightFor() {
               key={index}
               className="relative group overflow-hidden rounded-lg"
               style={{
-                animation: `fadeInUp 0.6s ease-out ${index * 0.2}s both`
+                animation: `fadeInUp 0.6s ease-out ${index * 0.2}s both`,
               }}
             >
               <div className="relative h-64 overflow-hidden">
@@ -80,5 +81,5 @@ export function WhoWeFightFor() {
         }
       `}</style>
     </section>
-  )
+  );
 }

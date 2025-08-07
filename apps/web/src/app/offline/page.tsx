@@ -8,164 +8,185 @@
  * @tags ["offline", "pwa", "fallback", "sync"]
  * @status stable
  */
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import {
-  WifiOff, RefreshCw, Home, FileText, Camera,
-  Heart, Bookmark, Clock, CheckCircle, AlertTriangle,
-  Smartphone, Monitor, Tablet, ArrowRight, Info
-} from 'lucide-react'
-import { useRouter } from 'next/navigation'
+  WifiOff,
+  RefreshCw,
+  Home,
+  FileText,
+  Camera,
+  Heart,
+  Bookmark,
+  Clock,
+  CheckCircle,
+  AlertTriangle,
+  Smartphone,
+  Monitor,
+  Tablet,
+  ArrowRight,
+  Info,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
 
-import { useOfflineStatus } from '@/hooks/use-pwa'
-import { TouchButton } from '@/components/ui/touch-button'
-import { TouchCard, TouchCardContent, TouchCardHeader } from '@/components/ui/touch-card'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { useOfflineStatus } from "@/hooks/use-pwa";
+import { TouchButton } from "@/components/ui/touch-button";
+import {
+  TouchCard,
+  TouchCardContent,
+  TouchCardHeader,
+} from "@/components/ui/touch-card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 interface CachedItem {
-  id: string
-  type: 'property' | 'document' | 'photo' | 'report'
-  title: string
-  subtitle?: string
-  timestamp: Date
-  size?: string
-  thumbnail?: string
+  id: string;
+  type: "property" | "document" | "photo" | "report";
+  title: string;
+  subtitle?: string;
+  timestamp: Date;
+  size?: string;
+  thumbnail?: string;
 }
 
 const offlineFeatures = [
   {
     icon: FileText,
-    title: 'View Documents',
-    description: 'Access your cached property documents and reports',
-    available: true
+    title: "View Documents",
+    description: "Access your cached property documents and reports",
+    available: true,
   },
   {
     icon: Camera,
-    title: 'Take Photos',
-    description: 'Capture damage photos that will sync when online',
-    available: true
+    title: "Take Photos",
+    description: "Capture damage photos that will sync when online",
+    available: true,
   },
   {
     icon: Heart,
-    title: 'Favorites',
-    description: 'Browse your favorite properties and saved items',
-    available: true
+    title: "Favorites",
+    description: "Browse your favorite properties and saved items",
+    available: true,
   },
   {
     icon: Bookmark,
-    title: 'Bookmarks',
-    description: 'Access bookmarked content and important documents',
-    available: true
-  }
-]
+    title: "Bookmarks",
+    description: "Access bookmarked content and important documents",
+    available: true,
+  },
+];
 
 const limitedFeatures = [
-  'AI damage analysis',
-  'Real-time property data',
-  'Cloud sync',
-  'Push notifications',
-  'Live chat support'
-]
+  "AI damage analysis",
+  "Real-time property data",
+  "Cloud sync",
+  "Push notifications",
+  "Live chat support",
+];
 
 export default function OfflinePage() {
-  const { isOnline } = useOfflineStatus()
-  const router = useRouter()
-  const [cachedItems, setCachedItems] = useState<CachedItem[]>([])
-  const [isRefreshing, setIsRefreshing] = useState(false)
+  const { isOnline } = useOfflineStatus();
+  const router = useRouter();
+  const [cachedItems, setCachedItems] = useState<CachedItem[]>([]);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     // Load cached items from localStorage or IndexedDB
-    loadCachedContent()
-  }, [])
+    loadCachedContent();
+  }, []);
 
   useEffect(() => {
     if (isOnline) {
       // Redirect to dashboard when connection is restored
-      router.push('/dashboard')
+      router.push("/dashboard");
     }
-  }, [isOnline, router])
+  }, [isOnline, router]);
 
   const loadCachedContent = async () => {
     // Mock cached content - in real app, load from IndexedDB or cache API
     const mockCached: CachedItem[] = [
       {
-        id: '1',
-        type: 'property',
-        title: 'Main Residence',
-        subtitle: '123 Palm Street, Miami, FL',
+        id: "1",
+        type: "property",
+        title: "Main Residence",
+        subtitle: "123 Palm Street, Miami, FL",
         timestamp: new Date(Date.now() - 3600000), // 1 hour ago
-        thumbnail: '/images/property-1.jpg'
+        thumbnail: "/images/property-1.jpg",
       },
       {
-        id: '2',
-        type: 'document',
-        title: 'Insurance Policy',
-        subtitle: 'State Farm - Policy #12345',
+        id: "2",
+        type: "document",
+        title: "Insurance Policy",
+        subtitle: "State Farm - Policy #12345",
         timestamp: new Date(Date.now() - 86400000), // 1 day ago
-        size: '2.3 MB'
+        size: "2.3 MB",
       },
       {
-        id: '3',
-        type: 'photo',
-        title: 'Roof Damage Photos',
-        subtitle: '5 images captured',
+        id: "3",
+        type: "photo",
+        title: "Roof Damage Photos",
+        subtitle: "5 images captured",
         timestamp: new Date(Date.now() - 1800000), // 30 minutes ago
-        size: '8.7 MB'
+        size: "8.7 MB",
       },
       {
-        id: '4',
-        type: 'report',
-        title: 'Property Assessment',
-        subtitle: 'Completed analysis report',
+        id: "4",
+        type: "report",
+        title: "Property Assessment",
+        subtitle: "Completed analysis report",
         timestamp: new Date(Date.now() - 7200000), // 2 hours ago
-        size: '1.4 MB'
-      }
-    ]
+        size: "1.4 MB",
+      },
+    ];
 
-    setCachedItems(mockCached)
-  }
+    setCachedItems(mockCached);
+  };
 
   const handleRefresh = async () => {
-    setIsRefreshing(true)
+    setIsRefreshing(true);
 
     // Check if we're back online
     if (navigator.onLine && !isOnline) {
       // Trigger a reconnection check
-      window.location.reload()
+      window.location.reload();
     }
 
     setTimeout(() => {
-      setIsRefreshing(false)
-    }, 2000)
-  }
+      setIsRefreshing(false);
+    }, 2000);
+  };
 
   const formatTimestamp = (date: Date) => {
-    const now = new Date()
-    const diff = now.getTime() - date.getTime()
-    const minutes = Math.floor(diff / 60000)
-    const hours = Math.floor(minutes / 60)
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(minutes / 60);
 
     if (hours > 0) {
-      return `${hours}h ago`
+      return `${hours}h ago`;
     } else if (minutes > 0) {
-      return `${minutes}m ago`
+      return `${minutes}m ago`;
     } else {
-      return 'Just now'
+      return "Just now";
     }
-  }
+  };
 
-  const getTypeIcon = (type: CachedItem['type']) => {
+  const getTypeIcon = (type: CachedItem["type"]) => {
     switch (type) {
-      case 'property': return Home
-      case 'document': return FileText
-      case 'photo': return Camera
-      case 'report': return FileText
-      default: return FileText
+      case "property":
+        return Home;
+      case "document":
+        return FileText;
+      case "photo":
+        return Camera;
+      case "report":
+        return FileText;
+      default:
+        return FileText;
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
@@ -185,7 +206,8 @@ export default function OfflinePage() {
           </h1>
 
           <p className="text-gray-600 dark:text-gray-400 mb-4">
-            Don't worry! You can still access your cached content and create new records.
+            Don't worry! You can still access your cached content and create new
+            records.
           </p>
 
           <TouchButton
@@ -220,7 +242,7 @@ export default function OfflinePage() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {offlineFeatures.map((feature) => {
-                  const Icon = feature.icon
+                  const Icon = feature.icon;
                   return (
                     <div
                       key={feature.title}
@@ -238,7 +260,7 @@ export default function OfflinePage() {
                         </p>
                       </div>
                     </div>
-                  )
+                  );
                 })}
               </div>
             </CardContent>
@@ -266,7 +288,7 @@ export default function OfflinePage() {
               {cachedItems.length > 0 ? (
                 <div className="space-y-3">
                   {cachedItems.map((item) => {
-                    const Icon = getTypeIcon(item.type)
+                    const Icon = getTypeIcon(item.type);
                     return (
                       <TouchCard
                         key={item.id}
@@ -275,7 +297,7 @@ export default function OfflinePage() {
                         className="cursor-pointer"
                         onTap={() => {
                           // Handle cached item access
-                          console.log('Accessing cached item:', item.id)
+                          console.log("Accessing cached item:", item.id);
                         }}
                       >
                         <TouchCardContent className="flex items-center gap-4 p-4">
@@ -304,14 +326,16 @@ export default function OfflinePage() {
                           <ArrowRight className="w-4 h-4 text-gray-400" />
                         </TouchCardContent>
                       </TouchCard>
-                    )
+                    );
                   })}
                 </div>
               ) : (
                 <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                   <FileText className="w-8 h-8 mx-auto mb-2 opacity-50" />
                   <p>No cached content available</p>
-                  <p className="text-sm">Visit pages while online to cache them for offline access</p>
+                  <p className="text-sm">
+                    Visit pages while online to cache them for offline access
+                  </p>
                 </div>
               )}
             </CardContent>
@@ -370,7 +394,10 @@ export default function OfflinePage() {
                   <Smartphone className="w-4 h-4 mt-0.5" />
                   <div>
                     <p className="font-medium">Mobile Users</p>
-                    <p>Enable airplane mode briefly, then turn it off to reset your connection</p>
+                    <p>
+                      Enable airplane mode briefly, then turn it off to reset
+                      your connection
+                    </p>
                   </div>
                 </div>
 
@@ -386,7 +413,10 @@ export default function OfflinePage() {
                   <Tablet className="w-4 h-4 mt-0.5" />
                   <div>
                     <p className="font-medium">All Devices</p>
-                    <p>Your work is saved locally and will sync automatically when you're back online</p>
+                    <p>
+                      Your work is saved locally and will sync automatically
+                      when you're back online
+                    </p>
                   </div>
                 </div>
               </div>
@@ -395,5 +425,5 @@ export default function OfflinePage() {
         </motion.div>
       </div>
     </div>
-  )
+  );
 }

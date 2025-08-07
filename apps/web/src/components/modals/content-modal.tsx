@@ -8,11 +8,11 @@
  * @tags ["modal", "content", "generic"]
  * @status stable
  */
-'use client'
+"use client";
 
-import { X } from 'lucide-react'
+import { X } from "lucide-react";
 
-import { useModalStore } from '@/stores/modal-store'
+import { useModalStore } from "@/stores/modal-store";
 
 interface Section {
   title: string;
@@ -20,11 +20,11 @@ interface Section {
 }
 
 export function ContentModal() {
-  const { activeModal, modalData, closeModal } = useModalStore()
+  const { activeModal, modalData, closeModal } = useModalStore();
 
-  if (activeModal !== 'content' || !modalData) return null
+  if (activeModal !== "content" || !modalData) return null;
 
-  const { title, content } = modalData
+  const { title, content } = modalData;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -61,14 +61,15 @@ export function ContentModal() {
           )}
 
           {/* Add more content types as needed */}
-          {content?.sections && content.sections.map((section: Section, index: number) => (
-            <div key={index} className="mt-6">
-              <h3 className="text-lg font-semibold mb-2">{section.title}</h3>
-              <p className="text-slate-300">{section.content}</p>
-            </div>
-          ))}
+          {content?.sections &&
+            content.sections.map((section: Section, index: number) => (
+              <div key={index} className="mt-6">
+                <h3 className="text-lg font-semibold mb-2">{section.title}</h3>
+                <p className="text-slate-300">{section.content}</p>
+              </div>
+            ))}
         </div>
       </div>
     </div>
-  )
+  );
 }

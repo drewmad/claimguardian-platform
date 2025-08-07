@@ -7,21 +7,21 @@
  */
 
 // Export all interfaces
-export * from './interfaces'
+export * from "./interfaces";
 
 // Export services
-export { llmLearningSynthesis } from './llm-learning-synthesis'
-export { semanticSimilarityService } from './semantic-similarity'
-export { naturalLanguageGenerator } from './natural-language-generator'
-export { aiBottleneckResolver } from './bottleneck-resolver'
-export { autoFixService } from './auto-fix-service'
+export { llmLearningSynthesis } from "./llm-learning-synthesis";
+export { semanticSimilarityService } from "./semantic-similarity";
+export { naturalLanguageGenerator } from "./natural-language-generator";
+export { aiBottleneckResolver } from "./bottleneck-resolver";
+export { autoFixService } from "./auto-fix-service";
 
 // Export service classes for custom instantiation
-export { LLMLearningynthesis } from './llm-learning-synthesis'
-export { SemanticSimilarityService } from './semantic-similarity'
-export { NaturalLanguageGenerator } from './natural-language-generator'
-export { AIBottleneckResolver } from './bottleneck-resolver'
-export { AutoFixService } from './auto-fix-service'
+export { LLMLearningynthesis } from "./llm-learning-synthesis";
+export { SemanticSimilarityService } from "./semantic-similarity";
+export { NaturalLanguageGenerator } from "./natural-language-generator";
+export { AIBottleneckResolver } from "./bottleneck-resolver";
+export { AutoFixService } from "./auto-fix-service";
 
 /**
  * LLM Integration Status
@@ -45,15 +45,15 @@ export const LLM_INTEGRATION_STATUS = {
   structureComplete: true,
   interfacesReady: true,
   implementationPending: true,
-  requiredModel: 'claude-3-opus',
+  requiredModel: "claude-3-opus",
   estimatedTokenUsage: {
     synthesis: 4096,
     similarity: 2048,
     naturalLanguage: 4096,
     bottleneckAnalysis: 4096,
-    autoFix: 2048
-  }
-}
+    autoFix: 2048,
+  },
+};
 
 /**
  * Enable LLM features when Opus is available
@@ -67,5 +67,5 @@ export async function enableLLMFeatures(apiKey: string): Promise<void> {
   // 4. Run initial synthesis
   // 5. Start monitoring
 
-  throw new Error('LLM features require Opus model. Awaiting implementation.')
+  throw new Error("LLM features require Opus model. Awaiting implementation.");
 }

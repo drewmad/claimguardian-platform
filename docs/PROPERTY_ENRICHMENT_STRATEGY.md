@@ -65,7 +65,7 @@ interface EnrichedPropertyData {
     metadata: {
       date: string;
       pano_id: string;
-    }
+    };
   };
 
   aerial_view_images: {
@@ -185,6 +185,7 @@ CREATE TABLE enrichment_audit_log (
 ## Cost Structure
 
 ### Current Costs (Full Enrichment)
+
 - Geocoding API: $0.005 per property
 - Elevation API: $0.005 per property
 - Street View (4 images): $0.028 per property
@@ -195,17 +196,20 @@ CREATE TABLE enrichment_audit_log (
 ### Future Tiered Approach
 
 #### Free Tier (Basic)
+
 - Elevation data only ($0.005)
 - Basic flood risk assessment
 - Stored in local database after first lookup
 
 #### Standard Tier ($9.99/month)
+
 - Everything in Free
 - Street view images (4 directions)
 - Emergency services distances
 - Total cost: $0.038 per property
 
 #### Premium Tier ($19.99/month)
+
 - Everything in Standard
 - Aerial imagery (3 zoom levels)
 - Advanced risk scoring
@@ -217,27 +221,27 @@ CREATE TABLE enrichment_audit_log (
 ### Edge Function: enrich-property-data
 
 ```typescript
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
 
-const GOOGLE_MAPS_KEY = Deno.env.get('GOOGLE_MAPS_API_KEY');
+const GOOGLE_MAPS_KEY = Deno.env.get("GOOGLE_MAPS_API_KEY");
 
 export async function enrichPropertyData(
   propertyId: string,
   latitude: number,
   longitude: number,
-  address: string
+  address: string,
 ) {
   const supabase = createClient(
-    Deno.env.get('SUPABASE_URL')!,
-    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   );
 
   // Check if we need to create new version
   const { data: currentEnrichment } = await supabase
-    .from('property_enrichments')
-    .select('version')
-    .eq('property_id', propertyId)
-    .eq('is_current', true)
+    .from("property_enrichments")
+    .select("version")
+    .eq("property_id", propertyId)
+    .eq("is_current", true)
     .single();
 
   const newVersion = currentEnrichment ? currentEnrichment.version + 1 : 1;
@@ -248,13 +252,13 @@ export async function enrichPropertyData(
     elevationData,
     streetViewData,
     aerialViewData,
-    nearbyData
+    nearbyData,
   ] = await Promise.all([
     fetchGeocodeData(latitude, longitude),
     fetchElevation(latitude, longitude),
     fetchStreetViewImages(latitude, longitude),
     fetchAerialImages(latitude, longitude),
-    fetchNearbyEmergencyServices(latitude, longitude)
+    fetchNearbyEmergencyServices(latitude, longitude),
   ]);
 
   // Calculate derived fields
@@ -262,7 +266,7 @@ export async function enrichPropertyData(
   const insuranceFactors = calculateInsuranceFactors({
     elevation: elevationData,
     fireProtection: nearbyData.fireStations,
-    coastalDistance: nearbyData.coastDistance
+    coastalDistance: nearbyData.coastDistance,
   });
 
   // Prepare enrichment record
@@ -279,11 +283,11 @@ export async function enrichPropertyData(
     // ... rest of fields
 
     source_apis: {
-      geocoding: 'v1',
-      elevation: 'v1',
-      street_view: 'v1',
-      maps_static: 'v1',
-      places: 'v3'
+      geocoding: "v1",
+      elevation: "v1",
+      street_view: "v1",
+      maps_static: "v1",
+      places: "v3",
     },
 
     api_costs: {
@@ -292,36 +296,34 @@ export async function enrichPropertyData(
       street_view: 0.028,
       maps_static: 0.021,
       places_nearby: 0.005,
-      total: 0.064
-    }
+      total: 0.064,
+    },
   };
 
   // Update previous version if exists
   if (currentEnrichment) {
     await supabase
-      .from('property_enrichments')
+      .from("property_enrichments")
       .update({ is_current: false })
-      .eq('property_id', propertyId)
-      .eq('version', currentEnrichment.version);
+      .eq("property_id", propertyId)
+      .eq("version", currentEnrichment.version);
   }
 
   // Insert new enrichment
   const { data, error } = await supabase
-    .from('property_enrichments')
+    .from("property_enrichments")
     .insert(enrichmentData)
     .select()
     .single();
 
   // Log the enrichment
-  await supabase
-    .from('enrichment_audit_log')
-    .insert({
-      property_id: propertyId,
-      action: newVersion === 1 ? 'created' : 'updated',
-      previous_version: currentEnrichment?.version || null,
-      new_version: newVersion,
-      reason: 'Initial enrichment from onboarding'
-    });
+  await supabase.from("enrichment_audit_log").insert({
+    property_id: propertyId,
+    action: newVersion === 1 ? "created" : "updated",
+    previous_version: currentEnrichment?.version || null,
+    new_version: newVersion,
+    reason: "Initial enrichment from onboarding",
+  });
 
   return { success: true, data, cost: 0.064 };
 }
@@ -330,17 +332,20 @@ export async function enrichPropertyData(
 ## Future Optimizations
 
 ### Local Database Caching (Phase 2)
+
 1. **Census Data**: Store locally after first fetch
 2. **Neighborhood Boundaries**: Cache in PostGIS
 3. **Fire Station Locations**: Update quarterly
 4. **Flood Maps**: Store FEMA flood zones locally
 
 ### Batch Processing (Phase 3)
+
 1. Process multiple properties in single API calls where possible
 2. Use Google's batch endpoints
 3. Queue enrichments during off-peak hours
 
 ### Progressive Enhancement (Phase 4)
+
 1. Start with free/cheap data
 2. Add premium data based on user tier
 3. Update only changed data points
@@ -378,23 +383,23 @@ Property enrichment is automatically triggered when users complete onboarding:
 Properties can also be enriched manually using the server action:
 
 ```typescript
-import { enrichPropertyData } from '@/actions/property-enrichment'
+import { enrichPropertyData } from "@/actions/property-enrichment";
 
 const result = await enrichPropertyData({
-  propertyId: 'uuid-here',
+  propertyId: "uuid-here",
   latitude: 25.7617,
   longitude: -80.1918,
-  address: '123 Main St, Miami, FL',
-  placeId: 'ChIJ...' // Optional
-})
+  address: "123 Main St, Miami, FL",
+  placeId: "ChIJ...", // Optional
+});
 ```
 
 ### Checking Enrichment Status
 
 ```typescript
-import { getPropertyEnrichmentStatus } from '@/actions/property-enrichment'
+import { getPropertyEnrichmentStatus } from "@/actions/property-enrichment";
 
-const status = await getPropertyEnrichmentStatus(propertyId)
+const status = await getPropertyEnrichmentStatus(propertyId);
 // Returns: { enriched, version, enrichedAt, expiresAt, daysUntilExpiry, totalCost }
 ```
 

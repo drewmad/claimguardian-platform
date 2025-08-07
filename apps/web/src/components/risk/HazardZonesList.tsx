@@ -8,82 +8,95 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import {
-  Droplets,
-  Flame,
-  Wind,
-  Waves,
-  AlertTriangle
-} from 'lucide-react'
-import { HazardZone } from '@/actions/geospatial'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Droplets, Flame, Wind, Waves, AlertTriangle } from "lucide-react";
+import { HazardZone } from "@/actions/geospatial";
 
 // Using HazardZone from geospatial actions
 
 interface HazardZonesListProps {
-  hazardZones: HazardZone[]
+  hazardZones: HazardZone[];
 }
 
 export function HazardZonesList({ hazardZones }: HazardZonesListProps) {
   const getCategoryIcon = (category: string) => {
     switch (category) {
-      case 'flood':
-        return <Droplets className="h-4 w-4" />
-      case 'fire':
-        return <Flame className="h-4 w-4" />
-      case 'wind':
-        return <Wind className="h-4 w-4" />
-      case 'surge':
-        return <Waves className="h-4 w-4" />
+      case "flood":
+        return <Droplets className="h-4 w-4" />;
+      case "fire":
+        return <Flame className="h-4 w-4" />;
+      case "wind":
+        return <Wind className="h-4 w-4" />;
+      case "surge":
+        return <Waves className="h-4 w-4" />;
       default:
-        return <AlertTriangle className="h-4 w-4" />
+        return <AlertTriangle className="h-4 w-4" />;
     }
-  }
+  };
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'flood':
-        return 'bg-blue-500/20 text-blue-400 border-blue-500/50'
-      case 'fire':
-        return 'bg-orange-500/20 text-orange-400 border-orange-500/50'
-      case 'wind':
-        return 'bg-purple-500/20 text-purple-400 border-purple-500/50'
-      case 'surge':
-        return 'bg-cyan-500/20 text-cyan-400 border-cyan-500/50'
+      case "flood":
+        return "bg-blue-500/20 text-blue-400 border-blue-500/50";
+      case "fire":
+        return "bg-orange-500/20 text-orange-400 border-orange-500/50";
+      case "wind":
+        return "bg-purple-500/20 text-purple-400 border-purple-500/50";
+      case "surge":
+        return "bg-cyan-500/20 text-cyan-400 border-cyan-500/50";
       default:
-        return 'bg-gray-500/20 text-gray-400 border-gray-500/50'
+        return "bg-gray-500/20 text-gray-400 border-gray-500/50";
     }
-  }
+  };
 
   const getRiskBadge = (riskLevel: string) => {
     switch (riskLevel) {
-      case 'extreme':
-      case 'high':
-        return <Badge variant="destructive" className="text-xs">High Risk</Badge>
-      case 'moderate':
-        return <Badge variant="outline" className="text-xs">Medium Risk</Badge>
-      case 'low':
-        return <Badge variant="secondary" className="text-xs">Low Risk</Badge>
+      case "extreme":
+      case "high":
+        return (
+          <Badge variant="destructive" className="text-xs">
+            High Risk
+          </Badge>
+        );
+      case "moderate":
+        return (
+          <Badge variant="outline" className="text-xs">
+            Medium Risk
+          </Badge>
+        );
+      case "low":
+        return (
+          <Badge variant="secondary" className="text-xs">
+            Low Risk
+          </Badge>
+        );
       default:
-        return <Badge variant="outline" className="text-xs">{riskLevel}</Badge>
+        return (
+          <Badge variant="outline" className="text-xs">
+            {riskLevel}
+          </Badge>
+        );
     }
-  }
+  };
 
   if (hazardZones.length === 0) {
     return (
       <Card className="bg-gray-800 border-gray-700">
         <CardContent className="text-center py-8">
           <AlertTriangle className="h-12 w-12 text-gray-500 mx-auto mb-4" />
-          <p className="text-gray-400">No hazard zones detected for this property</p>
+          <p className="text-gray-400">
+            No hazard zones detected for this property
+          </p>
           <p className="text-sm text-gray-500 mt-2">
-            This is good news! The property is not located in any identified hazard zones.
+            This is good news! The property is not located in any identified
+            hazard zones.
           </p>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -102,7 +115,9 @@ export function HazardZonesList({ hazardZones }: HazardZonesListProps) {
                 className="flex items-center justify-between p-4 bg-gray-900 rounded-lg border border-gray-700"
               >
                 <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg ${getCategoryColor(zone.category)}`}>
+                  <div
+                    className={`p-2 rounded-lg ${getCategoryColor(zone.category)}`}
+                  >
                     {getCategoryIcon(zone.category)}
                   </div>
                   <div>
@@ -117,7 +132,13 @@ export function HazardZonesList({ hazardZones }: HazardZonesListProps) {
                   >
                     {zone.category}
                   </Badge>
-                  {getRiskBadge(zone.riskWeight > 0.7 ? 'high' : zone.riskWeight > 0.4 ? 'moderate' : 'low')}
+                  {getRiskBadge(
+                    zone.riskWeight > 0.7
+                      ? "high"
+                      : zone.riskWeight > 0.4
+                        ? "moderate"
+                        : "low",
+                  )}
                 </div>
               </div>
             ))}
@@ -132,21 +153,27 @@ export function HazardZonesList({ hazardZones }: HazardZonesListProps) {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {['flood', 'fire', 'wind', 'surge'].map((category) => {
-              const count = hazardZones.filter(z => z.category === category).length
+            {["flood", "fire", "wind", "surge"].map((category) => {
+              const count = hazardZones.filter(
+                (z) => z.category === category,
+              ).length;
               return (
                 <div key={category} className="text-center">
-                  <div className={`inline-flex p-3 rounded-lg mb-2 ${getCategoryColor(category)}`}>
+                  <div
+                    className={`inline-flex p-3 rounded-lg mb-2 ${getCategoryColor(category)}`}
+                  >
                     {getCategoryIcon(category)}
                   </div>
                   <p className="text-2xl font-bold text-white">{count}</p>
-                  <p className="text-sm text-gray-400 capitalize">{category} Zones</p>
+                  <p className="text-sm text-gray-400 capitalize">
+                    {category} Zones
+                  </p>
                 </div>
-              )
+              );
             })}
           </div>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

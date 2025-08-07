@@ -9,83 +9,87 @@
  * @status stable
  */
 
-import { createBrowserSupabaseClient } from '@claimguardian/db'
-import { User, AuthError as SupabaseAuthError } from '@supabase/supabase-js'
-import { logger } from '@/lib/logger/production-logger'
-import { toError } from '@claimguardian/utils'
+import { createBrowserSupabaseClient } from "@claimguardian/db";
+import { User, AuthError as SupabaseAuthError } from "@supabase/supabase-js";
+import { logger } from "@/lib/logger/production-logger";
+import { toError } from "@claimguardian/utils";
 
-import { loginActivityService } from '@/lib/auth/login-activity-service'
-import { AppError, ErrorCode } from '@/lib/errors/app-error'
-import { getAuthCallbackURL } from '@/lib/utils/site-url'
+import { loginActivityService } from "@/lib/auth/login-activity-service";
+import { AppError, ErrorCode } from "@/lib/errors/app-error";
+import { getAuthCallbackURL } from "@/lib/utils/site-url";
 
 export class AuthError extends AppError {
   constructor(message: string, code: ErrorCode, originalError?: Error) {
-    super(message, code, originalError)
-    this.name = 'AuthError'
+    super(message, code, originalError);
+    this.name = "AuthError";
   }
 }
 
 export interface AuthResponse<T = unknown> {
-  data?: T
-  error?: AuthError
+  data?: T;
+  error?: AuthError;
 }
 
 interface SignUpData {
-  email: string
-  password: string
-  firstName?: string
-  lastName?: string
-  phone?: string
+  email: string;
+  password: string;
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
   // Legal compliance
-  acceptedDocuments?: string[]
-  gdprConsent?: boolean
-  marketingConsent?: boolean
-  dataProcessingConsent?: boolean
-  aiProcessingConsent?: boolean
-  over18?: boolean
+  acceptedDocuments?: string[];
+  gdprConsent?: boolean;
+  marketingConsent?: boolean;
+  dataProcessingConsent?: boolean;
+  aiProcessingConsent?: boolean;
+  over18?: boolean;
   // Tracking data
-  sessionId?: string
-  ipAddress?: string
-  userAgent?: string
-  deviceFingerprint?: string
-  deviceType?: 'mobile' | 'tablet' | 'desktop'
-  screenResolution?: string
+  sessionId?: string;
+  ipAddress?: string;
+  userAgent?: string;
+  deviceFingerprint?: string;
+  deviceType?: "mobile" | "tablet" | "desktop";
+  screenResolution?: string;
   geolocation?: {
-    lat?: number
-    lng?: number
-    city?: string
-    region?: string
-    country?: string
-  }
-  referrer?: string
-  landingPage?: string
+    lat?: number;
+    lng?: number;
+    city?: string;
+    region?: string;
+    country?: string;
+  };
+  referrer?: string;
+  landingPage?: string;
   utmParams?: {
-    source?: string
-    medium?: string
-    campaign?: string
-    term?: string
-    content?: string
-  }
+    source?: string;
+    medium?: string;
+    campaign?: string;
+    term?: string;
+    content?: string;
+  };
 }
 
 interface SignInData {
-  email: string
-  password: string
-  rememberMe?: boolean
+  email: string;
+  password: string;
+  rememberMe?: boolean;
 }
 
 class AuthService {
-  private supabase: ReturnType<typeof createBrowserSupabaseClient>
+  private supabase: ReturnType<typeof createBrowserSupabaseClient>;
 
   constructor() {
     try {
-      this.supabase = createBrowserSupabaseClient()
-      if (process.env.NODE_ENV === 'development') {
-        logger.info('[AUTH SERVICE] Supabase client created successfully')
+      this.supabase = createBrowserSupabaseClient();
+      if (process.env.NODE_ENV === "development") {
+        logger.info("[AUTH SERVICE] Supabase client created successfully");
       }
     } catch (error) {
-      logger.error('[AUTH SERVICE] Failed to create Supabase client:', toError(error))
-      throw error
+      logger.error(
+        "[AUTH SERVICE] Failed to create Supabase client:",
+        {},
+        toError(error),
+      );
+      throw error;
     }
   }
 
@@ -94,7 +98,7 @@ class AuthService {
    */
   async signUp(data: SignUpData): Promise<AuthResponse<User>> {
     try {
-      logger.info('[AUTH DEBUG] Basic signup - no validation')
+      logger.info("[AUTH DEBUG] Basic signup - no validation");
 
       // ULTRA SIMPLE: Just create the user account with minimal data
       const { data: authData, error } = await this.supabase.auth.signUp({
@@ -102,108 +106,123 @@ class AuthService {
         password: data.password,
         options: {
           data: {
-            firstName: data.firstName || '',
-            lastName: data.lastName || ''
-          }
-        }
-      })
+            firstName: data.firstName || "",
+            lastName: data.lastName || "",
+          },
+        },
+      });
 
       // Log detailed response
-      console.log('[AUTH DEBUG] Supabase signup response', {
+      console.log("[AUTH DEBUG] Supabase signup response", {
         hasUser: !!authData?.user,
         userId: authData?.user?.id,
         userEmail: authData?.user?.email,
         hasSession: !!authData?.session,
-        error: error ? {
-          message: error.message,
-          status: error.status,
-          code: error.code
-        } : null,
-        timestamp: new Date().toISOString()
-      })
+        error: error
+          ? {
+              message: error.message,
+              status: error.status,
+              code: error.code,
+            }
+          : null,
+        timestamp: new Date().toISOString(),
+      });
 
       if (error) {
-        console.error('[AUTH DEBUG] Signup error details', {
+        console.error("[AUTH DEBUG] Signup error details", {
           message: error.message,
           status: error.status,
           code: error.code,
           name: error.name,
-          stack: error.stack
-        })
+          stack: error.stack,
+        });
 
         // Check if this is a network/server error
         if (error.status === 500 || error.status === 503) {
-          logger.error('[AUTH DEBUG] Server error detected. Possible causes:')
-          logger.error('1. Supabase service is down')
-          logger.error('2. Network connectivity issues')
-          logger.error('3. Invalid Supabase URL or API key')
-          logger.error('4. Database migrations not applied')
-          logger.error('Invalid Supabase URL:', new Error(`Invalid configuration: ${process.env.NEXT_PUBLIC_SUPABASE_URL}`))
+          logger.error("[AUTH DEBUG] Server error detected. Possible causes:");
+          logger.error("1. Supabase service is down");
+          logger.error("2. Network connectivity issues");
+          logger.error("3. Invalid Supabase URL or API key");
+          logger.error("4. Database migrations not applied");
+          logger.error(
+            "Invalid Supabase URL:",
+            {},
+            new Error(
+              `Invalid configuration: ${process.env.NEXT_PUBLIC_SUPABASE_URL}`,
+            ),
+          );
         }
 
-        throw this.handleAuthError(error)
+        throw this.handleAuthError(error);
       }
 
       if (!authData.user) {
-        logger.error('[AUTH DEBUG] No user data returned despite successful signup')
+        logger.error(
+          "[AUTH DEBUG] No user data returned despite successful signup",
+        );
         throw new AuthError(
-          'Signup successful but no user data returned',
-          'AUTH_INVALID_RESPONSE'
-        )
+          "Signup successful but no user data returned",
+          "AUTH_INVALID_RESPONSE",
+        );
       }
 
       // Check if user was created successfully
-      console.log('[AUTH DEBUG] User created successfully', {
+      console.log("[AUTH DEBUG] User created successfully", {
         userId: authData.user.id,
         email: authData.user.email,
         emailConfirmedAt: authData.user.email_confirmed_at,
         createdAt: authData.user.created_at,
         userMetadata: authData.user.user_metadata,
-        appMetadata: authData.user.app_metadata
-      })
+        appMetadata: authData.user.app_metadata,
+      });
 
-      logger.info('User signup successful', { userId: authData.user.id })
+      logger.info("User signup successful", { userId: authData.user.id });
 
       // SIMPLIFIED: Basic compliance data is already stored in user metadata
-      logger.info('User created with basic compliance data', {
+      logger.info("User created with basic compliance data", {
         userId: authData.user.id,
         termsAccepted: true,
         privacyAccepted: true,
-        ageVerified: data.over18
-      })
+        ageVerified: data.over18,
+      });
 
       // Simple success logging
-      console.log('[AUTH DEBUG] User signup completed successfully', {
+      console.log("[AUTH DEBUG] User signup completed successfully", {
         userId: authData.user.id,
         email: authData.user.email,
-        emailConfirmationSent: !authData.user?.email_confirmed_at
-      })
+        emailConfirmationSent: !authData.user?.email_confirmed_at,
+      });
 
-
-      return { data: authData.user }
+      return { data: authData.user };
     } catch (error) {
-      console.error('[AUTH DEBUG] Signup process failed', {
-        error: error instanceof Error ? {
-          message: error.message,
-          name: error.name,
-          stack: error.stack
-        } : error,
-        timestamp: new Date().toISOString()
-      })
+      console.error("[AUTH DEBUG] Signup process failed", {
+        error:
+          error instanceof Error
+            ? {
+                message: error.message,
+                name: error.name,
+                stack: error.stack,
+              }
+            : error,
+        timestamp: new Date().toISOString(),
+      });
 
-      logger.error('Signup failed', error instanceof Error ? error : new Error(String(error)))
+      logger.error(
+        "Signup failed",
+        error instanceof Error ? error : new Error(String(error)),
+      );
 
       if (error instanceof AuthError) {
-        return { error }
+        return { error };
       }
 
       return {
         error: new AuthError(
-          'An unexpected error occurred during signup',
-          'AUTH_UNKNOWN_ERROR',
-          error as Error
-        )
-      }
+          "An unexpected error occurred during signup",
+          "AUTH_UNKNOWN_ERROR",
+          error as Error,
+        ),
+      };
     }
   }
 
@@ -212,82 +231,85 @@ class AuthService {
    */
   async signIn(data: SignInData): Promise<AuthResponse<User>> {
     try {
-      logger.info('Attempting user signin', { email: data.email })
+      logger.info("Attempting user signin", { email: data.email });
 
       // Enhanced debugging
-      console.log('[AUTH DEBUG] SignIn attempt:', {
+      console.log("[AUTH DEBUG] SignIn attempt:", {
         email: data.email,
         hasPassword: !!data.password,
         passwordLength: data.password?.length,
         timestamp: new Date().toISOString(),
-        supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL
-      })
+        supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+      });
 
-      const { data: authData, error } = await this.supabase.auth.signInWithPassword({
-        email: data.email,
-        password: data.password
-      })
+      const { data: authData, error } =
+        await this.supabase.auth.signInWithPassword({
+          email: data.email,
+          password: data.password,
+        });
 
-      console.log('[AUTH DEBUG] SignIn response:', {
+      console.log("[AUTH DEBUG] SignIn response:", {
         hasUser: !!authData?.user,
         hasSession: !!authData?.session,
-        error: error ? {
-          message: error.message,
-          status: error.status,
-          code: error.code
-        } : null,
-        timestamp: new Date().toISOString()
-      })
+        error: error
+          ? {
+              message: error.message,
+              status: error.status,
+              code: error.code,
+            }
+          : null,
+        timestamp: new Date().toISOString(),
+      });
 
       if (error) {
-        throw this.handleAuthError(error)
+        throw this.handleAuthError(error);
       }
 
       if (!authData.user) {
         throw new AuthError(
-          'Signin successful but no user data returned',
-          'AUTH_INVALID_RESPONSE'
-        )
+          "Signin successful but no user data returned",
+          "AUTH_INVALID_RESPONSE",
+        );
       }
 
-      logger.info('User signin successful', { userId: authData.user.id })
+      logger.info("User signin successful", { userId: authData.user.id });
 
       // Track login activity
       try {
-        await loginActivityService.logLoginAttempt(
-          authData.user.id,
-          true
-        )
+        await loginActivityService.logLoginAttempt(authData.user.id, true);
       } catch (trackingError) {
-        logger.warn('Failed to track login activity:', trackingError)
+        logger.warn("Failed to track login activity:", trackingError);
       }
 
-      return { data: authData.user }
+      return { data: authData.user };
     } catch (error) {
-      logger.error('Signin failed', error instanceof Error ? error : new Error(String(error)))
+      logger.error(
+        "Signin failed",
+        error instanceof Error ? error : new Error(String(error)),
+      );
 
       // Track failed login attempt
       try {
         await loginActivityService.logLoginAttempt(
-          '', // No userId for failed login
+          "", // No userId for failed login
           false,
-          error instanceof Error ? error.message : 'Unknown error'
-        )
+          error instanceof Error ? error.message : "Unknown error",
+        );
       } catch (trackingError) {
-        logger.warn('Failed to track failed login:', trackingError)
+        logger.warn("Failed to track failed login:", trackingError);
       }
 
       if (error instanceof AuthError) {
-        return { error }
+        return { error };
       }
 
       return {
         error: new AuthError(
-          'An unexpected error occurred during signin',
-          'AUTH_UNKNOWN_ERROR',
-          error as Error
-        )
-      }
+          "An unexpected error occurred during signin",
+          "AUTH_UNKNOWN_ERROR",
+          error as Error,
+        ),
+      };
     }
   }
 
@@ -296,30 +318,33 @@ class AuthService {
    */
   async signOut(): Promise<AuthResponse<void>> {
     try {
-      logger.info('Attempting user signout')
+      logger.info("Attempting user signout");
 
-      const { error } = await this.supabase.auth.signOut()
+      const { error } = await this.supabase.auth.signOut();
 
       if (error) {
-        throw this.handleAuthError(error)
+        throw this.handleAuthError(error);
       }
 
-      logger.info('User signout successful')
-      return { data: undefined }
+      logger.info("User signout successful");
+      return { data: undefined };
     } catch (error) {
-      logger.error('Signout failed', error instanceof Error ? error : new Error(String(error)))
+      logger.error(
+        "Signout failed",
+        error instanceof Error ? error : new Error(String(error)),
+      );
 
       if (error instanceof AuthError) {
-        return { error }
+        return { error };
       }
 
       return {
         error: new AuthError(
-          'An unexpected error occurred during signout',
-          'AUTH_UNKNOWN_ERROR',
-          error as Error
-        )
-      }
+          "An unexpected error occurred during signout",
+          "AUTH_UNKNOWN_ERROR",
+          error as Error,
+        ),
+      };
     }
   }
 
@@ -328,32 +353,35 @@ class AuthService {
    */
   async resetPassword(email: string): Promise<AuthResponse<void>> {
     try {
-      logger.info('Attempting password reset', { email })
+      logger.info("Attempting password reset", { email });
 
       const { error } = await this.supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: getAuthCallbackURL('/auth/reset-password'),
-      })
+        redirectTo: getAuthCallbackURL("/auth/reset-password"),
+      });
 
       if (error) {
-        throw this.handleAuthError(error)
+        throw this.handleAuthError(error);
       }
 
-      logger.info('Password reset email sent', { email })
-      return { data: undefined }
+      logger.info("Password reset email sent", { email });
+      return { data: undefined };
     } catch (error) {
-      logger.error('Password reset failed', error instanceof Error ? error : new Error(String(error)))
+      logger.error(
+        "Password reset failed",
+        error instanceof Error ? error : new Error(String(error)),
+      );
 
       if (error instanceof AuthError) {
-        return { error }
+        return { error };
       }
 
       return {
         error: new AuthError(
-          'An unexpected error occurred during password reset',
-          'AUTH_UNKNOWN_ERROR',
-          error as Error
-        )
-      }
+          "An unexpected error occurred during password reset",
+          "AUTH_UNKNOWN_ERROR",
+          error as Error,
+        ),
+      };
     }
   }
 
@@ -362,39 +390,42 @@ class AuthService {
    */
   async updatePassword(newPassword: string): Promise<AuthResponse<User>> {
     try {
-      logger.info('Attempting password update')
+      logger.info("Attempting password update");
 
       const { data, error } = await this.supabase.auth.updateUser({
-        password: newPassword
-      })
+        password: newPassword,
+      });
 
       if (error) {
-        throw this.handleAuthError(error)
+        throw this.handleAuthError(error);
       }
 
       if (!data.user) {
         throw new AuthError(
-          'Password update successful but no user data returned',
-          'AUTH_INVALID_RESPONSE'
-        )
+          "Password update successful but no user data returned",
+          "AUTH_INVALID_RESPONSE",
+        );
       }
 
-      logger.info('Password update successful', { userId: data.user.id })
-      return { data: data.user }
+      logger.info("Password update successful", { userId: data.user.id });
+      return { data: data.user };
     } catch (error) {
-      logger.error('Password update failed', error instanceof Error ? error : new Error(String(error)))
+      logger.error(
+        "Password update failed",
+        error instanceof Error ? error : new Error(String(error)),
+      );
 
       if (error instanceof AuthError) {
-        return { error }
+        return { error };
       }
 
       return {
         error: new AuthError(
-          'An unexpected error occurred during password update',
-          'AUTH_UNKNOWN_ERROR',
-          error as Error
-        )
-      }
+          "An unexpected error occurred during password update",
+          "AUTH_UNKNOWN_ERROR",
+          error as Error,
+        ),
+      };
     }
   }
 
@@ -403,36 +434,39 @@ class AuthService {
    */
   async resendConfirmationEmail(email: string): Promise<AuthResponse<void>> {
     try {
-      logger.info('Attempting to resend confirmation email', { email })
+      logger.info("Attempting to resend confirmation email", { email });
 
       const { error } = await this.supabase.auth.resend({
-        type: 'signup',
+        type: "signup",
         email: email,
         options: {
-          emailRedirectTo: getAuthCallbackURL('/auth/callback')
-        }
-      })
+          emailRedirectTo: getAuthCallbackURL("/auth/callback"),
+        },
+      });
 
       if (error) {
-        throw this.handleAuthError(error)
+        throw this.handleAuthError(error);
       }
 
-      logger.info('Confirmation email resent', { email })
-      return { data: undefined }
+      logger.info("Confirmation email resent", { email });
+      return { data: undefined };
     } catch (error) {
-      logger.error('Failed to resend confirmation email', error instanceof Error ? error : new Error(String(error)))
+      logger.error(
+        "Failed to resend confirmation email",
+        error instanceof Error ? error : new Error(String(error)),
+      );
 
       if (error instanceof AuthError) {
-        return { error }
+        return { error };
       }
 
       return {
         error: new AuthError(
-          'Failed to resend confirmation email',
-          'AUTH_UNKNOWN_ERROR',
-          error as Error
-        )
-      }
+          "Failed to resend confirmation email",
+          "AUTH_UNKNOWN_ERROR",
+          error as Error,
+        ),
+      };
     }
   }
 
@@ -441,27 +475,33 @@ class AuthService {
    */
   async getCurrentUser(): Promise<AuthResponse<User | null>> {
     try {
-      const { data: { user }, error } = await this.supabase.auth.getUser()
+      const {
+        data: { user },
+        error,
+      } = await this.supabase.auth.getUser();
 
       if (error) {
-        throw this.handleAuthError(error)
+        throw this.handleAuthError(error);
       }
 
-      return { data: user }
+      return { data: user };
     } catch (error) {
-      logger.error('Failed to get current user', error instanceof Error ? error : new Error(String(error)))
+      logger.error(
+        "Failed to get current user",
+        error instanceof Error ? error : new Error(String(error)),
+      );
 
       if (error instanceof AuthError) {
-        return { error }
+        return { error };
       }
 
       return {
         error: new AuthError(
-          'Failed to get current user',
-          'AUTH_UNKNOWN_ERROR',
-          error as Error
-        )
-      }
+          "Failed to get current user",
+          "AUTH_UNKNOWN_ERROR",
+          error as Error,
+        ),
+      };
     }
   }
 
@@ -470,34 +510,37 @@ class AuthService {
    */
   async refreshSession(): Promise<AuthResponse<User>> {
     try {
-      const { data: { session }, error } = await this.supabase.auth.refreshSession()
+      const {
+        data: { session },
+        error,
+      } = await this.supabase.auth.refreshSession();
 
       if (error) {
-        throw this.handleAuthError(error)
+        throw this.handleAuthError(error);
       }
 
       if (!session?.user) {
-        throw new AuthError(
-          'No active session found',
-          'AUTH_SESSION_EXPIRED'
-        )
+        throw new AuthError("No active session found", "AUTH_SESSION_EXPIRED");
       }
 
-      return { data: session.user }
+      return { data: session.user };
     } catch (error) {
-      logger.error('Failed to refresh session', error instanceof Error ? error : new Error(String(error)))
+      logger.error(
+        "Failed to refresh session",
+        error instanceof Error ? error : new Error(String(error)),
+      );
 
       if (error instanceof AuthError) {
-        return { error }
+        return { error };
       }
 
       return {
         error: new AuthError(
-          'Failed to refresh session',
-          'AUTH_UNKNOWN_ERROR',
-          error as Error
-        )
-      }
+          "Failed to refresh session",
+          "AUTH_UNKNOWN_ERROR",
+          error as Error,
+        ),
+      };
     }
   }
 
@@ -511,99 +554,105 @@ class AuthService {
       status: error.status,
       code: error.code,
       name: error.name,
-      url: typeof window !== 'undefined' ? window.location.href : 'server',
+      url: typeof window !== "undefined" ? window.location.href : "server",
       timestamp: new Date().toISOString(),
-      rawError: JSON.stringify(error)
-    }
+      rawError: JSON.stringify(error),
+    };
 
-    logger.error('Supabase auth error', errorDetails)
+    logger.error("Supabase auth error", { errorDetails });
 
     // Always log auth errors for debugging
-    logger.error('[ClaimGuardian Auth Error] Full details:', errorDetails)
+    logger.error("[ClaimGuardian Auth Error] Full details:", { errorDetails });
 
     // Log the raw error object
-    logger.error('[ClaimGuardian Auth Error] Raw error:', error)
+    logger.error("[ClaimGuardian Auth Error] Raw error:", {}, error instanceof Error ? error : toError(error));
 
     // If there's additional error info, log it
     if (error.stack) {
-      logger.error('[ClaimGuardian Auth Error] Stack trace:', new Error(error.stack))
+      logger.error(
+        "[ClaimGuardian Auth Error] Stack trace:",
+        {},
+        new Error(error.stack),
+      );
     }
 
     // Map Supabase error codes to our error codes
     // Check both message and status for better error mapping
-    if (error.message?.toLowerCase().includes('invalid login credentials') ||
-        error.message?.toLowerCase().includes('invalid credentials')) {
+    if (
+      error.message?.toLowerCase().includes("invalid login credentials") ||
+      error.message?.toLowerCase().includes("invalid credentials")
+    ) {
       return new AuthError(
-        'Invalid email or password',
-        'AUTH_INVALID_CREDENTIALS',
-        error
-      )
+        "Invalid email or password",
+        "AUTH_INVALID_CREDENTIALS",
+        error,
+      );
     }
 
-    if (error.message?.toLowerCase().includes('user already registered')) {
+    if (error.message?.toLowerCase().includes("user already registered")) {
       return new AuthError(
-        'An account with this email already exists',
-        'AUTH_USER_EXISTS',
-        error
-      )
+        "An account with this email already exists",
+        "AUTH_USER_EXISTS",
+        error,
+      );
     }
 
-    if (error.message?.toLowerCase().includes('email not confirmed')) {
+    if (error.message?.toLowerCase().includes("email not confirmed")) {
       return new AuthError(
-        'Please verify your email before signing in',
-        'AUTH_EMAIL_NOT_VERIFIED',
-        error
-      )
+        "Please verify your email before signing in",
+        "AUTH_EMAIL_NOT_VERIFIED",
+        error,
+      );
     }
 
-    if (error.message?.toLowerCase().includes('invalid email')) {
+    if (error.message?.toLowerCase().includes("invalid email")) {
       return new AuthError(
-        'Please enter a valid email address',
-        'VALIDATION_ERROR',
-        error
-      )
+        "Please enter a valid email address",
+        "VALIDATION_ERROR",
+        error,
+      );
     }
 
     // Handle status-based errors
     if (error.status === 400) {
       return new AuthError(
-        'Invalid request. Please check your information and try again.',
-        'VALIDATION_ERROR',
-        error
-      )
+        "Invalid request. Please check your information and try again.",
+        "VALIDATION_ERROR",
+        error,
+      );
     }
 
     if (error.status === 401) {
       return new AuthError(
-        'Authentication failed. Please check your credentials.',
-        'AUTH_INVALID_CREDENTIALS',
-        error
-      )
+        "Authentication failed. Please check your credentials.",
+        "AUTH_INVALID_CREDENTIALS",
+        error,
+      );
     }
 
     if (error.status === 429) {
       return new AuthError(
-        'Too many attempts. Please try again later',
-        'RATE_LIMIT_ERROR',
-        error
-      )
+        "Too many attempts. Please try again later",
+        "RATE_LIMIT_ERROR",
+        error,
+      );
     }
 
     if (error.status === 500 || error.status === 503) {
       return new AuthError(
-        'Service temporarily unavailable. Please try again later.',
-        'SERVICE_UNAVAILABLE',
-        error
-      )
+        "Service temporarily unavailable. Please try again later.",
+        "SERVICE_UNAVAILABLE",
+        error,
+      );
     }
 
     // Default error with more helpful message
     return new AuthError(
-      error.message || 'An unexpected error occurred. Please try again.',
-      'AUTH_UNKNOWN_ERROR',
-      error
-    )
+      error.message || "An unexpected error occurred. Please try again.",
+      "AUTH_UNKNOWN_ERROR",
+      error,
+    );
   }
 }
 
-export const authService = new AuthService()
+export const authService = new AuthService();

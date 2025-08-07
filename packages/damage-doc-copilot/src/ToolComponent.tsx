@@ -8,11 +8,11 @@
  * @status stable
  */
 
-import { Card, CardHeader, CardContent, Button } from '@claimguardian/ui'
-import { CameraCapture } from '@claimguardian/ui'
-import React from 'react'
+import { Card, CardHeader, CardContent, Button } from "@claimguardian/ui";
+import { CameraCapture } from "@claimguardian/ui";
+import React from "react";
 
-import { useDamageCopilot } from './useDamageCopilot'
+import { useDamageCopilot } from "./useDamageCopilot";
 
 export function ToolComponent() {
   const {
@@ -23,16 +23,19 @@ export function ToolComponent() {
     qualityScore,
     capture,
     resetSession,
-    loading
-  } = useDamageCopilot()
+    loading,
+  } = useDamageCopilot();
 
   return (
     <Card className="bg-gray-800 border-gray-700 w-full max-w-4xl mx-auto">
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <h2 className="text-2xl font-semibold text-white">Damage Documentation Copilot</h2>
+          <h2 className="text-2xl font-semibold text-white">
+            Damage Documentation Copilot
+          </h2>
           <p className="text-sm text-gray-400">
-            AI-guided evidence capture · Progress: {progress.current}/{progress.total}
+            AI-guided evidence capture · Progress: {progress.current}/
+            {progress.total}
           </p>
         </div>
         {complete && (
@@ -77,14 +80,18 @@ export function ToolComponent() {
         {/* AI Guidance */}
         <div className="space-y-2">
           <h3 className="font-medium text-white">AI Guidance</h3>
-          <div className={`p-4 rounded-md border ${
-            complete
-              ? 'bg-green-900/20 border-green-700'
-              : 'bg-blue-900/20 border-blue-700'
-          }`}>
-            <p className={`text-sm ${
-              complete ? 'text-green-300' : 'text-blue-300'
-            }`}>
+          <div
+            className={`p-4 rounded-md border ${
+              complete
+                ? "bg-green-900/20 border-green-700"
+                : "bg-blue-900/20 border-blue-700"
+            }`}
+          >
+            <p
+              className={`text-sm ${
+                complete ? "text-green-300" : "text-blue-300"
+              }`}
+            >
               {guidance}
             </p>
           </div>
@@ -98,16 +105,24 @@ export function ToolComponent() {
               <div className="flex-1 bg-gray-700 rounded-full h-2">
                 <div
                   className={`h-2 rounded-full transition-all duration-300 ${
-                    qualityScore >= 80 ? 'bg-green-600' :
-                    qualityScore >= 60 ? 'bg-yellow-600' : 'bg-red-600'
+                    qualityScore >= 80
+                      ? "bg-green-600"
+                      : qualityScore >= 60
+                        ? "bg-yellow-600"
+                        : "bg-red-600"
                   }`}
                   style={{ width: `${qualityScore}%` }}
                 />
               </div>
-              <span className={`text-sm font-medium ${
-                qualityScore >= 80 ? 'text-green-400' :
-                qualityScore >= 60 ? 'text-yellow-400' : 'text-red-400'
-              }`}>
+              <span
+                className={`text-sm font-medium ${
+                  qualityScore >= 80
+                    ? "text-green-400"
+                    : qualityScore >= 60
+                      ? "text-yellow-400"
+                      : "text-red-400"
+                }`}
+              >
                 {qualityScore}%
               </span>
             </div>
@@ -130,10 +145,15 @@ export function ToolComponent() {
                     />
                   </div>
                   <div className="absolute top-1 right-1">
-                    <span className={`inline-block w-3 h-3 rounded-full ${
-                      image.quality >= 80 ? 'bg-green-500' :
-                      image.quality >= 60 ? 'bg-yellow-500' : 'bg-red-500'
-                    }`} />
+                    <span
+                      className={`inline-block w-3 h-3 rounded-full ${
+                        image.quality >= 80
+                          ? "bg-green-500"
+                          : image.quality >= 60
+                            ? "bg-yellow-500"
+                            : "bg-red-500"
+                      }`}
+                    />
                   </div>
                 </div>
               ))}
@@ -142,5 +162,5 @@ export function ToolComponent() {
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

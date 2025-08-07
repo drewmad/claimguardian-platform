@@ -3,13 +3,19 @@
  * View real-time feature usage and performance metrics
  */
 
-'use client'
+"use client";
 
-import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { AnalyticsDashboard } from '@/components/analytics/AnalyticsDashboard'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import { AnalyticsDashboard } from "@/components/analytics/AnalyticsDashboard";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   BarChart3,
   Download,
@@ -18,25 +24,27 @@ import {
   TrendingUp,
   Users,
   Brain,
-  Shield
-} from 'lucide-react'
-import { useState } from 'react'
-import { toast } from 'sonner'
+  Shield,
+} from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export default function AnalyticsPage() {
-  const [refreshing, setRefreshing] = useState(false)
+  const [refreshing, setRefreshing] = useState(false);
 
   const handleRefresh = () => {
-    setRefreshing(true)
+    setRefreshing(true);
     // Force refresh the dashboard
-    window.location.reload()
-    setTimeout(() => setRefreshing(false), 2000)
-  }
+    window.location.reload();
+    setTimeout(() => setRefreshing(false), 2000);
+  };
 
   const handleExport = () => {
-    toast.success('Analytics export started. You will receive an email when ready.')
+    toast.success(
+      "Analytics export started. You will receive an email when ready.",
+    );
     // TODO: Implement actual export functionality
-  }
+  };
 
   return (
     <DashboardLayout>
@@ -59,14 +67,12 @@ export default function AnalyticsPage() {
               onClick={handleRefresh}
               disabled={refreshing}
             >
-              <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+              <RefreshCw
+                className={`h-4 w-4 mr-2 ${refreshing ? "animate-spin" : ""}`}
+              />
               Refresh
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleExport}
-            >
+            <Button variant="outline" size="sm" onClick={handleExport}>
               <Download className="h-4 w-4 mr-2" />
               Export
             </Button>
@@ -89,7 +95,8 @@ export default function AnalyticsPage() {
             <CardContent>
               <div className="text-2xl font-bold">1,247</div>
               <p className="text-xs text-muted-foreground">
-                <TrendingUp className="h-3 w-3 inline text-green-500" /> 23% from last week
+                <TrendingUp className="h-3 w-3 inline text-green-500" /> 23%
+                from last week
               </p>
             </CardContent>
           </Card>
@@ -144,23 +151,40 @@ export default function AnalyticsPage() {
         <Card>
           <CardHeader>
             <CardTitle>System Status</CardTitle>
-            <CardDescription>Real-time system health and performance</CardDescription>
+            <CardDescription>
+              Real-time system health and performance
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
-              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-300">
+              <Badge
+                variant="outline"
+                className="bg-green-50 text-green-700 border-green-300"
+              >
                 ✓ API Healthy
               </Badge>
-              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-300">
+              <Badge
+                variant="outline"
+                className="bg-green-50 text-green-700 border-green-300"
+              >
                 ✓ Database Connected
               </Badge>
-              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-300">
+              <Badge
+                variant="outline"
+                className="bg-green-50 text-green-700 border-green-300"
+              >
                 ✓ AI Services Online
               </Badge>
-              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-300">
+              <Badge
+                variant="outline"
+                className="bg-green-50 text-green-700 border-green-300"
+              >
                 ✓ Edge Functions Active
               </Badge>
-              <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-300">
+              <Badge
+                variant="outline"
+                className="bg-yellow-50 text-yellow-700 border-yellow-300"
+              >
                 ⚠ High API Usage (87%)
               </Badge>
             </div>
@@ -171,5 +195,5 @@ export default function AnalyticsPage() {
         <AnalyticsDashboard />
       </div>
     </DashboardLayout>
-  )
+  );
 }

@@ -8,45 +8,52 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { motion, AnimatePresence } from 'framer-motion'
-import { Home, Building, FileText, Shield, Menu, X, ChevronRight, Bot } from 'lucide-react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Home,
+  Building,
+  FileText,
+  Shield,
+  Menu,
+  X,
+  ChevronRight,
+  Bot,
+} from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 
-import { Button, Modal } from '@claimguardian/ui'
-import { cn } from '@/lib/utils'
+import { Button, Modal } from "@claimguardian/ui";
+import { cn } from "@/lib/utils";
 
 interface NavItem {
-  label: string
-  href: string
-  icon: React.ComponentType<{ className?: string }>
-  badge?: number
+  label: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  badge?: number;
 }
 
 const mainNavItems: NavItem[] = [
-  { label: 'Home', href: '/dashboard', icon: Home },
-  { label: 'Property', href: '/dashboard/property', icon: Building },
-  { label: 'Claims', href: '/dashboard/claims', icon: FileText, badge: 2 },
-  { label: 'Insurance', href: '/dashboard/policies', icon: Shield },
-]
+  { label: "Home", href: "/dashboard", icon: Home },
+  { label: "Property", href: "/dashboard/property", icon: Building },
+  { label: "Claims", href: "/dashboard/claims", icon: FileText, badge: 2 },
+  { label: "Insurance", href: "/dashboard/policies", icon: Shield },
+];
 
 const moreNavItems: NavItem[] = [
-  { label: 'AI Tools', href: '/ai-tools', icon: Bot },
-  { label: 'Maintenance', href: '/dashboard/maintenance', icon: Building },
-  { label: 'Community', href: '/dashboard/community', icon: Home },
-  { label: 'Settings', href: '/dashboard/settings', icon: Shield },
-]
+  { label: "AI Tools", href: "/ai-tools", icon: Bot },
+  { label: "Maintenance", href: "/dashboard/maintenance", icon: Building },
+  { label: "Community", href: "/dashboard/community", icon: Home },
+  { label: "Settings", href: "/dashboard/settings", icon: Shield },
+];
 
 export function MobileNav() {
-  const pathname = usePathname()
-  const [isOpen, setIsOpen] = useState(false)
+  const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
 
-  useEffect(() => {
-
-  }, [pathname])
+  useEffect(() => {}, [pathname]);
 
   return (
     <>
@@ -54,8 +61,8 @@ export function MobileNav() {
       <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-gray-900 border-t border-gray-800 safe-area-bottom">
         <div className="grid grid-cols-5 h-16">
           {mainNavItems.map((item) => {
-            const Icon = item.icon
-            const isActive = pathname.startsWith(item.href)
+            const Icon = item.icon;
+            const isActive = pathname.startsWith(item.href);
 
             return (
               <Link
@@ -64,7 +71,7 @@ export function MobileNav() {
                 className={cn(
                   "flex flex-col items-center justify-center relative",
                   "transition-all duration-200 active:scale-95",
-                  isActive ? "text-blue-500" : "text-gray-400"
+                  isActive ? "text-blue-500" : "text-gray-400",
                 )}
               >
                 <motion.div
@@ -90,7 +97,7 @@ export function MobileNav() {
                   />
                 )}
               </Link>
-            )
+            );
           })}
 
           {/* More Menu */}
@@ -111,8 +118,8 @@ export function MobileNav() {
             <div className="pb-4">
               <div className="space-y-1">
                 {moreNavItems.map((item) => {
-                  const Icon = item.icon
-                  const isActive = pathname.startsWith(item.href)
+                  const Icon = item.icon;
+                  const isActive = pathname.startsWith(item.href);
 
                   return (
                     <Link
@@ -124,7 +131,7 @@ export function MobileNav() {
                         "transition-all duration-200 active:scale-95",
                         isActive
                           ? "bg-blue-500/10 text-blue-500"
-                          : "text-gray-300 active:bg-gray-800"
+                          : "text-gray-300 active:bg-gray-800",
                       )}
                     >
                       <div className="flex items-center gap-3">
@@ -133,7 +140,7 @@ export function MobileNav() {
                       </div>
                       <ChevronRight className="w-4 h-4 text-gray-500" />
                     </Link>
-                  )
+                  );
                 })}
               </div>
             </div>
@@ -146,10 +153,16 @@ export function MobileNav() {
         {/* Notification component would go here */}
       </AnimatePresence>
     </>
-  )
+  );
 }
 
-export function MobileHeader({ title, showBack = false }: { title: string; showBack?: boolean }) {
+export function MobileHeader({
+  title,
+  showBack = false,
+}: {
+  title: string;
+  showBack?: boolean;
+}) {
   return (
     <header className="sticky top-0 z-40 bg-gray-900/95 backdrop-blur-md border-b border-gray-800 md:hidden">
       <div className="flex items-center justify-between px-4 h-14 safe-area-top">
@@ -171,5 +184,5 @@ export function MobileHeader({ title, showBack = false }: { title: string; showB
         <div className="w-10" />
       </div>
     </header>
-  )
+  );
 }

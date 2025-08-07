@@ -1,16 +1,22 @@
-'use client'
+"use client";
 
-import { useState, useCallback, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Progress } from '@/components/ui/progress'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { toast } from 'sonner'
-import { useDropzone } from 'react-dropzone'
+import { useState, useCallback, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { useDropzone } from "react-dropzone";
 import {
   FileText,
   Upload,
@@ -39,78 +45,120 @@ import {
   Zap,
   Archive,
   Share2,
-  BarChart3
-} from 'lucide-react'
+  BarChart3,
+} from "lucide-react";
 // Mock AI model manager for demo - in production would import from ai-services package
 const aiModelManager = {
   generateText: async (prompt: string, options?: any) => ({
-    content: 'Mock AI response'
+    content: "Mock AI response",
   }),
-  analyzeImage: async (imageData: string, prompt: string) => ({ description: 'Mock analysis', objects: [], damages: [] })
-}
-import { createClient } from '@/lib/supabase/client'
+  analyzeImage: async (imageData: string, prompt: string) => ({
+    description: "Mock analysis",
+    objects: [],
+    damages: [],
+  }),
+};
+import { createClient } from "@/lib/supabase/client";
 
 interface DocumentAnalysis {
-  id: string
-  fileName: string
-  fileType: string
-  fileSize: number
-  uploadDate: Date
-  status: 'pending' | 'processing' | 'completed' | 'error'
-  documentType?: 'policy' | 'claim' | 'invoice' | 'report' | 'correspondence' | 'evidence' | 'other'
+  id: string;
+  fileName: string;
+  fileType: string;
+  fileSize: number;
+  uploadDate: Date;
+  status: "pending" | "processing" | "completed" | "error";
+  documentType?:
+    | "policy"
+    | "claim"
+    | "invoice"
+    | "report"
+    | "correspondence"
+    | "evidence"
+    | "other";
   extractedData?: {
-    policyNumber?: string
-    claimNumber?: string
-    effectiveDate?: string
-    expirationDate?: string
-    insuredName?: string
-    propertyAddress?: string
-    coverageAmount?: number
-    deductible?: number
-    premiumAmount?: number
-    [key: string]: any
-  }
+    policyNumber?: string;
+    claimNumber?: string;
+    effectiveDate?: string;
+    expirationDate?: string;
+    insuredName?: string;
+    propertyAddress?: string;
+    coverageAmount?: number;
+    deductible?: number;
+    premiumAmount?: number;
+    [key: string]: any;
+  };
   entities?: Array<{
-    type: string
-    value: string
-    confidence: number
-  }>
-  keyPhrases?: string[]
-  sentiment?: 'positive' | 'negative' | 'neutral'
-  summary?: string
-  riskScore?: number
-  complianceFlags?: string[]
-  relatedDocuments?: string[]
-  aiConfidence?: number
-  processingTime?: number
+    type: string;
+    value: string;
+    confidence: number;
+  }>;
+  keyPhrases?: string[];
+  sentiment?: "positive" | "negative" | "neutral";
+  summary?: string;
+  riskScore?: number;
+  complianceFlags?: string[];
+  relatedDocuments?: string[];
+  aiConfidence?: number;
+  processingTime?: number;
 }
 
 interface DocumentCategory {
-  name: string
-  icon: typeof FileText
-  color: string
-  count: number
+  name: string;
+  icon: typeof FileText;
+  color: string;
+  count: number;
 }
 
 export function DocumentIntelligenceSystem() {
-  const [documents, setDocuments] = useState<DocumentAnalysis[]>([])
-  const [processing, setProcessing] = useState(false)
-  const [selectedDocument, setSelectedDocument] = useState<DocumentAnalysis | null>(null)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [filterType, setFilterType] = useState<string>('all')
-  const supabase = createClient()
+  const [documents, setDocuments] = useState<DocumentAnalysis[]>([]);
+  const [processing, setProcessing] = useState(false);
+  const [selectedDocument, setSelectedDocument] =
+    useState<DocumentAnalysis | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterType, setFilterType] = useState<string>("all");
+  const supabase = createClient();
 
   const categories: DocumentCategory[] = [
-    { name: 'Policies', icon: Shield, color: 'text-blue-500', count: documents.filter(d => d.documentType === 'policy').length },
-    { name: 'Claims', icon: FileCheck, color: 'text-green-500', count: documents.filter(d => d.documentType === 'claim').length },
-    { name: 'Invoices', icon: DollarSign, color: 'text-yellow-500', count: documents.filter(d => d.documentType === 'invoice').length },
-    { name: 'Reports', icon: BarChart3, color: 'text-purple-500', count: documents.filter(d => d.documentType === 'report').length },
-    { name: 'Evidence', icon: Eye, color: 'text-red-500', count: documents.filter(d => d.documentType === 'evidence').length },
-    { name: 'Other', icon: FolderOpen, color: 'text-gray-500', count: documents.filter(d => d.documentType === 'other').length }
-  ]
+    {
+      name: "Policies",
+      icon: Shield,
+      color: "text-blue-500",
+      count: documents.filter((d) => d.documentType === "policy").length,
+    },
+    {
+      name: "Claims",
+      icon: FileCheck,
+      color: "text-green-500",
+      count: documents.filter((d) => d.documentType === "claim").length,
+    },
+    {
+      name: "Invoices",
+      icon: DollarSign,
+      color: "text-yellow-500",
+      count: documents.filter((d) => d.documentType === "invoice").length,
+    },
+    {
+      name: "Reports",
+      icon: BarChart3,
+      color: "text-purple-500",
+      count: documents.filter((d) => d.documentType === "report").length,
+    },
+    {
+      name: "Evidence",
+      icon: Eye,
+      color: "text-red-500",
+      count: documents.filter((d) => d.documentType === "evidence").length,
+    },
+    {
+      name: "Other",
+      icon: FolderOpen,
+      color: "text-gray-500",
+      count: documents.filter((d) => d.documentType === "other").length,
+    },
+  ];
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    setProcessing(true)
+    setProcessing(true);
 
     for (const file of acceptedFiles) {
       const newDoc: DocumentAnalysis = {
@@ -119,100 +167,113 @@ export function DocumentIntelligenceSystem() {
         fileType: file.type,
         fileSize: file.size,
         uploadDate: new Date(),
-        status: 'processing'
-      }
+        status: "processing",
+      };
 
-      setDocuments(prev => [...prev, newDoc])
+      setDocuments((prev) => [...prev, newDoc]);
 
       try {
         // Upload to Supabase Storage
         const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('documents')
-          .upload(`intelligence/${newDoc.id}/${file.name}`, file)
+          .from("documents")
+          .upload(`intelligence/${newDoc.id}/${file.name}`, file);
 
-        if (uploadError) throw uploadError
+        if (uploadError) throw uploadError;
 
         // Process with AI
-        const analysis = await analyzeDocument(file, newDoc.id)
+        const analysis = await analyzeDocument(file, newDoc.id);
 
-        setDocuments(prev => prev.map(doc =>
-          doc.id === newDoc.id
-            ? { ...doc, ...analysis, status: 'completed' }
-            : doc
-        ))
+        setDocuments((prev) =>
+          prev.map((doc) =>
+            doc.id === newDoc.id
+              ? { ...doc, ...analysis, status: "completed" }
+              : doc,
+          ),
+        );
 
-        toast.success(`Successfully analyzed ${file.name}`)
+        toast.success(`Successfully analyzed ${file.name}`);
       } catch (error: any) {
-        console.error('Document processing error:', error)
+        console.error("Document processing error:", error);
 
-        setDocuments(prev => prev.map(doc =>
-          doc.id === newDoc.id
-            ? { ...doc, status: 'error' }
-            : doc
-        ))
+        setDocuments((prev) =>
+          prev.map((doc) =>
+            doc.id === newDoc.id ? { ...doc, status: "error" } : doc,
+          ),
+        );
 
-        toast.error(`Failed to process ${file.name}: ${error.message}`)
+        toast.error(`Failed to process ${file.name}: ${error.message}`);
       }
     }
 
-    setProcessing(false)
-  }, [])
+    setProcessing(false);
+  }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      'application/pdf': ['.pdf'],
-      'image/*': ['.png', '.jpg', '.jpeg'],
-      'text/*': ['.txt', '.csv'],
-      'application/msword': ['.doc', '.docx']
+      "application/pdf": [".pdf"],
+      "image/*": [".png", ".jpg", ".jpeg"],
+      "text/*": [".txt", ".csv"],
+      "application/msword": [".doc", ".docx"],
     },
-    multiple: true
-  })
+    multiple: true,
+  });
 
-  const analyzeDocument = async (file: File, docId: string): Promise<Partial<DocumentAnalysis>> => {
-    const startTime = Date.now()
+  const analyzeDocument = async (
+    file: File,
+    docId: string,
+  ): Promise<Partial<DocumentAnalysis>> => {
+    const startTime = Date.now();
 
     // Convert file to base64 for AI processing
-    const base64 = await fileToBase64(file)
+    const base64 = await fileToBase64(file);
 
     // Determine document type based on content
-    const typePrompt = `Analyze this document and determine its type. Categories: policy, claim, invoice, report, correspondence, evidence, other. Also extract key information like policy numbers, dates, amounts, names, and addresses. Return as JSON.`
+    const typePrompt = `Analyze this document and determine its type. Categories: policy, claim, invoice, report, correspondence, evidence, other. Also extract key information like policy numbers, dates, amounts, names, and addresses. Return as JSON.`;
 
     try {
       const response = await aiModelManager.generateText(typePrompt, {
-        systemPrompt: 'You are a document analysis expert specializing in insurance documents.',
-        temperature: 0.3
-      })
+        systemPrompt:
+          "You are a document analysis expert specializing in insurance documents.",
+        temperature: 0.3,
+      });
 
-      let extractedInfo: any = {}
+      let extractedInfo: any = {};
       try {
-        extractedInfo = JSON.parse(response.content)
+        extractedInfo = JSON.parse(response.content);
       } catch {
         // Fallback parsing
         extractedInfo = {
-          documentType: 'other',
-          summary: response.content
-        }
+          documentType: "other",
+          summary: response.content,
+        };
       }
 
       // Generate document summary
-      const summaryPrompt = 'Provide a brief 2-3 sentence summary of this document\'s key points.'
-      const summaryResponse = await aiModelManager.generateText(summaryPrompt)
+      const summaryPrompt =
+        "Provide a brief 2-3 sentence summary of this document's key points.";
+      const summaryResponse = await aiModelManager.generateText(summaryPrompt);
 
       // Calculate risk score (mock implementation)
-      const riskScore = Math.random() * 100
+      const riskScore = Math.random() * 100;
 
       // Identify compliance flags
-      const complianceFlags: string[] = []
-      if (extractedInfo.documentType === 'policy' && !extractedInfo.effectiveDate) {
-        complianceFlags.push('Missing effective date')
+      const complianceFlags: string[] = [];
+      if (
+        extractedInfo.documentType === "policy" &&
+        !extractedInfo.effectiveDate
+      ) {
+        complianceFlags.push("Missing effective date");
       }
-      if (extractedInfo.documentType === 'claim' && !extractedInfo.claimNumber) {
-        complianceFlags.push('Missing claim number')
+      if (
+        extractedInfo.documentType === "claim" &&
+        !extractedInfo.claimNumber
+      ) {
+        complianceFlags.push("Missing claim number");
       }
 
       return {
-        documentType: extractedInfo.documentType || 'other',
+        documentType: extractedInfo.documentType || "other",
         extractedData: extractedInfo,
         entities: extractEntities(response.content),
         keyPhrases: extractKeyPhrases(response.content),
@@ -221,137 +282,163 @@ export function DocumentIntelligenceSystem() {
         riskScore,
         complianceFlags,
         aiConfidence: 85 + Math.random() * 15,
-        processingTime: Date.now() - startTime
-      }
+        processingTime: Date.now() - startTime,
+      };
     } catch (error) {
-      console.error('AI analysis error:', error)
+      console.error("AI analysis error:", error);
 
       // Fallback analysis
       return {
         documentType: guessDocumentType(file.name),
-        summary: 'Unable to analyze document with AI. Manual review required.',
+        summary: "Unable to analyze document with AI. Manual review required.",
         riskScore: 50,
         aiConfidence: 0,
-        processingTime: Date.now() - startTime
-      }
+        processingTime: Date.now() - startTime,
+      };
     }
-  }
+  };
 
   const fileToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.readAsDataURL(file)
-      reader.onload = () => resolve(reader.result as string)
-      reader.onerror = error => reject(error)
-    })
-  }
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
+  };
 
-  const guessDocumentType = (fileName: string): DocumentAnalysis['documentType'] => {
-    const lower = fileName.toLowerCase()
-    if (lower.includes('policy')) return 'policy'
-    if (lower.includes('claim')) return 'claim'
-    if (lower.includes('invoice') || lower.includes('bill')) return 'invoice'
-    if (lower.includes('report')) return 'report'
-    if (lower.includes('letter') || lower.includes('email')) return 'correspondence'
-    if (lower.includes('photo') || lower.includes('image')) return 'evidence'
-    return 'other'
-  }
+  const guessDocumentType = (
+    fileName: string,
+  ): DocumentAnalysis["documentType"] => {
+    const lower = fileName.toLowerCase();
+    if (lower.includes("policy")) return "policy";
+    if (lower.includes("claim")) return "claim";
+    if (lower.includes("invoice") || lower.includes("bill")) return "invoice";
+    if (lower.includes("report")) return "report";
+    if (lower.includes("letter") || lower.includes("email"))
+      return "correspondence";
+    if (lower.includes("photo") || lower.includes("image")) return "evidence";
+    return "other";
+  };
 
-  const extractEntities = (text: string): DocumentAnalysis['entities'] => {
-    const entities: DocumentAnalysis['entities'] = []
+  const extractEntities = (text: string): DocumentAnalysis["entities"] => {
+    const entities: DocumentAnalysis["entities"] = [];
 
     // Extract dates
-    const dateRegex = /\b\d{1,2}\/\d{1,2}\/\d{2,4}\b/g
-    const dates = text.match(dateRegex) || []
-    dates.forEach(date => {
-      entities.push({ type: 'date', value: date, confidence: 0.9 })
-    })
+    const dateRegex = /\b\d{1,2}\/\d{1,2}\/\d{2,4}\b/g;
+    const dates = text.match(dateRegex) || [];
+    dates.forEach((date) => {
+      entities.push({ type: "date", value: date, confidence: 0.9 });
+    });
 
     // Extract money amounts
-    const moneyRegex = /\$[\d,]+\.?\d*/g
-    const amounts = text.match(moneyRegex) || []
-    amounts.forEach(amount => {
-      entities.push({ type: 'money', value: amount, confidence: 0.95 })
-    })
+    const moneyRegex = /\$[\d,]+\.?\d*/g;
+    const amounts = text.match(moneyRegex) || [];
+    amounts.forEach((amount) => {
+      entities.push({ type: "money", value: amount, confidence: 0.95 });
+    });
 
     // Extract policy/claim numbers
-    const numberRegex = /\b[A-Z]{2,3}-?\d{6,10}\b/g
-    const numbers = text.match(numberRegex) || []
-    numbers.forEach(num => {
-      entities.push({ type: 'reference_number', value: num, confidence: 0.85 })
-    })
+    const numberRegex = /\b[A-Z]{2,3}-?\d{6,10}\b/g;
+    const numbers = text.match(numberRegex) || [];
+    numbers.forEach((num) => {
+      entities.push({ type: "reference_number", value: num, confidence: 0.85 });
+    });
 
-    return entities
-  }
+    return entities;
+  };
 
   const extractKeyPhrases = (text: string): string[] => {
     const phrases = [
-      'coverage limit', 'deductible', 'premium', 'effective date',
-      'claim amount', 'property damage', 'liability', 'hurricane',
-      'flood damage', 'wind damage', 'replacement cost', 'actual cash value'
-    ]
+      "coverage limit",
+      "deductible",
+      "premium",
+      "effective date",
+      "claim amount",
+      "property damage",
+      "liability",
+      "hurricane",
+      "flood damage",
+      "wind damage",
+      "replacement cost",
+      "actual cash value",
+    ];
 
-    return phrases.filter(phrase =>
-      text.toLowerCase().includes(phrase.toLowerCase())
-    )
-  }
+    return phrases.filter((phrase) =>
+      text.toLowerCase().includes(phrase.toLowerCase()),
+    );
+  };
 
-  const analyzeSentiment = (text: string): 'positive' | 'negative' | 'neutral' => {
-    const positive = ['approved', 'covered', 'accepted', 'confirmed', 'valid']
-    const negative = ['denied', 'rejected', 'excluded', 'invalid', 'expired']
+  const analyzeSentiment = (
+    text: string,
+  ): "positive" | "negative" | "neutral" => {
+    const positive = ["approved", "covered", "accepted", "confirmed", "valid"];
+    const negative = ["denied", "rejected", "excluded", "invalid", "expired"];
 
-    const positiveCount = positive.filter(word => text.toLowerCase().includes(word)).length
-    const negativeCount = negative.filter(word => text.toLowerCase().includes(word)).length
+    const positiveCount = positive.filter((word) =>
+      text.toLowerCase().includes(word),
+    ).length;
+    const negativeCount = negative.filter((word) =>
+      text.toLowerCase().includes(word),
+    ).length;
 
-    if (positiveCount > negativeCount) return 'positive'
-    if (negativeCount > positiveCount) return 'negative'
-    return 'neutral'
-  }
+    if (positiveCount > negativeCount) return "positive";
+    if (negativeCount > positiveCount) return "negative";
+    return "neutral";
+  };
 
-  const filteredDocuments = documents.filter(doc => {
-    const matchesSearch = !searchQuery ||
+  const filteredDocuments = documents.filter((doc) => {
+    const matchesSearch =
+      !searchQuery ||
       doc.fileName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      doc.summary?.toLowerCase().includes(searchQuery.toLowerCase())
+      doc.summary?.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesFilter = filterType === 'all' || doc.documentType === filterType
+    const matchesFilter =
+      filterType === "all" || doc.documentType === filterType;
 
-    return matchesSearch && matchesFilter
-  })
+    return matchesSearch && matchesFilter;
+  });
 
   const exportAnalysis = (doc: DocumentAnalysis) => {
-    const data = JSON.stringify(doc, null, 2)
-    const blob = new Blob([data], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `${doc.fileName}-analysis.json`
-    a.click()
-    toast.success('Analysis exported')
-  }
+    const data = JSON.stringify(doc, null, 2);
+    const blob = new Blob([data], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${doc.fileName}-analysis.json`;
+    a.click();
+    toast.success("Analysis exported");
+  };
 
   const runBulkAnalysis = async () => {
-    const pendingDocs = documents.filter(d => d.status === 'pending')
+    const pendingDocs = documents.filter((d) => d.status === "pending");
     if (pendingDocs.length === 0) {
-      toast.info('No pending documents to analyze')
-      return
+      toast.info("No pending documents to analyze");
+      return;
     }
 
-    setProcessing(true)
+    setProcessing(true);
 
     for (const doc of pendingDocs) {
       // Simulate processing each document
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      setDocuments(prev => prev.map(d =>
-        d.id === doc.id
-          ? { ...d, status: 'completed', aiConfidence: 90 + Math.random() * 10 }
-          : d
-      ))
+      setDocuments((prev) =>
+        prev.map((d) =>
+          d.id === doc.id
+            ? {
+                ...d,
+                status: "completed",
+                aiConfidence: 90 + Math.random() * 10,
+              }
+            : d,
+        ),
+      );
     }
 
-    setProcessing(false)
-    toast.success(`Analyzed ${pendingDocs.length} documents`)
-  }
+    setProcessing(false);
+    toast.success(`Analyzed ${pendingDocs.length} documents`);
+  };
 
   return (
     <div className="space-y-6">
@@ -362,11 +449,19 @@ export function DocumentIntelligenceSystem() {
             <Brain className="h-6 w-6" />
             <span>Document Intelligence System</span>
           </h2>
-          <p className="text-gray-600">AI-powered document analysis and extraction</p>
+          <p className="text-gray-600">
+            AI-powered document analysis and extraction
+          </p>
         </div>
         <div className="flex gap-2">
-          <Button onClick={runBulkAnalysis} disabled={processing} variant="outline">
-            <RefreshCw className={`h-4 w-4 mr-2 ${processing ? 'animate-spin' : ''}`} />
+          <Button
+            onClick={runBulkAnalysis}
+            disabled={processing}
+            variant="outline"
+          >
+            <RefreshCw
+              className={`h-4 w-4 mr-2 ${processing ? "animate-spin" : ""}`}
+            />
             Bulk Analyze
           </Button>
           <Button>
@@ -396,7 +491,7 @@ export function DocumentIntelligenceSystem() {
               <Badge variant="outline">AI</Badge>
             </div>
             <p className="text-2xl font-bold">
-              {documents.filter(d => d.status === 'completed').length}
+              {documents.filter((d) => d.status === "completed").length}
             </p>
             <p className="text-sm text-gray-500">Analyzed</p>
           </CardContent>
@@ -409,7 +504,11 @@ export function DocumentIntelligenceSystem() {
               <Badge variant="outline">Queue</Badge>
             </div>
             <p className="text-2xl font-bold">
-              {documents.filter(d => d.status === 'pending' || d.status === 'processing').length}
+              {
+                documents.filter(
+                  (d) => d.status === "pending" || d.status === "processing",
+                ).length
+              }
             </p>
             <p className="text-sm text-gray-500">Processing</p>
           </CardContent>
@@ -422,7 +521,7 @@ export function DocumentIntelligenceSystem() {
               <Badge variant="outline">Risk</Badge>
             </div>
             <p className="text-2xl font-bold">
-              {documents.filter(d => (d.riskScore || 0) > 70).length}
+              {documents.filter((d) => (d.riskScore || 0) > 70).length}
             </p>
             <p className="text-sm text-gray-500">High Risk</p>
           </CardContent>
@@ -435,7 +534,11 @@ export function DocumentIntelligenceSystem() {
               <Badge variant="outline">Issues</Badge>
             </div>
             <p className="text-2xl font-bold">
-              {documents.filter(d => d.complianceFlags && d.complianceFlags.length > 0).length}
+              {
+                documents.filter(
+                  (d) => d.complianceFlags && d.complianceFlags.length > 0,
+                ).length
+              }
             </p>
             <p className="text-sm text-gray-500">Compliance</p>
           </CardContent>
@@ -444,10 +547,12 @@ export function DocumentIntelligenceSystem() {
 
       {/* Document Categories */}
       <div className="grid grid-cols-2 md:grid-cols-6 gap-2">
-        {categories.map(category => (
+        {categories.map((category) => (
           <Button
             key={category.name}
-            variant={filterType === category.name.toLowerCase() ? 'default' : 'outline'}
+            variant={
+              filterType === category.name.toLowerCase() ? "default" : "outline"
+            }
             onClick={() => setFilterType(category.name.toLowerCase())}
             className="justify-start"
           >
@@ -481,7 +586,7 @@ export function DocumentIntelligenceSystem() {
               <div
                 {...getRootProps()}
                 className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-colors
-                  ${isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'}`}
+                  ${isDragActive ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-gray-400"}`}
               >
                 <input {...getInputProps()} />
                 <Upload className="h-12 w-12 mx-auto mb-4 text-gray-400" />
@@ -504,7 +609,8 @@ export function DocumentIntelligenceSystem() {
                   <RefreshCw className="h-4 w-4 animate-spin" />
                   <AlertTitle>Processing Documents</AlertTitle>
                   <AlertDescription>
-                    AI is analyzing your documents. This may take a few moments...
+                    AI is analyzing your documents. This may take a few
+                    moments...
                   </AlertDescription>
                 </Alert>
               )}
@@ -540,7 +646,7 @@ export function DocumentIntelligenceSystem() {
 
               {/* Document List */}
               <div className="space-y-2">
-                {filteredDocuments.map(doc => (
+                {filteredDocuments.map((doc) => (
                   <div
                     key={doc.id}
                     className="border rounded-lg p-4 hover:bg-gray-50 cursor-pointer"
@@ -556,17 +662,26 @@ export function DocumentIntelligenceSystem() {
                             {(doc.fileSize / 1024).toFixed(1)}KB
                           </p>
                           {doc.summary && (
-                            <p className="text-sm text-gray-600 mt-1">{doc.summary}</p>
+                            <p className="text-sm text-gray-600 mt-1">
+                              {doc.summary}
+                            </p>
                           )}
                           <div className="flex gap-2 mt-2">
                             {doc.documentType && (
-                              <Badge variant="outline">{doc.documentType}</Badge>
+                              <Badge variant="outline">
+                                {doc.documentType}
+                              </Badge>
                             )}
                             {doc.sentiment && (
-                              <Badge variant={
-                                doc.sentiment === 'positive' ? 'default' :
-                                doc.sentiment === 'negative' ? 'destructive' : 'secondary'
-                              }>
+                              <Badge
+                                variant={
+                                  doc.sentiment === "positive"
+                                    ? "default"
+                                    : doc.sentiment === "negative"
+                                      ? "destructive"
+                                      : "secondary"
+                                }
+                              >
                                 {doc.sentiment}
                               </Badge>
                             )}
@@ -577,11 +692,17 @@ export function DocumentIntelligenceSystem() {
                         </div>
                       </div>
                       <div className="text-right">
-                        <Badge variant={
-                          doc.status === 'completed' ? 'default' :
-                          doc.status === 'processing' ? 'secondary' :
-                          doc.status === 'error' ? 'destructive' : 'outline'
-                        }>
+                        <Badge
+                          variant={
+                            doc.status === "completed"
+                              ? "default"
+                              : doc.status === "processing"
+                                ? "secondary"
+                                : doc.status === "error"
+                                  ? "destructive"
+                                  : "outline"
+                          }
+                        >
                           {doc.status}
                         </Badge>
                         {doc.aiConfidence && (
@@ -611,12 +732,18 @@ export function DocumentIntelligenceSystem() {
                 <div className="space-y-6">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="text-lg font-semibold">{selectedDocument.fileName}</h3>
+                      <h3 className="text-lg font-semibold">
+                        {selectedDocument.fileName}
+                      </h3>
                       <p className="text-sm text-gray-500">
-                        Analyzed on {new Date(selectedDocument.uploadDate).toLocaleString()}
+                        Analyzed on{" "}
+                        {new Date(selectedDocument.uploadDate).toLocaleString()}
                       </p>
                     </div>
-                    <Button onClick={() => exportAnalysis(selectedDocument)} size="sm">
+                    <Button
+                      onClick={() => exportAnalysis(selectedDocument)}
+                      size="sm"
+                    >
                       <Download className="h-4 w-4 mr-2" />
                       Export
                     </Button>
@@ -624,62 +751,76 @@ export function DocumentIntelligenceSystem() {
 
                   {selectedDocument.extractedData && (
                     <div>
-                      <h4 className="font-medium mb-2">Extracted Information</h4>
+                      <h4 className="font-medium mb-2">
+                        Extracted Information
+                      </h4>
                       <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
-                        {Object.entries(selectedDocument.extractedData).map(([key, value]) => (
-                          <div key={key}>
-                            <p className="text-sm text-gray-500">{key.replace(/_/g, ' ')}</p>
-                            <p className="font-medium">{String(value)}</p>
-                          </div>
-                        ))}
+                        {Object.entries(selectedDocument.extractedData).map(
+                          ([key, value]) => (
+                            <div key={key}>
+                              <p className="text-sm text-gray-500">
+                                {key.replace(/_/g, " ")}
+                              </p>
+                              <p className="font-medium">{String(value)}</p>
+                            </div>
+                          ),
+                        )}
                       </div>
                     </div>
                   )}
 
-                  {selectedDocument.entities && selectedDocument.entities.length > 0 && (
-                    <div>
-                      <h4 className="font-medium mb-2">Detected Entities</h4>
-                      <div className="flex flex-wrap gap-2">
-                        {selectedDocument.entities.map((entity, idx) => (
-                          <Badge key={idx} variant="outline">
-                            {entity.type}: {entity.value}
-                            <span className="ml-1 text-xs">({(entity.confidence * 100).toFixed(0)}%)</span>
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {selectedDocument.keyPhrases && selectedDocument.keyPhrases.length > 0 && (
-                    <div>
-                      <h4 className="font-medium mb-2">Key Phrases</h4>
-                      <div className="flex flex-wrap gap-2">
-                        {selectedDocument.keyPhrases.map((phrase, idx) => (
-                          <Badge key={idx} variant="secondary">
-                            {phrase}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {selectedDocument.complianceFlags && selectedDocument.complianceFlags.length > 0 && (
-                    <Alert variant="destructive">
-                      <AlertCircle className="h-4 w-4" />
-                      <AlertTitle>Compliance Issues</AlertTitle>
-                      <AlertDescription>
-                        <ul className="list-disc list-inside mt-2">
-                          {selectedDocument.complianceFlags.map((flag, idx) => (
-                            <li key={idx}>{flag}</li>
+                  {selectedDocument.entities &&
+                    selectedDocument.entities.length > 0 && (
+                      <div>
+                        <h4 className="font-medium mb-2">Detected Entities</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {selectedDocument.entities.map((entity, idx) => (
+                            <Badge key={idx} variant="outline">
+                              {entity.type}: {entity.value}
+                              <span className="ml-1 text-xs">
+                                ({(entity.confidence * 100).toFixed(0)}%)
+                              </span>
+                            </Badge>
                           ))}
-                        </ul>
-                      </AlertDescription>
-                    </Alert>
-                  )}
+                        </div>
+                      </div>
+                    )}
+
+                  {selectedDocument.keyPhrases &&
+                    selectedDocument.keyPhrases.length > 0 && (
+                      <div>
+                        <h4 className="font-medium mb-2">Key Phrases</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {selectedDocument.keyPhrases.map((phrase, idx) => (
+                            <Badge key={idx} variant="secondary">
+                              {phrase}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                  {selectedDocument.complianceFlags &&
+                    selectedDocument.complianceFlags.length > 0 && (
+                      <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>Compliance Issues</AlertTitle>
+                        <AlertDescription>
+                          <ul className="list-disc list-inside mt-2">
+                            {selectedDocument.complianceFlags.map(
+                              (flag, idx) => (
+                                <li key={idx}>{flag}</li>
+                              ),
+                            )}
+                          </ul>
+                        </AlertDescription>
+                      </Alert>
+                    )}
 
                   {selectedDocument.processingTime && (
                     <p className="text-sm text-gray-500">
-                      Processing time: {(selectedDocument.processingTime / 1000).toFixed(2)}s
+                      Processing time:{" "}
+                      {(selectedDocument.processingTime / 1000).toFixed(2)}s
                     </p>
                   )}
                 </div>
@@ -711,10 +852,18 @@ export function DocumentIntelligenceSystem() {
                     <p className="text-sm text-gray-600">
                       Average coverage amount: $
                       {documents
-                        .filter(d => d.extractedData?.coverageAmount)
-                        .reduce((sum, d) => sum + (d.extractedData?.coverageAmount || 0), 0) /
-                        Math.max(documents.filter(d => d.extractedData?.coverageAmount).length, 1)
-                      }
+                        .filter((d) => d.extractedData?.coverageAmount)
+                        .reduce(
+                          (sum, d) =>
+                            sum + (d.extractedData?.coverageAmount || 0),
+                          0,
+                        ) /
+                        Math.max(
+                          documents.filter(
+                            (d) => d.extractedData?.coverageAmount,
+                          ).length,
+                          1,
+                        )}
                     </p>
                   </div>
 
@@ -724,23 +873,35 @@ export function DocumentIntelligenceSystem() {
                       Compliance Rate
                     </h4>
                     <p className="text-sm text-gray-600">
-                      {(((documents.length - documents.filter(d => d.complianceFlags && d.complianceFlags.length > 0).length) /
-                        Math.max(documents.length, 1)) * 100).toFixed(0)}% compliant
+                      {(
+                        ((documents.length -
+                          documents.filter(
+                            (d) =>
+                              d.complianceFlags && d.complianceFlags.length > 0,
+                          ).length) /
+                          Math.max(documents.length, 1)) *
+                        100
+                      ).toFixed(0)}
+                      % compliant
                     </p>
                   </div>
                 </div>
 
                 <div>
-                  <h4 className="font-medium mb-2">Document Type Distribution</h4>
+                  <h4 className="font-medium mb-2">
+                    Document Type Distribution
+                  </h4>
                   <div className="space-y-2">
-                    {categories.map(cat => (
+                    {categories.map((cat) => (
                       <div key={cat.name} className="flex items-center">
                         <cat.icon className={`h-4 w-4 mr-2 ${cat.color}`} />
                         <span className="text-sm flex-1">{cat.name}</span>
                         <div className="w-32 bg-gray-200 rounded-full h-2">
                           <div
                             className="bg-blue-500 h-2 rounded-full"
-                            style={{ width: `${(cat.count / Math.max(documents.length, 1)) * 100}%` }}
+                            style={{
+                              width: `${(cat.count / Math.max(documents.length, 1)) * 100}%`,
+                            }}
                           />
                         </div>
                         <span className="text-sm ml-2">{cat.count}</span>
@@ -753,8 +914,9 @@ export function DocumentIntelligenceSystem() {
                   <Sparkles className="h-4 w-4" />
                   <AlertTitle>AI Insights</AlertTitle>
                   <AlertDescription>
-                    Based on analyzed documents, consider reviewing policies with expiration dates in the next 30 days
-                    and addressing high-risk compliance issues first.
+                    Based on analyzed documents, consider reviewing policies
+                    with expiration dates in the next 30 days and addressing
+                    high-risk compliance issues first.
                   </AlertDescription>
                 </Alert>
               </div>
@@ -763,5 +925,5 @@ export function DocumentIntelligenceSystem() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }

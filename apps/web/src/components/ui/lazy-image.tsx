@@ -5,32 +5,32 @@
  * @dependencies ["react", "lucide-react"]
  * @status stable
  */
-'use client'
+"use client";
 
-import { useState, useEffect, useRef } from 'react'
-import { ImageOff, Loader2 } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { useState, useEffect, useRef } from "react";
+import { ImageOff, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface LazyImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
-  src: string
-  alt: string
-  fallbackSrc?: string
-  blurDataUrl?: string
-  aspectRatio?: number
-  objectFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down'
-  onLoad?: () => void
-  onError?: () => void
-  showLoader?: boolean
-  threshold?: number
+  src: string;
+  alt: string;
+  fallbackSrc?: string;
+  blurDataUrl?: string;
+  aspectRatio?: number;
+  objectFit?: "cover" | "contain" | "fill" | "none" | "scale-down";
+  onLoad?: () => void;
+  onError?: () => void;
+  showLoader?: boolean;
+  threshold?: number;
 }
 
 export function LazyImage({
   src,
   alt,
-  fallbackSrc = '/placeholder.jpg',
+  fallbackSrc = "/placeholder.jpg",
   blurDataUrl,
   aspectRatio,
-  objectFit = 'cover',
+  objectFit = "cover",
   onLoad,
   onError,
   showLoader = true,
@@ -38,12 +38,12 @@ export function LazyImage({
   className,
   ...props
 }: LazyImageProps) {
-  const [imageSrc, setImageSrc] = useState<string>(blurDataUrl || '')
-  const [isLoading, setIsLoading] = useState(true)
-  const [hasError, setHasError] = useState(false)
-  const [isInView, setIsInView] = useState(false)
-  const imgRef = useRef<HTMLImageElement>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const [imageSrc, setImageSrc] = useState<string>(blurDataUrl || "");
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+  const [isInView, setIsInView] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Intersection Observer for lazy loading
   useEffect(() => {
@@ -51,53 +51,62 @@ export function LazyImage({
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            setIsInView(true)
-            observer.disconnect()
+            setIsInView(true);
+            observer.disconnect();
           }
-        })
+        });
       },
-      { threshold, rootMargin: '50px' }
-    )
+      { threshold, rootMargin: "50px" },
+    );
 
     if (containerRef.current) {
-      observer.observe(containerRef.current)
+      observer.observe(containerRef.current);
     }
 
-    return () => observer.disconnect()
-  }, [threshold])
+    return () => observer.disconnect();
+  }, [threshold]);
 
   // Load image when in view
   useEffect(() => {
-    if (!isInView) return
+    if (!isInView) return;
 
-    const img = new Image()
+    const img = new Image();
 
     img.onload = () => {
-      setImageSrc(src)
-      setIsLoading(false)
-      setHasError(false)
-      onLoad?.()
-    }
+      setImageSrc(src);
+      setIsLoading(false);
+      setHasError(false);
+      onLoad?.();
+    };
 
     img.onerror = () => {
-      setImageSrc(fallbackSrc)
-      setIsLoading(false)
-      setHasError(true)
-      onError?.()
-    }
+      setImageSrc(fallbackSrc);
+      setIsLoading(false);
+      setHasError(true);
+      onError?.();
+    };
 
-    img.src = src
-  }, [isInView, src, fallbackSrc, onLoad, onError])
+    img.src = src;
+  }, [isInView, src, fallbackSrc, onLoad, onError]);
 
   const containerStyle: React.CSSProperties = aspectRatio
     ? { paddingBottom: `${(1 / aspectRatio) * 100}%` }
-    : {}
+    : {};
 
   return (
     <div
       ref={containerRef}
-      className={cn('relative overflow-hidden bg-gray-800', className)}
-      style={aspectRatio ? { position: 'relative', width: '100%', height: 0, ...containerStyle } : {}}
+      className={cn("relative overflow-hidden bg-gray-800", className)}
+      style={
+        aspectRatio
+          ? {
+              position: "relative",
+              width: "100%",
+              height: 0,
+              ...containerStyle,
+            }
+          : {}
+      }
     >
       {/* Blur placeholder */}
       {blurDataUrl && isLoading && (
@@ -105,9 +114,9 @@ export function LazyImage({
           src={blurDataUrl}
           alt=""
           className={cn(
-            'absolute inset-0 w-full h-full',
+            "absolute inset-0 w-full h-full",
             `object-${objectFit}`,
-            'filter blur-xl scale-110'
+            "filter blur-xl scale-110",
           )}
           aria-hidden="true"
         />
@@ -120,10 +129,10 @@ export function LazyImage({
           src={imageSrc}
           alt={alt}
           className={cn(
-            aspectRatio ? 'absolute inset-0 w-full h-full' : '',
+            aspectRatio ? "absolute inset-0 w-full h-full" : "",
             `object-${objectFit}`,
-            'transition-opacity duration-300',
-            isLoading ? 'opacity-0' : 'opacity-100'
+            "transition-opacity duration-300",
+            isLoading ? "opacity-0" : "opacity-100",
           )}
           {...props}
         />
@@ -144,41 +153,36 @@ export function LazyImage({
         </div>
       )}
     </div>
-  )
+  );
 }
 
 // Image gallery with lazy loading
 interface LazyImageGalleryProps {
   images: Array<{
-    src: string
-    alt: string
-    thumbnail?: string
-  }>
-  columns?: number
-  gap?: number
-  className?: string
+    src: string;
+    alt: string;
+    thumbnail?: string;
+  }>;
+  columns?: number;
+  gap?: number;
+  className?: string;
 }
 
 export function LazyImageGallery({
   images,
   columns = 3,
   gap = 4,
-  className
+  className,
 }: LazyImageGalleryProps) {
-  const [selectedImage, setSelectedImage] = useState<number | null>(null)
+  const [selectedImage, setSelectedImage] = useState<number | null>(null);
 
   return (
     <>
       <div
-        className={cn(
-          'grid',
-          `grid-cols-${columns}`,
-          `gap-${gap}`,
-          className
-        )}
+        className={cn("grid", `grid-cols-${columns}`, `gap-${gap}`, className)}
         style={{
           gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
-          gap: `${gap * 0.25}rem`
+          gap: `${gap * 0.25}rem`,
         }}
       >
         {images.map((image, index) => (
@@ -219,41 +223,44 @@ export function LazyImageGallery({
         </div>
       )}
     </>
-  )
+  );
 }
 
 // Optimized property image with lazy loading
 export function LazyPropertyImage({
   src,
   propertyName,
-  size = 'medium',
-  className
+  size = "medium",
+  className,
 }: {
-  src?: string
-  propertyName: string
-  size?: 'small' | 'medium' | 'large' | 'full'
-  className?: string
+  src?: string;
+  propertyName: string;
+  size?: "small" | "medium" | "large" | "full";
+  className?: string;
 }) {
   const sizes = {
-    small: 'w-16 h-16',
-    medium: 'w-32 h-32',
-    large: 'w-64 h-64',
-    full: 'w-full h-full'
-  }
+    small: "w-16 h-16",
+    medium: "w-32 h-32",
+    large: "w-64 h-64",
+    full: "w-full h-full",
+  };
 
   return (
     <LazyImage
-      src={src || `/api/placeholder/400/300?text=${encodeURIComponent(propertyName)}`}
+      src={
+        src ||
+        `/api/placeholder/400/300?text=${encodeURIComponent(propertyName)}`
+      }
       alt={propertyName}
       className={cn(sizes[size], className)}
       fallbackSrc={`/api/placeholder/400/300?text=${encodeURIComponent(propertyName)}`}
-      aspectRatio={size === 'full' ? 16/9 : 1}
+      aspectRatio={size === "full" ? 16 / 9 : 1}
     />
-  )
+  );
 }
 
 // Next.js Image component wrapper with lazy loading
-import { X } from 'lucide-react'
+import { X } from "lucide-react";
 
 export function NextLazyImage({
   src,
@@ -261,28 +268,28 @@ export function NextLazyImage({
   priority = false,
   ...props
 }: {
-  src: string
-  alt: string
-  priority?: boolean
-  width?: number
-  height?: number
-  className?: string
+  src: string;
+  alt: string;
+  priority?: boolean;
+  width?: number;
+  height?: number;
+  className?: string;
 }) {
-  if (typeof window !== 'undefined' && 'next' in window) {
+  if (typeof window !== "undefined" && "next" in window) {
     // Use Next.js Image component if available
-    const NextImage = require('next/image').default
+    const NextImage = require("next/image").default;
     return (
       <NextImage
         src={src}
         alt={alt}
-        loading={priority ? 'eager' : 'lazy'}
+        loading={priority ? "eager" : "lazy"}
         placeholder="blur"
         blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAf/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCwABmX/9k="
         {...props}
       />
-    )
+    );
   }
 
   // Fallback to regular lazy image
-  return <LazyImage src={src} alt={alt} {...props} />
+  return <LazyImage src={src} alt={alt} {...props} />;
 }

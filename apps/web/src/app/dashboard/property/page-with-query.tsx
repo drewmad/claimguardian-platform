@@ -8,39 +8,43 @@
  * @tags ["dashboard", "property", "page", "react-query"]
  * @status stable
  */
-'use client'
+"use client";
 
-import { MapPin, Plus, ChevronRight, Building } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { MapPin, Plus, ChevronRight, Building } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-import { ProtectedRoute } from '@/components/auth/protected-route'
-import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { PropertyWizard } from '@/components/property/property-wizard'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { PropertyAvatar } from '@/components/ui/property-image'
-import { Skeleton } from '@/components/ui/skeleton'
-import { useProperties } from '@/hooks/queries/use-properties'
+import { ProtectedRoute } from "@/components/auth/protected-route";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import { PropertyWizard } from "@/components/property/property-wizard";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PropertyAvatar } from "@/components/ui/property-image";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useProperties } from "@/hooks/queries/use-properties";
 
 function PropertyOverviewContent() {
-  const router = useRouter()
-  const [showWizard, setShowWizard] = useState(false)
+  const router = useRouter();
+  const [showWizard, setShowWizard] = useState(false);
 
   // Use React Query hook
-  const { data: properties = [], isLoading, error } = useProperties()
+  const { data: properties = [], isLoading, error } = useProperties();
 
   // Transform data for display
   const displayProperties = properties.map((prop) => ({
     id: prop.id,
-    name: prop.name || 'Unnamed Property',
-    address: prop.address ? [
-      prop.address.street1,
-      prop.address.street2,
-      prop.address.city,
-      prop.address.state,
-      prop.address.zip
-    ].filter(Boolean).join(', ') : 'Address not set',
-    type: prop.type || 'Single Family Home',
+    name: prop.name || "Unnamed Property",
+    address: prop.address
+      ? [
+          prop.address.street1,
+          prop.address.street2,
+          prop.address.city,
+          prop.address.state,
+          prop.address.zip,
+        ]
+          .filter(Boolean)
+          .join(", ")
+      : "Address not set",
+    type: prop.type || "Single Family Home",
     value: prop.value || 0,
     sqft: prop.square_feet || 0,
     yearBuilt: prop.year_built || new Date().getFullYear(),
@@ -48,8 +52,8 @@ function PropertyOverviewContent() {
     bathrooms: prop.details?.bathrooms || 0,
     lotSize: prop.details?.lot_size || 0,
     insurabilityScore: prop.insurability_score || 0,
-    isPrimary: prop.is_primary || false
-  }))
+    isPrimary: prop.is_primary || false,
+  }));
 
   // Show loading skeleton
   if (isLoading) {
@@ -66,7 +70,7 @@ function PropertyOverviewContent() {
           </Card>
         ))}
       </div>
-    )
+    );
   }
 
   // Show error state
@@ -74,10 +78,12 @@ function PropertyOverviewContent() {
     return (
       <Card className="bg-gray-800 border-gray-700">
         <CardContent className="p-6">
-          <p className="text-red-400">Failed to load properties. Please try again.</p>
+          <p className="text-red-400">
+            Failed to load properties. Please try again.
+          </p>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -95,8 +101,9 @@ function PropertyOverviewContent() {
           </button>
         </div>
         <p className="text-gray-400 max-w-3xl">
-          Manage your property portfolio and maintain digital records for insurance claims.
-          Keep important documents, photos, and maintenance records all in one secure place.
+          Manage your property portfolio and maintain digital records for
+          insurance claims. Keep important documents, photos, and maintenance
+          records all in one secure place.
         </p>
       </div>
 
@@ -135,13 +142,17 @@ function PropertyOverviewContent() {
               <CardContent>
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <div>
-                    <p className="text-xs text-gray-500 uppercase tracking-wider">Value</p>
+                    <p className="text-xs text-gray-500 uppercase tracking-wider">
+                      Value
+                    </p>
                     <p className="text-lg font-semibold text-white">
                       ${property.value.toLocaleString()}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500 uppercase tracking-wider">Size</p>
+                    <p className="text-xs text-gray-500 uppercase tracking-wider">
+                      Size
+                    </p>
                     <p className="text-lg font-semibold text-white">
                       {property.sqft.toLocaleString()} sqft
                     </p>
@@ -155,13 +166,18 @@ function PropertyOverviewContent() {
                       <div className="flex-1 bg-gray-700 rounded-full h-2 w-24">
                         <div
                           className={`h-2 rounded-full ${
-                            property.insurabilityScore >= 80 ? 'bg-green-500' :
-                            property.insurabilityScore >= 60 ? 'bg-yellow-500' : 'bg-red-500'
+                            property.insurabilityScore >= 80
+                              ? "bg-green-500"
+                              : property.insurabilityScore >= 60
+                                ? "bg-yellow-500"
+                                : "bg-red-500"
                           }`}
                           style={{ width: `${property.insurabilityScore}%` }}
                         />
                       </div>
-                      <span className="text-white font-medium">{property.insurabilityScore}%</span>
+                      <span className="text-white font-medium">
+                        {property.insurabilityScore}%
+                      </span>
                     </div>
                   </div>
 
@@ -184,9 +200,12 @@ function PropertyOverviewContent() {
         <Card className="bg-gray-800 border-gray-700">
           <CardContent className="text-center py-12">
             <Building className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-white mb-2">No Properties Yet</h3>
+            <h3 className="text-xl font-semibold text-white mb-2">
+              No Properties Yet
+            </h3>
             <p className="text-gray-400 mb-6 max-w-md mx-auto">
-              Add your first property to start building your digital property portfolio and protect your assets.
+              Add your first property to start building your digital property
+              portfolio and protect your assets.
             </p>
             <button
               onClick={() => setShowWizard(true)}
@@ -205,13 +224,13 @@ function PropertyOverviewContent() {
           open={showWizard}
           onClose={() => setShowWizard(false)}
           onComplete={() => {
-            setShowWizard(false)
+            setShowWizard(false);
             // React Query will automatically refetch due to invalidation in the mutation
           }}
         />
       )}
     </div>
-  )
+  );
 }
 
 export default function PropertyOverviewPage() {
@@ -221,5 +240,5 @@ export default function PropertyOverviewPage() {
         <PropertyOverviewContent />
       </DashboardLayout>
     </ProtectedRoute>
-  )
+  );
 }

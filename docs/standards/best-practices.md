@@ -3,6 +3,7 @@
 Inspired by Agent OS, these are evolving guidelines for efficient, resilient coding with AI agents.
 
 ## Development Philosophy
+
 - **TDD First**: Write tests before code; use Jest for all features.
 - **Commit Patterns**: Use conventional commits (pnpm cz); small, atomic changes.
 - **Refinement Loop**: After tasks, review for patterns; update this file/others.
@@ -12,11 +13,13 @@ Inspired by Agent OS, these are evolving guidelines for efficient, resilient cod
 - **Team Reviews**: Schedule to consensus on updates.
 
 ## Workflow
+
 - Plan product/roadmap before features.
 - Create specs before execution.
 - Execute with TDD; update learnings.md.
 
 Examples:
+
 - For data imports: Parallelize with verification scripts.
 - For AI tools: Simulate integrations; check API keys.
 

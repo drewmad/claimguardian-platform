@@ -9,72 +9,72 @@
  * @status stable
  */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from "react";
 
 interface UseRateLimitOptions {
-  cooldownMs?: number
-  key?: string
+  cooldownMs?: number;
+  key?: string;
 }
 
 export function useRateLimit(options: UseRateLimitOptions = {}) {
-  const { cooldownMs = 60000, key = 'default' } = options
-  const storageKey = `rateLimit_${key}`
+  const { cooldownMs = 60000, key = "default" } = options;
+  const storageKey = `rateLimit_${key}`;
 
-  const [isLimited, setIsLimited] = useState(false)
-  const [secondsRemaining, setSecondsRemaining] = useState(0)
+  const [isLimited, setIsLimited] = useState(false);
+  const [secondsRemaining, setSecondsRemaining] = useState(0);
 
   // Check if we're still in cooldown on mount
   useEffect(() => {
-    const lastAttempt = localStorage.getItem(storageKey)
+    const lastAttempt = localStorage.getItem(storageKey);
     if (lastAttempt) {
-      const timePassed = Date.now() - parseInt(lastAttempt, 10)
+      const timePassed = Date.now() - parseInt(lastAttempt, 10);
       if (timePassed < cooldownMs) {
-        setIsLimited(true)
-        setSecondsRemaining(Math.ceil((cooldownMs - timePassed) / 1000))
+        setIsLimited(true);
+        setSecondsRemaining(Math.ceil((cooldownMs - timePassed) / 1000));
       }
     }
-  }, [storageKey, cooldownMs])
+  }, [storageKey, cooldownMs]);
 
   // Countdown timer
   useEffect(() => {
     if (secondsRemaining > 0) {
       const timer = setTimeout(() => {
-        setSecondsRemaining(prev => prev - 1)
-      }, 1000)
+        setSecondsRemaining((prev) => prev - 1);
+      }, 1000);
 
-      return () => clearTimeout(timer)
+      return () => clearTimeout(timer);
     } else if (isLimited && secondsRemaining === 0) {
-      setIsLimited(false)
-      localStorage.removeItem(storageKey)
+      setIsLimited(false);
+      localStorage.removeItem(storageKey);
     }
 
     // Ensure all code paths return a value
-    return undefined
-  }, [secondsRemaining, isLimited, storageKey])
+    return undefined;
+  }, [secondsRemaining, isLimited, storageKey]);
 
   const checkLimit = useCallback(() => {
     if (isLimited) {
-      return false
+      return false;
     }
 
     // Set the limit
-    localStorage.setItem(storageKey, Date.now().toString())
-    setIsLimited(true)
-    setSecondsRemaining(Math.ceil(cooldownMs / 1000))
+    localStorage.setItem(storageKey, Date.now().toString());
+    setIsLimited(true);
+    setSecondsRemaining(Math.ceil(cooldownMs / 1000));
 
-    return true
-  }, [isLimited, storageKey, cooldownMs])
+    return true;
+  }, [isLimited, storageKey, cooldownMs]);
 
   const reset = useCallback(() => {
-    localStorage.removeItem(storageKey)
-    setIsLimited(false)
-    setSecondsRemaining(0)
-  }, [storageKey])
+    localStorage.removeItem(storageKey);
+    setIsLimited(false);
+    setSecondsRemaining(0);
+  }, [storageKey]);
 
   return {
     isLimited,
     secondsRemaining,
     checkLimit,
-    reset
-  }
+    reset,
+  };
 }

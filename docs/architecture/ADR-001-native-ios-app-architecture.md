@@ -1,6 +1,7 @@
 # ADR-001: Native iOS App Architecture for ClaimGuardian Field Assessment
 
 ## Status
+
 Proposed
 
 ## Context
@@ -14,6 +15,7 @@ ClaimGuardian currently has a React Native/Expo mobile app, but the requirements
 5. **Performance optimization** for real-time AI analysis and large file handling
 
 **Business Context:**
+
 - Total Investment: $690K
 - Expected Annual Revenue: $1.4M+
 - Target Users: Insurance adjusters, property owners, contractors, public adjusters
@@ -24,6 +26,7 @@ ClaimGuardian currently has a React Native/Expo mobile app, but the requirements
 ### Option 1: Pure Native iOS App (SwiftUI + UIKit)
 
 **Architecture:**
+
 ```mermaid
 graph TB
     subgraph "Presentation Layer"
@@ -64,6 +67,7 @@ graph TB
 ```
 
 **Pros:**
+
 - Maximum performance and native iOS integration
 - Full access to ARKit, Core ML, Vision framework
 - Best user experience with native UI patterns
@@ -72,12 +76,14 @@ graph TB
 - App Store optimization
 
 **Cons:**
+
 - Single platform (iOS only)
 - Higher development cost
 - Longer initial development time
 - Need iOS-specific expertise
 
 **Technology Stack:**
+
 - SwiftUI for modern UI development
 - Combine for reactive programming
 - Core Data + CloudKit for data persistence
@@ -88,6 +94,7 @@ graph TB
 ### Option 2: Hybrid Approach (React Native + Native Modules)
 
 **Architecture:**
+
 ```mermaid
 graph TB
     subgraph "React Native Layer"
@@ -116,12 +123,14 @@ graph TB
 ```
 
 **Pros:**
+
 - Code sharing with existing RN app
 - Faster initial development
 - Cross-platform compatibility
 - Existing team expertise
 
 **Cons:**
+
 - Performance overhead from bridge
 - Complex native module development
 - Limited access to some iOS features
@@ -131,6 +140,7 @@ graph TB
 ### Option 3: Flutter + Platform Channels
 
 **Architecture:**
+
 ```mermaid
 graph TB
     subgraph "Flutter Layer"
@@ -157,12 +167,14 @@ graph TB
 ```
 
 **Pros:**
+
 - Cross-platform development
 - Good performance
 - Growing ecosystem
 - Modern development experience
 
 **Cons:**
+
 - Additional learning curve
 - Limited iOS-specific integrations
 - Platform channel complexity
@@ -186,6 +198,7 @@ graph TB
 ### Phase 1: Core Architecture (Weeks 1-4)
 
 #### 1.1 Project Structure Setup
+
 ```
 ClaimGuardian-iOS/
 ├── ClaimGuardian/
@@ -212,6 +225,7 @@ ClaimGuardian-iOS/
 ```
 
 #### 1.2 Core Data Model
+
 ```swift
 // Claim Entity
 @objc(Claim)
@@ -250,6 +264,7 @@ class DamageItem: NSManagedObject {
 ```
 
 #### 1.3 Network Layer with Supabase
+
 ```swift
 protocol SupabaseServiceProtocol {
     func authenticate(email: String, password: String) async throws -> User
@@ -273,6 +288,7 @@ class SupabaseService: SupabaseServiceProtocol {
 ### Phase 2: Camera & AR System (Weeks 5-8)
 
 #### 2.1 Advanced Camera System
+
 ```swift
 class CameraController: NSObject, ObservableObject {
     private let session = AVCaptureSession()
@@ -298,6 +314,7 @@ class CameraController: NSObject, ObservableObject {
 ```
 
 #### 2.2 ARKit Measurement System
+
 ```swift
 class ARMeasurementController: NSObject, ARSessionDelegate {
     private var arSession = ARSession()
@@ -321,6 +338,7 @@ class ARMeasurementController: NSObject, ARSessionDelegate {
 ### Phase 3: AI Integration & Offline Sync (Weeks 9-12)
 
 #### 3.1 AI Analysis Service
+
 ```swift
 class AIAnalysisService {
     private let openAIClient: OpenAIClient
@@ -350,6 +368,7 @@ class AIAnalysisService {
 ```
 
 #### 3.2 Offline Sync Strategy
+
 ```swift
 class SyncService: ObservableObject {
     @Published var syncStatus: SyncStatus = .idle
@@ -374,6 +393,7 @@ class SyncService: ObservableObject {
 ### Phase 4: Apple Ecosystem Integration (Weeks 13-16)
 
 #### 4.1 Siri Shortcuts
+
 ```swift
 class SiriShortcutService {
     func setupShortcuts() {
@@ -390,6 +410,7 @@ class SiriShortcutService {
 ```
 
 #### 4.2 iOS Widgets
+
 ```swift
 struct ClaimGuardianWidget: Widget {
     let kind: String = "ClaimGuardianWidget"
@@ -410,6 +431,7 @@ struct ClaimGuardianWidget: Widget {
 ```
 
 #### 4.3 Apple Pencil Support (iPad)
+
 ```swift
 class DrawingCanvasView: UIView {
     private var pkCanvasView = PKCanvasView()
@@ -428,24 +450,28 @@ class DrawingCanvasView: UIView {
 ## Technical Specifications
 
 ### Architecture Patterns
+
 - **MVVM-C**: Model-View-ViewModel-Coordinator for clear separation
 - **Repository Pattern**: Abstract data access layer
 - **Dependency Injection**: Protocol-based dependency management
 - **Reactive Programming**: Combine for async operations
 
 ### Performance Optimizations
+
 - **Lazy Loading**: Progressive image and data loading
 - **Background Processing**: AI analysis and sync on background queues
 - **Memory Management**: Proper image compression and caching
 - **Battery Optimization**: Efficient AR and camera usage
 
 ### Security Measures
+
 - **Keychain Storage**: Secure credential storage
 - **Certificate Pinning**: API communication security
 - **Data Encryption**: Local database encryption
 - **Privacy Controls**: Camera and location permission handling
 
 ### Testing Strategy
+
 - **Unit Tests**: Business logic and utilities
 - **Integration Tests**: API and database interactions
 - **UI Tests**: Critical user workflows
@@ -454,18 +480,21 @@ class DrawingCanvasView: UIView {
 ## Scalability Considerations
 
 ### Performance
+
 - Support for 10,000+ photos per claim
 - Real-time sync with 100+ concurrent users
 - AR rendering at 60fps
 - AI analysis within 5 seconds
 
 ### Security
+
 - SOC 2 Type II compliance
 - HIPAA-ready data handling
 - Enterprise security features
 - Audit logging and monitoring
 
 ### Cost Analysis
+
 - **Development**: $200K (4 engineers × 4 months)
 - **App Store**: $99/year developer program
 - **CloudKit**: Included with developer account
@@ -474,12 +503,14 @@ class DrawingCanvasView: UIView {
 ## Risks and Mitigations
 
 ### Technical Risks
+
 1. **AR Accuracy**: Extensive testing in various lighting conditions
 2. **Sync Conflicts**: Robust conflict resolution algorithms
 3. **Battery Usage**: Optimize AR and AI processing
 4. **Storage Limits**: Implement intelligent cleanup strategies
 
 ### Business Risks
+
 1. **Development Cost**: Phased development approach
 2. **User Adoption**: Comprehensive training and onboarding
 3. **Platform Lock-in**: iOS-first strategy justified by market data
@@ -488,12 +519,14 @@ class DrawingCanvasView: UIView {
 ## Success Metrics
 
 ### Technical KPIs
+
 - **App Store Rating**: Target 4.5+ stars
 - **Crash Rate**: <0.1% crash-free sessions
 - **Performance**: <3s app launch time
 - **Battery Usage**: <10% per hour of active use
 
 ### Business KPIs
+
 - **User Adoption**: 70% of enterprise users on iOS app
 - **Assessment Quality**: 25% reduction in claim processing time
 - **Customer Satisfaction**: 90% satisfaction score
@@ -519,6 +552,7 @@ class DrawingCanvasView: UIView {
    - Design offline state management UX
 
 ### Files Referenced:
+
 - `/Users/madengineering/ClaimGuardian/docs/product/backlog.md`
 - `/Users/madengineering/ClaimGuardian/apps/web/src/config/pricing.ts`
 - `/Users/madengineering/ClaimGuardian/mobile/` (existing structure for reference)

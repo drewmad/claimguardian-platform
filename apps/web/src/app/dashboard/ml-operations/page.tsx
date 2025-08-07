@@ -8,15 +8,21 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { Activity, Brain, Shield, AlertTriangle, CheckCircle2 } from 'lucide-react'
-import { useState } from 'react'
+import {
+  Activity,
+  Brain,
+  Shield,
+  AlertTriangle,
+  CheckCircle2,
+} from "lucide-react";
+import { useState } from "react";
 
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // Inline stub components to resolve TypeScript errors
 const ModelMonitoringDashboard = ({ modelId }: { modelId: string }) => (
   <Card>
@@ -61,7 +67,7 @@ const ModelMonitoringDashboard = ({ modelId }: { modelId: string }) => (
       </div>
     </CardContent>
   </Card>
-)
+);
 
 const ExplainabilityDashboard = ({ modelId }: { modelId: string }) => (
   <Card>
@@ -111,10 +117,10 @@ const ExplainabilityDashboard = ({ modelId }: { modelId: string }) => (
       </div>
     </CardContent>
   </Card>
-)
+);
 
 export default function MLOperationsPage() {
-  const [selectedModel, setSelectedModel] = useState('property_risk_v1.2.3')
+  const [selectedModel, setSelectedModel] = useState("property_risk_v1.2.3");
 
   // Mock data for overview
   const mlOverview = {
@@ -122,16 +128,36 @@ export default function MLOperationsPage() {
     totalPredictions24h: 12543,
     avgLatency: 45,
     errorRate: 0.002,
-    driftStatus: 'low',
-    federatedNodes: 12
-  }
+    driftStatus: "low",
+    federatedNodes: 12,
+  };
 
   const models = [
-    { id: 'property_risk_v1.2.3', name: 'Property Risk Assessment', status: 'active', traffic: 100 },
-    { id: 'damage_detection_v2.1.0', name: 'Damage Detection', status: 'active', traffic: 85 },
-    { id: 'flood_prediction_v1.0.0', name: 'Flood Risk Prediction', status: 'testing', traffic: 15 },
-    { id: 'claim_value_v3.0.0', name: 'Claim Value Estimator', status: 'inactive', traffic: 0 }
-  ]
+    {
+      id: "property_risk_v1.2.3",
+      name: "Property Risk Assessment",
+      status: "active",
+      traffic: 100,
+    },
+    {
+      id: "damage_detection_v2.1.0",
+      name: "Damage Detection",
+      status: "active",
+      traffic: 85,
+    },
+    {
+      id: "flood_prediction_v1.0.0",
+      name: "Flood Risk Prediction",
+      status: "testing",
+      traffic: 15,
+    },
+    {
+      id: "claim_value_v3.0.0",
+      name: "Claim Value Estimator",
+      status: "inactive",
+      traffic: 0,
+    },
+  ];
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -147,9 +173,7 @@ export default function MLOperationsPage() {
           <Button variant="outline" size="sm">
             Export Report
           </Button>
-          <Button size="sm">
-            Deploy New Model
-          </Button>
+          <Button size="sm">Deploy New Model</Button>
         </div>
       </div>
 
@@ -157,7 +181,9 @@ export default function MLOperationsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-500">Active Models</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-500">
+              Active Models
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{mlOverview.activeModels}</div>
@@ -167,17 +193,23 @@ export default function MLOperationsPage() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-500">Predictions (24h)</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-500">
+              Predictions (24h)
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{mlOverview.totalPredictions24h.toLocaleString()}</div>
+            <div className="text-2xl font-bold">
+              {mlOverview.totalPredictions24h.toLocaleString()}
+            </div>
             <p className="text-xs text-gray-500">+12% from yesterday</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-500">Avg Latency</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-500">
+              Avg Latency
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{mlOverview.avgLatency}ms</div>
@@ -187,20 +219,30 @@ export default function MLOperationsPage() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-500">Error Rate</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-500">
+              Error Rate
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{(mlOverview.errorRate * 100).toFixed(2)}%</div>
+            <div className="text-2xl font-bold">
+              {(mlOverview.errorRate * 100).toFixed(2)}%
+            </div>
             <p className="text-xs text-gray-500">Last hour</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-500">Drift Status</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-500">
+              Drift Status
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <Badge variant={mlOverview.driftStatus === 'low' ? 'default' : 'destructive'}>
+            <Badge
+              variant={
+                mlOverview.driftStatus === "low" ? "default" : "destructive"
+              }
+            >
               {mlOverview.driftStatus.toUpperCase()}
             </Badge>
             <p className="text-xs text-gray-500 mt-1">All models</p>
@@ -209,10 +251,14 @@ export default function MLOperationsPage() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-500">Fed. Learning Nodes</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-500">
+              Fed. Learning Nodes
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{mlOverview.federatedNodes}</div>
+            <div className="text-2xl font-bold">
+              {mlOverview.federatedNodes}
+            </div>
             <p className="text-xs text-gray-500">Active nodes</p>
           </CardContent>
         </Card>
@@ -240,18 +286,27 @@ export default function MLOperationsPage() {
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="text-right">
-                    <p className="text-sm font-medium">Traffic: {model.traffic}%</p>
+                    <p className="text-sm font-medium">
+                      Traffic: {model.traffic}%
+                    </p>
                     <Badge
                       variant={
-                        model.status === 'active' ? 'default' :
-                        model.status === 'testing' ? 'secondary' : 'outline'
+                        model.status === "active"
+                          ? "default"
+                          : model.status === "testing"
+                            ? "secondary"
+                            : "outline"
                       }
                     >
                       {model.status}
                     </Badge>
                   </div>
-                  {model.status === 'active' && <CheckCircle2 className="h-5 w-5 text-green-500" />}
-                  {model.status === 'testing' && <Activity className="h-5 w-5 text-yellow-500" />}
+                  {model.status === "active" && (
+                    <CheckCircle2 className="h-5 w-5 text-green-500" />
+                  )}
+                  {model.status === "testing" && (
+                    <Activity className="h-5 w-5 text-yellow-500" />
+                  )}
                 </div>
               </div>
             ))}
@@ -291,7 +346,9 @@ export default function MLOperationsPage() {
                     </CardHeader>
                     <CardContent>
                       <p className="text-2xl font-bold">Round 156</p>
-                      <p className="text-sm text-gray-500">8/12 nodes reported</p>
+                      <p className="text-sm text-gray-500">
+                        8/12 nodes reported
+                      </p>
                     </CardContent>
                   </Card>
                   <Card>
@@ -305,7 +362,9 @@ export default function MLOperationsPage() {
                   </Card>
                   <Card>
                     <CardHeader className="pb-3">
-                      <CardTitle className="text-sm">Privacy Budget Used</CardTitle>
+                      <CardTitle className="text-sm">
+                        Privacy Budget Used
+                      </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <p className="text-2xl font-bold">62%</p>
@@ -328,8 +387,12 @@ export default function MLOperationsPage() {
                 <div className="p-4 border rounded-lg">
                   <div className="flex justify-between items-start mb-2">
                     <div>
-                      <h4 className="font-medium">Property Risk v1.2.3 vs v1.3.0</h4>
-                      <p className="text-sm text-gray-500">Testing new risk factors</p>
+                      <h4 className="font-medium">
+                        Property Risk v1.2.3 vs v1.3.0
+                      </h4>
+                      <p className="text-sm text-gray-500">
+                        Testing new risk factors
+                      </p>
                     </div>
                     <Badge>Running</Badge>
                   </div>
@@ -339,12 +402,16 @@ export default function MLOperationsPage() {
                       <p className="font-medium">Accuracy: 94.2%</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500">Treatment (v1.3.0)</p>
+                      <p className="text-sm text-gray-500">
+                        Treatment (v1.3.0)
+                      </p>
                       <p className="font-medium">Accuracy: 95.1%</p>
                     </div>
                   </div>
                   <div className="mt-4 flex gap-2">
-                    <Button size="sm" variant="outline">View Details</Button>
+                    <Button size="sm" variant="outline">
+                      View Details
+                    </Button>
                     <Button size="sm">Promote to Production</Button>
                   </div>
                 </div>
@@ -365,10 +432,13 @@ export default function MLOperationsPage() {
                   <div className="flex-1">
                     <p className="font-medium">Moderate drift detected</p>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Property Risk model showing 0.23 PSI score in Miami-Dade region
+                      Property Risk model showing 0.23 PSI score in Miami-Dade
+                      region
                     </p>
                   </div>
-                  <Button size="sm" variant="outline">Investigate</Button>
+                  <Button size="sm" variant="outline">
+                    Investigate
+                  </Button>
                 </div>
               </div>
             </CardContent>
@@ -376,5 +446,5 @@ export default function MLOperationsPage() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }

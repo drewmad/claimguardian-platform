@@ -5,43 +5,43 @@
  * @owner frontend-team
  * @status stable
  */
-'use client'
+"use client";
 
-import { Button } from '@claimguardian/ui'
-import { LogOut, Loader2 } from 'lucide-react'
-import { useState } from 'react'
-import { logger } from "@/lib/logger/production-logger"
+import { Button } from "@claimguardian/ui";
+import { LogOut, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { logger } from "@/lib/logger/production-logger";
 
-import { useAuth } from '@/components/auth/auth-provider'
+import { useAuth } from "@/components/auth/auth-provider";
 
 interface SignOutButtonProps {
-  variant?: 'default' | 'ghost' | 'secondary' | 'link'
-  size?: 'sm' | 'default' | 'lg' | 'icon'
-  showIcon?: boolean
-  className?: string
+  variant?: "default" | "ghost" | "secondary" | "link";
+  size?: "sm" | "default" | "lg" | "icon";
+  showIcon?: boolean;
+  className?: string;
 }
 
 export function SignOutButton({
-  variant = 'ghost',
-  size = 'sm',
+  variant = "ghost",
+  size = "sm",
   showIcon = true,
-  className = ''
+  className = "",
 }: SignOutButtonProps) {
-  const { signOut } = useAuth()
-  const [isLoading, setIsLoading] = useState(false)
+  const { signOut } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSignOut = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      await signOut()
+      await signOut();
     } catch (error) {
-      logger.error('Sign out error:', error)
+      logger.error("Sign out error:", error);
       // Even if sign out fails, try to redirect
-      window.location.href = '/'
+      window.location.href = "/";
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <Button
@@ -63,5 +63,5 @@ export function SignOutButton({
         </>
       )}
     </Button>
-  )
+  );
 }

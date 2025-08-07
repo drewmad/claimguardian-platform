@@ -3,6 +3,7 @@
 ## Why Manual Setup is Required
 
 Storage bucket creation requires special permissions that are only available through:
+
 1. Supabase Dashboard UI
 2. Supabase client SDK with service role key
 
@@ -38,6 +39,7 @@ After creating the bucket, you need to set up Row Level Security policies:
 3. Click **New Policy** and create these four policies:
 
 #### Policy 1: Upload Policy
+
 - **Name**: `Users can upload their own policy documents`
 - **Policy Type**: `INSERT`
 - **Target Roles**: `authenticated`
@@ -47,6 +49,7 @@ After creating the bucket, you need to set up Row Level Security policies:
   ```
 
 #### Policy 2: View Policy
+
 - **Name**: `Users can view their own policy documents`
 - **Policy Type**: `SELECT`
 - **Target Roles**: `authenticated`
@@ -56,6 +59,7 @@ After creating the bucket, you need to set up Row Level Security policies:
   ```
 
 #### Policy 3: Delete Policy
+
 - **Name**: `Users can delete their own policy documents`
 - **Policy Type**: `DELETE`
 - **Target Roles**: `authenticated`
@@ -65,6 +69,7 @@ After creating the bucket, you need to set up Row Level Security policies:
   ```
 
 #### Policy 4: Update Policy
+
 - **Name**: `Users can update their own policy documents`
 - **Policy Type**: `UPDATE`
 - **Target Roles**: `authenticated`

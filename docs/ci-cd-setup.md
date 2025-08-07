@@ -3,6 +3,7 @@
 ## Quick Start
 
 1. **Set up GitHub Secrets**
+
    ```bash
    # Run the automated setup script
    ./scripts/setup-github-secrets.sh
@@ -24,6 +25,7 @@ If you prefer to set up secrets manually:
 ## Environment Variables
 
 ### Required for CI/CD
+
 ```env
 # Supabase (Required)
 NEXT_PUBLIC_SUPABASE_URL=your-project-url
@@ -42,6 +44,7 @@ VERCEL_PROJECT_ID=your-project-id
 ## Workflow Features
 
 ### Automatic Features
+
 - ✅ Linting and type checking on every PR
 - ✅ Unit tests with coverage reporting
 - ✅ Security vulnerability scanning
@@ -52,6 +55,7 @@ VERCEL_PROJECT_ID=your-project-id
 ### Branch Protection
 
 Enable these rules for the `main` branch:
+
 1. Require PR reviews before merging
 2. Require status checks to pass:
    - lint
@@ -64,15 +68,19 @@ Enable these rules for the `main` branch:
 ## Monitoring CI/CD
 
 ### Status Badge
+
 Add this to your README.md:
+
 ```markdown
 [![CI/CD](https://github.com/YOUR_USERNAME/ClaimGuardian/actions/workflows/main.yml/badge.svg)](https://github.com/YOUR_USERNAME/ClaimGuardian/actions/workflows/main.yml)
 ```
 
 ### Slack Notifications
+
 Set up the `SLACK_WEBHOOK` secret to get deployment notifications.
 
 ### Sentry Release Tracking
+
 Configure Sentry secrets to track releases and source maps.
 
 ## Troubleshooting
@@ -98,12 +106,14 @@ Configure Sentry secrets to track releases and source maps.
 ### Debug Mode
 
 Enable debug logging by adding this secret:
+
 - Name: `ACTIONS_STEP_DEBUG`
 - Value: `true`
 
 ## Local CI Testing
 
 Test workflows locally with act:
+
 ```bash
 # Install act
 brew install act # macOS
@@ -120,11 +130,13 @@ act push -W .github/workflows/main.yml --secret-file .env.local
 ## Cost Optimization
 
 ### GitHub Actions Minutes
+
 - Free tier: 2,000 minutes/month
 - Our average workflow: ~10 minutes
 - Estimated: ~200 runs/month
 
 ### Cost Saving Tips
+
 1. Use workflow conditions to skip unnecessary jobs
 2. Cache dependencies aggressively
 3. Run E2E tests only on important PRs

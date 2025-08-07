@@ -1,11 +1,13 @@
 # Deploying ClaimGuardian to Vercel
 
 ## Prerequisites
+
 - Vercel account (free tier works)
 - GitHub repository connected
 - Environment variables ready
 
 ## Step 1: Install Vercel CLI
+
 ```bash
 npm i -g vercel
 ```
@@ -13,6 +15,7 @@ npm i -g vercel
 ## Step 2: Deploy to Vercel
 
 ### Option A: Deploy via CLI
+
 ```bash
 npx vercel
 
@@ -26,6 +29,7 @@ npx vercel
 ```
 
 ### Option B: Deploy via GitHub Integration
+
 1. Go to [vercel.com/new](https://vercel.com/new)
 2. Import your GitHub repository
 3. Configure project:
@@ -37,6 +41,7 @@ npx vercel
 ## Step 3: Configure Environment Variables
 
 ### Required Variables
+
 Go to Project Settings → Environment Variables and add:
 
 ```bash
@@ -54,6 +59,7 @@ NEXT_PUBLIC_APP_URL=https://[your-project].vercel.app
 ```
 
 ### Optional Variables
+
 ```bash
 # Google Maps (for address autocomplete)
 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=[Your Google Maps key]
@@ -70,6 +76,7 @@ NEXT_PUBLIC_ENABLE_ANALYTICS=true
 ## Step 4: Configure Supabase for Production
 
 ### Update Redirect URLs
+
 1. Go to Supabase Dashboard → Authentication → URL Configuration
 2. Add your Vercel URLs:
    - Site URL: `https://[your-project].vercel.app`
@@ -82,11 +89,13 @@ NEXT_PUBLIC_ENABLE_ANALYTICS=true
      ```
 
 ### Enable Row Level Security
+
 Ensure all tables have RLS enabled (already done in migrations)
 
 ## Step 5: Deploy and Test
 
 ### Initial Deployment
+
 ```bash
 # Deploy to production
 npx vercel --prod
@@ -96,6 +105,7 @@ npx vercel
 ```
 
 ### Post-Deployment Testing
+
 1. **Test Signup Flow**
    - Visit `https://[your-project].vercel.app`
    - Click Sign Up
@@ -114,6 +124,7 @@ npx vercel
 ## Step 6: Custom Domain (Optional)
 
 ### Add Custom Domain
+
 1. Go to Project Settings → Domains
 2. Add your domain: `claimguardian.com`
 3. Update DNS records as instructed
@@ -125,6 +136,7 @@ npx vercel
 ## Troubleshooting
 
 ### Build Errors
+
 - Check build logs in Vercel dashboard
 - Common issues:
   - Missing environment variables
@@ -132,11 +144,13 @@ npx vercel
   - Package version conflicts
 
 ### Runtime Errors
+
 - Check Function logs in Vercel dashboard
 - Verify all environment variables are set
 - Check Supabase connection
 
 ### AI Features Not Working
+
 - Verify API keys are set correctly
 - Check usage limits on AI services
 - Review Edge Function logs
@@ -144,12 +158,15 @@ npx vercel
 ## Performance Optimization
 
 ### Enable Caching
+
 Already configured in `next.config.js`:
+
 - Static assets cached
 - API routes have appropriate cache headers
 - Images optimized automatically
 
 ### Monitor Performance
+
 - Use Vercel Analytics (free tier available)
 - Check Core Web Vitals
 - Monitor API response times
@@ -157,11 +174,13 @@ Already configured in `next.config.js`:
 ## Continuous Deployment
 
 ### Automatic Deployments
+
 - Every push to `main` triggers production deployment
 - Pull requests create preview deployments
 - Branch deployments available for testing
 
 ### Deployment Notifications
+
 1. Go to Project Settings → Integrations
 2. Add Slack/Discord notifications
 3. Configure deployment status updates
@@ -178,11 +197,13 @@ Already configured in `next.config.js`:
 ## Monitoring Setup
 
 ### Vercel Analytics
+
 - Automatically enabled
 - Check Web Vitals dashboard
 - Monitor user geography
 
 ### Error Tracking (Sentry)
+
 - Configure alerts for critical errors
 - Set up release tracking
 - Monitor performance metrics
@@ -190,12 +211,14 @@ Already configured in `next.config.js`:
 ## Cost Considerations
 
 ### Vercel Free Tier Includes
+
 - 100GB bandwidth/month
 - Unlimited deployments
 - SSL certificates
 - Edge Functions
 
 ### Potential Costs
+
 - Additional bandwidth: $0.15/GB
 - Additional build minutes
 - Team features
@@ -204,6 +227,7 @@ Already configured in `next.config.js`:
 ## Next Steps
 
 1. **Set up staging environment**
+
    ```bash
    npx vercel --prod --env=staging
    ```

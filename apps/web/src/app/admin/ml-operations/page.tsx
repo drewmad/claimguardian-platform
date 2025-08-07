@@ -8,18 +8,18 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client'
+"use client";
 
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function MlOperationsPage() {
-  const router = useRouter()
+  const router = useRouter();
 
   useEffect(() => {
     // Redirect to admin dashboard with ML Operations tab selected
-    router.push('/admin?tab=ml-operations')
-  }, [router])
+    router.push("/admin?tab=ml-operations");
+  }, [router]);
 
-  return null
+  return null;
 }

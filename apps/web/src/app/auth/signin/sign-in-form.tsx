@@ -5,83 +5,86 @@
  * @owner frontend-team
  * @status stable
  */
-'use client'
+"use client";
 
-import { Button, Input, Label, Card } from '@claimguardian/ui'
-import { Shield, ArrowLeft, Loader2, AlertCircle } from 'lucide-react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import React, { useState, useEffect } from 'react'
-import { logger } from "@/lib/logger/production-logger"
+import { Button, Input, Label, Card } from "@claimguardian/ui";
+import { Shield, ArrowLeft, Loader2, AlertCircle } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import { logger } from "@/lib/logger/production-logger";
 
-import { useAuth } from '@/components/auth/auth-provider'
+import { useAuth } from "@/components/auth/auth-provider";
 
 interface SignInFormProps {
-  message?: string
+  message?: string;
 }
 
 export function SignInForm({ message }: SignInFormProps) {
-  const router = useRouter()
-  const { signIn, error: authError, clearError } = useAuth()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [formError, setFormError] = useState<string | null>(null)
+  const router = useRouter();
+  const { signIn, error: authError, clearError } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
   // Clear errors when component unmounts or when inputs change
   useEffect(() => {
     return () => {
-      clearError()
-    }
-  }, [clearError])
+      clearError();
+    };
+  }, [clearError]);
 
   useEffect(() => {
     if (email || password) {
-      setFormError(null)
-      clearError()
+      setFormError(null);
+      clearError();
     }
-  }, [email, password, clearError])
+  }, [email, password, clearError]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    logger.info('[SIGNIN FORM] Submit started', { email, hasPassword: !!password })
+    logger.info("[SIGNIN FORM] Submit started", {
+      email,
+      hasPassword: !!password,
+    });
 
     // Clear any existing errors
-    setFormError(null)
-    clearError()
+    setFormError(null);
+    clearError();
 
     // Basic validation
     if (!email || !password) {
-      setFormError('Please enter both email and password')
-      return
+      setFormError("Please enter both email and password");
+      return;
     }
 
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
-      logger.info('[SIGNIN FORM] Calling signIn...')
-      const success = await signIn(email, password)
-      logger.info('[SIGNIN FORM] SignIn result:', { success })
+      logger.info("[SIGNIN FORM] Calling signIn...");
+      const success = await signIn(email, password);
+      logger.info("[SIGNIN FORM] SignIn result:", { success });
 
       if (success) {
-        logger.info('[SIGNIN FORM] Sign in successful, refreshing router...')
+        logger.info("[SIGNIN FORM] Sign in successful, refreshing router...");
         // Successful sign in - router will handle navigation via auth provider
-        router.refresh()
+        router.refresh();
       } else {
-        logger.info('[SIGNIN FORM] Sign in failed, auth error:', authError)
+        logger.info("[SIGNIN FORM] Sign in failed, auth error:", authError);
         // Error will be set by auth provider
-        setIsLoading(false)
+        setIsLoading(false);
       }
     } catch (error) {
-      logger.error('[SIGNIN FORM] Unexpected error:', error)
-      setFormError('An unexpected error occurred. Please try again.')
-      setIsLoading(false)
+      logger.error("[SIGNIN FORM] Unexpected error:", error);
+      setFormError("An unexpected error occurred. Please try again.");
+      setIsLoading(false);
     }
-  }
+  };
 
   // Combine all error sources
-  const displayError = formError || authError?.message || message
+  const displayError = formError || authError?.message || message;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 flex items-center justify-center p-4">
@@ -91,10 +94,14 @@ export function SignInForm({ message }: SignInFormProps) {
           <div className="text-center mb-8">
             <div className="flex items-center justify-center space-x-2 mb-4">
               <Shield className="h-8 w-8 text-blue-400" />
-              <span className="text-2xl font-bold text-white">ClaimGuardian</span>
+              <span className="text-2xl font-bold text-white">
+                ClaimGuardian
+              </span>
             </div>
             <h1 className="text-2xl font-bold text-white mb-2">Welcome Back</h1>
-            <p className="text-slate-400">Sign in to your account to continue</p>
+            <p className="text-slate-400">
+              Sign in to your account to continue
+            </p>
           </div>
 
           {/* Error Message */}
@@ -164,7 +171,7 @@ export function SignInForm({ message }: SignInFormProps) {
                   Signing in...
                 </>
               ) : (
-                'Sign In'
+                "Sign In"
               )}
             </Button>
           </form>
@@ -172,11 +179,8 @@ export function SignInForm({ message }: SignInFormProps) {
           {/* Sign Up Link */}
           <div className="mt-6 text-center">
             <p className="text-slate-400">
-              Don't have an account?{' '}
-              <Link
-                href="/"
-                className="text-blue-400 hover:text-blue-300"
-              >
+              Don't have an account?{" "}
+              <Link href="/" className="text-blue-400 hover:text-blue-300">
                 Sign up here
               </Link>
             </p>
@@ -195,5 +199,5 @@ export function SignInForm({ message }: SignInFormProps) {
         </div>
       </Card>
     </div>
-  )
+  );
 }

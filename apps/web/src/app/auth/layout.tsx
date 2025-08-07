@@ -6,30 +6,26 @@
  * @status stable
  */
 
-import { redirect } from 'next/navigation'
+import { redirect } from "next/navigation";
 
-import { getServerSession } from '@/lib/supabase/server-auth'
+import { getServerSession } from "@/lib/supabase/server-auth";
 
 // Force dynamic rendering for auth pages since they use cookies
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic";
 
 export default async function AuthLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   // Check if user is already authenticated
-  const session = await getServerSession()
+  const session = await getServerSession();
 
   if (session) {
     // User is already signed in, redirect to dashboard
-    redirect('/dashboard')
+    redirect("/dashboard");
   }
 
   // User is not authenticated, show auth pages
-  return (
-    <div className="min-h-screen">
-      {children}
-    </div>
-  )
+  return <div className="min-h-screen">{children}</div>;
 }

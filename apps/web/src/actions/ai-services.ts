@@ -6,61 +6,70 @@
  * @status stable
  */
 
-'use server'
+"use server";
 
-import { createClient } from '@/lib/supabase/server'
-import { PredictionEngine } from '@/lib/ai/prediction-engine'
-import { SmartCategorizationEngine } from '@/lib/ai/smart-categorization'
-import { WebhookManager, WebhookEventType } from '@/lib/webhooks/webhook-manager'
-import { revalidatePath } from 'next/cache'
+import { createClient } from "@/lib/supabase/server";
+import { PredictionEngine } from "@/lib/ai/prediction-engine";
+import { SmartCategorizationEngine } from "@/lib/ai/smart-categorization";
+import {
+  WebhookManager,
+  WebhookEventType,
+} from "@/lib/webhooks/webhook-manager";
+import { revalidatePath } from "next/cache";
 
-const predictionEngine = PredictionEngine.getInstance()
-const categorizationEngine = SmartCategorizationEngine.getInstance()
-const webhookManager = WebhookManager.getInstance()
+const predictionEngine = PredictionEngine.getInstance();
+const categorizationEngine = SmartCategorizationEngine.getInstance();
+const webhookManager = WebhookManager.getInstance();
 
 /**
  * Generate claim likelihood prediction for a property
  */
 export async function generateClaimPrediction(
   propertyId: string,
-  contextData?: Record<string, unknown>
+  contextData?: Record<string, unknown>,
 ) {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     // Verify user authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
-      return { data: null, error: 'Authentication required' }
+      return { data: null, error: "Authentication required" };
     }
 
     // Verify property ownership
     const { data: property, error: propError } = await supabase
-      .from('properties')
-      .select('id')
-      .eq('id', propertyId)
-      .eq('user_id', user.id)
-      .single()
+      .from("properties")
+      .select("id")
+      .eq("id", propertyId)
+      .eq("user_id", user.id)
+      .single();
 
     if (propError || !property) {
-      return { data: null, error: 'Property not found or access denied' }
+      return { data: null, error: "Property not found or access denied" };
     }
 
     // Generate prediction
     const prediction = await predictionEngine.predictClaimLikelihood(
       propertyId,
       user.id,
-      contextData
-    )
+      contextData,
+    );
 
-    revalidatePath('/dashboard/properties')
-    return { data: prediction, error: null }
+    revalidatePath("/dashboard/properties");
+    return { data: prediction, error: null };
   } catch (error) {
-    console.error('Failed to generate claim prediction:', error)
+    console.error("Failed to generate claim prediction:", error);
     return {
       data: null,
-      error: error instanceof Error ? error.message : 'Failed to generate prediction'
-    }
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to generate prediction",
+    };
   }
 }
 
@@ -70,28 +79,31 @@ export async function generateClaimPrediction(
 export async function estimateDamageRepairCost(
   propertyId: string,
   damageType: string,
-  severity: 'minor' | 'moderate' | 'major' | 'severe',
-  additionalContext?: Record<string, unknown>
+  severity: "minor" | "moderate" | "major" | "severe",
+  additionalContext?: Record<string, unknown>,
 ) {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     // Verify user authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
-      return { data: null, error: 'Authentication required' }
+      return { data: null, error: "Authentication required" };
     }
 
     // Verify property ownership
     const { data: property, error: propError } = await supabase
-      .from('properties')
-      .select('id')
-      .eq('id', propertyId)
-      .eq('user_id', user.id)
-      .single()
+      .from("properties")
+      .select("id")
+      .eq("id", propertyId)
+      .eq("user_id", user.id)
+      .single();
 
     if (propError || !property) {
-      return { data: null, error: 'Property not found or access denied' }
+      return { data: null, error: "Property not found or access denied" };
     }
 
     // Generate cost estimation
@@ -99,17 +111,17 @@ export async function estimateDamageRepairCost(
       propertyId,
       damageType,
       severity,
-      additionalContext
-    )
+      additionalContext,
+    );
 
-    revalidatePath('/dashboard/properties')
-    return { data: estimation, error: null }
+    revalidatePath("/dashboard/properties");
+    return { data: estimation, error: null };
   } catch (error) {
-    console.error('Failed to estimate damage cost:', error)
+    console.error("Failed to estimate damage cost:", error);
     return {
       data: null,
-      error: error instanceof Error ? error.message : 'Failed to estimate cost'
-    }
+      error: error instanceof Error ? error.message : "Failed to estimate cost",
+    };
   }
 }
 
@@ -118,40 +130,44 @@ export async function estimateDamageRepairCost(
  */
 export async function generateSettlementRecommendation(claimId: string) {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     // Verify user authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
-      return { data: null, error: 'Authentication required' }
+      return { data: null, error: "Authentication required" };
     }
 
     // Verify claim ownership
     const { data: claim, error: claimError } = await supabase
-      .from('claims')
-      .select('id')
-      .eq('id', claimId)
-      .eq('user_id', user.id)
-      .single()
+      .from("claims")
+      .select("id")
+      .eq("id", claimId)
+      .eq("user_id", user.id)
+      .single();
 
     if (claimError || !claim) {
-      return { data: null, error: 'Claim not found or access denied' }
+      return { data: null, error: "Claim not found or access denied" };
     }
 
     // Generate recommendation
-    const recommendation = await predictionEngine.generateSettlementRecommendation(
-      claimId,
-      user.id
-    )
+    const recommendation =
+      await predictionEngine.generateSettlementRecommendation(claimId, user.id);
 
-    revalidatePath('/dashboard/claims')
-    return { data: recommendation, error: null }
+    revalidatePath("/dashboard/claims");
+    return { data: recommendation, error: null };
   } catch (error) {
-    console.error('Failed to generate settlement recommendation:', error)
+    console.error("Failed to generate settlement recommendation:", error);
     return {
       data: null,
-      error: error instanceof Error ? error.message : 'Failed to generate recommendation'
-    }
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to generate recommendation",
+    };
   }
 }
 
@@ -160,40 +176,46 @@ export async function generateSettlementRecommendation(claimId: string) {
  */
 export async function predictMaintenanceNeeds(propertyId: string) {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     // Verify user authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
-      return { data: null, error: 'Authentication required' }
+      return { data: null, error: "Authentication required" };
     }
 
     // Verify property ownership
     const { data: property, error: propError } = await supabase
-      .from('properties')
-      .select('id')
-      .eq('id', propertyId)
-      .eq('user_id', user.id)
-      .single()
+      .from("properties")
+      .select("id")
+      .eq("id", propertyId)
+      .eq("user_id", user.id)
+      .single();
 
     if (propError || !property) {
-      return { data: null, error: 'Property not found or access denied' }
+      return { data: null, error: "Property not found or access denied" };
     }
 
     // Generate maintenance predictions
     const predictions = await predictionEngine.predictMaintenanceNeeds(
       propertyId,
-      user.id
-    )
+      user.id,
+    );
 
-    revalidatePath('/dashboard/properties')
-    return { data: predictions, error: null }
+    revalidatePath("/dashboard/properties");
+    return { data: predictions, error: null };
   } catch (error) {
-    console.error('Failed to predict maintenance needs:', error)
+    console.error("Failed to predict maintenance needs:", error);
     return {
       data: null,
-      error: error instanceof Error ? error.message : 'Failed to predict maintenance'
-    }
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to predict maintenance",
+    };
   }
 }
 
@@ -203,27 +225,30 @@ export async function predictMaintenanceNeeds(propertyId: string) {
 export async function classifyFieldDocumentation(
   documentId: string,
   content: string,
-  metadata: Record<string, unknown> = {}
+  metadata: Record<string, unknown> = {},
 ) {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     // Verify user authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
-      return { data: null, error: 'Authentication required' }
+      return { data: null, error: "Authentication required" };
     }
 
     // Verify document ownership
     const { data: document, error: docError } = await supabase
-      .from('field_documentation')
-      .select('id')
-      .eq('id', documentId)
-      .eq('user_id', user.id)
-      .single()
+      .from("field_documentation")
+      .select("id")
+      .eq("id", documentId)
+      .eq("user_id", user.id)
+      .single();
 
     if (docError || !document) {
-      return { data: null, error: 'Document not found or access denied' }
+      return { data: null, error: "Document not found or access denied" };
     }
 
     // Classify document
@@ -231,17 +256,18 @@ export async function classifyFieldDocumentation(
       documentId,
       content,
       metadata,
-      user.id
-    )
+      user.id,
+    );
 
-    revalidatePath('/mobile/field')
-    return { data: classification, error: null }
+    revalidatePath("/mobile/field");
+    return { data: classification, error: null };
   } catch (error) {
-    console.error('Failed to classify document:', error)
+    console.error("Failed to classify document:", error);
     return {
       data: null,
-      error: error instanceof Error ? error.message : 'Failed to classify document'
-    }
+      error:
+        error instanceof Error ? error.message : "Failed to classify document",
+    };
   }
 }
 
@@ -250,32 +276,36 @@ export async function classifyFieldDocumentation(
  */
 export async function analyzeDamageFromImage(
   imageUrl: string,
-  propertyContext: Record<string, unknown> = {}
+  propertyContext: Record<string, unknown> = {},
 ) {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     // Verify user authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
-      return { data: null, error: 'Authentication required' }
+      return { data: null, error: "Authentication required" };
     }
 
     // Analyze damage
     const analysis = await categorizationEngine.analyzeDamageFromImage(
       imageUrl,
       propertyContext,
-      user.id
-    )
+      user.id,
+    );
 
-    revalidatePath('/ai-tools/damage-analyzer')
-    return { data: analysis, error: null }
+    revalidatePath("/ai-tools/damage-analyzer");
+    return { data: analysis, error: null };
   } catch (error) {
-    console.error('Failed to analyze damage from image:', error)
+    console.error("Failed to analyze damage from image:", error);
     return {
       data: null,
-      error: error instanceof Error ? error.message : 'Failed to analyze damage'
-    }
+      error:
+        error instanceof Error ? error.message : "Failed to analyze damage",
+    };
   }
 }
 
@@ -286,15 +316,18 @@ export async function classifyInventoryItem(
   itemName: string,
   description: string,
   imageUrl?: string,
-  metadata?: Record<string, unknown>
+  metadata?: Record<string, unknown>,
 ) {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     // Verify user authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
-      return { data: null, error: 'Authentication required' }
+      return { data: null, error: "Authentication required" };
     }
 
     // Classify item
@@ -303,17 +336,17 @@ export async function classifyInventoryItem(
       description,
       imageUrl,
       metadata,
-      user.id
-    )
+      user.id,
+    );
 
-    revalidatePath('/ai-tools/inventory-scanner')
-    return { data: classification, error: null }
+    revalidatePath("/ai-tools/inventory-scanner");
+    return { data: classification, error: null };
   } catch (error) {
-    console.error('Failed to classify inventory item:', error)
+    console.error("Failed to classify inventory item:", error);
     return {
       data: null,
-      error: error instanceof Error ? error.message : 'Failed to classify item'
-    }
+      error: error instanceof Error ? error.message : "Failed to classify item",
+    };
   }
 }
 
@@ -323,39 +356,42 @@ export async function classifyInventoryItem(
 export async function autoTagDocumentation(
   documentId: string,
   content: string,
-  existingTags: string[] = []
+  existingTags: string[] = [],
 ) {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     // Verify user authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
-      return { data: null, error: 'Authentication required' }
+      return { data: null, error: "Authentication required" };
     }
 
     // Generate tags
     const tags = await categorizationEngine.autoTagDocumentation(
       documentId,
       content,
-      existingTags
-    )
+      existingTags,
+    );
 
     // Update document with new tags
     await supabase
-      .from('field_documentation')
+      .from("field_documentation")
       .update({ tags })
-      .eq('id', documentId)
-      .eq('user_id', user.id)
+      .eq("id", documentId)
+      .eq("user_id", user.id);
 
-    revalidatePath('/mobile/field')
-    return { data: tags, error: null }
+    revalidatePath("/mobile/field");
+    return { data: tags, error: null };
   } catch (error) {
-    console.error('Failed to auto-tag documentation:', error)
+    console.error("Failed to auto-tag documentation:", error);
     return {
       data: existingTags,
-      error: error instanceof Error ? error.message : 'Failed to generate tags'
-    }
+      error: error instanceof Error ? error.message : "Failed to generate tags",
+    };
   }
 }
 
@@ -365,15 +401,18 @@ export async function autoTagDocumentation(
 export async function createAIWebhookSubscription(
   webhookUrl: string,
   eventTypes: string[],
-  secretKey?: string
+  secretKey?: string,
 ) {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     // Verify user authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
-      return { data: null, error: 'Authentication required' }
+      return { data: null, error: "Authentication required" };
     }
 
     // Create subscription
@@ -381,21 +420,24 @@ export async function createAIWebhookSubscription(
       user.id,
       webhookUrl,
       eventTypes as WebhookEventType[],
-      secretKey
-    )
+      secretKey,
+    );
 
     if (result.error) {
-      return { data: null, error: result.error }
+      return { data: null, error: result.error };
     }
 
-    revalidatePath('/dashboard/settings')
-    return { data: result.data, error: null }
+    revalidatePath("/dashboard/settings");
+    return { data: result.data, error: null };
   } catch (error) {
-    console.error('Failed to create webhook subscription:', error)
+    console.error("Failed to create webhook subscription:", error);
     return {
       data: null,
-      error: error instanceof Error ? error.message : 'Failed to create subscription'
-    }
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to create subscription",
+    };
   }
 }
 
@@ -404,24 +446,27 @@ export async function createAIWebhookSubscription(
  */
 export async function testWebhookEndpoint(subscriptionId: string) {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     // Verify user authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
-      return { data: null, error: 'Authentication required' }
+      return { data: null, error: "Authentication required" };
     }
 
     // Test webhook
-    const result = await webhookManager.testWebhook(subscriptionId)
+    const result = await webhookManager.testWebhook(subscriptionId);
 
-    return { data: result, error: null }
+    return { data: result, error: null };
   } catch (error) {
-    console.error('Failed to test webhook:', error)
+    console.error("Failed to test webhook:", error);
     return {
       data: null,
-      error: error instanceof Error ? error.message : 'Failed to test webhook'
-    }
+      error: error instanceof Error ? error.message : "Failed to test webhook",
+    };
   }
 }
 
@@ -430,33 +475,36 @@ export async function testWebhookEndpoint(subscriptionId: string) {
  */
 export async function getAIPredictionHistory(propertyId: string) {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     // Verify user authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
-      return { data: null, error: 'Authentication required' }
+      return { data: null, error: "Authentication required" };
     }
 
     // Get predictions
     const { data: predictions, error } = await supabase
-      .from('ai_predictions')
-      .select('*')
-      .eq('property_id', propertyId)
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
+      .from("ai_predictions")
+      .select("*")
+      .eq("property_id", propertyId)
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false });
 
     if (error) {
-      return { data: null, error: error.message }
+      return { data: null, error: error.message };
     }
 
-    return { data: predictions, error: null }
+    return { data: predictions, error: null };
   } catch (error) {
-    console.error('Failed to get prediction history:', error)
+    console.error("Failed to get prediction history:", error);
     return {
       data: null,
-      error: error instanceof Error ? error.message : 'Failed to get history'
-    }
+      error: error instanceof Error ? error.message : "Failed to get history",
+    };
   }
 }
 
@@ -465,33 +513,36 @@ export async function getAIPredictionHistory(propertyId: string) {
  */
 export async function getDamageAnalysisHistory() {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     // Verify user authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
-      return { data: null, error: 'Authentication required' }
+      return { data: null, error: "Authentication required" };
     }
 
     // Get analyses
     const { data: analyses, error } = await supabase
-      .from('damage_analyses')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-      .limit(50)
+      .from("damage_analyses")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(50);
 
     if (error) {
-      return { data: null, error: error.message }
+      return { data: null, error: error.message };
     }
 
-    return { data: analyses, error: null }
+    return { data: analyses, error: null };
   } catch (error) {
-    console.error('Failed to get damage analysis history:', error)
+    console.error("Failed to get damage analysis history:", error);
     return {
       data: null,
-      error: error instanceof Error ? error.message : 'Failed to get history'
-    }
+      error: error instanceof Error ? error.message : "Failed to get history",
+    };
   }
 }
 
@@ -500,18 +551,22 @@ export async function getDamageAnalysisHistory() {
  */
 export async function getMaintenancePredictions() {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     // Verify user authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
-      return { data: null, error: 'Authentication required' }
+      return { data: null, error: "Authentication required" };
     }
 
     // Get predictions with property details
     const { data: predictions, error } = await supabase
-      .from('maintenance_predictions')
-      .select(`
+      .from("maintenance_predictions")
+      .select(
+        `
         *,
         properties (
           id,
@@ -519,22 +574,24 @@ export async function getMaintenancePredictions() {
           city,
           state
         )
-      `)
-      .eq('user_id', user.id)
-      .order('urgency_level', { ascending: false })
-      .order('predicted_date', { ascending: true })
+      `,
+      )
+      .eq("user_id", user.id)
+      .order("urgency_level", { ascending: false })
+      .order("predicted_date", { ascending: true });
 
     if (error) {
-      return { data: null, error: error.message }
+      return { data: null, error: error.message };
     }
 
-    return { data: predictions, error: null }
+    return { data: predictions, error: null };
   } catch (error) {
-    console.error('Failed to get maintenance predictions:', error)
+    console.error("Failed to get maintenance predictions:", error);
     return {
       data: null,
-      error: error instanceof Error ? error.message : 'Failed to get predictions'
-    }
+      error:
+        error instanceof Error ? error.message : "Failed to get predictions",
+    };
   }
 }
 
@@ -543,31 +600,35 @@ export async function getMaintenancePredictions() {
  */
 export async function getWebhookSubscriptions() {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     // Verify user authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
-      return { data: null, error: 'Authentication required' }
+      return { data: null, error: "Authentication required" };
     }
 
     // Get subscriptions
     const { data: subscriptions, error } = await supabase
-      .from('webhook_subscriptions')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
+      .from("webhook_subscriptions")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false });
 
     if (error) {
-      return { data: null, error: error.message }
+      return { data: null, error: error.message };
     }
 
-    return { data: subscriptions, error: null }
+    return { data: subscriptions, error: null };
   } catch (error) {
-    console.error('Failed to get webhook subscriptions:', error)
+    console.error("Failed to get webhook subscriptions:", error);
     return {
       data: null,
-      error: error instanceof Error ? error.message : 'Failed to get subscriptions'
-    }
+      error:
+        error instanceof Error ? error.message : "Failed to get subscriptions",
+    };
   }
 }

@@ -8,47 +8,47 @@
  * @tags ["maps", "property", "location", "address-confirmation"]
  * @status stable
  */
-'use client'
+"use client";
 
-import { useState, useEffect, useMemo, useCallback } from 'react'
-import { MapPin, Navigation, Home, Info, Edit, Check, X } from 'lucide-react'
-import { FloridaPropertyMap } from './florida-property-map'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { MapPin, Navigation, Home, Info, Edit, Check, X } from "lucide-react";
+import { FloridaPropertyMap } from "./florida-property-map";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface PropertyLocationMapProps {
   property: {
-    id: string
-    name: string
-    address: string
-    coordinates?: [number, number]
-    type: string
-    value: number
-    insuranceStatus?: 'active' | 'expired' | 'pending' | 'none'
-    lastUpdated?: Date
-  }
-  isEditing?: boolean
-  onLocationConfirm?: (coordinates: [number, number]) => void
-  onLocationEdit?: () => void
-  showNeighborhood?: boolean
-  height?: string
-  className?: string
+    id: string;
+    name: string;
+    address: string;
+    coordinates?: [number, number];
+    type: string;
+    value: number;
+    insuranceStatus?: "active" | "expired" | "pending" | "none";
+    lastUpdated?: Date;
+  };
+  isEditing?: boolean;
+  onLocationConfirm?: (coordinates: [number, number]) => void;
+  onLocationEdit?: () => void;
+  showNeighborhood?: boolean;
+  height?: string;
+  className?: string;
 }
 
 interface NearbyProperty {
-  id: string
-  name: string
-  address: string
-  coordinates: [number, number]
-  type: 'single_family' | 'condo' | 'townhouse' | 'commercial' | 'multi_family'
-  value: number
-  insuranceStatus: 'active' | 'expired' | 'pending' | 'none'
-  claimsCount: number
-  riskLevel: 'low' | 'medium' | 'high'
-  county: string
-  lastUpdated: Date
-  isMainProperty?: boolean
+  id: string;
+  name: string;
+  address: string;
+  coordinates: [number, number];
+  type: "single_family" | "condo" | "townhouse" | "commercial" | "multi_family";
+  value: number;
+  insuranceStatus: "active" | "expired" | "pending" | "none";
+  claimsCount: number;
+  riskLevel: "low" | "medium" | "high";
+  county: string;
+  lastUpdated: Date;
+  isMainProperty?: boolean;
 }
 
 export function PropertyLocationMap({
@@ -57,110 +57,119 @@ export function PropertyLocationMap({
   onLocationConfirm,
   onLocationEdit,
   showNeighborhood = true,
-  height = '400px',
-  className = ''
+  height = "400px",
+  className = "",
 }: PropertyLocationMapProps) {
-  const [tempCoordinates, setTempCoordinates] = useState<[number, number] | null>(null)
-  const [isConfirmingLocation, setIsConfirmingLocation] = useState(false)
-  const [mapStyle, setMapStyle] = useState<'streets' | 'satellite'>('streets')
+  const [tempCoordinates, setTempCoordinates] = useState<
+    [number, number] | null
+  >(null);
+  const [isConfirmingLocation, setIsConfirmingLocation] = useState(false);
+  const [mapStyle, setMapStyle] = useState<"streets" | "satellite">("streets");
 
   // Default coordinates based on address parsing or fallback to Florida center
   const defaultCoordinates = useMemo((): [number, number] => {
     if (property.coordinates) {
-      return property.coordinates
+      return property.coordinates;
     }
 
     // Simple geocoding fallback for common Florida cities
-    const addressLower = property.address.toLowerCase()
+    const addressLower = property.address.toLowerCase();
 
-    if (addressLower.includes('port charlotte')) {
-      return [-82.0907, 26.9762]
-    } else if (addressLower.includes('miami')) {
-      return [-80.1918, 25.7617]
-    } else if (addressLower.includes('tampa')) {
-      return [-82.4572, 27.9506]
-    } else if (addressLower.includes('orlando')) {
-      return [-81.3792, 28.5383]
-    } else if (addressLower.includes('jacksonville')) {
-      return [-81.6557, 30.3322]
-    } else if (addressLower.includes('fort lauderdale')) {
-      return [-80.1373, 26.1224]
-    } else if (addressLower.includes('naples')) {
-      return [-81.7948, 26.1420]
+    if (addressLower.includes("port charlotte")) {
+      return [-82.0907, 26.9762];
+    } else if (addressLower.includes("miami")) {
+      return [-80.1918, 25.7617];
+    } else if (addressLower.includes("tampa")) {
+      return [-82.4572, 27.9506];
+    } else if (addressLower.includes("orlando")) {
+      return [-81.3792, 28.5383];
+    } else if (addressLower.includes("jacksonville")) {
+      return [-81.6557, 30.3322];
+    } else if (addressLower.includes("fort lauderdale")) {
+      return [-80.1373, 26.1224];
+    } else if (addressLower.includes("naples")) {
+      return [-81.7948, 26.142];
     }
 
     // Default to center of Florida
-    return [-82.4572, 27.9506]
-  }, [property.coordinates, property.address])
+    return [-82.4572, 27.9506];
+  }, [property.coordinates, property.address]);
 
   // Generate nearby properties for context (mock data)
   const nearbyProperties = useMemo((): NearbyProperty[] => {
-    const baseCoords = tempCoordinates || property.coordinates || defaultCoordinates
+    const baseCoords =
+      tempCoordinates || property.coordinates || defaultCoordinates;
     const mainProperty: NearbyProperty = {
       id: property.id,
       name: property.name,
       address: property.address,
       coordinates: baseCoords,
-      type: 'single_family',
+      type: "single_family",
       value: property.value,
-      insuranceStatus: property.insuranceStatus || 'active',
+      insuranceStatus: property.insuranceStatus || "active",
       claimsCount: 0,
-      riskLevel: 'low',
-      county: 'Unknown',
+      riskLevel: "low",
+      county: "Unknown",
       lastUpdated: new Date(),
-      isMainProperty: true
-    }
+      isMainProperty: true,
+    };
 
     if (!showNeighborhood) {
-      return [mainProperty]
+      return [mainProperty];
     }
 
     // Generate mock nearby properties
-    const nearby: NearbyProperty[] = []
+    const nearby: NearbyProperty[] = [];
     for (let i = 0; i < 8; i++) {
       // Generate coordinates within ~0.01 degree radius (roughly 1 mile)
-      const offsetLat = (Math.random() - 0.5) * 0.02
-      const offsetLng = (Math.random() - 0.5) * 0.02
+      const offsetLat = (Math.random() - 0.5) * 0.02;
+      const offsetLng = (Math.random() - 0.5) * 0.02;
 
       nearby.push({
         id: `nearby-${i}`,
         name: `Nearby Property ${i + 1}`,
-        address: `${1234 + i * 12} ${['Oak St', 'Pine Ave', 'Maple Dr', 'Cedar Ln'][i % 4]}, ${property.address.split(',').slice(-2).join(',')}`,
+        address: `${1234 + i * 12} ${["Oak St", "Pine Ave", "Maple Dr", "Cedar Ln"][i % 4]}, ${property.address.split(",").slice(-2).join(",")}`,
         coordinates: [baseCoords[0] + offsetLng, baseCoords[1] + offsetLat],
-        type: ['single_family', 'condo', 'townhouse'][i % 3] as any,
+        type: ["single_family", "condo", "townhouse"][i % 3] as any,
         value: Math.round((200000 + Math.random() * 400000) / 10000) * 10000,
-        insuranceStatus: ['active', 'active', 'expired', 'pending'][i % 4] as any,
+        insuranceStatus: ["active", "active", "expired", "pending"][
+          i % 4
+        ] as any,
         claimsCount: Math.floor(Math.random() * 3),
-        riskLevel: ['low', 'medium', 'high'][i % 3] as any,
-        county: 'Unknown',
-        lastUpdated: new Date()
-      })
+        riskLevel: ["low", "medium", "high"][i % 3] as any,
+        county: "Unknown",
+        lastUpdated: new Date(),
+      });
     }
 
-    return [mainProperty, ...nearby]
-  }, [property, tempCoordinates, defaultCoordinates, showNeighborhood])
+    return [mainProperty, ...nearby];
+  }, [property, tempCoordinates, defaultCoordinates, showNeighborhood]);
 
-  const handleMapClick = useCallback((coordinates: [number, number]) => {
-    if (isEditing) {
-      setTempCoordinates(coordinates)
-      setIsConfirmingLocation(true)
-    }
-  }, [isEditing])
+  const handleMapClick = useCallback(
+    (coordinates: [number, number]) => {
+      if (isEditing) {
+        setTempCoordinates(coordinates);
+        setIsConfirmingLocation(true);
+      }
+    },
+    [isEditing],
+  );
 
   const confirmLocation = () => {
     if (tempCoordinates && onLocationConfirm) {
-      onLocationConfirm(tempCoordinates)
+      onLocationConfirm(tempCoordinates);
     }
-    setIsConfirmingLocation(false)
-    setTempCoordinates(null)
-  }
+    setIsConfirmingLocation(false);
+    setTempCoordinates(null);
+  };
 
   const cancelLocationEdit = () => {
-    setTempCoordinates(null)
-    setIsConfirmingLocation(false)
-  }
+    setTempCoordinates(null);
+    setIsConfirmingLocation(false);
+  };
 
-  const currentCoordinates = tempCoordinates || property.coordinates || defaultCoordinates
+  const currentCoordinates =
+    tempCoordinates || property.coordinates || defaultCoordinates;
 
   return (
     <div className={`relative ${className}`}>
@@ -169,7 +178,9 @@ export function PropertyLocationMap({
         <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg p-3 border border-gray-600">
           <div className="flex items-center gap-2 mb-2">
             <MapPin className="w-4 h-4 text-blue-400" />
-            <span className="text-sm text-white font-medium">Property Location</span>
+            <span className="text-sm text-white font-medium">
+              Property Location
+            </span>
             {!property.coordinates && (
               <Badge variant="secondary" className="text-xs">
                 Estimated
@@ -189,7 +200,10 @@ export function PropertyLocationMap({
                 }}
                 className="rounded border-gray-600 bg-gray-700 text-green-500"
               />
-              <label htmlFor="show-neighborhood" className="text-xs text-gray-300">
+              <label
+                htmlFor="show-neighborhood"
+                className="text-xs text-gray-300"
+              >
                 Show Neighborhood
               </label>
             </div>
@@ -201,16 +215,16 @@ export function PropertyLocationMap({
           <div className="flex gap-1">
             <Button
               size="sm"
-              variant={mapStyle === 'streets' ? 'default' : 'outline'}
-              onClick={() => setMapStyle('streets')}
+              variant={mapStyle === "streets" ? "default" : "outline"}
+              onClick={() => setMapStyle("streets")}
               className="text-xs h-7"
             >
               Streets
             </Button>
             <Button
               size="sm"
-              variant={mapStyle === 'satellite' ? 'default' : 'outline'}
-              onClick={() => setMapStyle('satellite')}
+              variant={mapStyle === "satellite" ? "default" : "outline"}
+              onClick={() => setMapStyle("satellite")}
               className="text-xs h-7"
             >
               Satellite
@@ -232,15 +246,20 @@ export function PropertyLocationMap({
             <CardContent>
               <div className="space-y-3">
                 <div>
-                  <div className="text-xs text-gray-400 mb-1">Current Address:</div>
+                  <div className="text-xs text-gray-400 mb-1">
+                    Current Address:
+                  </div>
                   <div className="text-sm text-white">{property.address}</div>
                 </div>
 
                 {isConfirmingLocation && tempCoordinates && (
                   <div>
-                    <div className="text-xs text-gray-400 mb-1">New Location:</div>
+                    <div className="text-xs text-gray-400 mb-1">
+                      New Location:
+                    </div>
                     <div className="text-sm text-white">
-                      {tempCoordinates[1].toFixed(6)}, {tempCoordinates[0].toFixed(6)}
+                      {tempCoordinates[1].toFixed(6)},{" "}
+                      {tempCoordinates[0].toFixed(6)}
                     </div>
                   </div>
                 )}
@@ -248,8 +267,7 @@ export function PropertyLocationMap({
                 <div className="text-xs text-gray-400">
                   {isConfirmingLocation
                     ? "Click 'Confirm' to save the new location, or 'Cancel' to keep the current one."
-                    : "Click anywhere on the map to set the exact property location."
-                  }
+                    : "Click anywhere on the map to set the exact property location."}
                 </div>
 
                 {isConfirmingLocation ? (
@@ -296,7 +314,9 @@ export function PropertyLocationMap({
             <CardContent className="p-4">
               <div className="flex items-start justify-between mb-3">
                 <div>
-                  <h3 className="text-white font-medium text-sm">{property.name}</h3>
+                  <h3 className="text-white font-medium text-sm">
+                    {property.name}
+                  </h3>
                   <p className="text-xs text-gray-400">{property.address}</p>
                 </div>
                 <Home className="w-5 h-5 text-blue-400" />
@@ -310,14 +330,20 @@ export function PropertyLocationMap({
 
                 <div className="flex justify-between">
                   <span className="text-gray-400">Estimated Value:</span>
-                  <span className="text-white">${(property.value / 1000).toFixed(0)}K</span>
+                  <span className="text-white">
+                    ${(property.value / 1000).toFixed(0)}K
+                  </span>
                 </div>
 
                 {property.insuranceStatus && (
                   <div className="flex justify-between">
                     <span className="text-gray-400">Insurance:</span>
                     <Badge
-                      variant={property.insuranceStatus === 'active' ? 'outline' : 'destructive'}
+                      variant={
+                        property.insuranceStatus === "active"
+                          ? "outline"
+                          : "destructive"
+                      }
                       className="text-xs"
                     >
                       {property.insuranceStatus}
@@ -327,8 +353,10 @@ export function PropertyLocationMap({
 
                 <div className="flex justify-between">
                   <span className="text-gray-400">Location:</span>
-                  <span className={`text-xs ${property.coordinates ? 'text-green-400' : 'text-orange-400'}`}>
-                    {property.coordinates ? 'Confirmed' : 'Estimated'}
+                  <span
+                    className={`text-xs ${property.coordinates ? "text-green-400" : "text-orange-400"}`}
+                  >
+                    {property.coordinates ? "Confirmed" : "Estimated"}
                   </span>
                 </div>
               </div>
@@ -358,9 +386,9 @@ export function PropertyLocationMap({
         onPropertyClick={() => {}} // Handle clicks in parent
         height={height}
         mapStyle={
-          mapStyle === 'streets'
-            ? 'mapbox://styles/mapbox/streets-v12'
-            : 'mapbox://styles/mapbox/satellite-streets-v12'
+          mapStyle === "streets"
+            ? "mapbox://styles/mapbox/streets-v12"
+            : "mapbox://styles/mapbox/satellite-streets-v12"
         }
       />
 
@@ -371,9 +399,12 @@ export function PropertyLocationMap({
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-orange-400 mt-0.5 flex-shrink-0" />
               <div>
-                <div className="text-xs font-medium text-orange-200">Estimated Location</div>
+                <div className="text-xs font-medium text-orange-200">
+                  Estimated Location
+                </div>
                 <div className="text-xs text-orange-300 mt-1">
-                  This location is estimated from the address. Click "Confirm Location" to set the exact position.
+                  This location is estimated from the address. Click "Confirm
+                  Location" to set the exact position.
                 </div>
               </div>
             </div>
@@ -381,5 +412,5 @@ export function PropertyLocationMap({
         </div>
       )}
     </div>
-  )
+  );
 }

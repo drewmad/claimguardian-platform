@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 /**
  * @fileMetadata
@@ -11,15 +11,22 @@
  * @florida-specific true
  */
 
-import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { PropertyEnrichmentUI } from '@/components/property/property-enrichment-ui'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { BarChart3, TrendingUp, Shield, Lightbulb, Database, MapPin } from 'lucide-react'
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import { PropertyEnrichmentUI } from "@/components/property/property-enrichment-ui";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  BarChart3,
+  TrendingUp,
+  Shield,
+  Lightbulb,
+  Database,
+  MapPin,
+} from "lucide-react";
 
 export default function PropertyEnrichmentPage() {
   // Demo parcel ID - in production would come from URL params or user selection
-  const demoParcelId = "03-23-43-00000.0010"
+  const demoParcelId = "03-23-43-00000.0010";
 
   return (
     <DashboardLayout>
@@ -32,8 +39,9 @@ export default function PropertyEnrichmentPage() {
             </span>
           </h1>
           <p className="text-xl text-gray-300 max-w-4xl mx-auto">
-            Get comprehensive AI-powered property analysis combining market data, risk assessment,
-            investment metrics, and strategic insights from the complete Florida 9.6M parcel dataset.
+            Get comprehensive AI-powered property analysis combining market
+            data, risk assessment, investment metrics, and strategic insights
+            from the complete Florida 9.6M parcel dataset.
           </p>
         </div>
 
@@ -42,9 +50,12 @@ export default function PropertyEnrichmentPage() {
           <Card className="bg-gray-800/50 border-gray-700">
             <CardContent className="p-6 text-center">
               <TrendingUp className="w-8 h-8 text-blue-400 mx-auto mb-3" />
-              <h3 className="text-lg font-semibold text-white mb-2">Market Analysis</h3>
+              <h3 className="text-lg font-semibold text-white mb-2">
+                Market Analysis
+              </h3>
               <p className="text-gray-400 text-sm">
-                Comparable sales, price trends, appreciation rates, and market conditions
+                Comparable sales, price trends, appreciation rates, and market
+                conditions
               </p>
             </CardContent>
           </Card>
@@ -52,9 +63,12 @@ export default function PropertyEnrichmentPage() {
           <Card className="bg-gray-800/50 border-gray-700">
             <CardContent className="p-6 text-center">
               <Shield className="w-8 h-8 text-green-400 mx-auto mb-3" />
-              <h3 className="text-lg font-semibold text-white mb-2">Risk Assessment</h3>
+              <h3 className="text-lg font-semibold text-white mb-2">
+                Risk Assessment
+              </h3>
               <p className="text-gray-400 text-sm">
-                Flood, hurricane, fire, crime, environmental, and seismic risk analysis
+                Flood, hurricane, fire, crime, environmental, and seismic risk
+                analysis
               </p>
             </CardContent>
           </Card>
@@ -62,9 +76,12 @@ export default function PropertyEnrichmentPage() {
           <Card className="bg-gray-800/50 border-gray-700">
             <CardContent className="p-6 text-center">
               <Lightbulb className="w-8 h-8 text-yellow-400 mx-auto mb-3" />
-              <h3 className="text-lg font-semibold text-white mb-2">AI Insights</h3>
+              <h3 className="text-lg font-semibold text-white mb-2">
+                AI Insights
+              </h3>
               <p className="text-gray-400 text-sm">
-                SWOT analysis, investment recommendations, and strategic action items
+                SWOT analysis, investment recommendations, and strategic action
+                items
               </p>
             </CardContent>
           </Card>
@@ -81,7 +98,9 @@ export default function PropertyEnrichmentPage() {
           <CardContent>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="bg-gray-700/50 rounded-lg p-4">
-                <h4 className="text-white font-medium mb-2">Market Intelligence</h4>
+                <h4 className="text-white font-medium mb-2">
+                  Market Intelligence
+                </h4>
                 <ul className="space-y-1 text-gray-400 text-sm">
                   <li>• Comparable sales analysis</li>
                   <li>• Price per sqft trends</li>
@@ -91,7 +110,9 @@ export default function PropertyEnrichmentPage() {
               </div>
 
               <div className="bg-gray-700/50 rounded-lg p-4">
-                <h4 className="text-white font-medium mb-2">Investment Metrics</h4>
+                <h4 className="text-white font-medium mb-2">
+                  Investment Metrics
+                </h4>
                 <ul className="space-y-1 text-gray-400 text-sm">
                   <li>• Rental yield estimates</li>
                   <li>• Capitalization rates</li>
@@ -101,7 +122,9 @@ export default function PropertyEnrichmentPage() {
               </div>
 
               <div className="bg-gray-700/50 rounded-lg p-4">
-                <h4 className="text-white font-medium mb-2">Insurance Analysis</h4>
+                <h4 className="text-white font-medium mb-2">
+                  Insurance Analysis
+                </h4>
                 <ul className="space-y-1 text-gray-400 text-sm">
                   <li>• Premium estimates</li>
                   <li>• Coverage recommendations</li>
@@ -111,7 +134,9 @@ export default function PropertyEnrichmentPage() {
               </div>
 
               <div className="bg-gray-700/50 rounded-lg p-4">
-                <h4 className="text-white font-medium mb-2">Compliance Status</h4>
+                <h4 className="text-white font-medium mb-2">
+                  Compliance Status
+                </h4>
                 <ul className="space-y-1 text-gray-400 text-sm">
                   <li>• Building code compliance</li>
                   <li>• Zoning regulations</li>
@@ -127,7 +152,7 @@ export default function PropertyEnrichmentPage() {
         <PropertyEnrichmentUI
           parcelId={demoParcelId}
           onEnrichmentComplete={(result) => {
-            console.log('Enrichment completed:', result)
+            console.log("Enrichment completed:", result);
           }}
         />
 
@@ -142,7 +167,9 @@ export default function PropertyEnrichmentPage() {
           <CardContent className="space-y-4">
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <h4 className="text-white font-medium mb-3">Primary Data Sources</h4>
+                <h4 className="text-white font-medium mb-3">
+                  Primary Data Sources
+                </h4>
                 <ul className="space-y-2 text-gray-400 text-sm">
                   <li className="flex items-center gap-2">
                     <MapPin className="w-4 h-4 text-blue-400" />
@@ -168,7 +195,9 @@ export default function PropertyEnrichmentPage() {
               </div>
 
               <div>
-                <h4 className="text-white font-medium mb-3">AI Analysis Methods</h4>
+                <h4 className="text-white font-medium mb-3">
+                  AI Analysis Methods
+                </h4>
                 <ul className="space-y-2 text-gray-400 text-sm">
                   <li>• Machine learning risk modeling</li>
                   <li>• Comparative market analysis algorithms</li>
@@ -190,5 +219,5 @@ export default function PropertyEnrichmentPage() {
         </Card>
       </div>
     </DashboardLayout>
-  )
+  );
 }

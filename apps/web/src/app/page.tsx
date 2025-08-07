@@ -16,26 +16,33 @@
  * @status stable
  * @notes Main landing page with all marketing sections
  */
-'use client'
+"use client";
 
-import { FAQ } from '@/components/landing/faq'
-import { Features } from '@/components/landing/features'
-import { Footer } from '@/components/landing/footer'
-import { GetStarted } from '@/components/landing/get-started'
-import { Header } from '@/components/landing/header-improved'
-import { Hero } from '@/components/landing/hero-improved'
-import { HowItWorks } from '@/components/landing/how-it-works'
-import { Pricing } from '@/components/landing/pricing'
-import { PropertyLifecycle } from '@/components/landing/property-lifecycle'
-import { Testimonials } from '@/components/landing/testimonials'
-import { WhoWeFightFor } from '@/components/landing/who-we-fight-for'
-import { WhoWeServe } from '@/components/landing/who-we-serve'
-import { ContentModal } from '@/components/modals/content-modal'
-import { SimpleLoginModal } from '@/components/modals/simple-login-modal'
-import { SimpleSignupModal } from '@/components/modals/simple-signup-modal'
-import { ResponsiveLoginModal } from '@/components/modals/responsive-login-modal'
-import { ResponsiveSignupModal } from '@/components/modals/responsive-signup-modal'
-import { FAQData, HowToData, ProductData, OrganizationData, CLAIMGUARDIAN_FAQS, CLAIM_DOCUMENTATION_STEPS } from '@/components/seo/structured-data'
+import { FAQ } from "@/components/landing/faq";
+import { Features } from "@/components/landing/features";
+import { Footer } from "@/components/landing/footer";
+import { GetStarted } from "@/components/landing/get-started";
+import { Header } from "@/components/landing/header-improved";
+import { Hero } from "@/components/landing/hero-improved";
+import { HowItWorks } from "@/components/landing/how-it-works";
+import { Pricing } from "@/components/landing/pricing";
+import { PropertyLifecycle } from "@/components/landing/property-lifecycle";
+import { Testimonials } from "@/components/landing/testimonials";
+import { WhoWeFightFor } from "@/components/landing/who-we-fight-for";
+import { WhoWeServe } from "@/components/landing/who-we-serve";
+import { ContentModal } from "@/components/modals/content-modal";
+import { SimpleLoginModal } from "@/components/modals/simple-login-modal";
+import { SimpleSignupModal } from "@/components/modals/simple-signup-modal";
+import { ResponsiveLoginModal } from "@/components/modals/responsive-login-modal";
+import { ResponsiveSignupModal } from "@/components/modals/responsive-signup-modal";
+import {
+  FAQData,
+  HowToData,
+  ProductData,
+  OrganizationData,
+  CLAIMGUARDIAN_FAQS,
+  CLAIM_DOCUMENTATION_STEPS,
+} from "@/components/seo/structured-data";
 
 export default function HomePage() {
   return (
@@ -49,7 +56,7 @@ export default function HomePage() {
         offers={{
           price: "0",
           priceCurrency: "USD",
-          availability: "https://schema.org/InStock"
+          availability: "https://schema.org/InStock",
         }}
       />
       <FAQData faqs={CLAIMGUARDIAN_FAQS} />
@@ -85,5 +92,5 @@ export default function HomePage() {
       <ResponsiveLoginModal />
       <ResponsiveSignupModal />
     </div>
-  )
+  );
 }

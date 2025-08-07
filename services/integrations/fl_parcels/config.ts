@@ -11,16 +11,14 @@
 
 // FGIO (Florida Geographic Information Office) - Quarterly updates
 export const FGIO_ITEM_ID = "efa909d6b1c841d298b0a649e7f71cf2";
-export const FGIO_REST =
-  `https://services.arcgis.com/KTcxiTD9dsQw4r7Z/ArcGIS/rest/services/Florida_Statewide_Parcels/FeatureServer/0`;
+export const FGIO_REST = `https://services.arcgis.com/KTcxiTD9dsQw4r7Z/ArcGIS/rest/services/Florida_Statewide_Parcels/FeatureServer/0`;
 
 // FDOT (Florida Department of Transportation) - Annual updates with weekly deltas
 export const FDOT_SERVICE =
   "https://gis.fdot.gov/arcgis/rest/services/Parcels/FeatureServer";
 
 // FGDL (Florida Geographic Data Library) - Yearly archives
-export const FGDL_ROOT =
-  "https://fgdl.org/metadataexplorer/explorer/zip/";
+export const FGDL_ROOT = "https://fgdl.org/metadataexplorer/explorer/zip/";
 
 // DOR (Department of Revenue) - Official tax roll shapes
 export const DOR_PORTAL =
@@ -97,14 +95,14 @@ export const COUNTY_FIPS_MAP: Record<number, string> = {
   64: "127", // Volusia
   65: "129", // Wakulla
   66: "131", // Walton
-  67: "133"  // Washington
+  67: "133", // Washington
 };
 
 // Request configuration
 export const REQUEST_CONFIG = {
   maxRecordCount: 2000, // FGIO max records per request
-  fdotPageSize: 1000,   // FDOT page size
-  timeout: 300000,      // 5 minute timeout for large requests
+  fdotPageSize: 1000, // FDOT page size
+  timeout: 300000, // 5 minute timeout for large requests
   retryAttempts: 3,
-  retryDelay: 5000
+  retryDelay: 5000,
 };

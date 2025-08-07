@@ -9,20 +9,18 @@
  * @supabase-integration edge-functions
  */
 
-import { GeminiProvider } from '../providers/gemini.provider';
-import { GeminiStrategy } from '../strategies/gemini-strategy';
-import {
-  AIProviderConfig
-} from '../types/index';
+import { GeminiProvider } from "../providers/gemini.provider";
+import { GeminiStrategy } from "../strategies/gemini-strategy";
+import { AIProviderConfig } from "../types/index";
 
 export interface FloridaClaimAnalysis {
-  damageType: 'hurricane' | 'flood' | 'wind' | 'hail' | 'fire' | 'other';
+  damageType: "hurricane" | "flood" | "wind" | "hail" | "fire" | "other";
   severity: number; // 1-10 scale
-  coverageType: 'HO3' | 'HO6' | 'DP3' | 'flood' | 'windstorm';
+  coverageType: "HO3" | "HO6" | "DP3" | "flood" | "windstorm";
   estimatedCost: number;
   repairTimeline: string;
   redFlags: string[];
-  documentationStatus: 'complete' | 'partial' | 'insufficient';
+  documentationStatus: "complete" | "partial" | "insufficient";
   nextSteps: string[];
 }
 
@@ -65,39 +63,44 @@ export class GeminiInsuranceService {
    */
   async analyzeHurricaneDamage(
     images: string[],
-    propertyDetails?: Record<string, unknown>
+    propertyDetails?: Record<string, unknown>,
   ): Promise<FloridaClaimAnalysis> {
-    const prompt = GeminiStrategy.getInsurancePrompts('florida-hurricane-assessment');
+    const prompt = GeminiStrategy.getInsurancePrompts(
+      "florida-hurricane-assessment",
+    );
 
     // Process multiple images for comprehensive analysis
     const analyses = await Promise.all(
-      images.map(image =>
+      images.map((image) =>
         this.provider.analyzeImage({
           imageBase64: image,
-          prompt: prompt + '\n\nProperty details: ' + JSON.stringify(propertyDetails || {}),
-          feature: 'damage-analyzer',
-          userId: 'system',
+          prompt:
+            prompt +
+            "\n\nProperty details: " +
+            JSON.stringify(propertyDetails || {}),
+          feature: "damage-analyzer",
+          userId: "system",
           temperature: 0.4, // Lower for consistent analysis
-          maxTokens: 8192
-        })
-      )
+          maxTokens: 8192,
+        }),
+      ),
     );
 
     // Combine analyses from multiple angles
     const combinedPrompt = `Based on these multiple damage assessments, provide a comprehensive Florida hurricane claim analysis:
 
-${analyses.map((a, i) => `Image ${i + 1} Analysis: ${a.text}`).join('\n\n')}
+${analyses.map((a, i) => `Image ${i + 1} Analysis: ${a.text}`).join("\n\n")}
 
 Synthesize into a single comprehensive assessment following Florida insurance requirements.
 Format as JSON with: damageType, severity (1-10), coverageType, estimatedCost, repairTimeline, redFlags[], documentationStatus, nextSteps[]`;
 
     const result = await this.provider.generateText({
       prompt: combinedPrompt,
-      feature: 'damage-analyzer',
-      userId: 'system',
+      feature: "damage-analyzer",
+      userId: "system",
       temperature: 0.5,
       maxTokens: 4096,
-      responseFormat: 'json'
+      responseFormat: "json",
     });
 
     return JSON.parse(result.text) as FloridaClaimAnalysis;
@@ -108,7 +111,7 @@ Format as JSON with: damageType, severity (1-10), coverageType, estimatedCost, r
    */
   async extractPolicyDetails(
     documentBase64: string,
-    documentType: 'pdf' | 'image'
+    documentType: "pdf" | "image",
   ): Promise<PolicyExtractionResult> {
     const prompt = `Extract all insurance policy details from this document. Focus on:
 1. Policy number and carrier information
@@ -124,10 +127,10 @@ Be precise with numbers and percentages. For hurricane deductibles, preserve per
     const result = await this.provider.analyzeImage({
       imageBase64: documentBase64,
       prompt,
-      feature: 'document-extractor',
-      userId: 'system',
+      feature: "document-extractor",
+      userId: "system",
       temperature: 0.3, // Very low for accuracy
-      maxTokens: 8192
+      maxTokens: 8192,
     });
 
     return JSON.parse(result.text) as PolicyExtractionResult;
@@ -141,26 +144,30 @@ Be precise with numbers and percentages. For hurricane deductibles, preserve per
       id: string;
       images: string[];
       description: string;
-    }>
+    }>,
   ): Promise<Map<string, FloridaClaimAnalysis>> {
     const config = GeminiStrategy.getBatchConfiguration(claims.length);
     const results = new Map<string, FloridaClaimAnalysis>();
 
-    console.log(`[GeminiInsurance] Processing ${claims.length} claims in batches of ${config.batchSize} using ${config.model}`);
+    console.log(
+      `[GeminiInsurance] Processing ${claims.length} claims in batches of ${config.batchSize} using ${config.model}`,
+    );
 
     // Process in optimized batches
     for (let i = 0; i < claims.length; i += config.batchSize) {
       const batch = claims.slice(i, i + config.batchSize);
 
-      const batchPromises = batch.map(async claim => {
+      const batchPromises = batch.map(async (claim) => {
         try {
-          const analysis = await this.analyzeHurricaneDamage(
-            claim.images,
-            { description: claim.description }
-          );
+          const analysis = await this.analyzeHurricaneDamage(claim.images, {
+            description: claim.description,
+          });
           return { id: claim.id, analysis };
         } catch (error) {
-          console.error(`[GeminiInsurance] Failed to process claim ${claim.id}:`, error);
+          console.error(
+            `[GeminiInsurance] Failed to process claim ${claim.id}:`,
+            error,
+          );
           return null;
         }
       });
@@ -182,22 +189,23 @@ Be precise with numbers and percentages. For hurricane deductibles, preserve per
   /**
    * Compare multiple insurance policies
    */
-  async comparePolicies(
-    policies: PolicyExtractionResult[]
-  ): Promise<{
+  async comparePolicies(policies: PolicyExtractionResult[]): Promise<{
     comparison: Record<string, unknown>;
     recommendations: string[];
     bestValue: string;
   }> {
-    const prompt = GeminiStrategy.getInsurancePrompts('policy-comparison');
+    const prompt = GeminiStrategy.getInsurancePrompts("policy-comparison");
 
     const result = await this.provider.generateText({
-      prompt: prompt + '\n\nPolicies to compare:\n' + JSON.stringify(policies, null, 2),
-      feature: 'document-extractor',
-      userId: 'system',
+      prompt:
+        prompt +
+        "\n\nPolicies to compare:\n" +
+        JSON.stringify(policies, null, 2),
+      feature: "document-extractor",
+      userId: "system",
       temperature: 0.6,
       maxTokens: 8192,
-      responseFormat: 'json'
+      responseFormat: "json",
     });
 
     return JSON.parse(result.text);
@@ -209,7 +217,7 @@ Be precise with numbers and percentages. For hurricane deductibles, preserve per
   async generateClaimReport(
     analysis: FloridaClaimAnalysis,
     policy: PolicyExtractionResult,
-    images: string[]
+    images: string[],
   ): Promise<string> {
     const prompt = `Generate a professional insurance claim report for submission to ${policy.carrier}.
 
@@ -233,10 +241,10 @@ Use clear sections, bullet points, and tables where appropriate.`;
 
     const result = await this.provider.generateText({
       prompt,
-      feature: 'communication-helper',
-      userId: 'system',
+      feature: "communication-helper",
+      userId: "system",
       temperature: 0.5,
-      maxTokens: 8192
+      maxTokens: 8192,
     });
 
     return result.text;
@@ -245,9 +253,7 @@ Use clear sections, bullet points, and tables where appropriate.`;
   /**
    * Validate claim against Florida regulations
    */
-  async validateFloridaClaim(
-    claimData: Record<string, unknown>
-  ): Promise<{
+  async validateFloridaClaim(claimData: Record<string, unknown>): Promise<{
     isValid: boolean;
     violations: string[];
     warnings: string[];
@@ -269,11 +275,11 @@ Return a structured validation report with any violations, warnings, and importa
 
     const result = await this.provider.generateText({
       prompt,
-      feature: 'document-extractor',
-      userId: 'system',
+      feature: "document-extractor",
+      userId: "system",
       temperature: 0.4,
       maxTokens: 4096,
-      responseFormat: 'json'
+      responseFormat: "json",
     });
 
     return JSON.parse(result.text);
@@ -282,9 +288,7 @@ Return a structured validation report with any violations, warnings, and importa
   /**
    * Helper to process promises sequentially
    */
-  private async processSequentially<T>(
-    promises: Promise<T>[]
-  ): Promise<T[]> {
+  private async processSequentially<T>(promises: Promise<T>[]): Promise<T[]> {
     const results: T[] = [];
     for (const promise of promises) {
       results.push(await promise);
@@ -315,17 +319,19 @@ Return a structured validation report with any violations, warnings, and importa
       geminiCost: 0, // FREE!
       openAICost: totalVolume * 0.05, // Approximate GPT-4V cost
       savings: totalVolume * 0.05,
-      savingsPercent: 100
+      savingsPercent: 100,
     };
   }
 }
 
 // Export convenience function for Florida-specific setup
-export function createFloridaInsuranceAI(apiKey: string): GeminiInsuranceService {
+export function createFloridaInsuranceAI(
+  apiKey: string,
+): GeminiInsuranceService {
   return new GeminiInsuranceService({
     apiKey,
-    defaultModel: 'gemini-2.0-flash-exp', // Use free model by default
+    defaultModel: "gemini-2.0-flash-exp", // Use free model by default
     maxRetries: 3,
-    timeout: 30000
+    timeout: 30000,
   });
 }

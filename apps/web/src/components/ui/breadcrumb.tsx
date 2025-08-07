@@ -6,42 +6,51 @@
  * @status stable
  * @insurance-context navigation
  */
-'use client'
+"use client";
 
-import { ChevronRight, Home, Shield, FileText, AlertTriangle } from 'lucide-react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { cn } from '@/lib/utils'
-import React from 'react'
+import {
+  ChevronRight,
+  Home,
+  Shield,
+  FileText,
+  AlertTriangle,
+} from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
+import React from "react";
 
 export interface BreadcrumbItem {
-  label: string
-  href?: string
-  icon?: React.ComponentType<{ className?: string }>
-  current?: boolean
+  label: string;
+  href?: string;
+  icon?: React.ComponentType<{ className?: string }>;
+  current?: boolean;
 }
 
 export interface BreadcrumbProps {
-  items: BreadcrumbItem[]
-  className?: string
-  separator?: React.ReactNode
-  'aria-label'?: string
-  showHome?: boolean
+  items: BreadcrumbItem[];
+  className?: string;
+  separator?: React.ReactNode;
+  "aria-label"?: string;
+  showHome?: boolean;
 }
 
 export function Breadcrumb({
   items,
-  className = '',
+  className = "",
   separator = <ChevronRight className="h-4 w-4 mx-1 text-gray-500" />,
-  'aria-label': ariaLabel = 'Breadcrumb navigation',
-  showHome = true
+  "aria-label": ariaLabel = "Breadcrumb navigation",
+  showHome = true,
 }: BreadcrumbProps) {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   return (
     <nav
       aria-label={ariaLabel}
-      className={cn('flex items-center space-x-1 text-sm text-gray-400', className)}
+      className={cn(
+        "flex items-center space-x-1 text-sm text-gray-400",
+        className,
+      )}
     >
       <ol className="flex items-center space-x-1" role="list">
         {showHome && (
@@ -60,8 +69,8 @@ export function Breadcrumb({
         )}
 
         {items.map((item, index) => {
-          const isLast = index === items.length - 1
-          const isCurrent = item.current || isLast || item.href === pathname
+          const isLast = index === items.length - 1;
+          const isCurrent = item.current || isLast || item.href === pathname;
 
           return (
             <React.Fragment key={index}>
@@ -71,7 +80,7 @@ export function Breadcrumb({
                   <Link
                     href={item.href}
                     className="hover:text-white transition-colors flex items-center gap-1"
-                    aria-current={isCurrent ? 'page' : undefined}
+                    aria-current={isCurrent ? "page" : undefined}
                   >
                     {item.icon && <item.icon className="h-4 w-4" />}
                     {item.label}
@@ -79,7 +88,7 @@ export function Breadcrumb({
                 ) : (
                   <span
                     className="text-white flex items-center gap-1"
-                    aria-current={isCurrent ? 'page' : undefined}
+                    aria-current={isCurrent ? "page" : undefined}
                   >
                     {item.icon && <item.icon className="h-4 w-4" />}
                     {item.label}
@@ -87,30 +96,30 @@ export function Breadcrumb({
                 )}
               </li>
             </React.Fragment>
-          )
+          );
         })}
       </ol>
     </nav>
-  )
+  );
 }
 
 // AI-specific breadcrumb helper
 export function AIBreadcrumb({
   section,
   page,
-  className = ''
+  className = "",
 }: {
-  section: string
-  page: string
-  className?: string
+  section: string;
+  page: string;
+  className?: string;
 }) {
   const items: BreadcrumbItem[] = [
-    { label: 'AI Tools', href: '/ai-tools' },
+    { label: "AI Tools", href: "/ai-tools" },
     { label: section },
-    { label: page }
-  ]
+    { label: page },
+  ];
 
-  return <Breadcrumb items={items} className={className} />
+  return <Breadcrumb items={items} className={className} />;
 }
 
 // Insurance-specific breadcrumb helper
@@ -121,34 +130,34 @@ export function InsuranceBreadcrumb({
   policyId,
   claim,
   claimId,
-  className = ''
+  className = "",
 }: {
-  property?: string
-  propertyId?: string
-  policy?: string
-  policyId?: string
-  claim?: string
-  claimId?: string
-  className?: string
+  property?: string;
+  propertyId?: string;
+  policy?: string;
+  policyId?: string;
+  claim?: string;
+  claimId?: string;
+  className?: string;
 }) {
   const items: BreadcrumbItem[] = [
-    { label: 'Insurance', href: '/dashboard/insurance', icon: Shield }
-  ]
+    { label: "Insurance", href: "/dashboard/insurance", icon: Shield },
+  ];
 
   if (property && propertyId) {
     items.push({
       label: property,
       href: `/dashboard/property/${propertyId}`,
-      icon: Home
-    })
+      icon: Home,
+    });
   }
 
   if (policy && policyId) {
     items.push({
       label: policy,
       href: `/dashboard/insurance/policy/${policyId}`,
-      icon: FileText
-    })
+      icon: FileText,
+    });
   }
 
   if (claim && claimId) {
@@ -156,9 +165,9 @@ export function InsuranceBreadcrumb({
       label: claim,
       href: `/dashboard/claims/${claimId}`,
       icon: AlertTriangle,
-      current: true
-    })
+      current: true,
+    });
   }
 
-  return <Breadcrumb items={items} className={className} />
+  return <Breadcrumb items={items} className={className} />;
 }

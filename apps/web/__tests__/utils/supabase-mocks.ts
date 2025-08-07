@@ -9,25 +9,25 @@
  * @status stable
  */
 
-import { jest } from '@jest/globals'
+import { jest } from "@jest/globals";
 
 // Simplified mock types to avoid jest function resolution issues
 export type MockSupabaseClient = {
   auth: {
-    signUp: jest.MockedFunction<any>
-    signInWithPassword: jest.MockedFunction<any>
-    signOut: jest.MockedFunction<any>
-    resetPasswordForEmail: jest.MockedFunction<any>
-    getUser: jest.MockedFunction<any>
-    getSession: jest.MockedFunction<any>
-  }
-  from: jest.MockedFunction<any>
-  rpc: jest.MockedFunction<any>
+    signUp: jest.MockedFunction<any>;
+    signInWithPassword: jest.MockedFunction<any>;
+    signOut: jest.MockedFunction<any>;
+    resetPasswordForEmail: jest.MockedFunction<any>;
+    getUser: jest.MockedFunction<any>;
+    getSession: jest.MockedFunction<any>;
+  };
+  from: jest.MockedFunction<any>;
+  rpc: jest.MockedFunction<any>;
   storage: {
-    from: jest.MockedFunction<any>
-  }
-  _mockQuery?: any // For backward compatibility with existing tests
-}
+    from: jest.MockedFunction<any>;
+  };
+  _mockQuery?: any; // For backward compatibility with existing tests
+};
 
 export function createSupabaseMock(): MockSupabaseClient & { _mockQuery: any } {
   // Create mock query builder chain with simpler approach
@@ -67,10 +67,10 @@ export function createSupabaseMock(): MockSupabaseClient & { _mockQuery: any } {
     single: jest.fn(),
     maybeSingle: jest.fn(),
     explain: jest.fn(),
-    then: jest.fn()
-  }
+    then: jest.fn(),
+  };
 
-  const fromMock = jest.fn().mockReturnValue(mockQuery)
+  const fromMock = jest.fn().mockReturnValue(mockQuery);
 
   return {
     auth: {
@@ -79,7 +79,7 @@ export function createSupabaseMock(): MockSupabaseClient & { _mockQuery: any } {
       signOut: jest.fn() as any,
       resetPasswordForEmail: jest.fn() as any,
       getUser: jest.fn() as any,
-      getSession: jest.fn() as any
+      getSession: jest.fn() as any,
     },
     from: fromMock as any,
     rpc: jest.fn() as any,
@@ -94,37 +94,40 @@ export function createSupabaseMock(): MockSupabaseClient & { _mockQuery: any } {
         copy: jest.fn(),
         createSignedUrl: jest.fn(),
         createSignedUrls: jest.fn(),
-        getPublicUrl: jest.fn()
-      }) as any
+        getPublicUrl: jest.fn(),
+      }) as any,
     },
-    _mockQuery: mockQuery
-  }
+    _mockQuery: mockQuery,
+  };
 }
 
 // Helper function to create a mock with custom return values
 export function createSupabaseMockWithData(data: any, error: any = null) {
-  const mock = createSupabaseMock()
-  mock._mockQuery.single.mockResolvedValue({ data, error })
-  mock._mockQuery.then.mockResolvedValue({ data, error })
-  return mock
+  const mock = createSupabaseMock();
+  mock._mockQuery.single.mockResolvedValue({ data, error });
+  mock._mockQuery.then.mockResolvedValue({ data, error });
+  return mock;
 }
 
 // Helper function to create a mock that returns an error
 export function createSupabaseMockWithError(error: any) {
-  return createSupabaseMockWithData(null, error)
+  return createSupabaseMockWithData(null, error);
 }
 
 // Legacy helper functions for backward compatibility
 export function mockAuthSuccess() {
   return {
-    data: { user: { id: 'user-123', email: 'test@example.com' }, session: null },
-    error: null
-  }
+    data: {
+      user: { id: "user-123", email: "test@example.com" },
+      session: null,
+    },
+    error: null,
+  };
 }
 
-export function mockAuthError(message: string = 'Authentication failed') {
+export function mockAuthError(message: string = "Authentication failed") {
   return {
     data: { user: null, session: null },
-    error: { message }
-  }
+    error: { message },
+  };
 }

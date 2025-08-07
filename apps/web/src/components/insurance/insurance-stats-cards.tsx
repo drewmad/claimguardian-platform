@@ -5,20 +5,24 @@
  * @dependencies ["react", "lucide-react"]
  * @status stable
  */
-'use client'
+"use client";
 
-import { Shield, DollarSign, FileText } from 'lucide-react'
-import { motion } from 'framer-motion'
-import { Card, CardContent } from '@/components/ui/card-variants'
-import { staggerContainer, staggerItem, cardHover } from '@/lib/animations'
+import { Shield, DollarSign, FileText } from "lucide-react";
+import { motion } from "framer-motion";
+import { Card, CardContent } from "@/components/ui/card-variants";
+import { staggerContainer, staggerItem, cardHover } from "@/lib/animations";
 
 interface InsuranceStatsProps {
-  totalCoverage: number
-  totalPremium: number
-  activePolicies: number
+  totalCoverage: number;
+  totalPremium: number;
+  activePolicies: number;
 }
 
-export function InsuranceStatsCards({ totalCoverage, totalPremium, activePolicies }: InsuranceStatsProps) {
+export function InsuranceStatsCards({
+  totalCoverage,
+  totalPremium,
+  activePolicies,
+}: InsuranceStatsProps) {
   return (
     <motion.div
       className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
@@ -45,9 +49,13 @@ export function InsuranceStatsCards({ totalCoverage, totalPremium, activePolicie
                 </motion.div>
                 <div>
                   <p className="text-3xl font-bold text-white">
-                    {totalCoverage > 0 ? `$${(totalCoverage / 1000000).toFixed(2)}M` : '$0'}
+                    {totalCoverage > 0
+                      ? `$${(totalCoverage / 1000000).toFixed(2)}M`
+                      : "$0"}
                   </p>
-                  <p className="text-sm text-gray-400">Total Dwelling Coverage</p>
+                  <p className="text-sm text-gray-400">
+                    Total Dwelling Coverage
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -74,7 +82,9 @@ export function InsuranceStatsCards({ totalCoverage, totalPremium, activePolicie
                 </motion.div>
                 <div>
                   <p className="text-3xl font-bold text-white">
-                    {totalPremium > 0 ? `$${totalPremium.toLocaleString()}` : '$0'}
+                    {totalPremium > 0
+                      ? `$${totalPremium.toLocaleString()}`
+                      : "$0"}
                   </p>
                   <p className="text-sm text-gray-400">Total Annual Premium</p>
                 </div>
@@ -102,7 +112,9 @@ export function InsuranceStatsCards({ totalCoverage, totalPremium, activePolicie
                   <FileText className="w-6 h-6 text-purple-400" />
                 </motion.div>
                 <div>
-                  <p className="text-3xl font-bold text-white">{activePolicies}</p>
+                  <p className="text-3xl font-bold text-white">
+                    {activePolicies}
+                  </p>
                   <p className="text-sm text-gray-400">Active Policies</p>
                 </div>
               </div>
@@ -111,5 +123,5 @@ export function InsuranceStatsCards({ totalCoverage, totalPremium, activePolicie
         </motion.div>
       </motion.div>
     </motion.div>
-  )
+  );
 }

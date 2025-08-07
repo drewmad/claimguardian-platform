@@ -8,15 +8,22 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Button } from '@claimguardian/ui';
-import { Badge } from '@/components/ui/badge';
-import { RefreshCw, Play, Pause, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Button } from "@claimguardian/ui";
+import { Badge } from "@/components/ui/badge";
+import {
+  RefreshCw,
+  Play,
+  Pause,
+  AlertCircle,
+  CheckCircle2,
+  Clock,
+} from "lucide-react";
 
 interface CountyStatus {
   county_code: number;
@@ -44,14 +51,19 @@ export default function FloridaParcelsMonitor() {
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [counties, setCounties] = useState<CountyStatus[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [selectedView, setSelectedView] = useState<'all' | 'active' | 'errors'>('all');
+  const [selectedView, setSelectedView] = useState<"all" | "active" | "errors">(
+    "all",
+  );
   const supabase = createClient();
 
   const fetchDashboard = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('florida-parcels-monitor', {
-        body: { view: 'dashboard' }
-      });
+      const { data, error } = await supabase.functions.invoke(
+        "florida-parcels-monitor",
+        {
+          body: { view: "dashboard" },
+        },
+      );
 
       if (!error && data) {
         setSummary(data.summary);
@@ -59,7 +71,7 @@ export default function FloridaParcelsMonitor() {
         setIsProcessing(data.summary.counties_processing > 0);
       }
     } catch (err) {
-      console.error('Error fetching dashboard:', err);
+      console.error("Error fetching dashboard:", err);
     } finally {
       setLoading(false);
     }
@@ -71,20 +83,23 @@ export default function FloridaParcelsMonitor() {
     return () => clearInterval(interval);
   }, [fetchDashboard]);
 
-  const startProcessing = async (mode: 'priority' | 'all') => {
+  const startProcessing = async (mode: "priority" | "all") => {
     try {
       setLoading(true);
-      const { data, error } = await supabase.functions.invoke('florida-parcels-orchestrator', {
-        body: { action: 'start', mode }
-      });
+      const { data, error } = await supabase.functions.invoke(
+        "florida-parcels-orchestrator",
+        {
+          body: { action: "start", mode },
+        },
+      );
 
       if (!error) {
         await fetchDashboard();
       } else {
-        console.error('Error starting processing:', error);
+        console.error("Error starting processing:", error);
       }
     } catch (err) {
-      console.error('Error:', err);
+      console.error("Error:", err);
     } finally {
       setLoading(false);
     }
@@ -92,37 +107,63 @@ export default function FloridaParcelsMonitor() {
 
   const stopProcessing = async () => {
     try {
-      const { error } = await supabase.functions.invoke('florida-parcels-orchestrator', {
-        body: { action: 'stop' }
-      });
+      const { error } = await supabase.functions.invoke(
+        "florida-parcels-orchestrator",
+        {
+          body: { action: "stop" },
+        },
+      );
 
       if (!error) {
         await fetchDashboard();
       }
     } catch (err) {
-      console.error('Error stopping processing:', err);
+      console.error("Error stopping processing:", err);
     }
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'completed':
-        return <Badge className="bg-green-500"><CheckCircle2 className="w-3 h-3 mr-1" />Completed</Badge>;
-      case 'processing':
-        return <Badge className="bg-blue-500"><Clock className="w-3 h-3 mr-1" />Processing</Badge>;
-      case 'error':
-        return <Badge variant="destructive"><AlertCircle className="w-3 h-3 mr-1" />Error</Badge>;
-      case 'completed_with_errors':
-        return <Badge className="bg-yellow-500"><AlertCircle className="w-3 h-3 mr-1" />Partial</Badge>;
+      case "completed":
+        return (
+          <Badge className="bg-green-500">
+            <CheckCircle2 className="w-3 h-3 mr-1" />
+            Completed
+          </Badge>
+        );
+      case "processing":
+        return (
+          <Badge className="bg-blue-500">
+            <Clock className="w-3 h-3 mr-1" />
+            Processing
+          </Badge>
+        );
+      case "error":
+        return (
+          <Badge variant="destructive">
+            <AlertCircle className="w-3 h-3 mr-1" />
+            Error
+          </Badge>
+        );
+      case "completed_with_errors":
+        return (
+          <Badge className="bg-yellow-500">
+            <AlertCircle className="w-3 h-3 mr-1" />
+            Partial
+          </Badge>
+        );
       default:
         return <Badge variant="secondary">Pending</Badge>;
     }
   };
 
-  const filteredCounties = counties.filter(county => {
-    if (selectedView === 'all') return true;
-    if (selectedView === 'active') return county.status === 'processing';
-    if (selectedView === 'errors') return county.status === 'error' || county.status === 'completed_with_errors';
+  const filteredCounties = counties.filter((county) => {
+    if (selectedView === "all") return true;
+    if (selectedView === "active") return county.status === "processing";
+    if (selectedView === "errors")
+      return (
+        county.status === "error" || county.status === "completed_with_errors"
+      );
     return true;
   });
 
@@ -145,11 +186,15 @@ export default function FloridaParcelsMonitor() {
           </Button>
           {!isProcessing ? (
             <>
-              <Button onClick={() => startProcessing('priority')} size="sm">
+              <Button onClick={() => startProcessing("priority")} size="sm">
                 <Play className="w-4 h-4 mr-2" />
                 Start Priority Counties
               </Button>
-              <Button onClick={() => startProcessing('all')} variant="secondary" size="sm">
+              <Button
+                onClick={() => startProcessing("all")}
+                variant="secondary"
+                size="sm"
+              >
                 <Play className="w-4 h-4 mr-2" />
                 Start All Counties
               </Button>
@@ -171,7 +216,9 @@ export default function FloridaParcelsMonitor() {
               <CardTitle className="text-sm">Total Progress</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{summary.overall_progress}%</div>
+              <div className="text-2xl font-bold">
+                {summary.overall_progress}%
+              </div>
               <Progress value={summary.overall_progress} className="mt-2" />
             </CardContent>
           </Card>
@@ -243,25 +290,32 @@ export default function FloridaParcelsMonitor() {
       {/* View Filter */}
       <div className="flex gap-2 mb-4">
         <Button
-          variant={selectedView === 'all' ? 'default' : 'secondary'}
+          variant={selectedView === "all" ? "default" : "secondary"}
           size="sm"
-          onClick={() => setSelectedView('all')}
+          onClick={() => setSelectedView("all")}
         >
           All Counties ({counties.length})
         </Button>
         <Button
-          variant={selectedView === 'active' ? 'default' : 'secondary'}
+          variant={selectedView === "active" ? "default" : "secondary"}
           size="sm"
-          onClick={() => setSelectedView('active')}
+          onClick={() => setSelectedView("active")}
         >
-          Active ({counties.filter(c => c.status === 'processing').length})
+          Active ({counties.filter((c) => c.status === "processing").length})
         </Button>
         <Button
-          variant={selectedView === 'errors' ? 'default' : 'secondary'}
+          variant={selectedView === "errors" ? "default" : "secondary"}
           size="sm"
-          onClick={() => setSelectedView('errors')}
+          onClick={() => setSelectedView("errors")}
         >
-          Errors ({counties.filter(c => c.status === 'error' || c.status === 'completed_with_errors').length})
+          Errors (
+          {
+            counties.filter(
+              (c) =>
+                c.status === "error" || c.status === "completed_with_errors",
+            ).length
+          }
+          )
         </Button>
       </div>
 
@@ -274,7 +328,9 @@ export default function FloridaParcelsMonitor() {
                 <div className="flex items-center gap-4">
                   <div>
                     <h3 className="font-semibold">{county.county_name}</h3>
-                    <p className="text-sm text-gray-500">Code: {county.county_code}</p>
+                    <p className="text-sm text-gray-500">
+                      Code: {county.county_code}
+                    </p>
                   </div>
                   {getStatusBadge(county.status)}
                 </div>

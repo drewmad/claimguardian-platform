@@ -9,34 +9,37 @@
  * @status stable
  */
 
-import { NextRequest } from 'next/server'
-import { createHash, timingSafeEqual } from 'crypto'
-import { createClient } from '@/lib/supabase/server'
-import { logger } from '@/lib/logger/production-logger'
-import type {
+import { NextRequest } from "next/server";
+import { createHash, timingSafeEqual } from "crypto";
+import { createClient } from "@/lib/supabase/server";
+import { logger } from "@/lib/logger/production-logger";
+import {
   PartnerApiKey,
   PartnerOrganization,
-  PartnerApiErrorCode
-} from '@claimguardian/db/types/partner-api.types'
+  PartnerApiErrorCode,
+} from "@claimguardian/db/types/partner-api.types";
 
 export interface PartnerAuthResult {
-  success: boolean
-  partner?: PartnerOrganization
-  apiKey?: PartnerApiKey
-  error?: string
-  errorCode?: PartnerApiErrorCode
+  success: boolean;
+  partner?: PartnerOrganization;
+  apiKey?: PartnerApiKey;
+  error?: string;
+  errorCode?: PartnerApiErrorCode;
 }
 
 export interface ApiKeyValidation {
-  isValid: boolean
-  partnerId?: string
-  keyId?: string
-  error?: string
+  isValid: boolean;
+  partnerId?: string;
+  keyId?: string;
+  error?: string;
 }
 
 class PartnerApiAuth {
-  private keyCache = new Map<string, { key: PartnerApiKey; partner: PartnerOrganization; cachedAt: number }>()
-  private readonly CACHE_TTL = 5 * 60 * 1000 // 5 minutes
+  private keyCache = new Map<
+    string,
+    { key: PartnerApiKey; partner: PartnerOrganization; cachedAt: number }
+  >();
+  private readonly CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
   /**
    * Authenticate partner API request using API key
@@ -44,78 +47,83 @@ class PartnerApiAuth {
   async authenticate(request: NextRequest): Promise<PartnerAuthResult> {
     try {
       // Extract API key from Authorization header
-      const apiKey = this.extractApiKey(request)
+      const apiKey = this.extractApiKey(request);
       if (!apiKey) {
         return {
           success: false,
-          error: 'Missing or invalid Authorization header',
-          errorCode: 'invalid_api_key'
-        }
+          error: "Missing or invalid Authorization header",
+          errorCode: PartnerApiErrorCode.INVALID_API_KEY,
+        };
       }
 
       // Validate API key format
-      const keyValidation = this.validateApiKeyFormat(apiKey)
+      const keyValidation = this.validateApiKeyFormat(apiKey);
       if (!keyValidation.isValid) {
         return {
           success: false,
-          error: keyValidation.error || 'Invalid API key format',
-          errorCode: 'invalid_api_key'
-        }
+          error: keyValidation.error || "Invalid API key format",
+          errorCode: PartnerApiErrorCode.INVALID_API_KEY,
+        };
       }
 
       // Check cache first for performance
-      const cached = this.getCachedKey(apiKey)
+      const cached = this.getCachedKey(apiKey);
       if (cached) {
         // Verify key is still active
-        if (cached.key.status !== 'active') {
-          this.invalidateCache(apiKey)
+        if (cached.key.status !== "active") {
+          this.invalidateCache(apiKey);
           return {
             success: false,
-            error: 'API key is suspended or revoked',
-            errorCode: 'invalid_api_key'
-          }
+            error: "API key is suspended or revoked",
+            errorCode: PartnerApiErrorCode.INVALID_API_KEY,
+          };
         }
 
         // Check expiration
-        if (cached.key.expiresAt && new Date(cached.key.expiresAt) < new Date()) {
-          this.invalidateCache(apiKey)
+        if (
+          cached.key.expiresAt &&
+          new Date(cached.key.expiresAt) < new Date()
+        ) {
+          this.invalidateCache(apiKey);
           return {
             success: false,
-            error: 'API key has expired',
-            errorCode: 'expired_api_key'
-          }
+            error: "API key has expired",
+            errorCode: PartnerApiErrorCode.EXPIRED_API_KEY,
+          };
         }
 
         // Update last used timestamp asynchronously
-        this.updateLastUsed(cached.key.id).catch(error => {
-          logger.error('Failed to update API key last used timestamp', { error, keyId: cached.key.id })
-        })
+        this.updateLastUsed(cached.key.id).catch((error) => {
+          logger.error("Failed to update API key last used timestamp", {
+            error,
+            keyId: cached.key.id,
+          });
+        });
 
         return {
           success: true,
           partner: cached.partner,
-          apiKey: cached.key
-        }
+          apiKey: cached.key,
+        };
       }
 
       // Database lookup for new or expired cache
-      const dbResult = await this.validateApiKeyInDatabase(apiKey)
+      const dbResult = await this.validateApiKeyInDatabase(apiKey);
       if (!dbResult.success) {
-        return dbResult
+        return dbResult;
       }
 
       // Cache the result
-      this.cacheKey(apiKey, dbResult.apiKey!, dbResult.partner!)
+      this.cacheKey(apiKey, dbResult.apiKey!, dbResult.partner!);
 
-      return dbResult
-
+      return dbResult;
     } catch (error) {
-      logger.error('Partner API authentication error', { error })
+      logger.error("Partner API authentication error", { error });
       return {
         success: false,
-        error: 'Authentication service unavailable',
-        errorCode: 'service_unavailable'
-      }
+        error: "Authentication service unavailable",
+        errorCode: PartnerApiErrorCode.SERVICE_UNAVAILABLE,
+      };
     }
   }
 
@@ -123,16 +131,16 @@ class PartnerApiAuth {
    * Extract API key from Authorization header
    */
   private extractApiKey(request: NextRequest): string | null {
-    const authHeader = request.headers.get('authorization')
+    const authHeader = request.headers.get("authorization");
     if (!authHeader) {
-      return null
+      return null;
     }
 
     // Support both "Bearer" and "ApiKey" prefixes
-    const bearerMatch = authHeader.match(/^Bearer\s+(.+)$/i)
-    const apiKeyMatch = authHeader.match(/^ApiKey\s+(.+)$/i)
+    const bearerMatch = authHeader.match(/^Bearer\s+(.+)$/i);
+    const apiKeyMatch = authHeader.match(/^ApiKey\s+(.+)$/i);
 
-    return bearerMatch?.[1] || apiKeyMatch?.[1] || null
+    return bearerMatch?.[1] || apiKeyMatch?.[1] || null;
   }
 
   /**
@@ -140,83 +148,87 @@ class PartnerApiAuth {
    */
   private validateApiKeyFormat(apiKey: string): ApiKeyValidation {
     // API key format: pk_{env}_{32_char_random}
-    const keyPattern = /^pk_(live|test)_[a-zA-Z0-9]{32}$/
+    const keyPattern = /^pk_(live|test)_[a-zA-Z0-9]{32}$/;
 
     if (!keyPattern.test(apiKey)) {
       return {
         isValid: false,
-        error: 'Invalid API key format. Expected format: pk_{env}_{key}'
-      }
+        error: "Invalid API key format. Expected format: pk_{env}_{key}",
+      };
     }
 
     // Extract environment and key ID
-    const parts = apiKey.split('_')
-    const environment = parts[1] // 'live' or 'test'
-    const keyId = parts[2]
+    const parts = apiKey.split("_");
+    const environment = parts[1]; // 'live' or 'test'
+    const keyId = parts[2];
 
     return {
       isValid: true,
       partnerId: undefined, // Will be determined from database
-      keyId
-    }
+      keyId,
+    };
   }
 
   /**
    * Validate API key against database
    */
-  private async validateApiKeyInDatabase(apiKey: string): Promise<PartnerAuthResult> {
-    const supabase = await createClient()
+  private async validateApiKeyInDatabase(
+    apiKey: string,
+  ): Promise<PartnerAuthResult> {
+    const supabase = await createClient();
 
     try {
       // Hash the API key for database lookup
-      const hashedKey = this.hashApiKey(apiKey)
+      const hashedKey = this.hashApiKey(apiKey);
 
       // Query for API key and associated partner
       const { data: keyData, error: keyError } = await supabase
-        .from('partner_api_keys')
-        .select(`
+        .from("partner_api_keys")
+        .select(
+          `
           *,
           partner_organizations (*)
-        `)
-        .eq('hashed_key', hashedKey)
-        .eq('status', 'active')
-        .single()
+        `,
+        )
+        .eq("hashed_key", hashedKey)
+        .eq("status", "active")
+        .single();
 
       if (keyError || !keyData) {
         // Log potential security issue
-        logger.warn('Invalid API key attempt', {
+        logger.warn("Invalid API key attempt", {
           hashedKey: hashedKey.substring(0, 8), // Log only first 8 chars
-          error: keyError?.message
-        })
+          error: keyError?.message,
+        });
 
         return {
           success: false,
-          error: 'Invalid API key',
-          errorCode: 'invalid_api_key'
-        }
+          error: "Invalid API key",
+          errorCode: PartnerApiErrorCode.INVALID_API_KEY,
+        };
       }
 
       // Check if key has expired
       if (keyData.expires_at && new Date(keyData.expires_at) < new Date()) {
         return {
           success: false,
-          error: 'API key has expired',
-          errorCode: 'expired_api_key'
-        }
+          error: "API key has expired",
+          errorCode: PartnerApiErrorCode.EXPIRED_API_KEY,
+        };
       }
 
       // Check if partner organization is active
-      const partner = keyData.partner_organizations
-      if (!partner || partner.subscription_status !== 'active') {
+      const partner = keyData.partner_organizations;
+      if (!partner || partner.subscription_status !== "active") {
         return {
           success: false,
-          error: 'Partner account is not active',
-          errorCode: 'invalid_api_key'
-        }
+          error: "Partner account is not active",
+          errorCode: PartnerApiErrorCode.INVALID_API_KEY,
+        };
       }
 
       // Update last used timestamp
-      await this.updateLastUsed(keyData.id)
+      await this.updateLastUsed(keyData.id);
 
       // Transform database records to interface types
       const apiKeyRecord: PartnerApiKey = {
@@ -232,8 +244,8 @@ class PartnerApiAuth {
         lastUsedAt: keyData.last_used_at,
         expiresAt: keyData.expires_at,
         createdAt: keyData.created_at,
-        updatedAt: keyData.updated_at
-      }
+        updatedAt: keyData.updated_at,
+      };
 
       const partnerRecord: PartnerOrganization = {
         id: partner.id,
@@ -262,22 +274,21 @@ class PartnerApiAuth {
         createdAt: partner.created_at,
         updatedAt: partner.updated_at,
         trialEndsAt: partner.trial_ends_at,
-        nextBillingDate: partner.next_billing_date
-      }
+        nextBillingDate: partner.next_billing_date,
+      };
 
       return {
         success: true,
         partner: partnerRecord,
-        apiKey: apiKeyRecord
-      }
-
+        apiKey: apiKeyRecord,
+      };
     } catch (error) {
-      logger.error('Database error during API key validation', { error })
+      logger.error("Database error during API key validation", { error });
       return {
         success: false,
-        error: 'Authentication service error',
-        errorCode: 'internal_error'
-      }
+        error: "Authentication service error",
+        errorCode: PartnerApiErrorCode.INTERNAL_ERROR,
+      };
     }
   }
 
@@ -285,94 +296,100 @@ class PartnerApiAuth {
    * Hash API key for secure storage comparison
    */
   private hashApiKey(apiKey: string): string {
-    return createHash('sha256').update(apiKey).digest('hex')
+    return createHash("sha256").update(apiKey).digest("hex");
   }
 
   /**
    * Update API key last used timestamp
    */
   private async updateLastUsed(keyId: string): Promise<void> {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     await supabase
-      .from('partner_api_keys')
+      .from("partner_api_keys")
       .update({
-        last_used_at: new Date().toISOString()
+        last_used_at: new Date().toISOString(),
       })
-      .eq('id', keyId)
+      .eq("id", keyId);
   }
 
   /**
    * Cache API key and partner data
    */
-  private cacheKey(apiKey: string, key: PartnerApiKey, partner: PartnerOrganization): void {
-    const hashedKey = this.hashApiKey(apiKey)
+  private cacheKey(
+    apiKey: string,
+    key: PartnerApiKey,
+    partner: PartnerOrganization,
+  ): void {
+    const hashedKey = this.hashApiKey(apiKey);
     this.keyCache.set(hashedKey, {
       key,
       partner,
-      cachedAt: Date.now()
-    })
+      cachedAt: Date.now(),
+    });
   }
 
   /**
    * Get cached API key data if valid
    */
-  private getCachedKey(apiKey: string): { key: PartnerApiKey; partner: PartnerOrganization } | null {
-    const hashedKey = this.hashApiKey(apiKey)
-    const cached = this.keyCache.get(hashedKey)
+  private getCachedKey(
+    apiKey: string,
+  ): { key: PartnerApiKey; partner: PartnerOrganization } | null {
+    const hashedKey = this.hashApiKey(apiKey);
+    const cached = this.keyCache.get(hashedKey);
 
     if (!cached) {
-      return null
+      return null;
     }
 
     // Check if cache has expired
     if (Date.now() - cached.cachedAt > this.CACHE_TTL) {
-      this.keyCache.delete(hashedKey)
-      return null
+      this.keyCache.delete(hashedKey);
+      return null;
     }
 
-    return cached
+    return cached;
   }
 
   /**
    * Invalidate cached API key
    */
   private invalidateCache(apiKey: string): void {
-    const hashedKey = this.hashApiKey(apiKey)
-    this.keyCache.delete(hashedKey)
+    const hashedKey = this.hashApiKey(apiKey);
+    this.keyCache.delete(hashedKey);
   }
 
   /**
    * Generate new API key for partner
    */
   async generateApiKey(params: {
-    partnerId: string
-    keyName: string
-    environment: 'sandbox' | 'production'
-    permissions: any
-    rateLimit?: any
-    expiresAt?: string
+    partnerId: string;
+    keyName: string;
+    environment: "sandbox" | "production";
+    permissions: any;
+    rateLimit?: any;
+    expiresAt?: string;
   }): Promise<{ success: boolean; apiKey?: string; error?: string }> {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     try {
       // Generate secure random API key
-      const keyId = this.generateSecureKey(32)
-      const apiKey = `pk_${params.environment === 'production' ? 'live' : 'test'}_${keyId}`
-      const hashedKey = this.hashApiKey(apiKey)
-      const keyPrefix = apiKey.substring(0, 12) + '...' // For display purposes
+      const keyId = this.generateSecureKey(32);
+      const apiKey = `pk_${params.environment === "production" ? "live" : "test"}_${keyId}`;
+      const hashedKey = this.hashApiKey(apiKey);
+      const keyPrefix = apiKey.substring(0, 12) + "..."; // For display purposes
 
       // Default rate limits based on environment
       const defaultRateLimit = {
-        requestsPerMinute: params.environment === 'production' ? 1000 : 100,
-        requestsPerHour: params.environment === 'production' ? 10000 : 1000,
-        requestsPerDay: params.environment === 'production' ? 100000 : 10000,
-        burstLimit: params.environment === 'production' ? 100 : 10
-      }
+        requestsPerMinute: params.environment === "production" ? 1000 : 100,
+        requestsPerHour: params.environment === "production" ? 10000 : 1000,
+        requestsPerDay: params.environment === "production" ? 100000 : 10000,
+        burstLimit: params.environment === "production" ? 100 : 10,
+      };
 
       // Insert API key into database
       const { data, error } = await supabase
-        .from('partner_api_keys')
+        .from("partner_api_keys")
         .insert({
           partner_id: params.partnerId,
           key_name: params.keyName,
@@ -380,41 +397,43 @@ class PartnerApiAuth {
           hashed_key: hashedKey,
           permissions: params.permissions,
           rate_limit: params.rateLimit || defaultRateLimit,
-          status: 'active',
+          status: "active",
           environment: params.environment,
           expires_at: params.expiresAt,
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .select()
-        .single()
+        .single();
 
       if (error) {
-        logger.error('Failed to create API key', { error, partnerId: params.partnerId })
+        logger.error("Failed to create API key", {
+          error,
+          partnerId: params.partnerId,
+        });
         return {
           success: false,
-          error: 'Failed to create API key'
-        }
+          error: "Failed to create API key",
+        };
       }
 
-      logger.info('API key created', {
+      logger.info("API key created", {
         partnerId: params.partnerId,
         keyId: data.id,
         keyName: params.keyName,
-        environment: params.environment
-      })
+        environment: params.environment,
+      });
 
       return {
         success: true,
-        apiKey // Return the raw key only once
-      }
-
+        apiKey, // Return the raw key only once
+      };
     } catch (error) {
-      logger.error('Error generating API key', { error })
+      logger.error("Error generating API key", { error });
       return {
         success: false,
-        error: 'Internal error'
-      }
+        error: "Internal error",
+      };
     }
   }
 
@@ -422,58 +441,61 @@ class PartnerApiAuth {
    * Generate cryptographically secure random key
    */
   private generateSecureKey(length: number): string {
-    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-    let result = ''
+    const chars =
+      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let result = "";
 
     for (let i = 0; i < length; i++) {
-      const randomIndex = Math.floor(Math.random() * chars.length)
-      result += chars[randomIndex]
+      const randomIndex = Math.floor(Math.random() * chars.length);
+      result += chars[randomIndex];
     }
 
-    return result
+    return result;
   }
 
   /**
    * Revoke API key
    */
-  async revokeApiKey(keyId: string, partnerId: string): Promise<{ success: boolean; error?: string }> {
-    const supabase = await createClient()
+  async revokeApiKey(
+    keyId: string,
+    partnerId: string,
+  ): Promise<{ success: boolean; error?: string }> {
+    const supabase = await createClient();
 
     try {
       const { error } = await supabase
-        .from('partner_api_keys')
+        .from("partner_api_keys")
         .update({
-          status: 'revoked',
-          updated_at: new Date().toISOString()
+          status: "revoked",
+          updated_at: new Date().toISOString(),
         })
-        .eq('id', keyId)
-        .eq('partner_id', partnerId)
+        .eq("id", keyId)
+        .eq("partner_id", partnerId);
 
       if (error) {
-        logger.error('Failed to revoke API key', { error, keyId, partnerId })
+        logger.error("Failed to revoke API key", { error, keyId, partnerId });
         return {
           success: false,
-          error: 'Failed to revoke API key'
-        }
+          error: "Failed to revoke API key",
+        };
       }
 
       // Clear from cache if present
       this.keyCache.forEach((value, key) => {
         if (value.key.id === keyId) {
-          this.keyCache.delete(key)
+          this.keyCache.delete(key);
         }
-      })
+      });
 
-      logger.info('API key revoked', { keyId, partnerId })
+      logger.info("API key revoked", { keyId, partnerId });
 
-      return { success: true }
-
+      return { success: true };
     } catch (error) {
-      logger.error('Error revoking API key', { error })
+      logger.error("Error revoking API key", { error });
       return {
         success: false,
-        error: 'Internal error'
-      }
+        error: "Internal error",
+      };
     }
   }
 
@@ -481,29 +503,29 @@ class PartnerApiAuth {
    * List API keys for partner
    */
   async listApiKeys(partnerId: string): Promise<{
-    success: boolean
-    keys?: Omit<PartnerApiKey, 'hashedKey'>[]
-    error?: string
+    success: boolean;
+    keys?: Omit<PartnerApiKey, "hashedKey">[];
+    error?: string;
   }> {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
     try {
       const { data, error } = await supabase
-        .from('partner_api_keys')
-        .select('*')
-        .eq('partner_id', partnerId)
-        .order('created_at', { ascending: false })
+        .from("partner_api_keys")
+        .select("*")
+        .eq("partner_id", partnerId)
+        .order("created_at", { ascending: false });
 
       if (error) {
-        logger.error('Failed to list API keys', { error, partnerId })
+        logger.error("Failed to list API keys", { error, partnerId });
         return {
           success: false,
-          error: 'Failed to retrieve API keys'
-        }
+          error: "Failed to retrieve API keys",
+        };
       }
 
       // Remove sensitive data before returning
-      const sanitizedKeys = data.map(key => ({
+      const sanitizedKeys = data.map((key) => ({
         id: key.id,
         partnerId: key.partner_id,
         keyName: key.key_name,
@@ -516,23 +538,22 @@ class PartnerApiAuth {
         lastUsedAt: key.last_used_at,
         expiresAt: key.expires_at,
         createdAt: key.created_at,
-        updatedAt: key.updated_at
-      }))
+        updatedAt: key.updated_at,
+      }));
 
       return {
         success: true,
-        keys: sanitizedKeys
-      }
-
+        keys: sanitizedKeys,
+      };
     } catch (error) {
-      logger.error('Error listing API keys', { error })
+      logger.error("Error listing API keys", { error });
       return {
         success: false,
-        error: 'Internal error'
-      }
+        error: "Internal error",
+      };
     }
   }
 }
 
 // Export singleton instance
-export const partnerApiAuth = new PartnerApiAuth()
+export const partnerApiAuth = new PartnerApiAuth();

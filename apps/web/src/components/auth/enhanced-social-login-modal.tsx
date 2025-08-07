@@ -8,10 +8,10 @@
  * @tags ["auth", "modal", "social-login", "enhanced"]
  * @status stable
  */
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
   Shield,
@@ -19,92 +19,102 @@ import {
   ArrowRight,
   CheckCircle,
   AlertTriangle,
-  ExternalLink
-} from 'lucide-react'
+  ExternalLink,
+} from "lucide-react";
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { SocialLoginPanel, type SocialProvider } from '@/components/auth/social-login-enhanced'
-import { useModalStore } from '@/stores/modal-store'
-import { useToast } from '@/components/notifications/toast-system'
-import { logger } from '@/lib/logger'
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  SocialLoginPanel,
+  type SocialProvider,
+} from "@/components/auth/social-login-enhanced";
+import { useModalStore } from "@/stores/modal-store";
+import { useToast } from "@/components/notifications/toast-system";
+import { logger } from "@/lib/logger";
 
-type ModalStep = 'selection' | 'connecting' | 'success' | 'error'
+type ModalStep = "selection" | "connecting" | "success" | "error";
 
 interface ModalState {
-  step: ModalStep
-  selectedProvider?: SocialProvider
-  error?: string
-  user?: any
+  step: ModalStep;
+  selectedProvider?: SocialProvider;
+  error?: string;
+  user?: any;
 }
 
 export function EnhancedSocialLoginModal() {
-  const { activeModal, closeModal, openModal } = useModalStore()
-  const [state, setState] = useState<ModalState>({ step: 'selection' })
+  const { activeModal, closeModal, openModal } = useModalStore();
+  const [state, setState] = useState<ModalState>({ step: "selection" });
 
-  const { success, error, info } = useToast()
+  const { success, error, info } = useToast();
 
   // Reset state when modal opens/closes
   useEffect(() => {
-    if (activeModal === 'socialLogin') {
-      setState({ step: 'selection' })
-      logger.track('social_login_modal_opened')
+    if (activeModal === "socialLogin") {
+      setState({ step: "selection" });
+      logger.track("social_login_modal_opened");
     }
-  }, [activeModal])
+  }, [activeModal]);
 
-  if (activeModal !== 'socialLogin') return null
+  if (activeModal !== "socialLogin") return null;
 
   const handleSocialSuccess = (provider: SocialProvider, userData: any) => {
     setState({
-      step: 'success',
+      step: "success",
       selectedProvider: provider,
-      user: userData
-    })
+      user: userData,
+    });
 
     success(`Signed in with ${getProviderName(provider)}!`, {
-      subtitle: 'Welcome to ClaimGuardian',
-      actions: [{
-        label: 'Continue',
-        onClick: () => {
-          closeModal()
-          // Navigation handled by auth provider
-        }
-      }]
-    })
+      subtitle: "Welcome to ClaimGuardian",
+      actions: [
+        {
+          label: "Continue",
+          onClick: () => {
+            closeModal();
+            // Navigation handled by auth provider
+          },
+        },
+      ],
+    });
 
-    logger.track('social_login_modal_success', { provider })
+    logger.track("social_login_modal_success", { provider });
 
     // Auto-close after success
     setTimeout(() => {
-      closeModal()
-    }, 2000)
-  }
+      closeModal();
+    }, 2000);
+  };
 
   const handleSocialError = (errorMessage: string) => {
     setState({
-      step: 'error',
-      error: errorMessage
-    })
+      step: "error",
+      error: errorMessage,
+    });
 
-    error('Social login failed', {
+    error("Social login failed", {
       subtitle: errorMessage,
-      actions: [{
-        label: 'Try Again',
-        onClick: () => setState({ step: 'selection' })
-      }]
-    })
+      actions: [
+        {
+          label: "Try Again",
+          onClick: () => setState({ step: "selection" }),
+        },
+      ],
+    });
 
-    logger.track('social_login_modal_error', { error: errorMessage })
-  }
+    logger.track("social_login_modal_error", { error: errorMessage });
+  };
 
   const getProviderName = (provider: SocialProvider): string => {
     switch (provider) {
-      case 'google': return 'Google'
-      case 'azure': return 'Microsoft'
-      case 'linkedin': return 'LinkedIn'
+      case "google":
+        return "Google";
+      case "azure":
+        return "Microsoft";
+      case "linkedin":
+        return "LinkedIn";
     }
-  }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -133,18 +143,18 @@ export function EnhancedSocialLoginModal() {
           </button>
 
           <AnimatePresence mode="wait">
-            {state.step === 'selection' && (
+            {state.step === "selection" && (
               <SelectionStep
                 onSuccess={handleSocialSuccess}
                 onError={handleSocialError}
                 onEmailSignIn={() => {
-                  closeModal()
-                  openModal('login')
+                  closeModal();
+                  openModal("login");
                 }}
               />
             )}
 
-            {state.step === 'success' && (
+            {state.step === "success" && (
               <SuccessStep
                 provider={state.selectedProvider!}
                 user={state.user}
@@ -152,10 +162,10 @@ export function EnhancedSocialLoginModal() {
               />
             )}
 
-            {state.step === 'error' && (
+            {state.step === "error" && (
               <ErrorStep
                 error={state.error!}
-                onRetry={() => setState({ step: 'selection' })}
+                onRetry={() => setState({ step: "selection" })}
                 onCancel={() => closeModal()}
               />
             )}
@@ -163,16 +173,20 @@ export function EnhancedSocialLoginModal() {
         </div>
       </motion.div>
     </div>
-  )
+  );
 }
 
 interface SelectionStepProps {
-  onSuccess: (provider: SocialProvider, user: any) => void
-  onError: (error: string) => void
-  onEmailSignIn: () => void
+  onSuccess: (provider: SocialProvider, user: any) => void;
+  onError: (error: string) => void;
+  onEmailSignIn: () => void;
 }
 
-function SelectionStep({ onSuccess, onError, onEmailSignIn }: SelectionStepProps) {
+function SelectionStep({
+  onSuccess,
+  onError,
+  onEmailSignIn,
+}: SelectionStepProps) {
   return (
     <motion.div
       key="selection"
@@ -254,29 +268,33 @@ function SelectionStep({ onSuccess, onError, onEmailSignIn }: SelectionStepProps
         <Alert>
           <Shield className="w-4 h-4" />
           <AlertDescription className="text-xs">
-            <strong>Privacy Protected:</strong> We never access your social media posts or contacts.
-            Only basic profile information (name, email) is shared securely.
+            <strong>Privacy Protected:</strong> We never access your social
+            media posts or contacts. Only basic profile information (name,
+            email) is shared securely.
           </AlertDescription>
         </Alert>
       </CardContent>
     </motion.div>
-  )
+  );
 }
 
 interface SuccessStepProps {
-  provider: SocialProvider
-  user: any
-  onContinue: () => void
+  provider: SocialProvider;
+  user: any;
+  onContinue: () => void;
 }
 
 function SuccessStep({ provider, user, onContinue }: SuccessStepProps) {
   const getProviderName = (p: SocialProvider): string => {
     switch (p) {
-      case 'google': return 'Google'
-      case 'azure': return 'Microsoft'
-      case 'linkedin': return 'LinkedIn'
+      case "google":
+        return "Google";
+      case "azure":
+        return "Microsoft";
+      case "linkedin":
+        return "LinkedIn";
     }
-  }
+  };
 
   return (
     <motion.div
@@ -303,7 +321,8 @@ function SuccessStep({ provider, user, onContinue }: SuccessStepProps) {
         <Alert className="border-green-500/20 bg-green-500/10">
           <CheckCircle className="w-4 h-4 text-green-400" />
           <AlertDescription className="text-green-300">
-            Your account is secure and ready to use. You'll be redirected to your dashboard shortly.
+            Your account is secure and ready to use. You'll be redirected to
+            your dashboard shortly.
           </AlertDescription>
         </Alert>
 
@@ -312,24 +331,29 @@ function SuccessStep({ provider, user, onContinue }: SuccessStepProps) {
             <h4 className="text-white font-medium mb-2">Account Details</h4>
             <p className="text-gray-400 text-sm">Email: {user.email}</p>
             {user.user_metadata?.full_name && (
-              <p className="text-gray-400 text-sm">Name: {user.user_metadata.full_name}</p>
+              <p className="text-gray-400 text-sm">
+                Name: {user.user_metadata.full_name}
+              </p>
             )}
           </div>
         )}
 
-        <Button onClick={onContinue} className="w-full bg-green-600 hover:bg-green-700">
+        <Button
+          onClick={onContinue}
+          className="w-full bg-green-600 hover:bg-green-700"
+        >
           <ArrowRight className="w-4 h-4 mr-2" />
           Continue to Dashboard
         </Button>
       </CardContent>
     </motion.div>
-  )
+  );
 }
 
 interface ErrorStepProps {
-  error: string
-  onRetry: () => void
-  onCancel: () => void
+  error: string;
+  onRetry: () => void;
+  onCancel: () => void;
 }
 
 function ErrorStep({ error, onRetry, onCancel }: ErrorStepProps) {
@@ -345,13 +369,9 @@ function ErrorStep({ error, onRetry, onCancel }: ErrorStepProps) {
           <AlertTriangle className="w-8 h-8 text-white" />
         </div>
 
-        <CardTitle className="text-2xl text-white">
-          Sign In Failed
-        </CardTitle>
+        <CardTitle className="text-2xl text-white">Sign In Failed</CardTitle>
 
-        <p className="text-gray-400">
-          We couldn't complete your social login
-        </p>
+        <p className="text-gray-400">We couldn't complete your social login</p>
       </CardHeader>
 
       <CardContent className="space-y-6">
@@ -371,7 +391,11 @@ function ErrorStep({ error, onRetry, onCancel }: ErrorStepProps) {
         </div>
 
         <div className="flex gap-3">
-          <Button variant="outline" onClick={onCancel} className="flex-1 border-slate-600">
+          <Button
+            variant="outline"
+            onClick={onCancel}
+            className="flex-1 border-slate-600"
+          >
             Cancel
           </Button>
           <Button onClick={onRetry} className="flex-1">
@@ -381,7 +405,12 @@ function ErrorStep({ error, onRetry, onCancel }: ErrorStepProps) {
 
         <div className="text-center">
           <button
-            onClick={() => window.open('mailto:support@claimguardianai.com?subject=Social Login Help', '_blank')}
+            onClick={() =>
+              window.open(
+                "mailto:support@claimguardianai.com?subject=Social Login Help",
+                "_blank",
+              )
+            }
             className="text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1 mx-auto"
           >
             <ExternalLink className="w-3 h-3" />
@@ -390,5 +419,5 @@ function ErrorStep({ error, onRetry, onCancel }: ErrorStepProps) {
         </div>
       </CardContent>
     </motion.div>
-  )
+  );
 }

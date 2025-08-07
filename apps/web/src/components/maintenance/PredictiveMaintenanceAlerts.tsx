@@ -1,14 +1,20 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { createClient } from '@/lib/supabase/client';
-import { toast } from 'sonner';
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
 import {
   Wrench,
   AlertTriangle,
@@ -29,8 +35,8 @@ import {
   RefreshCw,
   Download,
   Bell,
-  Settings
-} from 'lucide-react';
+  Settings,
+} from "lucide-react";
 import {
   LineChart,
   Line,
@@ -49,14 +55,14 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  Cell
-} from 'recharts';
+  Cell,
+} from "recharts";
 
 interface MaintenanceAlert {
   id: string;
   system: string;
   component: string;
-  urgency: 'low' | 'medium' | 'high' | 'critical';
+  urgency: "low" | "medium" | "high" | "critical";
   predictedFailure: string; // date
   currentCondition: number; // 0-100
   estimatedCost: number;
@@ -69,7 +75,7 @@ interface MaintenanceAlert {
 interface SystemHealth {
   system: string;
   health: number;
-  trend: 'improving' | 'stable' | 'declining';
+  trend: "improving" | "stable" | "declining";
   lastMaintenance: string;
   nextScheduled: string;
 }
@@ -77,7 +83,7 @@ interface SystemHealth {
 interface MaintenanceHistory {
   date: string;
   system: string;
-  type: 'preventive' | 'repair' | 'replacement';
+  type: "preventive" | "repair" | "replacement";
   cost: number;
   prevented?: boolean;
 }
@@ -96,26 +102,37 @@ const systemIcons = {
   electrical: Zap,
   foundation: Shield,
   windows: Wind,
-  appliances: Settings
+  appliances: Settings,
 };
 
 export function PredictiveMaintenanceAlerts() {
   const [scanning, setScanning] = useState(false);
-  const [selectedProperty, setSelectedProperty] = useState('');
+  const [selectedProperty, setSelectedProperty] = useState("");
   const [alerts, setAlerts] = useState<MaintenanceAlert[]>([]);
   const [systemHealth, setSystemHealth] = useState<SystemHealth[]>([]);
   const supabase = createClient();
 
   const [loading, setLoading] = useState(false);
 
-  const [maintenanceHistory, setMaintenanceHistory] = useState<MaintenanceHistory[]>([]);
+  const [maintenanceHistory, setMaintenanceHistory] = useState<
+    MaintenanceHistory[]
+  >([]);
   const [riskMatrix, setRiskMatrix] = useState<RiskAssessment[]>([]);
 
   const [maintenanceTimeline, setMaintenanceTimeline] = useState<any[]>([]);
 
-  const totalSavings = maintenanceTimeline.reduce((sum, month) => sum + (month.saved || 0), 0);
-  const totalPreventive = maintenanceTimeline.reduce((sum, month) => sum + (month.preventive || 0), 0);
-  const totalRepairs = maintenanceTimeline.reduce((sum, month) => sum + (month.repairs || 0), 0);
+  const totalSavings = maintenanceTimeline.reduce(
+    (sum, month) => sum + (month.saved || 0),
+    0,
+  );
+  const totalPreventive = maintenanceTimeline.reduce(
+    (sum, month) => sum + (month.preventive || 0),
+    0,
+  );
+  const totalRepairs = maintenanceTimeline.reduce(
+    (sum, month) => sum + (month.repairs || 0),
+    0,
+  );
 
   useEffect(() => {
     loadMaintenanceData();
@@ -126,9 +143,12 @@ export function PredictiveMaintenanceAlerts() {
 
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('predictive-maintenance', {
-        body: { property_id: selectedProperty }
-      });
+      const { data, error } = await supabase.functions.invoke(
+        "predictive-maintenance",
+        {
+          body: { property_id: selectedProperty },
+        },
+      );
 
       if (error) throw error;
 
@@ -140,7 +160,7 @@ export function PredictiveMaintenanceAlerts() {
         setMaintenanceHistory(data.history || []);
       }
     } catch (error) {
-      console.error('Error loading maintenance data:', error);
+      console.error("Error loading maintenance data:", error);
       // Set empty arrays on error
       setAlerts([]);
       setSystemHealth([]);
@@ -154,28 +174,33 @@ export function PredictiveMaintenanceAlerts() {
 
   const runPredictiveScan = async () => {
     if (!selectedProperty) {
-      toast.error('Please select a property first');
+      toast.error("Please select a property first");
       return;
     }
 
     setScanning(true);
     try {
-      const { data, error } = await supabase.functions.invoke('predictive-maintenance-scan', {
-        body: {
-          property_id: selectedProperty,
-          scan_type: 'comprehensive'
-        }
-      });
+      const { data, error } = await supabase.functions.invoke(
+        "predictive-maintenance-scan",
+        {
+          body: {
+            property_id: selectedProperty,
+            scan_type: "comprehensive",
+          },
+        },
+      );
 
       if (error) throw error;
 
       if (data?.predictions) {
         setAlerts(data.predictions);
-        toast.success(`Predictive scan complete - ${data.predictions.length} issues detected`);
+        toast.success(
+          `Predictive scan complete - ${data.predictions.length} issues detected`,
+        );
       }
     } catch (error) {
-      console.error('Error running scan:', error);
-      toast.error('Failed to complete scan');
+      console.error("Error running scan:", error);
+      toast.error("Failed to complete scan");
     } finally {
       setScanning(false);
     }
@@ -188,34 +213,45 @@ export function PredictiveMaintenanceAlerts() {
 
   const getUrgencyColor = (urgency: string) => {
     switch (urgency) {
-      case 'critical': return 'text-red-500';
-      case 'high': return 'text-orange-500';
-      case 'medium': return 'text-yellow-500';
-      case 'low': return 'text-green-500';
-      default: return 'text-gray-500';
+      case "critical":
+        return "text-red-500";
+      case "high":
+        return "text-orange-500";
+      case "medium":
+        return "text-yellow-500";
+      case "low":
+        return "text-green-500";
+      default:
+        return "text-gray-500";
     }
   };
 
   const getUrgencyBadge = (urgency: string) => {
     const colors = {
-      critical: 'bg-red-500',
-      high: 'bg-orange-500',
-      medium: 'bg-yellow-500',
-      low: 'bg-green-500'
+      critical: "bg-red-500",
+      high: "bg-orange-500",
+      medium: "bg-yellow-500",
+      low: "bg-green-500",
     };
-    return <Badge className={colors[urgency as keyof typeof colors]}>{urgency} priority</Badge>;
+    return (
+      <Badge className={colors[urgency as keyof typeof colors]}>
+        {urgency} priority
+      </Badge>
+    );
   };
 
   const getHealthColor = (health: number) => {
-    if (health >= 80) return '#22c55e';
-    if (health >= 60) return '#eab308';
-    if (health >= 40) return '#f97316';
-    return '#ef4444';
+    if (health >= 80) return "#22c55e";
+    if (health >= 60) return "#eab308";
+    if (health >= 40) return "#f97316";
+    return "#ef4444";
   };
 
   const getTrendIcon = (trend: string) => {
-    if (trend === 'improving') return <TrendingUp className="h-4 w-4 text-green-500" />;
-    if (trend === 'declining') return <TrendingUp className="h-4 w-4 text-red-500 rotate-180" />;
+    if (trend === "improving")
+      return <TrendingUp className="h-4 w-4 text-green-500" />;
+    if (trend === "declining")
+      return <TrendingUp className="h-4 w-4 text-red-500 rotate-180" />;
     return <Activity className="h-4 w-4 text-gray-500" />;
   };
 
@@ -228,7 +264,9 @@ export function PredictiveMaintenanceAlerts() {
             <Wrench className="h-6 w-6" />
             <span>Predictive Maintenance System</span>
           </h2>
-          <p className="text-gray-600">AI-powered predictions to prevent costly repairs</p>
+          <p className="text-gray-600">
+            AI-powered predictions to prevent costly repairs
+          </p>
         </div>
         <Button onClick={runPredictiveScan} disabled={scanning}>
           {scanning ? (
@@ -251,12 +289,18 @@ export function PredictiveMaintenanceAlerts() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-2">
               <AlertTriangle className="h-5 w-5 text-orange-500" />
-              <Badge className="bg-orange-500">{alerts.filter(a => a.urgency === 'high' || a.urgency === 'critical').length}</Badge>
+              <Badge className="bg-orange-500">
+                {
+                  alerts.filter(
+                    (a) => a.urgency === "high" || a.urgency === "critical",
+                  ).length
+                }
+              </Badge>
             </div>
             <p className="text-2xl font-bold">{alerts.length}</p>
             <p className="text-sm text-gray-500">Active Alerts</p>
             <p className="text-xs text-orange-600 mt-1">
-              {alerts.filter(a => a.urgency === 'critical').length} critical
+              {alerts.filter((a) => a.urgency === "critical").length} critical
             </p>
           </CardContent>
         </Card>
@@ -267,7 +311,9 @@ export function PredictiveMaintenanceAlerts() {
               <DollarSign className="h-5 w-5 text-green-500" />
               <TrendingUp className="h-4 w-4 text-green-500" />
             </div>
-            <p className="text-2xl font-bold">${totalSavings.toLocaleString()}</p>
+            <p className="text-2xl font-bold">
+              ${totalSavings.toLocaleString()}
+            </p>
             <p className="text-sm text-gray-500">Saved YTD</p>
             <p className="text-xs text-green-600 mt-1">Through prevention</p>
           </CardContent>
@@ -280,11 +326,24 @@ export function PredictiveMaintenanceAlerts() {
               <Badge variant="outline">Health</Badge>
             </div>
             <p className="text-2xl font-bold">
-              {systemHealth.length > 0 ? Math.round(systemHealth.reduce((sum, s) => sum + s.health, 0) / systemHealth.length) : 0}%
+              {systemHealth.length > 0
+                ? Math.round(
+                    systemHealth.reduce((sum, s) => sum + s.health, 0) /
+                      systemHealth.length,
+                  )
+                : 0}
+              %
             </p>
             <p className="text-sm text-gray-500">Overall Health</p>
             <Progress
-              value={systemHealth.length > 0 ? Math.round(systemHealth.reduce((sum, s) => sum + s.health, 0) / systemHealth.length) : 0}
+              value={
+                systemHealth.length > 0
+                  ? Math.round(
+                      systemHealth.reduce((sum, s) => sum + s.health, 0) /
+                        systemHealth.length,
+                    )
+                  : 0
+              }
               className="mt-2 h-2"
             />
           </CardContent>
@@ -304,14 +363,18 @@ export function PredictiveMaintenanceAlerts() {
       </div>
 
       {/* Critical Alert Banner */}
-      {alerts.some(a => a.urgency === 'critical') && (
+      {alerts.some((a) => a.urgency === "critical") && (
         <Alert className="border-red-200 bg-red-50">
           <AlertCircle className="h-4 w-4 text-red-600" />
-          <AlertTitle className="text-red-900">Critical Maintenance Required</AlertTitle>
+          <AlertTitle className="text-red-900">
+            Critical Maintenance Required
+          </AlertTitle>
           <AlertDescription className="text-red-700">
-            {alerts.filter(a => a.urgency === 'critical').length} system(s) require immediate attention to prevent failure.
-            Estimated prevention savings: ${alerts
-              .filter(a => a.urgency === 'critical')
+            {alerts.filter((a) => a.urgency === "critical").length} system(s)
+            require immediate attention to prevent failure. Estimated prevention
+            savings: $
+            {alerts
+              .filter((a) => a.urgency === "critical")
               .reduce((sum, a) => sum + (a.estimatedCost - a.preventiveCost), 0)
               .toLocaleString()}
           </AlertDescription>
@@ -341,41 +404,64 @@ export function PredictiveMaintenanceAlerts() {
                 {alerts.map((alert) => {
                   const Icon = alert.icon;
                   const daysUntilFailure = Math.floor(
-                    (new Date(alert.predictedFailure).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+                    (new Date(alert.predictedFailure).getTime() -
+                      new Date().getTime()) /
+                      (1000 * 60 * 60 * 24),
                   );
 
                   return (
                     <div key={alert.id} className="border rounded-lg p-4">
                       <div className="flex items-start justify-between">
                         <div className="flex items-start space-x-3 flex-1">
-                          <Icon className={`h-6 w-6 mt-1 ${getUrgencyColor(alert.urgency)}`} />
+                          <Icon
+                            className={`h-6 w-6 mt-1 ${getUrgencyColor(alert.urgency)}`}
+                          />
                           <div className="flex-1">
                             <div className="flex items-center space-x-2 mb-2">
-                              <h4 className="font-semibold">{alert.system} - {alert.component}</h4>
+                              <h4 className="font-semibold">
+                                {alert.system} - {alert.component}
+                              </h4>
                               {getUrgencyBadge(alert.urgency)}
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
                               <div>
-                                <p className="text-xs text-gray-500">Condition</p>
+                                <p className="text-xs text-gray-500">
+                                  Condition
+                                </p>
                                 <div className="flex items-center space-x-2">
-                                  <Progress value={alert.currentCondition} className="flex-1 h-2" />
-                                  <span className="text-sm font-medium">{alert.currentCondition}%</span>
+                                  <Progress
+                                    value={alert.currentCondition}
+                                    className="flex-1 h-2"
+                                  />
+                                  <span className="text-sm font-medium">
+                                    {alert.currentCondition}%
+                                  </span>
                                 </div>
                               </div>
 
                               <div>
-                                <p className="text-xs text-gray-500">Predicted Failure</p>
+                                <p className="text-xs text-gray-500">
+                                  Predicted Failure
+                                </p>
                                 <p className="text-sm font-medium">
-                                  {daysUntilFailure > 0 ? `In ${daysUntilFailure} days` : 'Imminent'}
+                                  {daysUntilFailure > 0
+                                    ? `In ${daysUntilFailure} days`
+                                    : "Imminent"}
                                 </p>
                               </div>
 
                               <div>
-                                <p className="text-xs text-gray-500">Cost to Prevent</p>
+                                <p className="text-xs text-gray-500">
+                                  Cost to Prevent
+                                </p>
                                 <p className="text-sm">
-                                  <span className="font-bold text-green-600">${alert.preventiveCost}</span>
-                                  <span className="text-gray-400 ml-2">vs ${alert.estimatedCost.toLocaleString()}</span>
+                                  <span className="font-bold text-green-600">
+                                    ${alert.preventiveCost}
+                                  </span>
+                                  <span className="text-gray-400 ml-2">
+                                    vs ${alert.estimatedCost.toLocaleString()}
+                                  </span>
                                 </p>
                               </div>
                             </div>
@@ -388,7 +474,8 @@ export function PredictiveMaintenanceAlerts() {
 
                             <div className="flex items-center justify-between">
                               <p className="text-xs text-gray-500">
-                                Last inspection: {alert.lastInspection || 'Never'}
+                                Last inspection:{" "}
+                                {alert.lastInspection || "Never"}
                               </p>
 
                               <div className="flex space-x-2">
@@ -402,7 +489,11 @@ export function PredictiveMaintenanceAlerts() {
                                 </Button>
                                 <Button
                                   size="sm"
-                                  variant={alert.urgency === 'critical' ? 'destructive' : 'default'}
+                                  variant={
+                                    alert.urgency === "critical"
+                                      ? "destructive"
+                                      : "default"
+                                  }
                                 >
                                   <Wrench className="h-4 w-4 mr-1" />
                                   Fix Now
@@ -431,10 +522,16 @@ export function PredictiveMaintenanceAlerts() {
             <CardContent>
               <div className="space-y-4">
                 {systemHealth.map((system) => {
-                  const Icon = systemIcons[system.system.toLowerCase() as keyof typeof systemIcons] || Home;
+                  const Icon =
+                    systemIcons[
+                      system.system.toLowerCase() as keyof typeof systemIcons
+                    ] || Home;
 
                   return (
-                    <div key={system.system} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div
+                      key={system.system}
+                      className="flex items-center justify-between p-4 border rounded-lg"
+                    >
                       <div className="flex items-center space-x-4 flex-1">
                         <Icon className="h-6 w-6 text-gray-500" />
                         <div className="flex-1">
@@ -442,15 +539,21 @@ export function PredictiveMaintenanceAlerts() {
                             <h4 className="font-medium">{system.system}</h4>
                             <div className="flex items-center space-x-2">
                               {getTrendIcon(system.trend)}
-                              <span className="text-sm text-gray-500">{system.trend}</span>
+                              <span className="text-sm text-gray-500">
+                                {system.trend}
+                              </span>
                             </div>
                           </div>
                           <Progress
                             value={system.health}
                             className="h-3"
-                            style={{
-                              '--progress-background': getHealthColor(system.health)
-                            } as React.CSSProperties}
+                            style={
+                              {
+                                "--progress-background": getHealthColor(
+                                  system.health,
+                                ),
+                              } as React.CSSProperties
+                            }
                           />
                           <div className="flex justify-between mt-2 text-xs text-gray-500">
                             <span>Last: {system.lastMaintenance}</span>
@@ -458,7 +561,10 @@ export function PredictiveMaintenanceAlerts() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-2xl font-bold" style={{ color: getHealthColor(system.health) }}>
+                          <p
+                            className="text-2xl font-bold"
+                            style={{ color: getHealthColor(system.health) }}
+                          >
                             {system.health}%
                           </p>
                           <p className="text-xs text-gray-500">Health Score</p>
@@ -519,17 +625,23 @@ export function PredictiveMaintenanceAlerts() {
               <div className="grid grid-cols-3 gap-4 mt-6">
                 <div className="text-center p-4 bg-green-50 rounded-lg">
                   <DollarSign className="h-8 w-8 text-green-500 mx-auto mb-2" />
-                  <p className="text-2xl font-bold text-green-600">${totalPreventive.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-green-600">
+                    ${totalPreventive.toLocaleString()}
+                  </p>
                   <p className="text-sm text-green-700">Preventive Costs</p>
                 </div>
                 <div className="text-center p-4 bg-red-50 rounded-lg">
                   <Wrench className="h-8 w-8 text-red-500 mx-auto mb-2" />
-                  <p className="text-2xl font-bold text-red-600">${totalRepairs.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-red-600">
+                    ${totalRepairs.toLocaleString()}
+                  </p>
                   <p className="text-sm text-red-700">Repair Costs</p>
                 </div>
                 <div className="text-center p-4 bg-blue-50 rounded-lg">
                   <TrendingUp className="h-8 w-8 text-blue-500 mx-auto mb-2" />
-                  <p className="text-2xl font-bold text-blue-600">${totalSavings.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-blue-600">
+                    ${totalSavings.toLocaleString()}
+                  </p>
                   <p className="text-sm text-blue-700">Total Saved</p>
                 </div>
               </div>
@@ -593,26 +705,47 @@ export function PredictiveMaintenanceAlerts() {
                 <div className="p-6 bg-green-50 border border-green-200 rounded-lg">
                   <div className="flex items-center justify-between mb-4">
                     <div>
-                      <h3 className="text-lg font-semibold text-green-900">Potential Savings This Month</h3>
-                      <p className="text-sm text-green-700">By addressing all current alerts</p>
+                      <h3 className="text-lg font-semibold text-green-900">
+                        Potential Savings This Month
+                      </h3>
+                      <p className="text-sm text-green-700">
+                        By addressing all current alerts
+                      </p>
                     </div>
                     <div className="text-right">
                       <p className="text-3xl font-bold text-green-600">
-                        ${alerts.reduce((sum, a) => sum + (a.estimatedCost - a.preventiveCost), 0).toLocaleString()}
+                        $
+                        {alerts
+                          .reduce(
+                            (sum, a) =>
+                              sum + (a.estimatedCost - a.preventiveCost),
+                            0,
+                          )
+                          .toLocaleString()}
                       </p>
-                      <p className="text-sm text-green-700">vs emergency repairs</p>
+                      <p className="text-sm text-green-700">
+                        vs emergency repairs
+                      </p>
                     </div>
                   </div>
 
                   <div className="space-y-3">
                     {alerts.map((alert) => (
-                      <div key={alert.id} className="flex items-center justify-between py-2 border-t border-green-200">
+                      <div
+                        key={alert.id}
+                        className="flex items-center justify-between py-2 border-t border-green-200"
+                      >
                         <div className="flex items-center space-x-3">
                           <alert.icon className="h-5 w-5 text-green-600" />
-                          <span className="text-sm font-medium text-green-900">{alert.component}</span>
+                          <span className="text-sm font-medium text-green-900">
+                            {alert.component}
+                          </span>
                         </div>
                         <div className="text-sm text-green-700">
-                          Save ${(alert.estimatedCost - alert.preventiveCost).toLocaleString()}
+                          Save $
+                          {(
+                            alert.estimatedCost - alert.preventiveCost
+                          ).toLocaleString()}
                         </div>
                       </div>
                     ))}

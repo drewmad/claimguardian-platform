@@ -8,10 +8,10 @@
  * @insurance-context deadline-management
  */
 
-'use client'
+"use client";
 
-import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { DeadlineGuardianDashboard } from '@/components/deadline-guardian/deadline-dashboard'
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import { DeadlineGuardianDashboard } from "@/components/deadline-guardian/deadline-dashboard";
 
 export default function DeadlineGuardianPage() {
   return (
@@ -20,5 +20,5 @@ export default function DeadlineGuardianPage() {
         <DeadlineGuardianDashboard />
       </div>
     </DashboardLayout>
-  )
+  );
 }

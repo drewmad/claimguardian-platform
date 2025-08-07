@@ -2,31 +2,31 @@
 # This file configures the pre-commit hooks that run automatically.
 
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
-    -   id: check-yaml
-    -   id: end-of-file-fixer
-    -   id: trailing-whitespace
-    -   id: check-added-large-files
-    -   id: check-json
-    -   id: check-merge-conflict
-    -   id: debug-statements
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-added-large-files
+      - id: check-json
+      - id: check-merge-conflict
+      - id: debug-statements
 
--   repo: https://github.com/psf/black
+  - repo: https://github.com/psf/black
     rev: 25.1.0
     hooks:
-    -   id: black # Automatically formats Python code.
+      - id: black # Automatically formats Python code.
         language_version: python3
 
--   repo: https://github.com/pycqa/flake8
+  - repo: https://github.com/pycqa/flake8
     rev: 7.3.0
     hooks:
-    -   id: flake8 # Lints for logical errors and style violations.
+      - id: flake8 # Lints for logical errors and style violations.
         additional_dependencies: [flake8-docstrings]
 
--   repo: https://github.com/pre-commit/mirrors-mypy
+  - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.17.1
     hooks:
-    -   id: mypy # Runs the static type checker.
+      - id: mypy # Runs the static type checker.
         files: \.py$

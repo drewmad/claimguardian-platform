@@ -1,11 +1,13 @@
 # ClaimGuardian Comprehensive Data Collection Guide
 
 ## Overview
+
 This document provides a comprehensive checklist of every data point ClaimGuardian can capture for Florida homeowners' insurance claims, damage assessments, and related workflows.
 
 ---
 
 ## 1. Policy & Coverage
+
 - Policy number (primary key)
 - Policy form (HO‑1 … HO‑8, DP, NFIP, wind‑only, excess flood)
 - Carrier name & NAIC code
@@ -24,6 +26,7 @@ This document provides a comprehensive checklist of every data point ClaimGuardi
 - Mortgagee / loss‑payee information
 
 ## 2. Insured & Occupants
+
 - Named insured(s) full legal name(s)
 - Contact details (phone, email, mailing address)
 - Preferred communication method
@@ -34,6 +37,7 @@ This document provides a comprehensive checklist of every data point ClaimGuardi
 - Special needs / accessibility notes
 
 ## 3. Property & Location
+
 - Physical address (parsed & geocoded lat/long)
 - County, municipality, FEMA flood zone, evacuation zone
 - Construction year & permit history
@@ -49,6 +53,7 @@ This document provides a comprehensive checklist of every data point ClaimGuardi
 - Property photos baseline & 3‑D scan UUIDs
 
 ## 4. Loss Event Metadata
+
 - Claim number (unique)
 - Date / time of loss (ISO‑8601, local & UTC)
 - Date reported
@@ -61,6 +66,7 @@ This document provides a comprehensive checklist of every data point ClaimGuardi
 - Catastrophe event tag (CAT code, PCS event ID)
 
 ## 5. Weather & Environmental Corroboration
+
 - NOAA/NWS point forecasts at loss time
 - Radar precipitation estimates (QPE)
 - Max wind gust & sustained wind
@@ -72,6 +78,7 @@ This document provides a comprehensive checklist of every data point ClaimGuardi
 - Tide level (for coastal flood claims)
 
 ## 6. Damage Scope – Structural
+
 - Room/area breakdown (unique ID, name, level)
 - Element type (roof, wall, floor, window, door, HVAC, pool cage, dock…)
 - Material & finish pre‑loss
@@ -87,6 +94,7 @@ This document provides a comprehensive checklist of every data point ClaimGuardi
 - Code upgrade requirements flag
 
 ## 7. Damage Scope – Contents
+
 - Item unique ID (SKU/hash)
 - Category (electronics, furniture, clothing, tools, appliances, etc.)
 - Make/model/serial #
@@ -99,6 +107,7 @@ This document provides a comprehensive checklist of every data point ClaimGuardi
 - Photographic proof URI list
 
 ## 8. Additional Living Expense (ALE)
+
 - Displacement start / end dates
 - Temporary housing vendor & address
 - Daily lodging cost
@@ -108,6 +117,7 @@ This document provides a comprehensive checklist of every data point ClaimGuardi
 - Receipts (URI, OCR text, amount, tax)
 
 ## 9. Mitigation & Emergency Services
+
 - Vendor company & license #
 - Service start / end timestamps
 - Tasks performed (water extraction, board‑up, tarping, tree removal)
@@ -118,6 +128,7 @@ This document provides a comprehensive checklist of every data point ClaimGuardi
 - Photos before/after mitigation
 
 ## 10. Estimates & Repair Workflow
+
 - Estimator name & credential (Xactimate ID, contractor license)
 - Estimating platform (Xactimate, Symbility, CoreLogic)
 - Estimate version # & date
@@ -134,6 +145,7 @@ This document provides a comprehensive checklist of every data point ClaimGuardi
 - Final completion certificate date
 
 ## 11. Financial & Payment Ledger
+
 - Initial reserve amount & date
 - Claim paid‑to‑date
 - Indemnity vs expense split
@@ -147,6 +159,7 @@ This document provides a comprehensive checklist of every data point ClaimGuardi
 - Salvage proceeds
 
 ## 12. Compliance & Timelines (Florida Statutes)
+
 - Insurer acknowledgment date (FS 627.70131)
 - Inspection scheduled date
 - Coverage decision date
@@ -157,6 +170,7 @@ This document provides a comprehensive checklist of every data point ClaimGuardi
 - Statute of limitations reminders
 
 ## 13. Communications & Documents
+
 - Contact log (timestamp, participants, medium, summary, sentiment)
 - Recorded statements transcript & audio URI
 - Reservation of rights letters
@@ -167,6 +181,7 @@ This document provides a comprehensive checklist of every data point ClaimGuardi
 - Document OCR text & embedding vector IDs
 
 ## 14. Litigation & Dispute Tracking
+
 - Attorney representation flags (insured, insurer)
 - Legal firm & bar #s
 - Civil remedy notice # & date
@@ -176,6 +191,7 @@ This document provides a comprehensive checklist of every data point ClaimGuardi
 - Expert witness reports (engineer, IAQ, cause‑origin)
 
 ## 15. Fraud & Special Investigation
+
 - Red flags checklist (late report, prior losses, financial distress, overlapping coverage)
 - Social media scrape evidence URIs
 - NICB indicator codes
@@ -184,6 +200,7 @@ This document provides a comprehensive checklist of every data point ClaimGuardi
 - Background check summary
 
 ## 16. Third‑Party & External Data Feeds
+
 - Property tax assessor data (parcel ID, assessed value)
 - Google Street View historical images
 - Permit & contractor history
@@ -196,6 +213,7 @@ This document provides a comprehensive checklist of every data point ClaimGuardi
 - Water level sensors (USGS, NOAA gauges)
 
 ## 17. IoT & Smart‑Home Telemetry
+
 - Device ID (MAC/serial)
 - Sensor type (water leak, smoke, motion, temp, humidity)
 - Event timestamp & value
@@ -204,6 +222,7 @@ This document provides a comprehensive checklist of every data point ClaimGuardi
 - Sensor location mapping to property rooms
 
 ## 18. Claim Workflow Metadata
+
 - Loss notification → closure workflow stage
 - Assigned adjuster & team hierarchy
 - SLA clock (hours since last action)
@@ -213,6 +232,7 @@ This document provides a comprehensive checklist of every data point ClaimGuardi
 - Embedding vector version for AI summarization
 
 ## 19. Analytics & Reporting
+
 - Severity index (loss amount ÷ Coverage A)
 - Claims frequency rate by peril
 - Loss ratio (incurred ÷ earned premium)
@@ -228,12 +248,14 @@ This document provides a comprehensive checklist of every data point ClaimGuardi
 ## Implementation Notes
 
 ### Database Schema
+
 - **RLS:** Default‑deny; grant row‑level permissions per role (insured, adjuster, contractor)
 - **Vector Columns:** Embed all textual fields (notes, OCR, transcripts) via `edge_functions/embed.ts`
 - **File Storage:** Store large binaries (photos, 3‑D scans) in S3‑compatible bucket; keep signed URLs only
 - **Event Triggers:** Emit `claim_update` events on any record change to power the "Claim Concierge" AI
 
 ### Security Considerations
+
 - All PII fields must be encrypted at rest
 - Social Security/EIN must be tokenized or hashed
 - Payment information requires PCI compliance
@@ -241,6 +263,7 @@ This document provides a comprehensive checklist of every data point ClaimGuardi
 - Legal documents require audit trail
 
 ### API Integration Strategy
+
 - Use canonical keys: `(parcel_id, place_id, lat, lng)` composite
 - ETL placement in `/data_integrations/` directory structure
 - Implement rate limiting and retry logic
@@ -251,6 +274,7 @@ This document provides a comprehensive checklist of every data point ClaimGuardi
 ## External Data Sources Integration
 
 ### Google Maps Platform APIs
+
 1. **Geocoding API**
    - `formatted_address`, `place_id`, `geometry.location`, `address_components`
 
@@ -272,6 +296,7 @@ This document provides a comprehensive checklist of every data point ClaimGuardi
    - OCR for document processing
 
 ### Real Estate APIs
+
 1. **Zillow/Bridge Interactive (RESO Web API)**
    - Property details, valuations, ownership history
    - Physical characteristics, financial data
@@ -283,6 +308,7 @@ This document provides a comprehensive checklist of every data point ClaimGuardi
    - Property listings, photos, neighborhood data
 
 ### Weather & Environmental APIs
+
 1. **NOAA/NWS**
    - Historical weather data
    - Storm tracking and predictions
@@ -298,6 +324,7 @@ This document provides a comprehensive checklist of every data point ClaimGuardi
 ---
 
 ## Data Refresh Cadence
+
 - **Real-time**: IoT sensors, emergency alerts
 - **Hourly**: Weather data, air quality
 - **Daily**: Property listings (active), legal documents
@@ -308,6 +335,7 @@ This document provides a comprehensive checklist of every data point ClaimGuardi
 ---
 
 ## Quick Implementation Steps
+
 1. Enable required Google APIs with usage caps
 2. Request RESO Web API credentials from MLS providers
 3. Setup cron-driven edge functions for data ingestion

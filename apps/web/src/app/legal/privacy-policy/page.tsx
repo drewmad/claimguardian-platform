@@ -6,14 +6,15 @@
  * @status stable
  */
 
-import { Metadata } from 'next'
+import { Metadata } from "next";
 
-import { LegalDocumentView } from '@/components/legal/legal-document-view'
+import { LegalDocumentView } from "@/components/legal/legal-document-view";
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | ClaimGuardian',
-  description: 'Learn how ClaimGuardian protects your personal information and privacy',
-}
+  title: "Privacy Policy | ClaimGuardian",
+  description:
+    "Learn how ClaimGuardian protects your personal information and privacy",
+};
 
 export default function PrivacyPolicyPage() {
   return (
@@ -22,5 +23,5 @@ export default function PrivacyPolicyPage() {
         <LegalDocumentView documentType="privacy_policy" />
       </div>
     </div>
-  )
+  );
 }

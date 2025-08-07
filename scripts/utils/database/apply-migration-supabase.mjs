@@ -1,19 +1,19 @@
 #!/usr/bin/env node
 
-import { createClient } from '@supabase/supabase-js';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { createClient } from "@supabase/supabase-js";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Load environment variables
-const envPath = path.join(__dirname, '..', '.env.local');
-const envContent = fs.readFileSync(envPath, 'utf8');
+const envPath = path.join(__dirname, "..", ".env.local");
+const envContent = fs.readFileSync(envPath, "utf8");
 const env = {};
-envContent.split('\n').forEach(line => {
-  const [key, value] = line.split('=');
+envContent.split("\n").forEach((line) => {
+  const [key, value] = line.split("=");
   if (key && value) {
     env[key.trim()] = value.trim();
   }
@@ -23,7 +23,7 @@ const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!supabaseUrl || !supabaseServiceKey) {
-  console.error('Missing required environment variables');
+  console.error("Missing required environment variables");
   process.exit(1);
 }
 
@@ -32,17 +32,23 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey, {
   auth: {
     persistSession: false,
     autoRefreshToken: false,
-  }
+  },
 });
 
 // Read migration file
-const migrationPath = path.join(__dirname, '..', 'supabase', 'migrations', '20250716051556_add_claims_and_policies_tables.sql');
-const migrationSQL = fs.readFileSync(migrationPath, 'utf8');
+const migrationPath = path.join(
+  __dirname,
+  "..",
+  "supabase",
+  "migrations",
+  "20250716051556_add_claims_and_policies_tables.sql",
+);
+const migrationSQL = fs.readFileSync(migrationPath, "utf8");
 
 // Split migration into logical sections
 const sections = [
   {
-    name: 'Create enum types',
+    name: "Create enum types",
     sql: `
       -- Create enum types if they don't exist
       DO $$
@@ -69,10 +75,10 @@ const sections = [
           );
         END IF;
       END $$;
-    `
+    `,
   },
   {
-    name: 'Create policies table',
+    name: "Create policies table",
     sql: `
       CREATE TABLE IF NOT EXISTS public.policies (
         id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -93,10 +99,10 @@ const sections = [
         created_by uuid REFERENCES auth.users(id),
         UNIQUE (property_id, policy_number, policy_type)
       );
-    `
+    `,
   },
   {
-    name: 'Create claims table',
+    name: "Create claims table",
     sql: `
       CREATE TABLE IF NOT EXISTS public.claims (
         id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -122,10 +128,10 @@ const sections = [
         created_at timestamptz DEFAULT now(),
         updated_at timestamptz DEFAULT now()
       );
-    `
+    `,
   },
   {
-    name: 'Add structured address columns',
+    name: "Add structured address columns",
     sql: `
       ALTER TABLE public.properties
       ADD COLUMN IF NOT EXISTS street_address text,
@@ -134,10 +140,10 @@ const sections = [
       ADD COLUMN IF NOT EXISTS postal_code text,
       ADD COLUMN IF NOT EXISTS county text,
       ADD COLUMN IF NOT EXISTS country text DEFAULT 'USA';
-    `
+    `,
   },
   {
-    name: 'Migrate address data',
+    name: "Migrate address data",
     sql: `
       UPDATE public.properties
       SET
@@ -155,28 +161,32 @@ const sections = [
         county = address->>'county',
         country = COALESCE(address->>'country', 'USA')
       WHERE address IS NOT NULL;
-    `
-  }
+    `,
+  },
 ];
 
 async function applyMigration() {
-  console.log('🚀 Starting database migration...\n');
+  console.log("🚀 Starting database migration...\n");
 
   for (const section of sections) {
     try {
       console.log(`📝 ${section.name}...`);
 
-      const { data, error } = await supabase.rpc('exec_sql', {
-        sql: section.sql
+      const { data, error } = await supabase.rpc("exec_sql", {
+        sql: section.sql,
       });
 
       if (error) {
         // Try direct execution as fallback
-        const { error: directError } = await supabase.from('_sql').insert({ query: section.sql });
+        const { error: directError } = await supabase
+          .from("_sql")
+          .insert({ query: section.sql });
 
         if (directError) {
           console.log(`  ❌ Failed: ${directError.message}`);
-          console.log(`  ℹ️  This section may need to be run manually in the dashboard`);
+          console.log(
+            `  ℹ️  This section may need to be run manually in the dashboard`,
+          );
         } else {
           console.log(`  ✅ Success!`);
         }
@@ -188,12 +198,16 @@ async function applyMigration() {
     }
   }
 
-  console.log('\n📋 Migration Summary:');
-  console.log('- Some sections may have failed due to RLS restrictions');
-  console.log('- Please check the Supabase dashboard to verify tables were created');
-  console.log('- If needed, run the full migration manually at:');
-  console.log(`  https://supabase.com/dashboard/project/tmlrvecuwgppbaynesji/sql/new`);
-  console.log('\nMigration file location:');
+  console.log("\n📋 Migration Summary:");
+  console.log("- Some sections may have failed due to RLS restrictions");
+  console.log(
+    "- Please check the Supabase dashboard to verify tables were created",
+  );
+  console.log("- If needed, run the full migration manually at:");
+  console.log(
+    `  https://supabase.com/dashboard/project/tmlrvecuwgppbaynesji/sql/new`,
+  );
+  console.log("\nMigration file location:");
   console.log(`  ${migrationPath}`);
 }
 

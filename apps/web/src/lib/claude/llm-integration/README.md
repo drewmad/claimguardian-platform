@@ -47,7 +47,7 @@ class ServiceName {
   // Full interface implementation
   async methodName(params: TypedParams): Promise<TypedResult> {
     // TODO: Implement with Opus
-    throw new Error('Feature requires Opus model. Implementation pending.')
+    throw new Error("Feature requires Opus model. Implementation pending.");
   }
 
   // Statistics and monitoring ready
@@ -57,7 +57,7 @@ class ServiceName {
 }
 
 // Singleton instance ready
-export const serviceName = new ServiceName(config)
+export const serviceName = new ServiceName(config);
 ```
 
 ## Usage (When Activated)
@@ -68,41 +68,41 @@ import {
   semanticSimilarityService,
   naturalLanguageGenerator,
   aiBottleneckResolver,
-  autoFixService
-} from '@claimguardian/claude/llm-integration'
+  autoFixService,
+} from "@claimguardian/claude/llm-integration";
 
 // Synthesize patterns
 const patterns = await llmLearningSynthesis.synthesizeMetaPatterns({
   learnings: recentLearnings,
-  minConfidence: 0.8
-})
+  minConfidence: 0.8,
+});
 
 // Find similar patterns
 const matches = await semanticSimilarityService.findSimilar({
   query: currentTask,
   candidates: availablePatterns,
-  threshold: 0.7
-})
+  threshold: 0.7,
+});
 
 // Generate documentation
 const docs = await naturalLanguageGenerator.generateDocumentation(
   patterns,
-  'markdown'
-)
+  "markdown",
+);
 
 // Analyze bottlenecks
 const analysis = await aiBottleneckResolver.analyzeBottlenecks({
   metrics: performanceMetrics,
   learnings: allLearnings,
   patterns: allPatterns,
-  timeframe: 'week'
-})
+  timeframe: "week",
+});
 
 // Apply auto-fixes
 const fixes = await autoFixService.scanForFixCandidates(
   files,
-  highConfidencePatterns
-)
+  highConfidencePatterns,
+);
 ```
 
 ## Configuration
@@ -129,21 +129,21 @@ Each service can be configured independently:
 ```typescript
 // Custom LLM provider
 const customSynthesis = new LLMLearningynthesis({
-  name: 'anthropic',
-  model: 'claude-3-opus',
+  name: "anthropic",
+  model: "claude-3-opus",
   maxTokens: 8192,
-  temperature: 0.5
-})
+  temperature: 0.5,
+});
 
 // Auto-fix with strict settings
 const strictAutoFix = new AutoFixService({
   enableAutoFix: true,
   confidenceThreshold: 0.98,
   requireApproval: true,
-  allowedCategories: ['security'],
+  allowedCategories: ["security"],
   maxChangesPerRun: 5,
-  testBeforeFix: true
-})
+  testBeforeFix: true,
+});
 ```
 
 ## Integration Points
@@ -191,15 +191,15 @@ async generateInsights() {
 
 ```typescript
 // When Opus is available
-describe('LLM Integration', () => {
-  it('should synthesize meta-patterns', async () => {
+describe("LLM Integration", () => {
+  it("should synthesize meta-patterns", async () => {
     const patterns = await llmLearningSynthesis.synthesizeMetaPatterns({
-      learnings: testLearnings
-    })
-    expect(patterns).toHaveLength(greaterThan(0))
-    expect(patterns[0].confidence).toBeGreaterThan(0.7)
-  })
-})
+      learnings: testLearnings,
+    });
+    expect(patterns).toHaveLength(greaterThan(0));
+    expect(patterns[0].confidence).toBeGreaterThan(0.7);
+  });
+});
 ```
 
 ### Integration Tests (Prepared)
@@ -222,17 +222,17 @@ Each service includes built-in monitoring:
 
 ```typescript
 // Get synthesis statistics
-const synthStats = llmLearningSynthesis.getSynthesisStats()
-console.log(`Synthesized ${synthStats.totalSynthesized} patterns`)
-console.log(`Average confidence: ${synthStats.averageConfidence}`)
+const synthStats = llmLearningSynthesis.getSynthesisStats();
+console.log(`Synthesized ${synthStats.totalSynthesized} patterns`);
+console.log(`Average confidence: ${synthStats.averageConfidence}`);
 
 // Get similarity cache performance
-const simStats = semanticSimilarityService.getSimilarityStats()
-console.log(`Cache hit rate: ${simStats.cacheHitRate}`)
+const simStats = semanticSimilarityService.getSimilarityStats();
+console.log(`Cache hit rate: ${simStats.cacheHitRate}`);
 
 // Get auto-fix success rate
-const fixStats = autoFixService.getFixStats()
-console.log(`Success rate: ${fixStats.successRate}`)
+const fixStats = autoFixService.getFixStats();
+console.log(`Success rate: ${fixStats.successRate}`);
 ```
 
 ## Security Considerations
@@ -273,18 +273,21 @@ console.log(`Success rate: ${fixStats.successRate}`)
 ## Roadmap
 
 ### Phase 1: Core Implementation (Opus Required)
+
 - [ ] Implement all service methods
 - [ ] Add comprehensive error handling
 - [ ] Create integration tests
 - [ ] Deploy to staging
 
 ### Phase 2: Advanced Features
+
 - [ ] Multi-model support (GPT-4, Gemini)
 - [ ] Custom fine-tuning
 - [ ] Real-time learning updates
 - [ ] Distributed processing
 
 ### Phase 3: Enterprise Features
+
 - [ ] Team-specific models
 - [ ] Compliance controls
 - [ ] Advanced analytics

@@ -1,6 +1,5 @@
-
-import { createClient } from 'jsr:@supabase/supabase-js@2'
-import { corsHeaders } from '../_shared/cors.ts'
+import { createClient } from "jsr:@supabase/supabase-js@2";
+import { corsHeaders } from "../_shared/cors.ts";
 
 // This function securely queries the database to audit the permissions
 // of the currently authenticated user (or the anon role if no user).
@@ -8,17 +7,21 @@ import { corsHeaders } from '../_shared/cors.ts'
 
 Deno.serve(async (req) => {
   // This is needed if you're planning to invoke your function from a browser.
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
   }
 
   try {
     // Create a Supabase client with the Auth context of the calling user.
     const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      { global: { headers: { Authorization: req.headers.get('Authorization')! } } }
-    )
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      {
+        global: {
+          headers: { Authorization: req.headers.get("Authorization")! },
+        },
+      },
+    );
 
     // The query provided in the prompt.
     const query = `
@@ -31,23 +34,30 @@ Deno.serve(async (req) => {
            WHERE polrelid = 'auth.users'::regclass
            AND polcmd = 'i'
            LIMIT 1)                                        AS insert_policy_auth_users;
-    `
+    `;
 
     // Execute the query.
-    const { data, error } = await supabaseClient.rpc('execute_sql', { sql: query })
+    const { data, error } = await supabaseClient.rpc("execute_sql", {
+      sql: query,
+    });
 
     if (error) {
-      throw error
+      throw error;
     }
 
     return new Response(JSON.stringify({ data }, null, 2), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
-    })
+    });
   } catch (error) {
-    return new Response(JSON.stringify({ error: error instanceof Error ? error.message : String(error) }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 400,
-    })
+    return new Response(
+      JSON.stringify({
+        error: error instanceof Error ? error.message : String(error),
+      }),
+      {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 400,
+      },
+    );
   }
-})
+});

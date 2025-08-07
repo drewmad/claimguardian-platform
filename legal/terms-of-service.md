@@ -1,4 +1,3 @@
-
 # Terms of Service for ClaimGuardian
 
 **Effective Date:** July 31, 2025
@@ -31,6 +30,7 @@ b. **Account Security:** You are responsible for safeguarding your account passw
 ### 5. User Conduct and Responsibilities
 
 You agree not to misuse the Service. You will not, directly or indirectly:
+
 - Use the Service for any illegal or unauthorized purpose.
 - Probe, scan, or test the vulnerability of any system or network.
 - Breach or otherwise circumvent any security or authentication measures.

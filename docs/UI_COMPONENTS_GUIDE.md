@@ -1,9 +1,11 @@
 # ClaimGuardian UI Components Guide
 
 ## Overview
+
 Complete documentation for ClaimGuardian's UI component system, covering standardized components, design patterns, animations, and usage examples.
 
 ## Table of Contents
+
 - [Design System](#design-system)
 - [Core Components](#core-components)
 - [Insurance-Specific Components](#insurance-specific-components)
@@ -17,6 +19,7 @@ Complete documentation for ClaimGuardian's UI component system, covering standar
 ## Design System
 
 ### Color Palette
+
 ClaimGuardian uses a dark theme with consistent color usage:
 
 ```typescript
@@ -35,6 +38,7 @@ ClaimGuardian uses a dark theme with consistent color usage:
 ```
 
 ### Typography
+
 ```typescript
 // Headings
 - h1: text-3xl md:text-5xl font-bold
@@ -50,6 +54,7 @@ ClaimGuardian uses a dark theme with consistent color usage:
 ```
 
 ### Spacing
+
 ```typescript
 // Container Padding
 - Page containers: px-4 md:px-8, py-6 md:py-12
@@ -96,6 +101,7 @@ export type CardVariant =
 ```
 
 **Variant Styles:**
+
 - `default`: Standard gray card with subtle border
 - `insurance`: Blue-tinted with backdrop blur for insurance content
 - `property`: Green-tinted for property-related information
@@ -133,6 +139,7 @@ export type InsuranceBadgeVariant =
 ```
 
 **Badge Categories:**
+
 - **Status**: active, expired, pending
 - **Coverage**: adequate, low, high
 - **Premium**: low, high
@@ -168,6 +175,7 @@ export interface FilterOptions {
 ```
 
 **Features:**
+
 - Real-time search with debouncing
 - Multi-select filters for policy types, carriers, status
 - Sort by premium, coverage, expiration, or name
@@ -201,6 +209,7 @@ interface StatsData {
 ```
 
 **Features:**
+
 - Animated number counters
 - Color-coded status indicators
 - Responsive grid layout
@@ -248,6 +257,7 @@ export const hoverScale: Variants = {
 ```
 
 **Available Animations:**
+
 - `fadeInUp` - Fade in with upward slide
 - `fadeInDown` - Fade in with downward slide
 - `slideInLeft` - Slide in from left
@@ -315,6 +325,7 @@ interface DragDropUploadProps {
 ```
 
 **Features:**
+
 - Visual drag & drop zone
 - File type validation
 - Size limit enforcement
@@ -534,6 +545,7 @@ When creating new components, ensure:
 ## Future Enhancements
 
 ### Planned Components
+
 - Data visualization charts
 - Mobile-optimized components
 - Print-friendly layouts
@@ -542,6 +554,7 @@ When creating new components, ensure:
 - Real-time notification components
 
 ### Design System Improvements
+
 - Component playground/Storybook integration
 - Design tokens system
 - Automated visual regression testing
@@ -550,6 +563,6 @@ When creating new components, ensure:
 
 ---
 
-*Last updated: August 2025*
-*Version: 1.0*
-*Maintainer: Frontend Team*
+_Last updated: August 2025_
+_Version: 1.0_
+_Maintainer: Frontend Team_

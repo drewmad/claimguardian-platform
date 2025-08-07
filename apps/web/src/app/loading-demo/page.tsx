@@ -8,10 +8,10 @@
  * @tags ["demo", "loading", "ui"]
  * @status stable
  */
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import {
   RefreshCw,
   Play,
@@ -19,12 +19,12 @@ import {
   RotateCcw,
   Sparkles,
   Loader2,
-  Clock
-} from 'lucide-react'
+  Clock,
+} from "lucide-react";
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   Skeleton,
   SkeletonText,
@@ -32,8 +32,8 @@ import {
   SkeletonTable,
   PropertyCardSkeleton,
   DashboardStatsSkeleton,
-  ClaimCardSkeleton
-} from '@/components/ui/skeleton'
+  ClaimCardSkeleton,
+} from "@/components/ui/skeleton";
 import {
   LoadingOverlay,
   LoadingSpinner,
@@ -42,93 +42,99 @@ import {
   LoadingBars,
   LoadingSparkles,
   ProgressIndicator,
-  StepIndicator
-} from '@/components/ui/loading-overlay'
+  StepIndicator,
+} from "@/components/ui/loading-overlay";
 import {
   PageLoader,
   DashboardLoader,
   ModalLoader,
-  ComponentLoader
-} from '@/components/loading/page-loader'
-import { useLoadingState, useAsyncOperation, useMultiStepLoading } from '@/hooks/use-loading-state'
+  ComponentLoader,
+} from "@/components/loading/page-loader";
+import {
+  useLoadingState,
+  useAsyncOperation,
+  useMultiStepLoading,
+} from "@/hooks/use-loading-state";
 
 const demoSteps = [
-  'Initialize system',
-  'Load user data',
-  'Fetch properties',
-  'Process AI insights',
-  'Render dashboard'
-]
+  "Initialize system",
+  "Load user data",
+  "Fetch properties",
+  "Process AI insights",
+  "Render dashboard",
+];
 
 export default function LoadingDemoPage() {
-  const [activeDemo, setActiveDemo] = useState<string | null>(null)
-  const [progress, setProgress] = useState(0)
-  const [currentStep, setCurrentStep] = useState(0)
+  const [activeDemo, setActiveDemo] = useState<string | null>(null);
+  const [progress, setProgress] = useState(0);
+  const [currentStep, setCurrentStep] = useState(0);
 
   // Demo loading states
-  const basicLoader = useLoadingState({ key: 'basic-demo' })
-  const { execute: executeAsyncDemo } = useAsyncOperation()
-  const multiStep = useMultiStepLoading(demoSteps.map(step => ({ id: step, label: step })))
+  const basicLoader = useLoadingState({ key: "basic-demo" });
+  const { execute: executeAsyncDemo } = useAsyncOperation();
+  const multiStep = useMultiStepLoading(
+    demoSteps.map((step) => ({ id: step, label: step })),
+  );
 
   // Auto-increment progress for demo
   useEffect(() => {
     const interval = setInterval(() => {
-      setProgress(prev => (prev >= 100 ? 0 : prev + 2))
-    }, 100)
-    return () => clearInterval(interval)
-  }, [])
+      setProgress((prev) => (prev >= 100 ? 0 : prev + 2));
+    }, 100);
+    return () => clearInterval(interval);
+  }, []);
 
   // Auto-cycle through steps
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentStep(prev => (prev >= demoSteps.length - 1 ? 0 : prev + 1))
-    }, 2000)
-    return () => clearInterval(interval)
-  }, [])
+      setCurrentStep((prev) => (prev >= demoSteps.length - 1 ? 0 : prev + 1));
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
 
   const runBasicLoadingDemo = async () => {
-    basicLoader.startLoading('Running basic loading demo...')
+    basicLoader.startLoading("Running basic loading demo...");
 
     // Simulate loading stages
-    setTimeout(() => basicLoader.updateMessage('Processing data...'), 1000)
-    setTimeout(() => basicLoader.updateMessage('Almost done...'), 2000)
-    setTimeout(() => basicLoader.stopLoading(), 3000)
-  }
+    setTimeout(() => basicLoader.updateMessage("Processing data..."), 1000);
+    setTimeout(() => basicLoader.updateMessage("Almost done..."), 2000);
+    setTimeout(() => basicLoader.stopLoading(), 3000);
+  };
 
   const runAsyncDemo = async () => {
     await executeAsyncDemo(
       async () => {
-        await new Promise(resolve => setTimeout(resolve, 2000))
-        return { success: true }
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        return { success: true };
       },
       {
-        loadingMessage: 'Running async operation demo...',
-        successMessage: 'Operation completed!',
-        errorMessage: 'Operation failed!',
-        showProgress: true
-      }
-    )
-  }
+        loadingMessage: "Running async operation demo...",
+        successMessage: "Operation completed!",
+        errorMessage: "Operation failed!",
+        showProgress: true,
+      },
+    );
+  };
 
   const runMultiStepDemo = async () => {
-    multiStep.resetSteps()
+    multiStep.resetSteps();
 
     for (let i = 0; i < demoSteps.length; i++) {
-      const step = demoSteps[i]
-      multiStep.startStep(step, `Processing ${step}...`)
+      const step = demoSteps[i];
+      multiStep.startStep(step, `Processing ${step}...`);
 
       // Simulate processing time
-      await new Promise(resolve => setTimeout(resolve, 800))
+      await new Promise((resolve) => setTimeout(resolve, 800));
 
-      multiStep.completeStep(step)
+      multiStep.completeStep(step);
     }
-  }
+  };
 
   const demos = [
     {
-      id: 'spinners',
-      title: 'Loading Spinners',
-      description: 'Various spinner animations with different styles and sizes',
+      id: "spinners",
+      title: "Loading Spinners",
+      description: "Various spinner animations with different styles and sizes",
       component: (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
           <div className="text-center space-y-2">
@@ -156,12 +162,12 @@ export default function LoadingDemoPage() {
             <p className="text-xs text-gray-600">Dancing Bars</p>
           </div>
         </div>
-      )
+      ),
     },
     {
-      id: 'skeletons',
-      title: 'Skeleton Loaders',
-      description: 'Content placeholders that match your layout structure',
+      id: "skeletons",
+      title: "Skeleton Loaders",
+      description: "Content placeholders that match your layout structure",
       component: (
         <div className="space-y-6">
           <div>
@@ -188,12 +194,12 @@ export default function LoadingDemoPage() {
             <SkeletonTable rows={3} columns={4} showHeader={true} />
           </div>
         </div>
-      )
+      ),
     },
     {
-      id: 'progress',
-      title: 'Progress Indicators',
-      description: 'Show completion status and step-by-step progress',
+      id: "progress",
+      title: "Progress Indicators",
+      description: "Show completion status and step-by-step progress",
       component: (
         <div className="space-y-6">
           <div>
@@ -208,10 +214,7 @@ export default function LoadingDemoPage() {
 
           <div>
             <h4 className="font-medium mb-4">Step Indicator</h4>
-            <StepIndicator
-              steps={demoSteps}
-              currentStep={currentStep}
-            />
+            <StepIndicator steps={demoSteps} currentStep={currentStep} />
           </div>
 
           <div>
@@ -219,9 +222,15 @@ export default function LoadingDemoPage() {
             <div className="space-y-3">
               <ProgressIndicator
                 progress={multiStep.progress}
-                message={multiStep.currentStep?.label || 'Ready'}
+                message={multiStep.currentStep?.label || "Ready"}
                 showPercentage={true}
-                color={multiStep.hasError ? 'orange' : multiStep.isCompleted ? 'green' : 'blue'}
+                color={
+                  multiStep.hasError
+                    ? "orange"
+                    : multiStep.isCompleted
+                      ? "green"
+                      : "blue"
+                }
               />
               <Button onClick={runMultiStepDemo} disabled={multiStep.isLoading}>
                 {multiStep.isLoading ? (
@@ -239,12 +248,12 @@ export default function LoadingDemoPage() {
             </div>
           </div>
         </div>
-      )
+      ),
     },
     {
-      id: 'overlays',
-      title: 'Loading Overlays',
-      description: 'Full-screen and component-level loading overlays',
+      id: "overlays",
+      title: "Loading Overlays",
+      description: "Full-screen and component-level loading overlays",
       component: (
         <div className="space-y-6">
           <div>
@@ -261,7 +270,10 @@ export default function LoadingDemoPage() {
             </ComponentLoader>
 
             <div className="mt-3 space-x-2">
-              <Button onClick={runBasicLoadingDemo} disabled={basicLoader.isLoading}>
+              <Button
+                onClick={runBasicLoadingDemo}
+                disabled={basicLoader.isLoading}
+              >
                 {basicLoader.isLoading ? (
                   <>
                     <Square className="w-4 h-4 mr-2" />
@@ -323,12 +335,12 @@ export default function LoadingDemoPage() {
             </div>
           </div>
         </div>
-      )
+      ),
     },
     {
-      id: 'specialized',
-      title: 'Specialized Loaders',
-      description: 'Pre-built loading components for specific use cases',
+      id: "specialized",
+      title: "Specialized Loaders",
+      description: "Pre-built loading components for specific use cases",
       component: (
         <div className="space-y-6">
           <div>
@@ -368,9 +380,9 @@ export default function LoadingDemoPage() {
             </Card>
           </div>
         </div>
-      )
-    }
-  ]
+      ),
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
@@ -385,8 +397,8 @@ export default function LoadingDemoPage() {
             Loading States Demo
           </h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Comprehensive showcase of loading states, progress indicators,
-            and skeleton loaders for enhanced user experience.
+            Comprehensive showcase of loading states, progress indicators, and
+            skeleton loaders for enhanced user experience.
           </p>
         </motion.div>
 
@@ -400,12 +412,14 @@ export default function LoadingDemoPage() {
           {demos.map((demo, index) => (
             <Button
               key={demo.id}
-              variant={activeDemo === demo.id ? 'default' : 'outline'}
-              onClick={() => setActiveDemo(activeDemo === demo.id ? null : demo.id)}
+              variant={activeDemo === demo.id ? "default" : "outline"}
+              onClick={() =>
+                setActiveDemo(activeDemo === demo.id ? null : demo.id)
+              }
               className={
                 activeDemo === demo.id
-                  ? 'bg-blue-600 hover:bg-blue-700'
-                  : 'border-white/20 text-white hover:bg-white/10'
+                  ? "bg-blue-600 hover:bg-blue-700"
+                  : "border-white/20 text-white hover:bg-white/10"
               }
             >
               {demo.title}
@@ -420,13 +434,17 @@ export default function LoadingDemoPage() {
               key={demo.id}
               initial={{ opacity: 0, y: 40 }}
               animate={{
-                opacity: activeDemo === demo.id || activeDemo === null ? 1 : 0.3,
+                opacity:
+                  activeDemo === demo.id || activeDemo === null ? 1 : 0.3,
                 y: 0,
-                scale: activeDemo === demo.id ? 1 : activeDemo === null ? 1 : 0.95
+                scale:
+                  activeDemo === demo.id ? 1 : activeDemo === null ? 1 : 0.95,
               }}
               transition={{ delay: index * 0.1 }}
               className={`${
-                activeDemo && activeDemo !== demo.id ? 'pointer-events-none' : ''
+                activeDemo && activeDemo !== demo.id
+                  ? "pointer-events-none"
+                  : ""
               }`}
             >
               <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
@@ -436,9 +454,7 @@ export default function LoadingDemoPage() {
                       <CardTitle className="text-white text-2xl">
                         {demo.title}
                       </CardTitle>
-                      <p className="text-gray-300 mt-1">
-                        {demo.description}
-                      </p>
+                      <p className="text-gray-300 mt-1">{demo.description}</p>
                     </div>
                     <Badge
                       variant="outline"
@@ -475,5 +491,5 @@ export default function LoadingDemoPage() {
         </motion.div>
       </div>
     </div>
-  )
+  );
 }

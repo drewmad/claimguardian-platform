@@ -20,7 +20,9 @@ pnpm fix:all
 ### 🧹 Clean Commands
 
 #### `pnpm clean:all`
+
 Runs the complete cleanup pipeline:
+
 1. Install dependencies with lockfile
 2. Fix all lint issues
 3. Generate database types
@@ -28,30 +30,40 @@ Runs the complete cleanup pipeline:
 5. Build all packages
 
 #### `pnpm clean:quick`
+
 Quick cleanup for development:
+
 - Fix lint issues
 - Build packages
 
 #### `pnpm clean:deps`
+
 Clean install dependencies:
+
 ```bash
 pnpm install --frozen-lockfile
 ```
 
 #### `pnpm clean:lint`
+
 Fix all auto-fixable lint issues:
+
 ```bash
 pnpm lint:fix:all
 ```
 
 #### `pnpm clean:types`
+
 Generate types and validate:
+
 ```bash
 pnpm db:generate-types && pnpm type-check
 ```
 
 #### `pnpm clean:build`
+
 Build all packages:
+
 ```bash
 pnpm build
 ```
@@ -59,7 +71,9 @@ pnpm build
 ### 🔧 Fix Commands
 
 #### `pnpm fix:all`
+
 Smart fix everything possible:
+
 - Smart lint fixes
 - Generate database types
 - Build packages
@@ -67,7 +81,9 @@ Smart fix everything possible:
 ### 🏭 CI/CD Simulation
 
 #### `pnpm ci:local`
+
 Run full CI/CD pipeline locally:
+
 ```bash
 pnpm install --frozen-lockfile
 pnpm lint
@@ -77,7 +93,9 @@ pnpm build
 ```
 
 #### `pnpm ci:validate`
+
 Validation only (no build):
+
 ```bash
 pnpm deps:check
 pnpm lint
@@ -87,7 +105,9 @@ pnpm type-check
 ### 📊 Health Check
 
 #### `pnpm health:check`
+
 Quick health status:
+
 - Count lint issues
 - Count type errors
 
@@ -118,22 +138,26 @@ For more control, use the bash script directly:
 ## Common Workflows
 
 ### Before Committing
+
 ```bash
 pnpm clean:quick
 ```
 
 ### After Pulling Changes
+
 ```bash
 pnpm clean:deps
 pnpm db:generate-types
 ```
 
 ### Before Major Push
+
 ```bash
 pnpm clean:all
 ```
 
 ### Debug Build Issues
+
 ```bash
 ./scripts/clean.sh health
 ./scripts/clean.sh validate

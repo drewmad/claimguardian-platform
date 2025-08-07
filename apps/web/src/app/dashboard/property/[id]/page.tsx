@@ -8,173 +8,203 @@
  * @tags ["dashboard", "property", "detail", "page"]
  * @status stable
  */
-'use client'
+"use client";
 
 import {
-  Info, Building, Wrench, FileText,
-  MapPin, Shield, CheckCircle, Wind, Award, Plus,
-  AlertCircle, Camera, ChevronRight, Edit, ArrowLeft,
-  Home, Save, X, Loader2, Upload, Image
-} from 'lucide-react'
-import { useParams, useRouter } from 'next/navigation'
-import { useState, useEffect } from 'react'
-import { toast } from 'sonner'
-import { logger } from "@/lib/logger/production-logger"
+  Info,
+  Building,
+  Wrench,
+  FileText,
+  MapPin,
+  Shield,
+  CheckCircle,
+  Wind,
+  Award,
+  Plus,
+  AlertCircle,
+  Camera,
+  ChevronRight,
+  Edit,
+  ArrowLeft,
+  Home,
+  Save,
+  X,
+  Loader2,
+  Upload,
+  Image,
+} from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
+import { logger } from "@/lib/logger/production-logger";
 
-import { getProperty, updateProperty } from '@/actions/properties'
-import { ProtectedRoute } from '@/components/auth/protected-route'
-import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { FloridaAddressForm } from '@/components/forms/florida-address-form'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { PropertyImage } from '@/components/ui/property-image'
-import { useNavigateToParent } from '@/lib/utils/navigation'
+import { getProperty, updateProperty } from "@/actions/properties";
+import { ProtectedRoute } from "@/components/auth/protected-route";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import { FloridaAddressForm } from "@/components/forms/florida-address-form";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { PropertyImage } from "@/components/ui/property-image";
+import { useNavigateToParent } from "@/lib/utils/navigation";
 
-type SubTab = 'detail' | 'home-systems' | 'structures'
+type SubTab = "detail" | "home-systems" | "structures";
 
 interface EditFormData {
-  name: string
-  street1: string
-  street2?: string
-  city: string
-  state: string
-  zip: string
-  county?: string
-  type: string
-  year_built: number
-  square_feet: number
-  bedrooms?: number
-  bathrooms?: number
-  lotSize?: number
-  value?: number
+  name: string;
+  street1: string;
+  street2?: string;
+  city: string;
+  state: string;
+  zip: string;
+  county?: string;
+  type: string;
+  year_built: number;
+  square_feet: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  lotSize?: number;
+  value?: number;
 }
 
 function PropertyDetailContent() {
-  const params = useParams()
-  const router = useRouter()
-  const propertyId = params.id as string
-  const { navigateToParent, getParentInfo } = useNavigateToParent('propertyDetail')
-  const [activeSubTab, setActiveSubTab] = useState<SubTab>('detail')
-  const [isEditing, setIsEditing] = useState(false)
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [showPhotoUploadModal, setShowPhotoUploadModal] = useState(false)
+  const params = useParams();
+  const router = useRouter();
+  const propertyId = params.id as string;
+  const { navigateToParent, getParentInfo } =
+    useNavigateToParent("propertyDetail");
+  const [activeSubTab, setActiveSubTab] = useState<SubTab>("detail");
+  const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [showPhotoUploadModal, setShowPhotoUploadModal] = useState(false);
 
   // Property state - will be loaded from Supabase
-  const [property, setProperty] = useState<Record<string, unknown> | null>(null)
+  const [property, setProperty] = useState<Record<string, unknown> | null>(
+    null,
+  );
 
   // Edit form state
   const [editForm, setEditForm] = useState<EditFormData>({
-    name: '',
-    street1: '',
-    street2: '',
-    city: '',
-    state: '',
-    zip: '',
-    county: '',
-    type: '',
+    name: "",
+    street1: "",
+    street2: "",
+    city: "",
+    state: "",
+    zip: "",
+    county: "",
+    type: "",
     year_built: 0,
     square_feet: 0,
     bedrooms: 0,
     bathrooms: 0,
     lotSize: 0,
-    value: 0
-  })
+    value: 0,
+  });
 
   // Address parsing helper
   const parseAddress = (addressString: string) => {
     // Simple address parsing - could be enhanced with Google Places API
-    const parts = addressString.split(',').map(part => part.trim())
-    const stateZipPart = parts[2] || ''
-    const stateZipMatch = stateZipPart.match(/^([A-Z]{2})\s+(\d{5}(?:-\d{4})?)$/)
+    const parts = addressString.split(",").map((part) => part.trim());
+    const stateZipPart = parts[2] || "";
+    const stateZipMatch = stateZipPart.match(
+      /^([A-Z]{2})\s+(\d{5}(?:-\d{4})?)$/,
+    );
 
     return {
-      street1: parts[0] || '',
-      street2: '',
-      city: parts[1] || '',
-      state: 'FL', // Always Florida for this application
-      zip: stateZipMatch ? stateZipMatch[2] : (stateZipPart.split(' ')[1] || ''),
-      county: parts[1] === 'Port Charlotte' ? 'Charlotte County' : ''
-    }
-  }
+      street1: parts[0] || "",
+      street2: "",
+      city: parts[1] || "",
+      state: "FL", // Always Florida for this application
+      zip: stateZipMatch ? stateZipMatch[2] : stateZipPart.split(" ")[1] || "",
+      county: parts[1] === "Port Charlotte" ? "Charlotte County" : "",
+    };
+  };
 
   const formatAddress = (addressParts: Record<string, string>) => {
-    const parts = []
-    if (addressParts.street1) parts.push(addressParts.street1)
-    if (addressParts.street2) parts.push(addressParts.street2)
-    if (addressParts.city) parts.push(addressParts.city)
+    const parts = [];
+    if (addressParts.street1) parts.push(addressParts.street1);
+    if (addressParts.street2) parts.push(addressParts.street2);
+    if (addressParts.city) parts.push(addressParts.city);
     if (addressParts.state && addressParts.zip) {
-      parts.push(`${addressParts.state} ${addressParts.zip}`)
+      parts.push(`${addressParts.state} ${addressParts.zip}`);
     } else if (addressParts.state) {
-      parts.push(addressParts.state)
+      parts.push(addressParts.state);
     }
-    return parts.join(', ')
-  }
+    return parts.join(", ");
+  };
 
   // Load property data on mount
   useEffect(() => {
     const loadProperty = async () => {
       try {
         // Handle demo property UUID - use mock data directly
-        if (propertyId === 'demo-property-uuid') {
-          const addressString = '3407 Knox Terrace Port Charlotte, FL 33948'
-          const addressParts = parseAddress(addressString)
+        if (propertyId === "demo-property-uuid") {
+          const addressString = "3407 Knox Terrace Port Charlotte, FL 33948";
+          const addressParts = parseAddress(addressString);
           const mockData = {
             id: propertyId,
-            name: 'Main Residence',
+            name: "Main Residence",
             address: addressString,
             addressParts,
-            type: 'Single Family Home',
+            type: "Single Family Home",
             value: 450000,
             sqft: 2800,
             yearBuilt: 2010,
             bedrooms: 4,
             bathrooms: 3,
             lotSize: 0.25,
-            insurabilityScore: 92
-          }
-          setProperty(mockData)
+            insurabilityScore: 92,
+          };
+          setProperty(mockData);
           setEditForm({
-            name: mockData.name || '',
-            street1: addressParts.street1 || '',
-            street2: addressParts.street2 || '',
-            city: addressParts.city || '',
-            state: addressParts.state || '',
-            zip: addressParts.zip || '',
-            county: '',
-            type: mockData.type || '',
+            name: mockData.name || "",
+            street1: addressParts.street1 || "",
+            street2: addressParts.street2 || "",
+            city: addressParts.city || "",
+            state: addressParts.state || "",
+            zip: addressParts.zip || "",
+            county: "",
+            type: mockData.type || "",
             year_built: mockData.yearBuilt || 0,
             square_feet: mockData.sqft || 0,
             bedrooms: mockData.bedrooms || 0,
             bathrooms: mockData.bathrooms || 0,
             lotSize: mockData.lotSize || 0,
-            value: mockData.value || 0
-          })
-          return
+            value: mockData.value || 0,
+          });
+          return;
         }
 
-        const { data, error } = await getProperty({ propertyId })
-        if (error) throw error
+        const { data, error } = await getProperty({ propertyId });
+        if (error) throw error;
 
         if (data) {
           // Transform new schema data to display format
-          const addressString = data.full_address || `${data.street_address}, ${data.city}, ${data.state} ${data.zip_code}`
-          const addressParts = parseAddress(addressString)
+          const addressString =
+            data.full_address ||
+            `${data.street_address}, ${data.city}, ${data.state} ${data.zip_code}`;
+          const addressParts = parseAddress(addressString);
           const transformedData = {
             id: data.id,
-            name: data.metadata?.name || 'Unnamed Property',
+            name: data.metadata?.name || "Unnamed Property",
             address: addressString,
             addressParts: {
               street1: data.street_address,
-              street2: '',
+              street2: "",
               city: data.city,
               state: data.state,
-              zip: data.zip_code
+              zip: data.zip_code,
             },
-            type: data.property_type?.replace('_', ' ') || 'Single Family Home',
+            type: data.property_type?.replace("_", " ") || "Single Family Home",
             value: data.current_value || 0,
             sqft: data.square_footage || 0,
             yearBuilt: data.year_built || new Date().getFullYear(),
@@ -187,73 +217,73 @@ function PropertyDetailContent() {
             version: data.version,
             version_id: data.version_id,
             valid_from: data.valid_from,
-            is_current: data.is_current
-          }
-          setProperty(transformedData)
+            is_current: data.is_current,
+          };
+          setProperty(transformedData);
           setEditForm({
-            name: transformedData.name || '',
-            street1: data.street_address || '',
-            street2: '',
-            city: data.city || '',
-            state: data.state || '',
-            zip: data.zip_code || '',
-            county: data.county_name || '',
-            type: transformedData.type || '',
+            name: transformedData.name || "",
+            street1: data.street_address || "",
+            street2: "",
+            city: data.city || "",
+            state: data.state || "",
+            zip: data.zip_code || "",
+            county: data.county_name || "",
+            type: transformedData.type || "",
             year_built: transformedData.yearBuilt || 0,
             square_feet: transformedData.sqft || 0,
             bedrooms: transformedData.bedrooms || 0,
             bathrooms: transformedData.bathrooms || 0,
             lotSize: transformedData.lotSize || 0,
-            value: transformedData.value || 0
-          })
+            value: transformedData.value || 0,
+          });
         } else {
           // If no property found, use mock data for now
-          const addressString = '1234 Main Street, Austin, TX 78701'
-          const addressParts = parseAddress(addressString)
+          const addressString = "1234 Main Street, Austin, TX 78701";
+          const addressParts = parseAddress(addressString);
           const mockData = {
             id: propertyId,
-            name: 'Main Residence',
+            name: "Main Residence",
             address: addressString,
             addressParts,
-            type: 'Single Family Home',
+            type: "Single Family Home",
             value: 450000,
             sqft: 2800,
             yearBuilt: 2010,
             bedrooms: 4,
             bathrooms: 3,
             lotSize: 0.25,
-            insurabilityScore: 92
-          }
-          setProperty(mockData)
+            insurabilityScore: 92,
+          };
+          setProperty(mockData);
           setEditForm({
-            name: mockData.name || '',
-            street1: addressParts.street1 || '',
-            street2: addressParts.street2 || '',
-            city: addressParts.city || '',
-            state: addressParts.state || '',
-            zip: addressParts.zip || '',
-            county: '',
-            type: mockData.type || '',
+            name: mockData.name || "",
+            street1: addressParts.street1 || "",
+            street2: addressParts.street2 || "",
+            city: addressParts.city || "",
+            state: addressParts.state || "",
+            zip: addressParts.zip || "",
+            county: "",
+            type: mockData.type || "",
             year_built: mockData.yearBuilt || 0,
             square_feet: mockData.sqft || 0,
             bedrooms: mockData.bedrooms || 0,
             bathrooms: mockData.bathrooms || 0,
             lotSize: mockData.lotSize || 0,
-            value: mockData.value || 0
-          })
+            value: mockData.value || 0,
+          });
         }
       } catch (error) {
-        logger.error('Error loading property:', error)
-        toast.error('Failed to load property details')
+        logger.error("Error loading property:", error);
+        toast.error("Failed to load property details");
         // Use mock data as fallback
-        const addressString = '1234 Main Street, Austin, TX 78701'
-        const addressParts = parseAddress(addressString)
+        const addressString = "1234 Main Street, Austin, TX 78701";
+        const addressParts = parseAddress(addressString);
         const mockData = {
           id: propertyId,
-          name: 'Main Residence',
+          name: "Main Residence",
           address: addressString,
           addressParts,
-          type: 'Single Family Home',
+          type: "Single Family Home",
           value: 450000,
           sqft: 2800,
           yearBuilt: 2010,
@@ -261,47 +291,47 @@ function PropertyDetailContent() {
           bathrooms: 3,
           lotSize: 0.25,
           insurabilityScore: 92,
-          image: '🏠'
-        }
-        setProperty(mockData)
+          image: "🏠",
+        };
+        setProperty(mockData);
         setEditForm({
-            name: mockData.name || '',
-            street1: addressParts.street1 || '',
-            street2: addressParts.street2 || '',
-            city: addressParts.city || '',
-            state: addressParts.state || '',
-            zip: addressParts.zip || '',
-            county: '',
-            type: mockData.type || '',
-            year_built: mockData.yearBuilt || 0,
-            square_feet: mockData.sqft || 0,
-            bedrooms: mockData.bedrooms || 0,
-            bathrooms: mockData.bathrooms || 0,
-            lotSize: mockData.lotSize || 0,
-            value: mockData.value || 0
-          })
+          name: mockData.name || "",
+          street1: addressParts.street1 || "",
+          street2: addressParts.street2 || "",
+          city: addressParts.city || "",
+          state: addressParts.state || "",
+          zip: addressParts.zip || "",
+          county: "",
+          type: mockData.type || "",
+          year_built: mockData.yearBuilt || 0,
+          square_feet: mockData.sqft || 0,
+          bedrooms: mockData.bedrooms || 0,
+          bathrooms: mockData.bathrooms || 0,
+          lotSize: mockData.lotSize || 0,
+          value: mockData.value || 0,
+        });
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    loadProperty()
-  }, [propertyId])
+    loadProperty();
+  }, [propertyId]);
 
   const handleSave = async () => {
-    setSaving(true)
+    setSaving(true);
     try {
-      logger.info('[PROPERTY SAVE] Starting save for property:', propertyId)
-      logger.info('[PROPERTY SAVE] Edit form data:', editForm)
+      logger.info("[PROPERTY SAVE] Starting save for property:", propertyId);
+      logger.info("[PROPERTY SAVE] Edit form data:", editForm);
 
       // Reconstruct address from individual fields
       const fullAddress = formatAddress({
         street1: editForm.street1,
-        street2: editForm.street2 || '',
+        street2: editForm.street2 || "",
         city: editForm.city,
         state: editForm.state,
-        zip: editForm.zip
-      })
+        zip: editForm.zip,
+      });
 
       const updates = {
         name: editForm.name,
@@ -313,20 +343,20 @@ function PropertyDetailContent() {
           bedrooms: editForm.bedrooms,
           bathrooms: editForm.bathrooms,
           lot_size: editForm.lotSize,
-          county: editForm.county
-        }
-      }
+          county: editForm.county,
+        },
+      };
 
-      logger.info('[PROPERTY SAVE] Sending updates:', updates)
+      logger.info("[PROPERTY SAVE] Sending updates:", updates);
 
-      const { data, error } = await updateProperty({ propertyId, updates })
+      const { data, error } = await updateProperty({ propertyId, updates });
 
       if (error) {
-        logger.error('[PROPERTY SAVE] Update failed:', error)
-        throw error
+        logger.error("[PROPERTY SAVE] Update failed:", error);
+        throw error;
       }
 
-      logger.info('[PROPERTY SAVE] Update successful:', data)
+      logger.info("[PROPERTY SAVE] Update successful:", data);
 
       // Update local state with saved data
       setProperty({
@@ -334,118 +364,128 @@ function PropertyDetailContent() {
         name: editForm.name,
         address: formatAddress({
           street1: editForm.street1,
-          street2: editForm.street2 || '',
+          street2: editForm.street2 || "",
           city: editForm.city,
           state: editForm.state,
-          zip: editForm.zip
+          zip: editForm.zip,
         }),
         type: editForm.type,
         yearBuilt: editForm.year_built,
-        sqft: editForm.square_feet
-      })
-      setIsEditing(false)
-      toast.success('Property details updated successfully')
+        sqft: editForm.square_feet,
+      });
+      setIsEditing(false);
+      toast.success("Property details updated successfully");
     } catch (error) {
-      logger.error('[PROPERTY SAVE] Error saving property:', error)
-      const errorMessage = error instanceof Error ? error.message : 'Failed to save property details'
-      toast.error(errorMessage)
+      logger.error("[PROPERTY SAVE] Error saving property:", error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to save property details";
+      toast.error(errorMessage);
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   const handleCancel = () => {
     if (property) {
-      const addressParts = parseAddress(property.address as string || '')
+      const addressParts = parseAddress((property.address as string) || "");
       setEditForm({
-        name: property.name as string || '',
-        street1: addressParts.street1 || '',
-        street2: addressParts.street2 || '',
-        city: addressParts.city || '',
-        state: addressParts.state || '',
-        zip: addressParts.zip || '',
-        county: (property.details as Record<string, unknown>)?.county as string || '',
-        type: property.type as string || '',
-        year_built: property.yearBuilt as number || 0,
-        square_feet: property.sqft as number || 0,
-        bedrooms: property.bedrooms as number || 0,
-        bathrooms: property.bathrooms as number || 0,
-        lotSize: property.lotSize as number || 0,
-        value: property.value as number || 0
-      })
+        name: (property.name as string) || "",
+        street1: addressParts.street1 || "",
+        street2: addressParts.street2 || "",
+        city: addressParts.city || "",
+        state: addressParts.state || "",
+        zip: addressParts.zip || "",
+        county:
+          ((property.details as Record<string, unknown>)?.county as string) ||
+          "",
+        type: (property.type as string) || "",
+        year_built: (property.yearBuilt as number) || 0,
+        square_feet: (property.sqft as number) || 0,
+        bedrooms: (property.bedrooms as number) || 0,
+        bathrooms: (property.bathrooms as number) || 0,
+        lotSize: (property.lotSize as number) || 0,
+        value: (property.value as number) || 0,
+      });
     }
-    setIsEditing(false)
-  }
+    setIsEditing(false);
+  };
 
   const handleEditClick = () => {
-    setIsEditing(true)
-    setActiveSubTab('detail')
-  }
+    setIsEditing(true);
+    setActiveSubTab("detail");
+  };
 
-  const [systems, setSystems] = useState<any[]>([])
-  const [structures, setStructures] = useState<any[]>([])
+  const [systems, setSystems] = useState<any[]>([]);
+  const [structures, setStructures] = useState<any[]>([]);
 
   const handleAddSystem = () => {
     // Ensure we stay on the home-systems tab
-    setActiveSubTab('home-systems')
+    setActiveSubTab("home-systems");
 
     const newSystem = {
       id: Date.now(),
-      name: 'New System',
-      type: '',
-      brand: '',
-      model: '',
-      installDate: new Date().toISOString().split('T')[0],
-      lastMaintenance: '',
-      warrantyExpiration: '',
-      status: 'New',
-      efficiency: '',
-      value: 0
-    }
-    setSystems([...systems, newSystem])
-    toast.success('New system added. Fill in the details.')
-  }
+      name: "New System",
+      type: "",
+      brand: "",
+      model: "",
+      installDate: new Date().toISOString().split("T")[0],
+      lastMaintenance: "",
+      warrantyExpiration: "",
+      status: "New",
+      efficiency: "",
+      value: 0,
+    };
+    setSystems([...systems, newSystem]);
+    toast.success("New system added. Fill in the details.");
+  };
 
   const handleAddStructure = () => {
     const newStructure = {
       id: Date.now(),
-      name: 'New Structure',
-      type: '',
-      material: '',
-      installDate: new Date().toISOString().split('T')[0],
-      warrantyExpiration: '',
-      windRating: '',
+      name: "New Structure",
+      type: "",
+      material: "",
+      installDate: new Date().toISOString().split("T")[0],
+      warrantyExpiration: "",
+      windRating: "",
       insuranceScore: 0,
-      value: 0
-    }
-    setStructures([...structures, newStructure])
-    toast.success('New structure added. Fill in the details.')
-  }
+      value: 0,
+    };
+    setStructures([...structures, newStructure]);
+    toast.success("New structure added. Fill in the details.");
+  };
 
   const handleUpdatePhotos = () => {
-    setShowPhotoUploadModal(true)
-  }
+    setShowPhotoUploadModal(true);
+  };
 
   const handleViewDocuments = () => {
-    toast.info('Document viewer coming soon!')
+    toast.info("Document viewer coming soon!");
     // TODO: Implement document viewer modal or redirect to documents page
-  }
+  };
 
   const subTabs = [
-    { id: 'detail', label: 'Detail', icon: Info },
-    { id: 'home-systems', label: 'Home Systems', icon: Wrench },
-    { id: 'structures', label: 'Structures', icon: Building }
-  ]
+    { id: "detail", label: "Detail", icon: Info },
+    { id: "home-systems", label: "Home Systems", icon: Wrench },
+    { id: "structures", label: "Structures", icon: Building },
+  ];
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'excellent': return 'text-green-400'
-      case 'good': return 'text-blue-400'
-      case 'fair': return 'text-yellow-400'
-      case 'poor': return 'text-red-400'
-      default: return 'text-gray-400'
+      case "excellent":
+        return "text-green-400";
+      case "good":
+        return "text-blue-400";
+      case "fair":
+        return "text-yellow-400";
+      case "poor":
+        return "text-red-400";
+      default:
+        return "text-gray-400";
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -461,7 +501,7 @@ function PropertyDetailContent() {
           </div>
         </div>
       </DashboardLayout>
-    )
+    );
   }
 
   if (!property) {
@@ -475,7 +515,7 @@ function PropertyDetailContent() {
           </div>
         </div>
       </DashboardLayout>
-    )
+    );
   }
 
   return (
@@ -500,7 +540,9 @@ function PropertyDetailContent() {
 
           <div className="mb-8 flex justify-between items-start">
             <div>
-              <h1 className="text-3xl font-bold text-white mb-2">{property.name as string}</h1>
+              <h1 className="text-3xl font-bold text-white mb-2">
+                {property.name as string}
+              </h1>
               <p className="text-gray-400 flex items-center gap-1">
                 <MapPin className="w-4 h-4" />
                 {property.address as string}
@@ -523,7 +565,7 @@ function PropertyDetailContent() {
               <PropertyImage
                 propertyType={property.type as string}
                 propertyName={property.name as string}
-                location={`${(property.addressParts as Record<string, unknown>)?.city || ''}, FL`}
+                location={`${(property.addressParts as Record<string, unknown>)?.city || ""}, FL`}
                 style="florida-style"
                 width={800}
                 height={192}
@@ -536,23 +578,33 @@ function PropertyDetailContent() {
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 <div className="bg-gray-700 rounded-lg p-3">
                   <p className="text-xs text-gray-400">Value</p>
-                  <p className="text-lg font-bold text-cyan-300">${((property.value as number) / 1000).toFixed(0)}k</p>
+                  <p className="text-lg font-bold text-cyan-300">
+                    ${((property.value as number) / 1000).toFixed(0)}k
+                  </p>
                 </div>
                 <div className="bg-gray-700 rounded-lg p-3">
                   <p className="text-xs text-gray-400">Type</p>
-                  <p className="text-sm text-white font-medium">{property.type as string}</p>
+                  <p className="text-sm text-white font-medium">
+                    {property.type as string}
+                  </p>
                 </div>
                 <div className="bg-gray-700 rounded-lg p-3">
                   <p className="text-xs text-gray-400">Size</p>
-                  <p className="text-sm text-white font-medium">{(property.sqft as number).toLocaleString()} sqft</p>
+                  <p className="text-sm text-white font-medium">
+                    {(property.sqft as number).toLocaleString()} sqft
+                  </p>
                 </div>
                 <div className="bg-gray-700 rounded-lg p-3">
                   <p className="text-xs text-gray-400">Built</p>
-                  <p className="text-sm text-white font-medium">{property.yearBuilt as number}</p>
+                  <p className="text-sm text-white font-medium">
+                    {property.yearBuilt as number}
+                  </p>
                 </div>
                 <div className="bg-gray-700 rounded-lg p-3">
                   <p className="text-xs text-gray-400">Score</p>
-                  <p className="text-sm text-white font-medium">{property.insurabilityScore as number}%</p>
+                  <p className="text-sm text-white font-medium">
+                    {property.insurabilityScore as number}%
+                  </p>
                 </div>
               </div>
             </div>
@@ -562,27 +614,27 @@ function PropertyDetailContent() {
           <div className="bg-gray-800 rounded-lg p-1 mb-6 overflow-x-auto">
             <div className="flex gap-1 min-w-max">
               {subTabs.map((tab) => {
-                const Icon = tab.icon
+                const Icon = tab.icon;
                 return (
                   <button
                     key={tab.id}
                     onClick={() => setActiveSubTab(tab.id as SubTab)}
                     className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${
                       activeSubTab === tab.id
-                        ? 'bg-blue-600 text-white'
-                        : 'text-gray-400 hover:text-white hover:bg-gray-700'
+                        ? "bg-blue-600 text-white"
+                        : "text-gray-400 hover:text-white hover:bg-gray-700"
                     }`}
                   >
                     <Icon className="w-4 h-4" />
                     {tab.label}
                   </button>
-                )
+                );
               })}
             </div>
           </div>
 
           {/* Sub-tab Content */}
-          {activeSubTab === 'detail' && (
+          {activeSubTab === "detail" && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader>
@@ -629,25 +681,27 @@ function PropertyDetailContent() {
                         <Label className="text-gray-300">Property Name</Label>
                         <Input
                           value={editForm.name}
-                          onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                          onChange={(e) =>
+                            setEditForm({ ...editForm, name: e.target.value })
+                          }
                           className="bg-gray-700 border-gray-600 text-white"
                         />
                       </div>
                       {/* Florida Address Form with Dependent Dropdowns */}
                       <FloridaAddressForm
                         value={{
-                          street1: editForm.street1 || '',
-                          street2: editForm.street2 || '',
-                          city: editForm.city || '',
-                          state: 'FL',
-                          zip: editForm.zip || '',
-                          county: editForm.county || ''
+                          street1: editForm.street1 || "",
+                          street2: editForm.street2 || "",
+                          city: editForm.city || "",
+                          state: "FL",
+                          zip: editForm.zip || "",
+                          county: editForm.county || "",
                         }}
                         onChange={(addressComponents) => {
                           setEditForm({
                             ...editForm,
-                            ...addressComponents
-                          })
+                            ...addressComponents,
+                          });
                         }}
                         disabled={saving}
                       />
@@ -655,10 +709,14 @@ function PropertyDetailContent() {
                         <Label className="text-gray-300">Property Type</Label>
                         <select
                           value={editForm.type}
-                          onChange={(e) => setEditForm({ ...editForm, type: e.target.value })}
+                          onChange={(e) =>
+                            setEditForm({ ...editForm, type: e.target.value })
+                          }
                           className="w-full bg-gray-700 border-gray-600 text-white rounded px-3 py-2"
                         >
-                          <option value="Single Family Home">Single Family Home</option>
+                          <option value="Single Family Home">
+                            Single Family Home
+                          </option>
                           <option value="Condo">Condo</option>
                           <option value="Townhouse">Townhouse</option>
                           <option value="Multi-Family">Multi-Family</option>
@@ -671,16 +729,28 @@ function PropertyDetailContent() {
                           <Input
                             type="number"
                             value={editForm.year_built}
-                            onChange={(e) => setEditForm({ ...editForm, year_built: parseInt(e.target.value) || 0 })}
+                            onChange={(e) =>
+                              setEditForm({
+                                ...editForm,
+                                year_built: parseInt(e.target.value) || 0,
+                              })
+                            }
                             className="bg-gray-700 border-gray-600 text-white"
                           />
                         </div>
                         <div>
-                          <Label className="text-gray-300">Square Footage</Label>
+                          <Label className="text-gray-300">
+                            Square Footage
+                          </Label>
                           <Input
                             type="number"
                             value={editForm.square_feet}
-                            onChange={(e) => setEditForm({ ...editForm, square_feet: parseInt(e.target.value) || 0 })}
+                            onChange={(e) =>
+                              setEditForm({
+                                ...editForm,
+                                square_feet: parseInt(e.target.value) || 0,
+                              })
+                            }
                             className="bg-gray-700 border-gray-600 text-white"
                           />
                         </div>
@@ -691,7 +761,12 @@ function PropertyDetailContent() {
                           <Input
                             type="number"
                             value={editForm.bedrooms}
-                            onChange={(e) => setEditForm({ ...editForm, bedrooms: parseInt(e.target.value) || 0 })}
+                            onChange={(e) =>
+                              setEditForm({
+                                ...editForm,
+                                bedrooms: parseInt(e.target.value) || 0,
+                              })
+                            }
                             className="bg-gray-700 border-gray-600 text-white"
                           />
                         </div>
@@ -701,28 +776,47 @@ function PropertyDetailContent() {
                             type="number"
                             step="0.5"
                             value={editForm.bathrooms}
-                            onChange={(e) => setEditForm({ ...editForm, bathrooms: parseFloat(e.target.value) || 0 })}
+                            onChange={(e) =>
+                              setEditForm({
+                                ...editForm,
+                                bathrooms: parseFloat(e.target.value) || 0,
+                              })
+                            }
                             className="bg-gray-700 border-gray-600 text-white"
                           />
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <Label className="text-gray-300">Lot Size (acres)</Label>
+                          <Label className="text-gray-300">
+                            Lot Size (acres)
+                          </Label>
                           <Input
                             type="number"
                             step="0.01"
                             value={editForm.lotSize}
-                            onChange={(e) => setEditForm({ ...editForm, lotSize: parseFloat(e.target.value) || 0 })}
+                            onChange={(e) =>
+                              setEditForm({
+                                ...editForm,
+                                lotSize: parseFloat(e.target.value) || 0,
+                              })
+                            }
                             className="bg-gray-700 border-gray-600 text-white"
                           />
                         </div>
                         <div>
-                          <Label className="text-gray-300">Property Value</Label>
+                          <Label className="text-gray-300">
+                            Property Value
+                          </Label>
                           <Input
                             type="number"
                             value={editForm.value}
-                            onChange={(e) => setEditForm({ ...editForm, value: parseInt(e.target.value) || 0 })}
+                            onChange={(e) =>
+                              setEditForm({
+                                ...editForm,
+                                value: parseInt(e.target.value) || 0,
+                              })
+                            }
                             className="bg-gray-700 border-gray-600 text-white"
                           />
                         </div>
@@ -732,27 +826,39 @@ function PropertyDetailContent() {
                     <div className="space-y-3">
                       <div className="flex justify-between py-2 border-b border-gray-700">
                         <span className="text-gray-400">Property Type</span>
-                        <span className="text-white">{property.type as string}</span>
+                        <span className="text-white">
+                          {property.type as string}
+                        </span>
                       </div>
                       <div className="flex justify-between py-2 border-b border-gray-700">
                         <span className="text-gray-400">Year Built</span>
-                        <span className="text-white">{property.yearBuilt as number}</span>
+                        <span className="text-white">
+                          {property.yearBuilt as number}
+                        </span>
                       </div>
                       <div className="flex justify-between py-2 border-b border-gray-700">
                         <span className="text-gray-400">Square Footage</span>
-                        <span className="text-white">{(property.sqft as number).toLocaleString()} sqft</span>
+                        <span className="text-white">
+                          {(property.sqft as number).toLocaleString()} sqft
+                        </span>
                       </div>
                       <div className="flex justify-between py-2 border-b border-gray-700">
                         <span className="text-gray-400">Lot Size</span>
-                        <span className="text-white">{property.lotSize as number} acres</span>
+                        <span className="text-white">
+                          {property.lotSize as number} acres
+                        </span>
                       </div>
                       <div className="flex justify-between py-2 border-b border-gray-700">
                         <span className="text-gray-400">Bedrooms</span>
-                        <span className="text-white">{property.bedrooms as number}</span>
+                        <span className="text-white">
+                          {property.bedrooms as number}
+                        </span>
                       </div>
                       <div className="flex justify-between py-2">
                         <span className="text-gray-400">Bathrooms</span>
-                        <span className="text-white">{property.bathrooms as number}</span>
+                        <span className="text-white">
+                          {property.bathrooms as number}
+                        </span>
                       </div>
                     </div>
                   )}
@@ -767,7 +873,8 @@ function PropertyDetailContent() {
                   <div className="space-y-3">
                     <button
                       onClick={handleUpdatePhotos}
-                      className="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
+                      className="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between"
+                    >
                       <span className="flex items-center gap-3">
                         <Camera className="w-5 h-5 text-cyan-400" />
                         <span>Update Property Photos</span>
@@ -776,7 +883,8 @@ function PropertyDetailContent() {
                     </button>
                     <button
                       onClick={handleViewDocuments}
-                      className="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
+                      className="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between"
+                    >
                       <span className="flex items-center gap-3">
                         <FileText className="w-5 h-5 text-blue-400" />
                         <span>View Insurance Documents</span>
@@ -804,7 +912,9 @@ function PropertyDetailContent() {
                     <Wrench className="w-5 h-5 text-blue-400" />
                     <span className="text-xs text-green-400">All Good</span>
                   </div>
-                  <p className="text-2xl font-bold text-white">{systems.length}</p>
+                  <p className="text-2xl font-bold text-white">
+                    {systems.length}
+                  </p>
                   <p className="text-xs text-gray-400">Systems Tracked</p>
                 </Card>
                 <Card className="bg-gray-800 border-gray-700 p-4">
@@ -812,7 +922,9 @@ function PropertyDetailContent() {
                     <Building className="w-5 h-5 text-cyan-400" />
                     <CheckCircle className="w-4 h-4 text-green-400" />
                   </div>
-                  <p className="text-2xl font-bold text-white">{structures.length}</p>
+                  <p className="text-2xl font-bold text-white">
+                    {structures.length}
+                  </p>
                   <p className="text-xs text-gray-400">Structures</p>
                 </Card>
                 <Card className="bg-gray-800 border-gray-700 p-4">
@@ -835,13 +947,16 @@ function PropertyDetailContent() {
             </div>
           )}
 
-          {activeSubTab === 'home-systems' && (
+          {activeSubTab === "home-systems" && (
             <div className="space-y-6">
               <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold text-white">Home Systems</h3>
+                <h3 className="text-lg font-semibold text-white">
+                  Home Systems
+                </h3>
                 <button
                   onClick={handleAddSystem}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm">
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm"
+                >
                   <Plus className="w-4 h-4" />
                   Add System
                 </button>
@@ -853,58 +968,87 @@ function PropertyDetailContent() {
                     <CardContent className="p-6 text-center">
                       <Wrench className="w-12 h-12 text-gray-500 mx-auto mb-3" />
                       <p className="text-gray-400">No home systems added yet</p>
-                      <p className="text-sm text-gray-500 mt-2">Click "Add System" to start tracking your home systems</p>
+                      <p className="text-sm text-gray-500 mt-2">
+                        Click "Add System" to start tracking your home systems
+                      </p>
                     </CardContent>
                   </Card>
-                ) : systems.map((system) => (
-                  <Card key={system.id} className="bg-gray-800 border-gray-700">
-                    <CardContent className="p-6">
-                      <div className="flex items-start justify-between mb-4">
-                        <div>
-                          <h4 className="font-semibold text-white">{system.name}</h4>
-                          <p className="text-sm text-gray-400">{system.type}</p>
+                ) : (
+                  systems.map((system) => (
+                    <Card
+                      key={system.id}
+                      className="bg-gray-800 border-gray-700"
+                    >
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div>
+                            <h4 className="font-semibold text-white">
+                              {system.name}
+                            </h4>
+                            <p className="text-sm text-gray-400">
+                              {system.type}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-lg font-bold text-cyan-300">
+                              ${(system.value / 1000).toFixed(1)}k
+                            </p>
+                            <p className="text-xs text-gray-400">Value</p>
+                          </div>
                         </div>
-                        <div className="text-right">
-                          <p className="text-lg font-bold text-cyan-300">${(system.value / 1000).toFixed(1)}k</p>
-                          <p className="text-xs text-gray-400">Value</p>
-                        </div>
-                      </div>
 
-                      <div className="space-y-2 mb-4">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-400">Brand</span>
-                          <span className="text-gray-300">{system.brand}</span>
+                        <div className="space-y-2 mb-4">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-400">Brand</span>
+                            <span className="text-gray-300">
+                              {system.brand}
+                            </span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-400">Model</span>
+                            <span className="text-gray-300">
+                              {system.model}
+                            </span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-400">Efficiency</span>
+                            <span className="text-green-300">
+                              {system.efficiency}
+                            </span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-400">Status</span>
+                            <span className={getStatusColor(system.status)}>
+                              {system.status}
+                            </span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-400">Last Service</span>
+                            <span className="text-gray-300">
+                              {new Date(
+                                system.lastMaintenance,
+                              ).toLocaleDateString()}
+                            </span>
+                          </div>
                         </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-400">Model</span>
-                          <span className="text-gray-300">{system.model}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-400">Efficiency</span>
-                          <span className="text-green-300">{system.efficiency}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-400">Status</span>
-                          <span className={getStatusColor(system.status)}>{system.status}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-400">Last Service</span>
-                          <span className="text-gray-300">{new Date(system.lastMaintenance).toLocaleDateString()}</span>
-                        </div>
-                      </div>
 
-                      <div className="flex gap-2">
-                        <button className="flex-1 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm">Details</button>
-                        <button className="flex-1 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm">Service</button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                        <div className="flex gap-2">
+                          <button className="flex-1 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm">
+                            Details
+                          </button>
+                          <button className="flex-1 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm">
+                            Service
+                          </button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))
+                )}
               </div>
             </div>
           )}
 
-          {activeSubTab === 'structures' && (
+          {activeSubTab === "structures" && (
             <div className="space-y-6">
               {/* Wind Mitigation Summary */}
               <Card className="bg-gray-800 border-gray-700">
@@ -919,16 +1063,22 @@ function PropertyDetailContent() {
                     <div className="bg-gray-700 rounded-xl p-4 text-center">
                       <CheckCircle className="w-8 h-8 text-green-400 mx-auto mb-2" />
                       <p className="font-medium text-white">Impact Windows</p>
-                      <p className="text-xs text-gray-400 mt-1">100% Coverage</p>
+                      <p className="text-xs text-gray-400 mt-1">
+                        100% Coverage
+                      </p>
                     </div>
                     <div className="bg-gray-700 rounded-xl p-4 text-center">
                       <Shield className="w-8 h-8 text-cyan-400 mx-auto mb-2" />
                       <p className="font-medium text-white">Reinforced Roof</p>
-                      <p className="text-xs text-gray-400 mt-1">Class F Rating</p>
+                      <p className="text-xs text-gray-400 mt-1">
+                        Class F Rating
+                      </p>
                     </div>
                     <div className="bg-gray-700 rounded-xl p-4 text-center">
                       <Award className="w-8 h-8 text-blue-400 mx-auto mb-2" />
-                      <p className="font-medium text-white">Insurance Discount</p>
+                      <p className="font-medium text-white">
+                        Insurance Discount
+                      </p>
                       <p className="text-xs text-green-400 mt-1">35% Savings</p>
                     </div>
                   </div>
@@ -938,10 +1088,13 @@ function PropertyDetailContent() {
               {/* Structures List */}
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-semibold text-white">Building Structures</h3>
+                  <h3 className="text-lg font-semibold text-white">
+                    Building Structures
+                  </h3>
                   <button
                     onClick={handleAddStructure}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm">
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm"
+                  >
                     <Plus className="w-4 h-4" />
                     Add Structure
                   </button>
@@ -953,49 +1106,81 @@ function PropertyDetailContent() {
                       <CardContent className="p-6 text-center">
                         <Building className="w-12 h-12 text-gray-500 mx-auto mb-3" />
                         <p className="text-gray-400">No structures added yet</p>
-                        <p className="text-sm text-gray-500 mt-2">Click "Add Structure" to start tracking your building structures</p>
+                        <p className="text-sm text-gray-500 mt-2">
+                          Click "Add Structure" to start tracking your building
+                          structures
+                        </p>
                       </CardContent>
                     </Card>
-                  ) : structures.map((structure) => (
-                    <Card key={structure.id} className="bg-gray-800 border-gray-700">
-                      <CardContent className="p-6">
-                        <div className="flex items-start justify-between mb-4">
-                          <div>
-                            <h4 className="font-semibold text-white">{structure.name}</h4>
-                            <p className="text-sm text-gray-400">{structure.type}</p>
+                  ) : (
+                    structures.map((structure) => (
+                      <Card
+                        key={structure.id}
+                        className="bg-gray-800 border-gray-700"
+                      >
+                        <CardContent className="p-6">
+                          <div className="flex items-start justify-between mb-4">
+                            <div>
+                              <h4 className="font-semibold text-white">
+                                {structure.name}
+                              </h4>
+                              <p className="text-sm text-gray-400">
+                                {structure.type}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-lg font-bold text-cyan-300">
+                                ${(structure.value / 1000).toFixed(0)}k
+                              </p>
+                              <p className="text-xs text-gray-400">Value</p>
+                            </div>
                           </div>
-                          <div className="text-right">
-                            <p className="text-lg font-bold text-cyan-300">${(structure.value / 1000).toFixed(0)}k</p>
-                            <p className="text-xs text-gray-400">Value</p>
-                          </div>
-                        </div>
 
-                        <div className="space-y-2 mb-4">
-                          <div className="flex justify-between text-sm">
-                            <span className="text-gray-400">Material</span>
-                            <span className="text-gray-300">{structure.material}</span>
+                          <div className="space-y-2 mb-4">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-400">Material</span>
+                              <span className="text-gray-300">
+                                {structure.material}
+                              </span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-400">Wind Rating</span>
+                              <span className="text-green-300">
+                                {structure.windRating}
+                              </span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-400">
+                                Insurance Score
+                              </span>
+                              <span className="text-white">
+                                {structure.insuranceScore}%
+                              </span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-400">
+                                Warranty Expires
+                              </span>
+                              <span className="text-gray-300">
+                                {new Date(
+                                  structure.warrantyExpiration,
+                                ).toLocaleDateString()}
+                              </span>
+                            </div>
                           </div>
-                          <div className="flex justify-between text-sm">
-                            <span className="text-gray-400">Wind Rating</span>
-                            <span className="text-green-300">{structure.windRating}</span>
-                          </div>
-                          <div className="flex justify-between text-sm">
-                            <span className="text-gray-400">Insurance Score</span>
-                            <span className="text-white">{structure.insuranceScore}%</span>
-                          </div>
-                          <div className="flex justify-between text-sm">
-                            <span className="text-gray-400">Warranty Expires</span>
-                            <span className="text-gray-300">{new Date(structure.warrantyExpiration).toLocaleDateString()}</span>
-                          </div>
-                        </div>
 
-                        <div className="flex gap-2">
-                          <button className="flex-1 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm">Details</button>
-                          <button className="flex-1 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm">Documents</button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                          <div className="flex gap-2">
+                            <button className="flex-1 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm">
+                              Details
+                            </button>
+                            <button className="flex-1 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm">
+                              Documents
+                            </button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))
+                  )}
                 </div>
               </div>
             </div>
@@ -1005,26 +1190,37 @@ function PropertyDetailContent() {
 
       {/* Photo Upload Modal */}
       {showPhotoUploadModal && (
-        <Dialog open={showPhotoUploadModal} onOpenChange={setShowPhotoUploadModal}>
+        <Dialog
+          open={showPhotoUploadModal}
+          onOpenChange={setShowPhotoUploadModal}
+        >
           <DialogContent className="bg-gray-800 border-gray-700 max-w-2xl">
             <DialogHeader>
-              <DialogTitle className="text-xl font-semibold text-white">Upload Property Photos</DialogTitle>
+              <DialogTitle className="text-xl font-semibold text-white">
+                Upload Property Photos
+              </DialogTitle>
             </DialogHeader>
 
             <div className="space-y-4">
               {/* Drop Zone */}
               <div className="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center hover:border-gray-500 transition-colors cursor-pointer">
                 <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-white font-medium mb-2">Drop photos here or click to browse</p>
-                <p className="text-sm text-gray-400">Supports JPG, PNG, HEIF • Max 10MB per file</p>
+                <p className="text-white font-medium mb-2">
+                  Drop photos here or click to browse
+                </p>
+                <p className="text-sm text-gray-400">
+                  Supports JPG, PNG, HEIF • Max 10MB per file
+                </p>
                 <input
                   type="file"
                   multiple
                   accept="image/*"
                   onChange={(e) => {
-                    const files = e.target.files
+                    const files = e.target.files;
                     if (files && files.length > 0) {
-                      toast.success(`Selected ${files.length} photo${files.length > 1 ? 's' : ''} for upload`)
+                      toast.success(
+                        `Selected ${files.length} photo${files.length > 1 ? "s" : ""} for upload`,
+                      );
                       // TODO: Implement actual file upload logic
                     }
                   }}
@@ -1032,7 +1228,10 @@ function PropertyDetailContent() {
                   id="photo-upload"
                 />
                 <label htmlFor="photo-upload" className="inline-block mt-4">
-                  <Button type="button" className="bg-blue-600 hover:bg-blue-700">
+                  <Button
+                    type="button"
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
                     <Camera className="w-4 h-4 mr-2" />
                     Select Photos
                   </Button>
@@ -1046,12 +1245,16 @@ function PropertyDetailContent() {
                   <button className="p-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-left transition-colors">
                     <Home className="w-5 h-5 text-blue-400 mb-1" />
                     <p className="text-white font-medium">Exterior</p>
-                    <p className="text-xs text-gray-400">Front, sides, backyard</p>
+                    <p className="text-xs text-gray-400">
+                      Front, sides, backyard
+                    </p>
                   </button>
                   <button className="p-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-left transition-colors">
                     <Building className="w-5 h-5 text-green-400 mb-1" />
                     <p className="text-white font-medium">Interior</p>
-                    <p className="text-xs text-gray-400">Rooms, fixtures, systems</p>
+                    <p className="text-xs text-gray-400">
+                      Rooms, fixtures, systems
+                    </p>
                   </button>
                   <button className="p-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-left transition-colors">
                     <Shield className="w-5 h-5 text-purple-400 mb-1" />
@@ -1072,7 +1275,9 @@ function PropertyDetailContent() {
                 <div className="bg-gray-700/50 rounded-lg p-4 min-h-[100px] flex items-center justify-center">
                   <div className="text-center">
                     <Image className="w-8 h-8 text-gray-500 mx-auto mb-2" />
-                    <p className="text-sm text-gray-500">No photos selected yet</p>
+                    <p className="text-sm text-gray-500">
+                      No photos selected yet
+                    </p>
                   </div>
                 </div>
               </div>
@@ -1088,8 +1293,8 @@ function PropertyDetailContent() {
               </Button>
               <Button
                 onClick={() => {
-                  toast.success('Photos uploaded successfully!')
-                  setShowPhotoUploadModal(false)
+                  toast.success("Photos uploaded successfully!");
+                  setShowPhotoUploadModal(false);
                 }}
                 className="bg-blue-600 hover:bg-blue-700"
               >
@@ -1101,7 +1306,7 @@ function PropertyDetailContent() {
         </Dialog>
       )}
     </DashboardLayout>
-  )
+  );
 }
 
 export default function PropertyDetailPage() {
@@ -1109,5 +1314,5 @@ export default function PropertyDetailPage() {
     <ProtectedRoute>
       <PropertyDetailContent />
     </ProtectedRoute>
-  )
+  );
 }
