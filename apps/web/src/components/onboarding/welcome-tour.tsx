@@ -116,6 +116,7 @@ interface TooltipPosition {
   bottom?: string
   left?: string
   right?: string
+  transform?: string
 }
 
 interface WelcomeTourProps {

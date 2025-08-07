@@ -97,7 +97,7 @@ export function QueryPerformanceDashboard({
       setPerformanceData(snapshot)
       setHistoricalData(prev => [...prev.slice(-49), snapshot]) // Keep last 50 snapshots
     } catch (error) {
-      logger.error('Failed to fetch performance data', error as Error)
+      logger.error('Failed to fetch performance data', {}, error as Error)
     } finally {
       setIsLoading(false)
     }
@@ -403,7 +403,7 @@ interface MetricCardProps {
   title: string
   value: string
   trend?: number
-  icon: React.ElementType
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
   color: string
   trendInverted?: boolean
 }

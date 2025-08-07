@@ -51,7 +51,7 @@ interface CustomToastOptions extends Omit<ExternalToast, 'action'> {
   subtitle?: string
   progress?: number
   actions?: ToastAction[]
-  icon?: React.ComponentType<any>
+  icon?: React.ReactNode
   persistent?: boolean
   metadata?: Record<string, any>
   onDismiss?: () => void
@@ -248,7 +248,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     update: (toastId, options) => {
       // For Sonner, we'd need to dismiss and recreate
       sonnerToast.dismiss(toastId)
-      createCustomToast(options.description || '', options)
+      createCustomToast(String(options.description || ''), options)
     }
   }
 

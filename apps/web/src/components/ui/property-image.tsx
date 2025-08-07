@@ -17,10 +17,10 @@ import { logger } from "@/lib/logger/production-logger"
 import { getPropertyImage, getPropertyImageByType, PropertyImageStyle } from '@/lib/ai/image-generation'
 
 interface PropertyImageProps {
-  propertyId?: string // Add support for propertyId
+  propertyId?: string
   propertyType?: string
   propertyName?: string
-  size?: string // Add support for size prop
+  size?: string
   location?: string
   style?: PropertyImageStyle
   width?: number
@@ -29,6 +29,8 @@ interface PropertyImageProps {
   priority?: boolean
   generateAI?: boolean
   fallbackEmoji?: string
+  src?: string
+  alt?: string
 }
 
 export function PropertyImage({

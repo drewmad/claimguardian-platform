@@ -8,6 +8,7 @@
  */
 
 import dynamic from 'next/dynamic'
+import React from 'react'
 import { ComponentType } from 'react'
 
 // Loading components for different dashboard sections
@@ -245,7 +246,7 @@ export const createLazyRoute = <P = Record<string, never>>(
   fallback?: ComponentType
 ) => {
   return dynamic(importFn, {
-    loading: fallback || (() => <DashboardLoadingCard />),
+    loading: () => fallback ? React.createElement(fallback) : <DashboardLoadingCard />,
     ssr: false
   })
 }

@@ -118,7 +118,6 @@ export default function ARDamageDocumenterPage() {
   useEffect(() => {
     // Check for WebXR support
     if ('xr' in navigator) {
-      // @ts-expect-error - WebXR API not fully typed
       navigator.xr.isSessionSupported('immersive-ar').then((supported: boolean) => {
         setIsARSupported(supported)
       })

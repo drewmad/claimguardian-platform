@@ -46,6 +46,7 @@ interface AvatarImageProps extends Omit<OptimizedImageProps, 'width' | 'height' 
 
 // Size mappings for consistent sizing
 const PROPERTY_SIZES = {
+  xs: { width: 150, height: 120 },
   sm: { width: 200, height: 150 },
   md: { width: 320, height: 240 },
   lg: { width: 480, height: 360 },

@@ -369,7 +369,7 @@ export function ProgressEnhanced({
 
 // Multi-Stage Progress Component
 interface MultiStageProgressProps {
-  stages: { name: string; description: string; icon: React.ElementType }[]
+  stages: { name: string; description: string; icon: React.ComponentType<React.SVGProps<SVGSVGElement>> }[]
   currentStage: number
   stageProgress: number
   overallProgress: number

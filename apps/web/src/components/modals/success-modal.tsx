@@ -68,7 +68,7 @@ export function SuccessModal() {
   const { activeModal, modalData, closeModal } = useModalStore()
   const [isClosing, setIsClosing] = useState(false)
 
-  const config = modalData as ModalConfig | null
+  const config = modalData as unknown as ModalConfig | null
 
   useEffect(() => {
     if (activeModal === 'success' && config?.autoClose) {

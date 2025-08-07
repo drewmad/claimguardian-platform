@@ -146,7 +146,7 @@ export function SettingsModal() {
   const handleSavePreferences = () => {
     localStorage.setItem('userPreferences', JSON.stringify(preferences))
     setSaveSuccess(true)
-    logger.track('preferences_updated', preferences)
+    logger.track('preferences_updated', preferences as unknown as Record<string, unknown>)
   }
 
   const handleSignOut = async () => {

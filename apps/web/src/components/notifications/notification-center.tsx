@@ -18,7 +18,7 @@ import {
   Check,
   X,
   Trash2,
-  MarkAsUnread,
+  Mail as MarkAsUnread,
   Settings,
   Filter,
   Search,

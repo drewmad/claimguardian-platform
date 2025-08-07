@@ -90,7 +90,7 @@ export function CacheDashboard({
       setCacheInfo(infoData)
       setAlerts(generateAlerts(metricsData, infoData))
     } catch (err) {
-      logger.error('Failed to fetch cache data', err as Error)
+      logger.error('Failed to fetch cache data', {}, err as Error)
       error('Failed to load cache data')
     } finally {
       setIsLoading(false)
@@ -548,7 +548,7 @@ export function CacheDashboard({
 interface CacheMetricsCardProps {
   title: string
   value: string
-  icon: React.ElementType
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
   color: string
   progress?: number
   description?: string

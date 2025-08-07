@@ -125,7 +125,7 @@ export function RealtimeDashboard({
       startTime.current = new Date()
 
       // Subscribe to all major tables for monitoring
-      const tablesToMonitor: RealtimeTable[] = ['properties', 'claims', 'user_profiles']
+      const tablesToMonitor = ['claims', 'user_profiles'] as RealtimeTable[]
 
       const subscribePromises = tablesToMonitor.map(async (table) => {
         const subscriptionId = await realtimeManager.current.subscribe(
@@ -152,7 +152,7 @@ export function RealtimeDashboard({
         )
         subscriptionIds.current.push(presenceId)
       } catch (presenceError) {
-        logger.warn('Presence subscription failed', presenceError as Error)
+        logger.warn('Presence subscription failed', { error: (presenceError as Error).message })
       }
 
       setIsConnected(true)
@@ -168,7 +168,7 @@ export function RealtimeDashboard({
 
     } catch (err) {
       error('Failed to start real-time monitoring')
-      logger.error('Real-time monitoring startup failed', err as Error)
+      logger.error('Real-time monitoring startup failed', {}, err as Error)
     }
   }
 
@@ -188,7 +188,7 @@ export function RealtimeDashboard({
 
     } catch (err) {
       error('Failed to stop real-time monitoring')
-      logger.error('Real-time monitoring shutdown failed', err as Error)
+      logger.error('Real-time monitoring shutdown failed', {}, err as Error)
     }
   }
 
@@ -460,7 +460,7 @@ export function RealtimeDashboard({
 interface ConnectionStatusCardProps {
   title: string
   status: 'connected' | 'disconnected' | 'connecting' | 'error'
-  icon: React.ElementType
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
   color: string
   description: string
 }
@@ -507,7 +507,7 @@ function ConnectionStatusCard({ title, status, icon: Icon, color, description }:
 interface MetricCardProps {
   title: string
   value: string
-  icon: React.ElementType
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
   color: string
   description?: string
 }
