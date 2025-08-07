@@ -32,7 +32,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { SocialLoginPanel } from "@/components/auth/social-login-enhanced";
 
 type Step = "welcome" | "account" | "legal" | "ai-disclaimer" | "success";
 
@@ -258,7 +257,7 @@ export function MultiStepSignupForm() {
           email: formData.email,
           password: formData.password,
           options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback`,
+            emailRedirectTo: `${window.location.origin}/auth/verify-enhanced`,
             data: {
               first_name: formData.firstName,
               last_name: formData.lastName,
@@ -299,8 +298,8 @@ export function MultiStepSignupForm() {
             signup_landing_page: window.location.href,
           });
 
-          // Show success message for email verification
-          setCurrentStep("success");
+          // Redirect to resend verification page with email
+          router.push(`/auth/resend-verification?email=${encodeURIComponent(formData.email)}`);
         } else {
           // Profile will be automatically created by database trigger
           logger.info(
@@ -412,26 +411,6 @@ export function MultiStepSignupForm() {
               <p className="text-gray-400 mt-1">Sign up to get started</p>
             </div>
 
-            {/* Social Login Section */}
-            <div className="mb-8">
-              <SocialLoginPanel
-                mode="signup"
-                onSuccess={() => router.push("/onboarding/property-setup")}
-                onError={(error) => setError(error.toString())}
-              />
-            </div>
-
-            {/* Divider */}
-            <div className="relative mb-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-700"></div>
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-slate-900/50 px-2 text-slate-400">
-                  Or sign up with email
-                </span>
-              </div>
-            </div>
 
             {/* Personal Info */}
             <div className="space-y-4">

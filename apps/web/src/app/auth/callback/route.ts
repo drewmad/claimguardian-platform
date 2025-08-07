@@ -20,10 +20,10 @@ export async function GET(request: NextRequest) {
 
   // Handle token_hash format (email verification links)
   if (tokenHash) {
-    logger.info("Redirecting token_hash verification to verify page");
+    logger.info("Redirecting token_hash verification to verify-enhanced page");
     return NextResponse.redirect(
       new URL(
-        `/auth/verify?token_hash=${tokenHash}&type=${type || "signup"}`,
+        `/auth/verify-enhanced?token_hash=${tokenHash}&type=${type || "signup"}`,
         requestUrl.origin,
       ),
     );

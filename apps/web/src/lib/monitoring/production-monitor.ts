@@ -9,7 +9,7 @@
  */
 
 import { logger } from "@/lib/logger/production-logger";
-import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
 import {
   asyncErrorHandler,
   withRetry,
@@ -239,7 +239,7 @@ export class ProductionMonitor {
   private async calculateErrorRate(): Promise<number> {
     const result = await withRetry(
       async () => {
-        const supabase = await createClient();
+        const supabase = createServiceClient();
 
         const { data, error } = await supabase
           .from("request_logs")
@@ -265,7 +265,7 @@ export class ProductionMonitor {
   private async calculateThroughput(): Promise<number> {
     const result = await withRetry(
       async () => {
-        const supabase = await createClient();
+        const supabase = createServiceClient();
 
         const { count, error } = await supabase
           .from("request_logs")
@@ -308,7 +308,7 @@ export class ProductionMonitor {
   private async getActiveConnections(): Promise<number> {
     const result = await withRetry(
       async () => {
-        const supabase = await createClient();
+        const supabase = createServiceClient();
 
         // Query active sessions or connections
         const { count, error } = await supabase
@@ -329,7 +329,7 @@ export class ProductionMonitor {
   private async getQueueSize(): Promise<number> {
     const result = await withRetry(
       async () => {
-        const supabase = await createClient();
+        const supabase = createServiceClient();
 
         const { count, error } = await supabase
           .from("ai_processing_queue")
@@ -349,7 +349,7 @@ export class ProductionMonitor {
   private async storeMetrics(metrics: MonitoringMetrics): Promise<void> {
     const result = await withRetry(
       async () => {
-        const supabase = await createClient();
+        const supabase = createServiceClient();
 
         const { error } = await supabase.from("system_metrics").insert({
           timestamp: new Date(metrics.timestamp).toISOString(),
@@ -451,7 +451,7 @@ export class ProductionMonitor {
 
   private async checkDatabaseHealth(): Promise<boolean> {
     try {
-      const supabase = await createClient();
+      const supabase = createServiceClient();
       const { error } = await supabase
         .from("health_checks")
         .select("1")
@@ -497,7 +497,7 @@ export class ProductionMonitor {
 
   private async checkStorageHealth(): Promise<boolean> {
     try {
-      const supabase = await createClient();
+      const supabase = createServiceClient();
 
       // Test storage by trying to list files (doesn't require actual files)
       const { error } = await supabase.storage
@@ -592,7 +592,7 @@ export class ProductionMonitor {
   private async storeAlert(alertData: Record<string, unknown>): Promise<void> {
     const result = await withRetry(
       async () => {
-        const supabase = await createClient();
+        const supabase = createServiceClient();
 
         const { error } = await supabase
           .from("system_alerts")
@@ -680,14 +680,6 @@ export class ProductionMonitor {
 // Singleton instance
 export const productionMonitor = new ProductionMonitor();
 
-// Auto-start monitoring in production
-if (
-  process.env.NODE_ENV === "production" &&
-  process.env.VERCEL_ENV === "production"
-) {
-  productionMonitor
-    .startMonitoring(30000) // 30 seconds interval
-    .catch((error) =>
-      logger.error("Failed to start production monitoring", error instanceof Error ? error : new Error(String(error))),
-    );
-}
+// Note: Auto-start disabled to prevent initialization outside request context
+// Monitoring should be started explicitly from API routes or server components
+// that have proper environment variable access

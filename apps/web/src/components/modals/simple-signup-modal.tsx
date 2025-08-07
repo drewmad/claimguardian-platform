@@ -12,17 +12,18 @@
 
 import { X } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { useAuth } from "@/components/auth/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useModalStore } from "@/stores/modal-store";
-import { SocialLoginPanel } from "@/components/auth/social-login-enhanced";
 
 export function SimpleSignupModal() {
   const { activeModal, closeModal, openModal } = useModalStore();
   const { signUp, error } = useAuth();
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -52,23 +53,9 @@ export function SimpleSignupModal() {
   };
 
   if (submitted) {
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div className="absolute inset-0 bg-black/50" onClick={closeModal} />
-        <div className="relative bg-white rounded-lg p-6 max-w-md w-full">
-          <h2 className="text-xl font-bold mb-4">Check Your Email</h2>
-          <p className="text-gray-600 mb-4">
-            We sent a confirmation email to <strong>{formData.email}</strong>
-          </p>
-          <p className="text-sm text-gray-500 mb-6">
-            Click the link in the email to activate your account.
-          </p>
-          <Button onClick={closeModal} className="w-full">
-            Close
-          </Button>
-        </div>
-      </div>
-    );
+    // Redirect to resend verification page with email
+    router.push(`/auth/resend-verification?email=${encodeURIComponent(formData.email)}`);
+    return null;
   }
 
   return (
@@ -85,25 +72,6 @@ export function SimpleSignupModal() {
 
         <h2 className="text-xl font-bold mb-6">Create Account</h2>
 
-        {/* Social Login Section */}
-        <div className="mb-6">
-          <SocialLoginPanel
-            mode="signup"
-            onSuccess={() => closeModal()}
-            onError={(error) => console.error("Social signup error:", error)}
-          />
-        </div>
-
-        <div className="relative mb-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-200"></div>
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-white px-2 text-gray-500">
-              Or continue with email
-            </span>
-          </div>
-        </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

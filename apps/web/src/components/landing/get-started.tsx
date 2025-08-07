@@ -41,7 +41,7 @@ export function GetStarted() {
             <button
               onClick={() =>
                 openModal("content", {
-                  title: "Schedule a Demo",
+                  title: "Start Today",
                   content: {
                     description:
                       "See ClaimGuardian in action with a personalized demo from our team.",
@@ -50,7 +50,7 @@ export function GetStarted() {
               }
               className="btn-secondary text-white font-bold py-4 px-8 text-lg w-full sm:w-auto"
             >
-              Schedule a Demo
+              Start Today
             </button>
           </div>
 

@@ -205,7 +205,7 @@ export function EmailVerificationWizard({
             type: verificationType as "signup" | "email_change",
             email,
             options: {
-              emailRedirectTo: `${window.location.origin}/auth/verify`,
+              emailRedirectTo: `${window.location.origin}/auth/verify-enhanced`,
             },
           });
           resendError = error;
@@ -372,7 +372,7 @@ export function EmailVerificationWizard({
           color: "text-green-500",
           bgColor: "bg-green-50 dark:bg-green-900/10",
           borderColor: "border-green-200 dark:border-green-800",
-          title: "Verification Email Sent!",
+          title: "Email Verification Sent",
           description:
             "Check your inbox and spam folder for the verification email.",
         };
@@ -572,6 +572,7 @@ function ResendVerificationForm({
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Enter your email address"
           className="w-full"
+          readOnly={!!initialEmail}
         />
       </div>
 

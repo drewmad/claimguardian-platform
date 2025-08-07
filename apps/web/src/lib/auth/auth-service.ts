@@ -443,7 +443,7 @@ class AuthService {
         type: "signup",
         email: email,
         options: {
-          emailRedirectTo: getAuthCallbackURL("/auth/callback"),
+          emailRedirectTo: getAuthCallbackURL("/auth/verify-enhanced"),
         },
       });
 

@@ -13,18 +13,18 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmailVerificationWizard } from "@/components/auth/email-verification-enhanced";
 import { createClient } from "@/lib/supabase/client";
 import { logger } from "@/lib/logger";
+import { useModalStore } from "@/stores/modal-store";
 
 export default function ResendVerificationPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { openModal } = useModalStore();
   const [userEmail, setUserEmail] = useState<string>("");
 
   // Get email from URL params or current user
@@ -62,27 +62,13 @@ export default function ResendVerificationPage() {
   };
 
   const handleCancel = () => {
-    router.push("/auth/signin");
+    router.push("/");
+    openModal("login");
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 flex items-center justify-center p-4">
       <div className="max-w-2xl w-full">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-8"
-        >
-          <h1 className="text-4xl font-bold text-white mb-4">
-            Email Verification
-          </h1>
-          <p className="text-xl text-gray-300 max-w-lg mx-auto">
-            We need to verify your email address to secure your account and
-            enable all features.
-          </p>
-        </motion.div>
 
         {/* Main verification component */}
         <motion.div
@@ -99,20 +85,6 @@ export default function ResendVerificationPage() {
           />
         </motion.div>
 
-        {/* Back navigation */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="text-center mt-8"
-        >
-          <Link href="/auth/signin">
-            <Button variant="ghost" className="text-white hover:bg-white/10">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Sign In
-            </Button>
-          </Link>
-        </motion.div>
 
         {/* Additional help card */}
         <motion.div

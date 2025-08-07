@@ -59,26 +59,7 @@ export function Header() {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-          <a
-            href="#how-it-works"
-            className="text-gray-300 hover:text-white transition-colors duration-200 relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-green-400 after:transition-all hover:after:w-full"
-          >
-            How It Works
-          </a>
-          <a
-            href="#features"
-            className="text-gray-300 hover:text-white transition-colors duration-200 relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-green-400 after:transition-all hover:after:w-full"
-          >
-            Features
-          </a>
-          <a
-            href="#pricing"
-            className="text-gray-300 hover:text-white transition-colors duration-200 relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-green-400 after:transition-all hover:after:w-full"
-          >
-            Pricing
-          </a>
-
-          <div className="flex items-center gap-4 ml-4">
+          <div className="flex items-center gap-4">
             <button
               onClick={() => openModal("login")}
               className="text-gray-300 hover:text-white transition-colors duration-200"
@@ -90,7 +71,7 @@ export function Header() {
               className="relative py-2 px-5 rounded-full font-semibold transition-all duration-300 hover:scale-105 overflow-hidden group"
               style={{
                 backgroundColor: COLORS.brand.neonGreen,
-                color: "white",
+                color: "black",
               }}
             >
               <span className="relative z-10">Join the Community</span>
@@ -107,7 +88,7 @@ export function Header() {
             className="font-semibold text-sm py-2.5 px-4 rounded-lg transition-all duration-300 hover:scale-105 inline-block a11y-touch-target"
             style={{
               backgroundColor: COLORS.brand.neonGreen,
-              color: "white",
+              color: "black",
             }}
           >
             Sign Up
@@ -144,28 +125,6 @@ export function Header() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex flex-col space-y-4">
-              <a
-                href="#how-it-works"
-                className="text-white text-lg font-medium py-3 px-4 rounded-lg hover:bg-white/10 transition-colors a11y-touch-target"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                How It Works
-              </a>
-              <a
-                href="#features"
-                className="text-white text-lg font-medium py-3 px-4 rounded-lg hover:bg-white/10 transition-colors a11y-touch-target"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Features
-              </a>
-              <a
-                href="#pricing"
-                className="text-white text-lg font-medium py-3 px-4 rounded-lg hover:bg-white/10 transition-colors a11y-touch-target"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Pricing
-              </a>
-
               <div className="border-t border-gray-600 pt-4 space-y-3">
                 <button
                   onClick={() => {
@@ -181,7 +140,7 @@ export function Header() {
                   className="block text-center py-3 px-6 rounded-full font-semibold transition-all duration-300 a11y-touch-target"
                   style={{
                     backgroundColor: COLORS.brand.neonGreen,
-                    color: "white",
+                    color: "black",
                   }}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >

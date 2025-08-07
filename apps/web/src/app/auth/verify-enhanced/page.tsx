@@ -164,22 +164,23 @@ function EnhancedVerifyContent() {
         return;
       }
 
-      // Handle different token formats
+      // Handle different token formats - both 'token' and 'token_hash'
       const token = searchParams.get("token");
+      const tokenHash = searchParams.get("token_hash"); // PKCE format
       const type = searchParams.get("type") || "signup";
 
       // Check hash fragment for newer format
       const hash = window.location.hash;
-      let tokenHash = token;
+      let finalTokenHash = tokenHash || token; // Prioritize token_hash for PKCE
       let verificationType = type;
 
       if (hash) {
         const hashParams = new URLSearchParams(hash.substring(1));
-        tokenHash = hashParams.get("token") || token;
+        finalTokenHash = hashParams.get("token_hash") || hashParams.get("token") || finalTokenHash;
         verificationType = hashParams.get("type") || type;
       }
 
-      if (!tokenHash) {
+      if (!finalTokenHash) {
         // Check if user is already verified
         const {
           data: { user },
@@ -211,6 +212,12 @@ function EnhancedVerifyContent() {
           return;
         }
 
+        logger.error("No verification token found", {
+          searchParams: Object.fromEntries(searchParams.entries()),
+          url: window.location.href,
+          hash: window.location.hash
+        });
+        
         setState((prev) => ({
           ...prev,
           status: "error",
@@ -226,13 +233,24 @@ function EnhancedVerifyContent() {
 
       logger.info("Processing email verification", {
         type: verificationType,
-        hasToken: !!tokenHash,
+        hasToken: !!finalTokenHash,
+        tokenLength: finalTokenHash?.length || 0,
+        tokenSource: tokenHash ? 'token_hash_param' : token ? 'token_param' : 'none',
+        fullUrl: window.location.href,
         retryAttempt: state.retryCount,
+      });
+
+      // Check if this is a PKCE token that might need special handling
+      const isPkceToken = finalTokenHash.startsWith('pkce_');
+      
+      logger.info("Token format detected", {
+        isPkceToken,
+        tokenPrefix: finalTokenHash.substring(0, 10)
       });
 
       // Verify the token
       const { data, error: verifyError } = await supabase.auth.verifyOtp({
-        token_hash: tokenHash,
+        token_hash: finalTokenHash,
         type: verificationType as "signup" | "recovery" | "invite",
       });
 

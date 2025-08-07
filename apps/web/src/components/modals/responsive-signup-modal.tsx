@@ -169,6 +169,10 @@ export function ResponsiveSignupModal() {
         setSubmitted(true);
         logger.track("signup_success", { email: formData.email });
         toast.success("Account created! Please check your email.");
+        // Redirect to resend verification page with email
+        setTimeout(() => {
+          window.location.href = `/auth/resend-verification?email=${encodeURIComponent(formData.email)}`;
+        }, 1000);
       }
     } catch (error) {
       logger.error("Signup failed", {}, error instanceof Error ? error : new Error(String(error)));

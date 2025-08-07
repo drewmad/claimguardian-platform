@@ -21,7 +21,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { SocialLoginPanel } from "@/components/auth/social-login-enhanced";
 
 interface SimpleSignInFormProps {
   message?: string;
@@ -98,26 +97,6 @@ export function SimpleSignInForm({ message }: SimpleSignInFormProps) {
             </div>
           )}
 
-          {/* Social Login Section */}
-          <div className="mb-8">
-            <SocialLoginPanel
-              mode="login"
-              onSuccess={() => router.push("/dashboard")}
-              onError={(error) => setError(error)}
-            />
-          </div>
-
-          {/* Divider */}
-          <div className="relative mb-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-700"></div>
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-slate-900/50 px-2 text-slate-400">
-                Or continue with email
-              </span>
-            </div>
-          </div>
 
           {/* Sign In Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
