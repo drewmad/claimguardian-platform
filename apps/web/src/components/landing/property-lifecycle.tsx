@@ -1,6 +1,6 @@
 /**
  * @fileMetadata
- * @purpose "Property lifecycle overview section for landing page"
+ * @purpose "Property lifecycle overview section for landing page - updated"
  * @owner frontend-team
  * @dependencies ["react", "lucide-react", "@/lib/styles/liquid-glass"]
  * @exports ["PropertyLifecycle"]
