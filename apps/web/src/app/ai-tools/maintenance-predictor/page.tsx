@@ -764,7 +764,7 @@ export default function MaintenancePredictorPage() {
                                   item.priority === "medium" ? "bg-yellow-900/50" :
                                   "bg-green-900/50"
                                 }`}>
-                                  <Tool className={`h-4 w-4 ${
+                                  <Wrench className={`h-4 w-4 ${
                                     item.priority === "critical" ? "text-red-400" :
                                     item.priority === "high" ? "text-orange-400" :
                                     item.priority === "medium" ? "text-yellow-400" :
