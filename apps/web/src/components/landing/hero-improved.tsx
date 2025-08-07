@@ -207,10 +207,10 @@ export function Hero() {
                 }}
                 onMouseEnter={() => setHoveredCTA(true)}
                 onMouseLeave={() => setHoveredCTA(false)}
-                aria-label="Create your complete property digital twin - no credit card required"
+                aria-label="Deploy your digital guardian for complete property protection"
               >
                 <span className="relative z-10 font-black tracking-wide">
-                  Create My Digital Twin →
+                  Deploy My Digital Guardian →
                 </span>
               </Link>
             </div>
