@@ -282,9 +282,12 @@ export function Hero() {
                 >
                   Claim<span className="text-green-400">Guardian</span>
                 </div>
-                <h1 className="text-[clamp(1.25rem,2.5vw,1.75rem)] font-semibold text-gray-200 opacity-90">
-                  {taglineLoading ? 'Your Property Intelligence, Not Theirs' : taglineVariant?.data?.tagline || 'Your Property Intelligence, Not Theirs'}
+                <h1 className="text-[clamp(1.5rem,3vw,2.25rem)] font-bold text-white mb-4">
+                  YOUR PROPERTY'S COMPLETE LIFECYCLE COMMAND CENTER
                 </h1>
+                <p className="text-[clamp(1.125rem,2.2vw,1.5rem)] font-medium text-gray-200 opacity-90">
+                  From purchase to legacy transfer, every phase of ownership—documented, optimized, and forever protected by independent intelligence.
+                </p>
                 {/* A/B Test Debug Info (only in development) */}
                 {process.env.NODE_ENV === 'development' && taglineVariant && (
                   <div className="text-xs text-yellow-400 mt-1 opacity-60">
@@ -295,19 +298,6 @@ export function Hero() {
             </header>
           </AnimatedSection>
 
-          <AnimatedSection delay={100}>
-            <div className="mt-6 max-w-4xl mx-auto space-y-3">
-              <p className="text-[clamp(1.25rem,2.2vw,1.625rem)] font-medium text-gray-200 leading-relaxed">
-                From purchase to transfer, every asset and every phase is protected.
-              </p>
-              <p className="text-[clamp(1.125rem,2vw,1.5rem)] font-medium text-gray-300 leading-relaxed">
-                ClaimGuardian's AI manages your property with one goal: protecting your interests—not theirs.
-              </p>
-              <p className="text-[clamp(1rem,1.8vw,1.375rem)] text-gray-400 leading-relaxed">
-                An AI-powered guardian that protects, manages, and optimizes everything you own—without bias or surveillance.
-              </p>
-            </div>
-          </AnimatedSection>
 
           <AnimatedSection delay={200}>
             {/* "I'm a..." Dropdown */}

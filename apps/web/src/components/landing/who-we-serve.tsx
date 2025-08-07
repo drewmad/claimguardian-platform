@@ -16,39 +16,45 @@ import Image from "next/image";
 const segments = [
   {
     icon: Home,
-    title: "Homeowners",
+    title: "🏠 Homeowners",
+    subtitle: "Turn your house into an appreciating asset.",
     description:
-      "Create a complete digital twin of your property. Track every warranty, schedule maintenance, document improvements, and protect your largest investment for generations.",
+      "Track warranties, schedule maintenance, and capture every upgrade in one immutable record. Sell faster, negotiate harder, and avoid costly surprises.",
   },
   {
     icon: Key,
-    title: "Renters",
+    title: "🔑 Renters",
+    subtitle: "Secure your deposit—and your reputation.",
     description:
-      "Document your rental condition, protect your security deposit, track maintenance requests, and build a verified rental history for future housing applications.",
+      "Timestamp move-in condition, log maintenance requests, and export a verified rental history that follows you to the next lease.",
   },
   {
     icon: Building,
-    title: "Real Estate Professionals",
+    title: "📈 Real-Estate Professionals",
+    subtitle: "Portfolio-wide ROI at a glance.",
     description:
-      "Manage entire portfolios with intelligent oversight. Track ROI on improvements, optimize maintenance schedules, and maximize property values across all holdings.",
+      "AI ranks improvements by payback, flags deferred maintenance, and surfaces hidden equity across unlimited doors.",
   },
   {
     icon: Users,
-    title: "Growing Families",
+    title: "👨‍👩‍👧‍👦 Growing Families",
+    subtitle: "Protect what matters now—and for generations.",
     description:
-      "Protect your family's most important asset. Every repair, upgrade, and lesson learned becomes part of your property's documented history, preserved forever.",
+      "Every repair, appliance manual, and lesson learned is stored for easy hand-off to kids or heirs.",
   },
   {
     icon: Briefcase,
-    title: "Enterprise & Government",
+    title: "🏢 Enterprise & Government",
+    subtitle: "FEMA-NIMS compliant intelligence at scale.",
     description:
-      "FEMA NIMS-compliant disaster response, multi-property management, and institutional-grade documentation for corporate real estate and government facilities.",
+      "Multi-site dashboards, SOC 2 data security, and instant disaster-response reporting for institutional portfolios.",
   },
   {
     icon: Shield,
-    title: "Insurance & Legal",
+    title: "⚖️ Insurance & Legal",
+    subtitle: "Evidence that wins.",
     description:
-      "Comprehensive claim documentation, policy compliance tracking, and litigation support with AI-powered evidence organization and timeline reconstruction.",
+      "Chain-of-custody photo logs, policy compliance tracking, and AI-built timelines ready for carriers or court.",
   },
 ];
 
@@ -73,132 +79,47 @@ export function WhoWeServe() {
           {segments.map((segment, index) => {
             const Icon = segment.icon;
             return (
-              <div key={index} className="text-center group">
-                <div className="w-16 h-16 mx-auto mb-4 bg-blue-600/10 rounded-full flex items-center justify-center group-hover:bg-blue-600/20 transition-colors">
-                  <Icon className="w-8 h-8 text-blue-400" />
-                </div>
-                <h3 className="text-xl font-bold mb-2">{segment.title}</h3>
-                <p className="text-slate-400">{segment.description}</p>
+              <div key={index} className="text-left group bg-gradient-to-br from-gray-800/40 to-gray-900/40 backdrop-blur-xl border border-gray-700/30 rounded-2xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.2)] hover:border-green-400/30 hover:shadow-[0_20px_60px_rgba(57,255,20,0.1)] transition-all duration-300">
+                <h3 className="text-xl font-bold mb-2 text-white">{segment.title}</h3>
+                <p className="text-green-400 font-semibold mb-3 text-sm">{segment.subtitle}</p>
+                <ul className="text-gray-300 space-y-1 text-sm">
+                  {segment.description.split('. ').map((bullet, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <span className="text-green-400 mt-1.5 text-xs">•</span>
+                      <span>{bullet}{i === segment.description.split('. ').length - 1 ? '' : '.'}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             );
           })}
         </div>
 
-        {/* Property Showcase Section */}
+        {/* Property Types We Protect - Simplified for TAM expansion */}
         <div className="mt-16">
           <h3 className="text-2xl font-bold text-center mb-8 text-white">
-            Protecting Florida Properties of All Types
+            Property Types We Protect
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="group relative overflow-hidden rounded-xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50">
-              <div className="aspect-video relative">
-                <Image
-                  src="/landingpage/Waterfront.png"
-                  alt="Waterfront Estate Protection"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <div className="absolute bottom-4 left-4 right-4">
-                  <h4 className="text-white font-semibold text-lg">
-                    Waterfront Estates
-                  </h4>
-                  <p className="text-gray-300 text-sm">
-                    Hurricane-resistant documentation & flood protection
-                  </p>
-                </div>
-              </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+            <div className="flex flex-col items-center p-4 bg-gradient-to-br from-blue-600/20 to-cyan-600/20 border border-blue-400/30 rounded-xl backdrop-blur-sm hover:border-blue-400/50 transition-colors">
+              <span className="text-3xl mb-2">🌊</span>
+              <h4 className="text-white font-semibold text-sm text-center">Waterfront Estates</h4>
+              <p className="text-blue-300 text-xs text-center mt-1">hurricane-resilient documentation & flood-risk modeling</p>
             </div>
-
-            <div className="group relative overflow-hidden rounded-xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50">
-              <div className="aspect-video relative">
-                <Image
-                  src="/landingpage/ModernHomeProtection.png"
-                  alt="Modern Home Protection"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <div className="absolute bottom-4 left-4 right-4">
-                  <h4 className="text-white font-semibold text-lg">
-                    Modern Homes
-                  </h4>
-                  <p className="text-gray-300 text-sm">
-                    Smart technology integration & comprehensive coverage
-                  </p>
-                </div>
-              </div>
+            <div className="flex flex-col items-center p-4 bg-gradient-to-br from-green-600/20 to-emerald-600/20 border border-green-400/30 rounded-xl backdrop-blur-sm hover:border-green-400/50 transition-colors">
+              <span className="text-3xl mb-2">🏡</span>
+              <h4 className="text-white font-semibold text-sm text-center">Modern Homes</h4>
+              <p className="text-green-300 text-xs text-center mt-1">smart-device data feeds & comprehensive coverage</p>
             </div>
-
-            <div className="group relative overflow-hidden rounded-xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50">
-              <div className="aspect-video relative bg-gradient-to-br from-blue-600 to-purple-700">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-white text-6xl">🏢</div>
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <div className="absolute bottom-4 left-4 right-4">
-                  <h4 className="text-white font-semibold text-lg">
-                    Condominiums
-                  </h4>
-                  <p className="text-gray-300 text-sm">
-                    HOA coordination & shared structure documentation
-                  </p>
-                </div>
-              </div>
+            <div className="flex flex-col items-center p-4 bg-gradient-to-br from-yellow-600/20 to-orange-600/20 border border-yellow-400/30 rounded-xl backdrop-blur-sm hover:border-yellow-400/50 transition-colors">
+              <span className="text-3xl mb-2">🏘️</span>
+              <h4 className="text-white font-semibold text-sm text-center">Historical Properties</h4>
+              <p className="text-yellow-300 text-xs text-center mt-1">materials provenance & preservation audit trails</p>
             </div>
-
-            <div className="group relative overflow-hidden rounded-xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50">
-              <div className="aspect-video relative bg-gradient-to-br from-green-600 to-emerald-700">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-white text-6xl">🌴</div>
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <div className="absolute bottom-4 left-4 right-4">
-                  <h4 className="text-white font-semibold text-lg">
-                    Land & Vacant Lots
-                  </h4>
-                  <p className="text-gray-300 text-sm">
-                    Pre-development assessment & environmental tracking
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="group relative overflow-hidden rounded-xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50">
-              <div className="aspect-video relative bg-gradient-to-br from-orange-600 to-red-700">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-white text-6xl">🏘️</div>
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <div className="absolute bottom-4 left-4 right-4">
-                  <h4 className="text-white font-semibold text-lg">
-                    Multi-Family Properties
-                  </h4>
-                  <p className="text-gray-300 text-sm">
-                    Portfolio management & bulk claim processing
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="group relative overflow-hidden rounded-xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50">
-              <div className="aspect-video relative">
-                <Image
-                  src="/landingpage/mobile-first.png"
-                  alt="Mobile App Interface"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-                <div className="absolute bottom-4 left-4 right-4 bg-black/40 backdrop-blur-md rounded-lg p-3 border border-white/10">
-                  <h4 className="text-white font-bold text-lg drop-shadow-lg">
-                    Mobile-First Tools
-                  </h4>
-                  <p className="text-gray-100 text-sm font-medium drop-shadow">
-                    Document damage anywhere, anytime with AI assistance
-                  </p>
-                </div>
-              </div>
+            <div className="flex flex-col items-center p-4 bg-gradient-to-br from-purple-600/20 to-pink-600/20 border border-purple-400/30 rounded-xl backdrop-blur-sm hover:border-purple-400/50 transition-colors">
+              <span className="text-3xl mb-2">🏢</span>
+              <h4 className="text-white font-semibold text-sm text-center">Multi-Family / Commercial</h4>
+              <p className="text-purple-300 text-xs text-center mt-1">unit-level analytics & CAP-rate optimization</p>
             </div>
           </div>
         </div>
