@@ -175,8 +175,8 @@ function QuickAccessGrid({ router }: { router: ReturnType<typeof useRouter> }) {
               onClick={() => router.push(item.path)}
               data-quick-access={item.id}
               className={`
-                touch-target-lg p-4 bg-gray-700/70 backdrop-blur-sm
-                hover:bg-gray-600/80 active:scale-95 rounded-lg
+                touch-target-lg p-4 liquid-glass-2
+                hover:liquid-glass-3 active:scale-95 rounded-lg
                 transition-all flex flex-col items-center gap-3 group
                 shadow-[0_4px_16px_rgba(0,0,0,0.2)] ${item.hoverColor}
                 focus:ring-2 focus:ring-accent-border focus:ring-offset-2 focus:outline-none
@@ -458,14 +458,14 @@ function DashboardContent() {
                   className="w-full text-left touch-target focus:ring-2 focus:ring-accent-border focus:ring-offset-2 focus:outline-none rounded-lg"
                   aria-label="View property details - Current value $485,000"
                 >
-                  <Card className="bg-gray-800/80 backdrop-blur-sm border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(59,130,246,0.15)] transition-all duration-300 hover:bg-gray-800/90 active:scale-95 cursor-pointer">
+                  <Card className="liquid-glass-3 border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(59,130,246,0.15)] hover:liquid-glass-4 transition-all duration-300 active:scale-95 cursor-pointer">
                     <CardContent className="p-4 sm:p-6">
                       <div className="flex items-center justify-between mb-2">
                         <Home
                           className="h-6 w-6 sm:h-7 sm:w-7 text-blue-400 drop-shadow-[0_2px_8px_rgba(59,130,246,0.3)]"
                           aria-hidden="true"
                         />
-                        <Badge className="bg-green-600/20 text-green-400 border-green-600/30 text-xs backdrop-blur-sm">
+                        <Badge className="liquid-glass-success text-green-400 text-xs">
                           Active
                         </Badge>
                       </div>
@@ -493,7 +493,7 @@ function DashboardContent() {
                   className="w-full text-left touch-target focus:ring-2 focus:ring-accent-border focus:ring-offset-2 focus:outline-none rounded-lg"
                   aria-label="View personal property inventory - 247 items tracked"
                 >
-                  <Card className="bg-gray-800/80 backdrop-blur-sm border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(147,51,234,0.15)] transition-all duration-300 hover:bg-gray-800/90 active:scale-95 cursor-pointer">
+                  <Card className="liquid-glass-3 border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(147,51,234,0.15)] hover:liquid-glass-4 transition-all duration-300 active:scale-95 cursor-pointer">
                     <CardContent className="p-4 sm:p-6">
                       <div className="flex items-center justify-between mb-2">
                         <Package
@@ -518,7 +518,7 @@ function DashboardContent() {
                 </button>
 
                 {/* Coverage Score Card */}
-                <Card className="bg-gray-800/80 backdrop-blur-sm border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(6,182,212,0.15)] transition-all duration-300 hover:bg-gray-800/90 active:scale-95 cursor-pointer touch-target">
+                <Card className="liquid-glass-3 border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(6,182,212,0.15)] hover:liquid-glass-4 transition-all duration-300 active:scale-95 cursor-pointer touch-target">
                   <CardContent className="p-4 sm:p-6">
                     <div className="flex items-center justify-between mb-2">
                       <Shield
@@ -545,7 +545,7 @@ function DashboardContent() {
                 </Card>
 
                 {/* Expenses Card */}
-                <Card className="bg-gray-800/80 backdrop-blur-sm border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(34,197,94,0.15)] transition-all duration-300 hover:bg-gray-800/90 active:scale-95 cursor-pointer touch-target">
+                <Card className="liquid-glass-3 border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(34,197,94,0.15)] hover:liquid-glass-4 transition-all duration-300 active:scale-95 cursor-pointer touch-target">
                   <CardContent className="p-4 sm:p-6">
                     <div className="flex items-center justify-between mb-2">
                       <Receipt
@@ -585,7 +585,7 @@ function DashboardContent() {
                   className="w-full text-left touch-target focus:ring-2 focus:ring-accent-border focus:ring-offset-2 focus:outline-none rounded-lg"
                   aria-label={`View pending tasks - ${hasPendingTasks ? "3 tasks pending" : "All tasks completed"}`}
                 >
-                  <Card className="bg-gray-800/80 backdrop-blur-sm border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(251,146,60,0.15)] transition-all duration-300 hover:bg-gray-800/90 active:scale-95 cursor-pointer">
+                  <Card className="liquid-glass-3 border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(251,146,60,0.15)] hover:liquid-glass-4 transition-all duration-300 active:scale-95 cursor-pointer">
                     <CardContent className="p-4 sm:p-6">
                       <div className="flex items-center justify-between mb-2">
                         <AlertCircle
@@ -623,7 +623,7 @@ function DashboardContent() {
               <div className="lg:col-span-2 space-y-4 sm:space-y-6">
                 {/* Weather & Environmental - Show only when relevant */}
                 {/* For demo, showing hurricane alert - in production, show only when needed */}
-                <Card className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_16px_40px_rgba(0,0,0,0.4)] hover:shadow-[0_16px_40px_rgba(6,182,212,0.1)] transition-all duration-500">
+                <Card className="liquid-glass-4 border-gray-700/60 shadow-[0_16px_40px_rgba(0,0,0,0.4)] hover:shadow-[0_16px_40px_rgba(6,182,212,0.1)] transition-all duration-500">
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-white flex items-center gap-2">
@@ -636,7 +636,7 @@ function DashboardContent() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-gray-400 hover:text-white backdrop-blur-sm hover:bg-white/10"
+                        className="text-gray-400 hover:text-white liquid-glass-1 hover:liquid-glass-2"
                         onClick={() =>
                           toast.info(
                             "Environmental monitoring settings coming soon!",
@@ -654,9 +654,9 @@ function DashboardContent() {
                       aria-label="Weather alerts and conditions"
                     >
                       {/* Hurricane Alert - High visibility for important information */}
-                      <div className="p-4 bg-orange-900/25 backdrop-blur-sm border border-orange-500/40 rounded-lg shadow-[0_8px_24px_rgba(251,146,60,0.15)] mb-4">
+                      <div className="p-4 liquid-glass-warning border border-orange-500/40 rounded-lg shadow-[0_8px_24px_rgba(251,146,60,0.15)] mb-4">
                         <div className="flex items-start gap-3">
-                          <div className="p-2 bg-orange-600/25 backdrop-blur-sm rounded-lg shadow-[0_4px_12px_rgba(251,146,60,0.2)]">
+                          <div className="p-2 liquid-glass-warning rounded-lg shadow-[0_4px_12px_rgba(251,146,60,0.2)]">
                             <Wind
                               className="h-5 w-5 text-orange-400 drop-shadow-[0_2px_6px_rgba(251,146,60,0.4)]"
                               aria-hidden="true"
@@ -701,7 +701,7 @@ function DashboardContent() {
 
                       {/* Current Conditions - Improved mobile layout */}
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <div className="bg-gray-700/60 backdrop-blur-sm rounded-lg p-3 shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:bg-gray-700/70 transition-all duration-300">
+                        <div className="liquid-glass-2 rounded-lg p-3 shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:liquid-glass-3 transition-all duration-300">
                           <div className="flex items-center gap-2 mb-1">
                             <Thermometer
                               className="h-4 w-4 text-red-400 drop-shadow-[0_2px_4px_rgba(239,68,68,0.3)]"
@@ -718,7 +718,7 @@ function DashboardContent() {
                             Feels like 82°F
                           </p>
                         </div>
-                        <div className="bg-gray-700/60 backdrop-blur-sm rounded-lg p-3 shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:bg-gray-700/70 transition-all duration-300">
+                        <div className="liquid-glass-2 rounded-lg p-3 shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:liquid-glass-3 transition-all duration-300">
                           <div className="flex items-center gap-2 mb-1">
                             <Droplets
                               className="h-4 w-4 text-blue-400 drop-shadow-[0_2px_4px_rgba(59,130,246,0.3)]"
@@ -733,7 +733,7 @@ function DashboardContent() {
                           </p>
                           <p className="text-xs text-gray-500">High moisture</p>
                         </div>
-                        <div className="bg-gray-700/60 backdrop-blur-sm rounded-lg p-3 shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:bg-gray-700/70 transition-all duration-300">
+                        <div className="liquid-glass-2 rounded-lg p-3 shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:liquid-glass-3 transition-all duration-300">
                           <div className="flex items-center gap-2 mb-1">
                             <Wind
                               className="h-4 w-4 text-gray-400 drop-shadow-[0_2px_4px_rgba(156,163,175,0.3)]"
@@ -754,7 +754,7 @@ function DashboardContent() {
                 </Card>
 
                 {/* Quick Access Grid */}
-                <Card className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_16px_40px_rgba(0,0,0,0.4)] hover:shadow-[0_16px_40px_rgba(59,130,246,0.1)] transition-all duration-500">
+                <Card className="liquid-glass-4 border-gray-700/60 shadow-[0_16px_40px_rgba(0,0,0,0.4)] hover:shadow-[0_16px_40px_rgba(59,130,246,0.1)] transition-all duration-500">
                   <CardHeader>
                     <CardTitle className="text-white">Quick Access</CardTitle>
                   </CardHeader>
@@ -764,7 +764,7 @@ function DashboardContent() {
                 </Card>
 
                 {/* Property Status - Enhanced for mobile */}
-                <Card className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_16px_40px_rgba(0,0,0,0.4)]">
+                <Card className="liquid-glass-4 border-gray-700/60 shadow-[0_16px_40px_rgba(0,0,0,0.4)]">
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-white">
@@ -837,7 +837,7 @@ function DashboardContent() {
               {/* Right Column - Enhanced mobile experience */}
               <div className="space-y-4 sm:space-y-6">
                 {/* Recent Activity */}
-                <Card className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_16px_40px_rgba(0,0,0,0.4)] hover:shadow-[0_16px_40px_rgba(59,130,246,0.1)] transition-all duration-500">
+                <Card className="liquid-glass-4 border-gray-700/60 shadow-[0_16px_40px_rgba(0,0,0,0.4)] hover:shadow-[0_16px_40px_rgba(59,130,246,0.1)] transition-all duration-500">
                   <CardHeader>
                     <CardTitle className="text-white flex items-center gap-2">
                       <Activity
@@ -888,7 +888,7 @@ function DashboardContent() {
                 {/* Upcoming Tasks */}
                 <Card
                   id="upcoming-tasks"
-                  className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_16px_40px_rgba(0,0,0,0.4)] hover:shadow-[0_16px_40px_rgba(251,146,60,0.1)] transition-all duration-500"
+                  className="liquid-glass-4 border-gray-700/60 shadow-[0_16px_40px_rgba(0,0,0,0.4)] hover:shadow-[0_16px_40px_rgba(251,146,60,0.1)] transition-all duration-500"
                   tabIndex={-1}
                 >
                   <CardHeader>
@@ -897,11 +897,11 @@ function DashboardContent() {
                         Upcoming Tasks
                       </CardTitle>
                       {hasPendingTasks ? (
-                        <Badge className="bg-orange-600/25 backdrop-blur-sm text-orange-400 border-orange-600/40">
+                        <Badge className="liquid-glass-warning text-orange-400">
                           3 pending
                         </Badge>
                       ) : (
-                        <Badge className="bg-green-600/25 backdrop-blur-sm text-green-400 border-green-600/40">
+                        <Badge className="liquid-glass-success text-green-400">
                           All done
                         </Badge>
                       )}
@@ -914,7 +914,7 @@ function DashboardContent() {
                         role="region"
                         aria-label="Pending tasks"
                       >
-                        <div className="p-3 bg-orange-900/25 backdrop-blur-sm border border-orange-600/40 rounded-lg shadow-[0_4px_16px_rgba(251,146,60,0.15)]">
+                        <div className="p-3 liquid-glass-warning border border-orange-600/40 rounded-lg shadow-[0_4px_16px_rgba(251,146,60,0.15)]">
                           <div className="flex items-start justify-between mb-2">
                             <div>
                               <h4 className="text-sm font-medium text-white">
@@ -924,7 +924,7 @@ function DashboardContent() {
                                 Review checklist and secure property
                               </p>
                             </div>
-                            <Badge className="bg-red-600/25 backdrop-blur-sm text-red-400 text-xs border-red-600/40 shrink-0 ml-2">
+                            <Badge className="liquid-glass-danger text-red-400 text-xs shrink-0 ml-2">
                               Urgent
                             </Badge>
                           </div>
@@ -949,10 +949,10 @@ function DashboardContent() {
                 </Card>
 
                 {/* AI Assistant */}
-                <Card className="bg-gradient-to-br from-blue-900/30 to-purple-900/30 backdrop-blur-md border-blue-600/40 shadow-[0_16px_40px_rgba(59,130,246,0.2)] hover:shadow-[0_20px_48px_rgba(59,130,246,0.25)] transition-all duration-500">
+                <Card className="liquid-glass-premium border-blue-600/40 shadow-[0_16px_40px_rgba(59,130,246,0.2)] hover:shadow-[0_20px_48px_rgba(59,130,246,0.25)] transition-all duration-500">
                   <CardContent className="p-4">
                     <div className="flex items-center gap-3 mb-3">
-                      <div className="p-2 bg-blue-600/25 backdrop-blur-sm rounded-lg shadow-[0_4px_12px_rgba(59,130,246,0.3)]">
+                      <div className="p-2 liquid-glass-info rounded-lg shadow-[0_4px_12px_rgba(59,130,246,0.3)]">
                         <Zap
                           className="h-5 w-5 text-blue-400 drop-shadow-[0_2px_8px_rgba(59,130,246,0.5)]"
                           aria-hidden="true"
@@ -1056,7 +1056,7 @@ function DashboardContent() {
       {/* Onboarding Modal Overlay */}
       {showOnboarding && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
+          <div className="fixed inset-0 liquid-glass-overlay" />
           <div className="relative min-h-screen flex items-center justify-center p-4">
             <div className="relative w-full max-w-4xl">
               <OnboardingFlow

@@ -267,6 +267,57 @@ export default function PricingPage() {
                     Dedicated
                   </td>
                 </tr>
+                <tr className="hover:bg-gray-700/50 transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                    Disaster Preparedness
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">
+                    Basic alerts
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">
+                    Full tracking
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">
+                    Advanced tools
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-green-400">
+                    FEMA NIMS
+                  </td>
+                </tr>
+                <tr className="hover:bg-gray-700/50 transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                    Document Generation
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">
+                    -
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-green-400">
+                    ✓
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-green-400">
+                    ✓
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-green-400">
+                    ✓ + Custom
+                  </td>
+                </tr>
+                <tr className="hover:bg-gray-700/50 transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                    API Access
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">
+                    -
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">
+                    -
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-green-400">
+                    ✓
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-green-400">
+                    ✓ + Priority
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>

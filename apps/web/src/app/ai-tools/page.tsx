@@ -491,7 +491,7 @@ export default function AIToolsPage() {
                 <div className="absolute -top-20 left-1/2 transform -translate-x-1/2 w-96 h-96 bg-gradient-to-br from-cyan-400/30 via-blue-500/20 to-purple-600/30 rounded-full blur-3xl animate-pulse opacity-30" />
 
                 <div className="relative flex items-center justify-center gap-3 mb-6">
-                  <div className="p-4 bg-gradient-to-br from-blue-600/30 to-purple-600/30 backdrop-blur-xl rounded-2xl border border-white/10 shadow-[0_20px_60px_rgba(59,130,246,0.3)] hover:shadow-[0_25px_80px_rgba(147,51,234,0.4)] transition-all duration-700">
+                  <div className="p-4 liquid-glass-premium rounded-2xl shadow-[0_20px_60px_rgba(59,130,246,0.3)] hover:shadow-[0_25px_80px_rgba(147,51,234,0.4)] transition-all duration-700">
                     <Sparkles className="h-10 w-10 text-cyan-300 drop-shadow-[0_0_20px_rgba(6,182,212,0.8)]" />
                   </div>
                   <h1 className="text-5xl font-bold">
@@ -511,7 +511,7 @@ export default function AIToolsPage() {
               <div className="flex flex-wrap justify-center items-center gap-6 text-sm">
                 <Badge
                   variant="outline"
-                  className="text-green-400 border-green-400/30 bg-green-400/10 backdrop-blur-md shadow-[0_8px_32px_rgba(34,197,94,0.15)] hover:shadow-[0_8px_32px_rgba(34,197,94,0.25)] transition-all duration-300"
+                  className="liquid-glass-success text-green-400 shadow-[0_8px_32px_rgba(34,197,94,0.15)] hover:shadow-[0_8px_32px_rgba(34,197,94,0.25)] transition-all duration-300"
                 >
                   <CheckCircle className="w-3 h-3 mr-1 drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
                   {AI_TOOLS.filter((t) => t.status === "active").length} Tools
@@ -519,14 +519,14 @@ export default function AIToolsPage() {
                 </Badge>
                 <Badge
                   variant="outline"
-                  className="text-blue-400 border-blue-400/30 bg-blue-400/10 backdrop-blur-md shadow-[0_8px_32px_rgba(59,130,246,0.15)] hover:shadow-[0_8px_32px_rgba(59,130,246,0.25)] transition-all duration-300"
+                  className="liquid-glass-info text-blue-400 shadow-[0_8px_32px_rgba(59,130,246,0.15)] hover:shadow-[0_8px_32px_rgba(59,130,246,0.25)] transition-all duration-300"
                 >
                   <Clock className="w-3 h-3 mr-1 drop-shadow-[0_0_8px_rgba(59,130,246,0.6)]" />
                   24/7 Available
                 </Badge>
                 <Badge
                   variant="outline"
-                  className="text-purple-400 border-purple-400/30 bg-purple-400/10 backdrop-blur-md shadow-[0_8px_32px_rgba(147,51,234,0.15)] hover:shadow-[0_8px_32px_rgba(147,51,234,0.25)] transition-all duration-300"
+                  className="liquid-glass-3 text-purple-400 border-purple-400/30 shadow-[0_8px_32px_rgba(147,51,234,0.15)] hover:shadow-[0_8px_32px_rgba(147,51,234,0.25)] transition-all duration-300"
                 >
                   <Shield className="w-3 h-3 mr-1 drop-shadow-[0_0_8px_rgba(147,51,234,0.6)]" />
                   Florida Focused
@@ -535,7 +535,7 @@ export default function AIToolsPage() {
             </div>
 
             {/* Premium Status Bar */}
-            <Card className="bg-gray-800/60 backdrop-blur-xl border-gray-700/50 shadow-[0_20px_60px_rgba(0,0,0,0.4)] hover:shadow-[0_25px_80px_rgba(59,130,246,0.15)] transition-all duration-500">
+            <Card className="liquid-glass-4 border-gray-700/50 shadow-[0_20px_60px_rgba(0,0,0,0.4)] hover:shadow-[0_25px_80px_rgba(59,130,246,0.15)] transition-all duration-500">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-6 text-sm">
@@ -620,7 +620,7 @@ export default function AIToolsPage() {
                 return (
                   <Card
                     key={tool.id}
-                    className={`bg-gray-800/70 backdrop-blur-xl border-gray-700/50 overflow-hidden transition-all duration-500 shadow-[0_12px_40px_rgba(0,0,0,0.3)] ${
+                    className={`liquid-glass-3 border-gray-700/50 overflow-hidden transition-all duration-500 shadow-[0_12px_40px_rgba(0,0,0,0.3)] ${
                       !isDisabled
                         ? "hover:border-gray-600/70 hover:shadow-[0_20px_60px_rgba(59,130,246,0.2)] hover:bg-gray-800/80 hover:scale-[1.02] hover:-translate-y-1"
                         : "opacity-75"
@@ -629,7 +629,7 @@ export default function AIToolsPage() {
                     <CardHeader className="pb-4">
                       <div className="flex items-start justify-between mb-3">
                         <div
-                          className={`p-3 rounded-xl bg-${tool.color}-600/30 backdrop-blur-md shadow-[0_8px_32px_rgba(59,130,246,0.2)] hover:shadow-[0_12px_40px_rgba(59,130,246,0.3)] transition-all duration-300 border border-white/10`}
+                          className={`p-3 rounded-xl liquid-glass-2 bg-${tool.color}-600/20 shadow-[0_8px_32px_rgba(59,130,246,0.2)] hover:shadow-[0_12px_40px_rgba(59,130,246,0.3)] transition-all duration-300`}
                         >
                           <Icon
                             className={`h-6 w-6 text-${tool.color}-300 drop-shadow-[0_0_12px_rgba(59,130,246,0.6)]`}
@@ -681,7 +681,7 @@ export default function AIToolsPage() {
                             }}
                           >
                             <Button
-                              className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-[0_8px_32px_rgba(59,130,246,0.3)] hover:shadow-[0_12px_40px_rgba(59,130,246,0.4)] transition-all duration-300 backdrop-blur-md border-0"
+                              className="w-full liquid-glass-premium bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-[0_8px_32px_rgba(59,130,246,0.3)] hover:shadow-[0_12px_40px_rgba(59,130,246,0.4)] transition-all duration-300 border-0"
                               disabled={!hasOpenAIKey && !hasGeminiKey}
                             >
                               {!hasOpenAIKey && !hasGeminiKey ? (
@@ -706,10 +706,10 @@ export default function AIToolsPage() {
             </div>
 
             {/* Premium Help Section */}
-            <Card className="bg-gradient-to-br from-blue-900/30 to-purple-900/20 backdrop-blur-xl border-blue-600/40 shadow-[0_20px_60px_rgba(59,130,246,0.2)] hover:shadow-[0_25px_80px_rgba(59,130,246,0.3)] transition-all duration-500">
+            <Card className="liquid-glass-premium border-blue-600/40 shadow-[0_20px_60px_rgba(59,130,246,0.2)] hover:shadow-[0_25px_80px_rgba(59,130,246,0.3)] transition-all duration-500">
               <CardContent className="p-6">
                 <div className="flex items-start gap-4">
-                  <div className="p-4 bg-gradient-to-br from-blue-600/30 to-cyan-600/20 backdrop-blur-md rounded-xl border border-white/10 shadow-[0_8px_32px_rgba(59,130,246,0.3)]">
+                  <div className="p-4 liquid-glass-info rounded-xl shadow-[0_8px_32px_rgba(59,130,246,0.3)]">
                     <Bot className="h-6 w-6 text-cyan-300 drop-shadow-[0_0_12px_rgba(6,182,212,0.7)]" />
                   </div>
                   <div className="flex-1">

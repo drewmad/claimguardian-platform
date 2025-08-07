@@ -70,6 +70,87 @@
     1;
 }
 
+/* ===== STANDARDIZED LIQUID GLASS LEVELS ===== */
+
+/* Level 1: Minimal glass (very subtle) */
+.liquid-glass-1 {
+  backdrop-filter: blur(4px) saturate(1.05);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Level 2: Light glass (subtle) */
+.liquid-glass-2 {
+  backdrop-filter: blur(8px) saturate(1.1);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Level 3: Standard glass (medium) */
+.liquid-glass-3 {
+  backdrop-filter: blur(16px) saturate(1.3);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0.08) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Level 4: Strong glass (prominent) */
+.liquid-glass-4 {
+  backdrop-filter: blur(24px) saturate(1.5);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.15) 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.12) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+/* Level 5: Premium glass (maximum effect) */
+.liquid-glass-5 {
+  backdrop-filter: blur(32px) saturate(2) brightness(1.1);
+  background: linear-gradient(
+    125deg,
+    rgba(6, 182, 212, 0.1) 0%,
+    rgba(57, 255, 20, 0.05) 30%,
+    rgba(0, 56, 168, 0.08) 70%,
+    rgba(220, 20, 60, 0.03) 100%
+  );
+  border: 2px solid;
+  border-image: linear-gradient(
+      45deg,
+      rgba(57, 255, 20, 0.5),
+      rgba(6, 182, 212, 0.3),
+      rgba(0, 56, 168, 0.4)
+    )
+    1;
+}
+
+/* Dark variants for dark backgrounds */
+.liquid-glass-dark {
+  backdrop-filter: blur(16px) saturate(1.3);
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.5) 0%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.liquid-glass-dark-subtle {
+  backdrop-filter: blur(8px) saturate(1.1);
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
 /* ===== INTERACTIVE EFFECTS ===== */
 
 /* Hover shimmer effect */
@@ -421,12 +502,65 @@
   transform: translateX(100%);
 }
 
+/* ===== TAILWIND-COMPATIBLE UTILITY CLASSES ===== */
+
+/* Quick application classes matching Tailwind patterns */
+.liquid-glass { @apply liquid-glass-3; }
+.liquid-glass-sm { @apply liquid-glass-2; }
+.liquid-glass-lg { @apply liquid-glass-4; }
+.liquid-glass-xl { @apply liquid-glass-5; }
+
+/* Component-specific liquid glass */
+.liquid-glass-card {
+  @apply liquid-glass-3 rounded-xl shadow-lg transition-all duration-300;
+}
+
+.liquid-glass-card:hover {
+  @apply liquid-glass-4 shadow-xl;
+  transform: translateY(-2px);
+}
+
+.liquid-glass-button {
+  @apply liquid-glass-2 rounded-lg px-4 py-2 font-medium transition-all duration-200;
+}
+
+.liquid-glass-button:hover {
+  @apply liquid-glass-3;
+  transform: scale(1.02);
+}
+
+.liquid-glass-badge {
+  @apply liquid-glass-2 rounded-full px-3 py-1 text-sm font-medium;
+}
+
+.liquid-glass-input {
+  @apply liquid-glass-1 rounded-lg px-4 py-2 transition-all duration-200;
+}
+
+.liquid-glass-input:focus {
+  @apply liquid-glass-2;
+  border-color: rgba(57, 255, 20, 0.4);
+}
+
+.liquid-glass-modal {
+  @apply liquid-glass-4 rounded-2xl shadow-2xl;
+}
+
+.liquid-glass-overlay {
+  @apply liquid-glass-dark;
+}
+
 /* ===== PERFORMANCE OPTIMIZATIONS ===== */
 
 /* GPU acceleration for better performance */
 .liquid-glass-base,
 .liquid-glass-subtle,
-.liquid-glass-premium {
+.liquid-glass-premium,
+.liquid-glass-1,
+.liquid-glass-2,
+.liquid-glass-3,
+.liquid-glass-4,
+.liquid-glass-5 {
   transform: translateZ(0);
   will-change: backdrop-filter, transform;
 }

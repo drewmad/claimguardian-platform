@@ -47,9 +47,9 @@ export async function createCheckoutSession(
 
     // Get user profile
     const { data: profile } = await supabase
-      .from("profiles")
-      .select("stripe_customer_id, email, full_name")
-      .eq("id", user.id)
+      .from("user_profiles")
+      .select("stripe_customer_id, email, first_name, last_name")
+      .eq("user_id", user.id)
       .single();
 
     // Get the price ID for the selected plan
@@ -67,9 +67,13 @@ export async function createCheckoutSession(
     let customerId = profile?.stripe_customer_id;
 
     if (!customerId) {
+      const fullName = profile?.first_name && profile?.last_name 
+        ? `${profile.first_name} ${profile.last_name}`
+        : profile?.first_name || "";
+        
       const customer = await stripe.customers.create({
         email: profile?.email || user.email,
-        name: profile?.full_name,
+        name: fullName,
         metadata: {
           supabase_user_id: user.id,
         },
@@ -78,9 +82,9 @@ export async function createCheckoutSession(
 
       // Save customer ID to profile
       await supabase
-        .from("profiles")
+        .from("user_profiles")
         .update({ stripe_customer_id: customerId })
-        .eq("id", user.id);
+        .eq("user_id", user.id);
     }
 
     // Create checkout session
@@ -136,9 +140,9 @@ export async function createPortalSession(
 
     // Get user's Stripe customer ID
     const { data: profile } = await supabase
-      .from("profiles")
+      .from("user_profiles")
       .select("stripe_customer_id")
-      .eq("id", user.id)
+      .eq("user_id", user.id)
       .single();
 
     if (!profile?.stripe_customer_id) {
@@ -171,13 +175,13 @@ export async function getSubscriptionDetails() {
       return { error: "Unauthorized" };
     }
 
-    // Get user profile
+    // Get user subscription details
     const { data: profile } = await supabase
-      .from("profiles")
+      .from("user_subscriptions")
       .select(
-        "stripe_subscription_id, subscription_status, subscription_plan, subscription_current_period_end",
+        "stripe_subscription_id, status, tier, current_period_end",
       )
-      .eq("id", user.id)
+      .eq("user_id", user.id)
       .single();
 
     if (!profile?.stripe_subscription_id) {
@@ -204,8 +208,8 @@ export async function getSubscriptionDetails() {
         ),
         cancelAtPeriodEnd: (subscription as any).cancel_at_period_end,
         plan: {
-          id: profile.subscription_plan,
-          name: PRICING_PLANS[profile.subscription_plan]?.name || "Unknown",
+          id: profile.tier,
+          name: PRICING_PLANS[profile.tier]?.name || "Unknown",
           interval:
             subscription.items.data[0]?.price.recurring?.interval || "month",
           amount: subscription.items.data[0]?.price.unit_amount || 0,
@@ -229,7 +233,7 @@ export async function getSubscriptionDetails() {
             }
           : null,
       },
-      plan: profile.subscription_plan || "free",
+      plan: profile.tier || "free",
     };
   } catch (error) {
     console.error("Error getting subscription details:", error);
@@ -252,9 +256,9 @@ export async function cancelSubscription() {
 
     // Get subscription ID
     const { data: profile } = await supabase
-      .from("profiles")
+      .from("user_subscriptions")
       .select("stripe_subscription_id")
-      .eq("id", user.id)
+      .eq("user_id", user.id)
       .single();
 
     if (!profile?.stripe_subscription_id) {
@@ -294,9 +298,9 @@ export async function resumeSubscription() {
 
     // Get subscription ID
     const { data: profile } = await supabase
-      .from("profiles")
+      .from("user_subscriptions")
       .select("stripe_subscription_id")
-      .eq("id", user.id)
+      .eq("user_id", user.id)
       .single();
 
     if (!profile?.stripe_subscription_id) {
@@ -336,9 +340,9 @@ export async function getPaymentMethods() {
 
     // Get customer ID
     const { data: profile } = await supabase
-      .from("profiles")
+      .from("user_profiles")
       .select("stripe_customer_id")
-      .eq("id", user.id)
+      .eq("user_id", user.id)
       .single();
 
     if (!profile?.stripe_customer_id) {
