@@ -17,7 +17,7 @@
  */
 "use client";
 
-import { Clock, DollarSign, ShieldCheck } from "lucide-react";
+import { Clock, DollarSign, ShieldCheck, Search, Wrench, Hammer, FileCheck, AlertCircle, HandCoins } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
 import { liquidGlass } from "@/lib/styles/liquid-glass";
@@ -86,6 +86,53 @@ export function Features() {
           your AI-powered property command center—from the day you buy to the
           legacy you leave.
         </p>
+
+        {/* Property Lifecycle Stages */}
+        <div className="mt-12 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 max-w-5xl mx-auto">
+            <div className="flex flex-col items-center gap-3 p-4 rounded-xl bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 hover:bg-gray-800/60 transition-all duration-300 group">
+              <div className="p-3 rounded-full bg-blue-600/20 group-hover:bg-blue-600/30 transition-colors">
+                <Search className="h-6 w-6 text-blue-400" />
+              </div>
+              <span className="text-sm font-medium text-gray-300">Track</span>
+            </div>
+            
+            <div className="flex flex-col items-center gap-3 p-4 rounded-xl bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 hover:bg-gray-800/60 transition-all duration-300 group">
+              <div className="p-3 rounded-full bg-green-600/20 group-hover:bg-green-600/30 transition-colors">
+                <Wrench className="h-6 w-6 text-green-400" />
+              </div>
+              <span className="text-sm font-medium text-gray-300">Maintain</span>
+            </div>
+            
+            <div className="flex flex-col items-center gap-3 p-4 rounded-xl bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 hover:bg-gray-800/60 transition-all duration-300 group">
+              <div className="p-3 rounded-full bg-orange-600/20 group-hover:bg-orange-600/30 transition-colors">
+                <Hammer className="h-6 w-6 text-orange-400" />
+              </div>
+              <span className="text-sm font-medium text-gray-300">Fix</span>
+            </div>
+            
+            <div className="flex flex-col items-center gap-3 p-4 rounded-xl bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 hover:bg-gray-800/60 transition-all duration-300 group">
+              <div className="p-3 rounded-full bg-purple-600/20 group-hover:bg-purple-600/30 transition-colors">
+                <FileCheck className="h-6 w-6 text-purple-400" />
+              </div>
+              <span className="text-sm font-medium text-gray-300">Warranty</span>
+            </div>
+            
+            <div className="flex flex-col items-center gap-3 p-4 rounded-xl bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 hover:bg-gray-800/60 transition-all duration-300 group">
+              <div className="p-3 rounded-full bg-red-600/20 group-hover:bg-red-600/30 transition-colors">
+                <AlertCircle className="h-6 w-6 text-red-400" />
+              </div>
+              <span className="text-sm font-medium text-gray-300">Claim</span>
+            </div>
+            
+            <div className="flex flex-col items-center gap-3 p-4 rounded-xl bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 hover:bg-gray-800/60 transition-all duration-300 group">
+              <div className="p-3 rounded-full bg-cyan-600/20 group-hover:bg-cyan-600/30 transition-colors">
+                <HandCoins className="h-6 w-6 text-cyan-400" />
+              </div>
+              <span className="text-sm font-medium text-gray-300">Donate/Sell</span>
+            </div>
+          </div>
+        </div>
 
         {/* The Three Pillars */}
         <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -203,7 +250,7 @@ export function Features() {
                 documentation
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-purple-400">✓</span> Generational transfer
+                <span className="text-purple-400">✓</span> Property value optimization
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-purple-400">✓</span> Community insights
