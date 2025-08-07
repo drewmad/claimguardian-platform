@@ -3,6 +3,12 @@
  * Ensures GDPR/CCPA compliance and proper consent handling
  */
 
+declare global {
+  interface Window {
+    Sentry?: typeof import('@sentry/nextjs');
+  }
+}
+
 export type CookieConsent = 'accepted' | 'necessary-only' | null;
 
 export interface CookiePreferences {
@@ -158,13 +164,13 @@ class CookieManager {
     // Sentry error tracking (considered necessary but respecting user choice)
     if (prefs.analytics && window.Sentry) {
       // Sentry is usually necessary for error tracking but we respect user choice
-      const client = window.Sentry.getCurrentHub().getClient();
-      if (client && client.getOptions()) {
+      const client = (window.Sentry as any).getCurrentHub?.()?.getClient?.();
+      if (client && client.getOptions) {
         client.getOptions().enabled = true;
       }
     } else if (window.Sentry) {
-      const client = window.Sentry.getCurrentHub().getClient();
-      if (client && client.getOptions()) {
+      const client = (window.Sentry as any).getCurrentHub?.()?.getClient?.();
+      if (client && client.getOptions) {
         client.getOptions().enabled = false;
       }
     }
@@ -260,6 +266,6 @@ declare global {
   interface Window {
     gtag?: (...args: any[]) => void;
     posthog?: any;
-    Sentry?: any;
+    // Sentry type is declared at the top of this file
   }
 }
