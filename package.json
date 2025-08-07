@@ -25,7 +25,7 @@
     "deps:update": "pnpm update -r",
     "deps:clean": "rm -rf node_modules **/node_modules pnpm-lock.yaml && pnpm install",
     "db:seed-legal": "tsx scripts/fix-legal-documents.ts",
-    "postinstall": "husky",
+    "prepare": "husky",
     "lint:fix": "turbo lint:fix",
     "lint:fix:all": "eslint . --fix --ext .js,.jsx,.ts,.tsx",
     "lint:report": "eslint . --format html -o lint-report.html || true",

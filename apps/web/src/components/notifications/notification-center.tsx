@@ -51,7 +51,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { cn } from '@/lib/utils'
+import { cn, getPriorityBadge } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
 
 export interface PersistentNotification {
@@ -299,18 +299,6 @@ export function NotificationCenter() {
     }
   }
 
-  const getPriorityBadge = (priority: PersistentNotification['priority']) => {
-    switch (priority) {
-      case 'urgent':
-        return <Badge variant="destructive" className="text-xs">Urgent</Badge>
-      case 'high':
-        return <Badge variant="secondary" className="text-xs bg-orange-100 text-orange-800">High</Badge>
-      case 'medium':
-        return <Badge variant="outline" className="text-xs">Medium</Badge>
-      default:
-        return null
-    }
-  }
 
   return (
     <div className="max-h-[600px] flex flex-col">
@@ -521,7 +509,11 @@ function NotificationItem({
                 )}>
                   {notification.title}
                 </h4>
-                {getPriorityBadge(notification.priority)}
+                {(() => {
+                  const config = getPriorityBadge(notification.priority)
+                  if (!config) return null
+                  return <Badge variant={config.variant as any} className={config.className}>{config.label}</Badge>
+                })()}
               </div>
 
               <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
