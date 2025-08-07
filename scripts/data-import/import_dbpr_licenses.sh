@@ -6,7 +6,7 @@
 # Configuration
 DOWNLOAD_DIR="/Users/madengineering/ClaimGuardian/data/florida/dbpr_licenses/"
 LOG_FILE="/Users/madengineering/ClaimGuardian/logs/dbpr_import.log"
-NODE_SCRIPT="/Users/madengineering/ClaimGuardian/scripts/data-import/process_dbpr_import.js"
+NODE_SCRIPT="/Users/madengineering/ClaimGuardian/scripts/data-import/process_dbpr_import.cjs"
 
 # Database configuration (use environment variables)
 if [ -f "/Users/madengineering/ClaimGuardian/.env.local" ]; then

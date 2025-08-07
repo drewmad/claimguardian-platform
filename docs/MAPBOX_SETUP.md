@@ -1,138 +1,105 @@
-# MapBox Setup Guide for ClaimGuardian
+# Mapbox Setup Guide for ClaimGuardian
 
 ## Overview
-ClaimGuardian uses MapBox GL JS for interactive property mapping with 8.2M+ Florida parcels data. This guide covers setting up MapBox for both development and production.
+ClaimGuardian uses Mapbox for interactive property mapping and visualization of Florida parcels data. This guide will help you set up Mapbox integration.
 
-## 1. Get Your MapBox Token
+## Getting Your Mapbox Token
 
-1. Go to [MapBox](https://www.mapbox.com/)
-2. Sign up or log in to your account
-3. Navigate to your [Account Dashboard](https://account.mapbox.com/)
-4. Find your **Default public token** or create a new one
-5. Copy the token (starts with `pk.`)
+1. **Create a Mapbox Account**
+   - Go to [https://www.mapbox.com/](https://www.mapbox.com/)
+   - Click "Sign up" and create a free account
+   - Verify your email address
 
-## 2. Configure for Local Development
+2. **Get Your Access Token**
+   - After logging in, go to your [Account Dashboard](https://account.mapbox.com/)
+   - Navigate to the "Tokens" section
+   - Copy your default public token (starts with `pk.`)
+   - Or create a new token with the following scopes:
+     - `styles:read` - For map styles
+     - `fonts:read` - For map fonts
+     - `datasets:read` - For datasets
+     - `vision:read` - For vision APIs
 
-Add to your `.env.local` file:
-```bash
-NEXT_PUBLIC_MAPBOX_TOKEN=pk.your_mapbox_token_here
-```
-
-## 3. Configure for Production (Vercel)
-
-### Via Vercel Dashboard:
-1. Go to your [Vercel Dashboard](https://vercel.com/dashboard)
-2. Select the **claimguardian-platform** project
-3. Navigate to **Settings** → **Environment Variables**
-4. Add new variable:
-   - **Key**: `NEXT_PUBLIC_MAPBOX_TOKEN`
-   - **Value**: Your MapBox token (pk.xxx...)
-   - **Environment**: Select all (Production, Preview, Development)
-5. Click **Save**
-
-### Via Vercel CLI:
-```bash
-vercel env add NEXT_PUBLIC_MAPBOX_TOKEN
-```
-
-## 4. MapBox Features Used
-
-### Property Map Component (`/components/map/PropertyMap.tsx`)
-- Interactive property visualization
-- Satellite and street view toggle
-- 3D terrain support
-- Property clustering for performance
-- Search integration
-
-### Vector Tiles API (`/api/parcels/tiles/[z]/[x]/[y]`)
-- Dynamic tile generation for 8.2M+ properties
-- Zoom-based data reduction
-- Caching for performance
-
-### Search API (`/api/parcels/search`)
-- Property search by address, owner, or parcel ID
-- Autocomplete support
-- Relevance scoring
-
-## 5. MapBox Usage Limits
-
-### Free Tier:
-- 50,000 map loads/month
-- 200,000 tile requests/month
-- 100,000 geocoding requests/month
-
-### Recommended for Production:
-- Pay-as-you-go plan for scale
-- Monitor usage in MapBox dashboard
-- Set up usage alerts
-
-## 6. Performance Optimizations
-
-The app implements several optimizations:
-
-1. **Vector Tiles**: Only load visible properties
-2. **Zoom-based Filtering**: 
-   - Zoom < 10: Show properties > $1M
-   - Zoom < 12: Show properties > $500K
-   - Zoom 14+: Show all properties (max 5000)
-3. **Caching**: 1-hour client, 24-hour CDN cache
-4. **Clustering**: Group nearby properties at low zoom
-
-## 7. Testing MapBox Integration
-
-After setting up the token:
-
-1. Start the development server:
+3. **Configure Environment Variables**
+   
+   Add your token to your `.env.local` file:
    ```bash
-   pnpm dev
+   NEXT_PUBLIC_MAPBOX_TOKEN=pk.your_mapbox_token_here
    ```
 
-2. Navigate to a page with the map
-3. Check browser console for any MapBox errors
-4. Verify map loads and shows Florida properties
+   For production (Vercel), add it to your environment variables:
+   - Go to your Vercel project settings
+   - Navigate to Environment Variables
+   - Add `NEXT_PUBLIC_MAPBOX_TOKEN` with your token value
 
-## 8. Troubleshooting
+## Features Using Mapbox
 
-### Map not loading:
-- Check token is set in environment variables
-- Verify token starts with `pk.`
-- Check browser console for errors
-- Ensure token has correct scopes
+### 1. Property Map Dashboard
+- Interactive map showing all Florida properties
+- Clustering for performance with large datasets
+- Custom property markers with status indicators
+- Filter properties by insurance status, risk level, etc.
 
-### Performance issues:
-- Reduce max features per tile
-- Increase zoom threshold for filtering
-- Enable browser caching
-- Use CDN for production
+### 2. Parcel Visualization
+- Display of 8.2M+ Florida parcels
+- County-level data aggregation
+- Heat maps for property values
+- Vector tiles for performance
 
-### CORS errors:
-- MapBox tokens are domain-restricted by default
-- Add your domains in MapBox dashboard
-- For development, add `localhost:3000`
+### 3. Disaster Monitoring
+- Hurricane tracking overlays
+- Flood zone visualization
+- Risk assessment layers
+- Emergency evacuation routes
 
-## 9. Security Best Practices
+## Map Styles Available
 
-1. **Token Scoping**: Create separate tokens for dev/staging/production
-2. **URL Restrictions**: Limit tokens to specific domains
-3. **Rate Limiting**: Monitor and set alerts for unusual usage
-4. **Token Rotation**: Rotate tokens periodically
-5. **Never commit tokens**: Always use environment variables
+The application supports multiple map styles:
+- **Dark Mode** (`mapbox://styles/mapbox/dark-v11`) - Default for dashboard
+- **Streets** (`mapbox://styles/mapbox/streets-v12`) - Detailed street view
+- **Satellite** (`mapbox://styles/mapbox/satellite-streets-v12`) - Aerial imagery
 
-## 10. Advanced Features (Future)
+## Troubleshooting
 
-- [ ] Custom map styles for ClaimGuardian branding
-- [ ] Offline map support for disaster scenarios
-- [ ] Real-time property updates via WebSocket
-- [ ] Heat maps for claim density
-- [ ] Hurricane path overlays
-- [ ] FEMA flood zone layers
+### Map Not Displaying
+1. Check that `NEXT_PUBLIC_MAPBOX_TOKEN` is set in your environment
+2. Verify the token starts with `pk.`
+3. Check browser console for any Mapbox-related errors
+4. Ensure you're not exceeding the free tier limits (50,000 map loads/month)
 
-## Support
+### Performance Issues
+- The app uses clustering for properties when zoomed out
+- Vector tiles are used for parcel data to improve performance
+- Consider upgrading your Mapbox plan if you exceed rate limits
 
-For MapBox-specific issues:
-- [MapBox Documentation](https://docs.mapbox.com/)
-- [MapBox Support](https://support.mapbox.com/)
+### CORS Issues
+- Mapbox tiles are served with proper CORS headers
+- If you see CORS errors, check your Mapbox token permissions
 
-For ClaimGuardian integration issues:
-- Check `/docs/troubleshooting.md`
-- Open issue on GitHub
+## Usage Limits (Free Tier)
+
+- **Map loads**: 50,000/month
+- **Vector tiles**: 200,000/month
+- **Geocoding**: 100,000/month
+
+For production use with high traffic, consider upgrading to a paid Mapbox plan.
+
+## Integration Points
+
+### Components Using Mapbox:
+- `/components/maps/florida-property-map.tsx` - Main map component
+- `/components/maps/property-map-dashboard.tsx` - Dashboard integration
+- `/components/maps/parcel-search-map.tsx` - Parcel search functionality
+- `/app/api/parcels/tiles/[z]/[x]/[y]/route.ts` - Vector tile generation
+
+### Data Flow:
+1. Parcel data stored in Supabase (`florida_parcels` table)
+2. Vector tiles generated on-demand via API route
+3. Mapbox GL JS renders the map with custom layers
+4. User interactions trigger property/parcel selection events
+
+## Additional Resources
+
+- [Mapbox GL JS Documentation](https://docs.mapbox.com/mapbox-gl-js/guides/)
+- [Mapbox Studio](https://studio.mapbox.com/) - Create custom map styles
+- [Mapbox Pricing](https://www.mapbox.com/pricing) - Understand usage limits

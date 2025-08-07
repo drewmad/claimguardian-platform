@@ -84,31 +84,7 @@ const navigationItems = [
     icon: Shield,
     href: "/dashboard/insurance",
   },
-  {
-    id: "smart-policy-recommendations",
-    label: "Smart Policy Recommendations",
-    icon: Brain,
-    href: "/smart-policy-recommendations",
-  },
   { id: "claims", label: "Claims", icon: FileText, href: "/dashboard/claims" },
-  {
-    id: "realtime-claims",
-    label: "Real-Time Claims Processing",
-    icon: Zap,
-    href: "/realtime-claims",
-  },
-  {
-    id: "crisis-response",
-    label: "Crisis Response Coordinator",
-    icon: AlertTriangle,
-    href: "/crisis-response",
-  },
-  {
-    id: "deadline-guardian",
-    label: "Deadline Guardian",
-    icon: Clock,
-    href: "/dashboard/deadline-guardian",
-  },
   {
     id: "maintenance",
     label: "Maintenance",
@@ -140,12 +116,6 @@ const navigationItems = [
     href: "/dashboard/community",
   },
   {
-    id: "weather",
-    label: "Weather Intelligence",
-    icon: Cloud,
-    href: "/dashboard/weather",
-  },
-  {
     id: "situation-room",
     label: "Situation Room",
     icon: Siren,
@@ -171,6 +141,36 @@ const adminFeatures = [
     label: "Admin Dashboard",
     icon: Cog,
     href: "/admin",
+  },
+  {
+    id: "smart-policy-recommendations",
+    label: "Smart Policy Recommendations",
+    icon: Brain,
+    href: "/smart-policy-recommendations",
+  },
+  {
+    id: "realtime-claims",
+    label: "Real-Time Claims Processing",
+    icon: Zap,
+    href: "/realtime-claims",
+  },
+  {
+    id: "crisis-response",
+    label: "Crisis Response Coordinator",
+    icon: AlertTriangle,
+    href: "/crisis-response",
+  },
+  {
+    id: "deadline-guardian",
+    label: "Deadline Guardian",
+    icon: Clock,
+    href: "/dashboard/deadline-guardian",
+  },
+  {
+    id: "weather",
+    label: "Weather Intelligence",
+    icon: Cloud,
+    href: "/dashboard/weather",
   },
 ];
 
@@ -390,25 +390,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 </span>
               </div>
               <div className="space-y-1">
-                {/* AI Cost Tracking */}
-                <Link
-                  href="/admin/ai-costs"
-                  onClick={() => {
-                    if (isMobile) setIsSidebarOpen(false);
-                  }}
-                  className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg transition-all text-sm ${
-                    pathname === "/admin/ai-costs"
-                      ? "bg-red-600/20 text-red-300"
-                      : "text-gray-400 hover:text-white hover:bg-gray-700"
-                  }`}
-                >
-                  <DollarSign className="w-4 h-4" />
-                  <span>AI Cost Tracking</span>
-                </Link>
-
                 {adminFeatures.map((feature) => {
                   const Icon = feature.icon;
-                  const isActive = pathname.startsWith(feature.href);
+                  const isActive = pathname === feature.href || pathname.startsWith(feature.href);
 
                   return (
                     <Link
@@ -428,6 +412,22 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                     </Link>
                   );
                 })}
+
+                {/* AI Cost Tracking */}
+                <Link
+                  href="/admin/ai-costs"
+                  onClick={() => {
+                    if (isMobile) setIsSidebarOpen(false);
+                  }}
+                  className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg transition-all text-sm ${
+                    pathname === "/admin/ai-costs"
+                      ? "bg-red-600/20 text-red-300"
+                      : "text-gray-400 hover:text-white hover:bg-gray-700"
+                  }`}
+                >
+                  <DollarSign className="w-4 h-4" />
+                  <span>AI Cost Tracking</span>
+                </Link>
               </div>
             </div>
           </div>

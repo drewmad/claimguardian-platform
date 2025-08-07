@@ -438,7 +438,7 @@ export function Hero() {
               {/* Founders Photo */}
               <div className="flex-shrink-0 w-80 h-64 bg-gradient-to-br from-gray-800/70 to-gray-900/70 backdrop-blur-xl border border-gray-700/50 rounded-2xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.4)]">
                 <Image
-                  src="/founders.png"
+                  src="/images/founders.png"
                   alt="ClaimGuardian Founders"
                   width={320}
                   height={256}

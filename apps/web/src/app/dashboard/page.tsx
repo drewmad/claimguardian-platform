@@ -74,6 +74,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useSupabase } from "@/lib/supabase/client";
 import { profileService, UserProfile } from "@/lib/auth/profile-service";
+import { FloridaPropertyMap } from "@/components/maps/florida-property-map";
 
 interface QuickAccessItem {
   id: string;
@@ -760,6 +761,56 @@ function DashboardContent() {
                   </CardHeader>
                   <CardContent>
                     <QuickAccessGrid router={router} />
+                  </CardContent>
+                </Card>
+
+                {/* Property Map */}
+                <Card className="liquid-glass-4 border-gray-700/60 shadow-[0_16px_40px_rgba(0,0,0,0.4)] hover:shadow-[0_16px_40px_rgba(59,130,246,0.1)] transition-all duration-500">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-white flex items-center gap-2">
+                        <MapPin className="h-5 w-5 text-blue-400" />
+                        Florida Properties Overview
+                      </CardTitle>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => router.push("/dashboard/property-map")}
+                        className="text-cyan-400 hover:text-cyan-300"
+                        aria-label="View full property map"
+                      >
+                        View Full Map
+                        <ChevronRight className="h-4 w-4 ml-1" aria-hidden="true" />
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-0 overflow-hidden">
+                    <div className="relative h-[400px] w-full">
+                      <FloridaPropertyMap
+                        height="400px"
+                        showControls={false}
+                        mapStyle="mapbox://styles/mapbox/dark-v11"
+                      />
+                      {!process.env.NEXT_PUBLIC_MAPBOX_TOKEN && (
+                        <div className="absolute inset-0 bg-gray-800/90 flex items-center justify-center">
+                          <div className="text-center p-6">
+                            <MapPin className="h-12 w-12 text-gray-500 mx-auto mb-3" />
+                            <p className="text-white font-medium mb-2">Map Configuration Required</p>
+                            <p className="text-sm text-gray-400 mb-4">
+                              Add NEXT_PUBLIC_MAPBOX_TOKEN to your environment variables
+                            </p>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => window.open("https://www.mapbox.com/", "_blank")}
+                              className="bg-gray-700 hover:bg-gray-600 border-gray-600"
+                            >
+                              Get Mapbox Token
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
 
