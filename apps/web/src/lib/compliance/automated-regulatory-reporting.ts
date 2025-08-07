@@ -11,7 +11,7 @@
  * @lastModifiedDate 2025-08-06
  */
 
-import { createClient } from '@/lib/supabase/server'
+import { SupabaseService } from '@/lib/supabase/helpers'
 import { logger } from '@/lib/logger/production-logger'
 import { soxAuditTrailManager } from './sox-audit-trail-system'
 import { floridaComplianceManager } from './florida-regulatory-framework'
@@ -213,13 +213,12 @@ export interface ReportingSchedule {
 // REGULATORY REPORTING MANAGER
 // =======================
 
-export class RegulatoryReportingManager {
-  private supabase: ReturnType<typeof createClient>
+export class RegulatoryReportingManager extends SupabaseService {
   private oirGenerator: OIRReportGenerator
   private scheduler: ComplianceReportScheduler
 
   constructor() {
-    this.supabase = createClient()
+    super()
     this.oirGenerator = new OIRReportGenerator()
     this.scheduler = new ComplianceReportScheduler()
   }
@@ -360,8 +359,9 @@ export class RegulatoryReportingManager {
     errors?: string[]
   }> {
     try {
+      const supabase = await this.getSupabaseClient()
       // Get report
-      const { data: report, error } = await this.supabase
+      const { data: report, error } = await supabase
         .from('compliance.regulatory_reports')
         .select('*')
         .eq('id', reportId)
@@ -384,7 +384,7 @@ export class RegulatoryReportingManager {
       const submissionResult = await this.performSubmission(report)
 
       // Update report status
-      await this.supabase
+      await supabase
         .from('compliance.regulatory_reports')
         .update({
           status: submissionResult.success ? 'submitted' : 'rejected',
@@ -886,11 +886,9 @@ export class RegulatoryReportingManager {
 // OIR REPORT GENERATOR
 // =======================
 
-export class OIRReportGenerator {
-  private supabase: ReturnType<typeof createClient>
-
+export class OIRReportGenerator extends SupabaseService {
   constructor() {
-    this.supabase = createClient()
+    super()
   }
 
   /**
@@ -1087,11 +1085,9 @@ export class OIRReportGenerator {
 // COMPLIANCE REPORT SCHEDULER
 // =======================
 
-export class ComplianceReportScheduler {
-  private supabase: ReturnType<typeof createClient>
-
+export class ComplianceReportScheduler extends SupabaseService {
   constructor() {
-    this.supabase = createClient()
+    super()
   }
 
   /**

@@ -599,11 +599,9 @@ export class PrivacyComplianceManager extends SupabaseService {
 // CONSENT MANAGER
 // =======================
 
-export class ConsentManager {
-  private supabase: ReturnType<typeof createClient>
-
+export class ConsentManager extends SupabaseService {
   constructor() {
-    this.supabase = createClient()
+    super()
   }
 
   /**
@@ -738,11 +736,9 @@ export class ConsentManager {
 // DATA DELETION SERVICE
 // =======================
 
-export class DataDeletionService {
-  private supabase: ReturnType<typeof createClient>
-
+export class DataDeletionService extends SupabaseService {
   constructor() {
-    this.supabase = createClient()
+    super()
   }
 
   /**
