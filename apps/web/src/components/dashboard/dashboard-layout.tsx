@@ -268,25 +268,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 </span>
               )}
             </button>
-            <div className="h-6 w-px bg-gray-600 mx-2" />
-            <div className="flex items-center gap-2 px-3 py-2">
-              <div className="w-8 h-8 bg-cyan-600 rounded-full flex items-center justify-center">
-                <User className="w-5 h-5 text-white" />
-              </div>
-              <div className="text-left">
-                <p className="text-sm font-medium text-white">
-                  {user?.user_metadata?.firstName || "User"}
-                </p>
-                <p className="text-xs text-gray-400">{user?.email}</p>
-              </div>
-            </div>
-            <button
-              onClick={handleSignOut}
-              className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
-              title="Sign out"
-            >
-              <LogOut className="w-5 h-5 text-gray-400" />
-            </button>
           </div>
         </div>
       </header>
@@ -299,21 +280,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           } transition-all duration-300 bg-gray-800 border-r border-gray-700 sticky top-[57px] h-[calc(100vh-57px)] flex flex-col`}
         >
           <div className={`${isSidebarCollapsed ? "p-2" : "p-4"} space-y-6 overflow-y-auto flex-1`}>
-            {/* User Profile Section */}
-            <div className={`flex items-center ${isSidebarCollapsed ? "justify-center" : "gap-3 px-2"} pb-4 border-b border-gray-700`}>
-              <div className="w-10 h-10 bg-cyan-600 rounded-full flex items-center justify-center flex-shrink-0">
-                <User className="w-6 h-6 text-white" />
-              </div>
-              {!isSidebarCollapsed && (
-                <div className="text-left overflow-hidden">
-                  <p className="text-sm font-medium text-white truncate">
-                    {user?.user_metadata?.firstName || user?.email?.split('@')[0] || "User"}
-                  </p>
-                  <p className="text-xs text-gray-400 truncate">{user?.email}</p>
-                </div>
-              )}
-            </div>
-
             {/* Main Navigation */}
             <div className="space-y-1">
               {!isSidebarCollapsed && (
@@ -472,6 +438,50 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
           {/* Bottom Section */}
           <div className={`${isSidebarCollapsed ? "p-2" : "p-4"} border-t border-gray-700 space-y-2`}>
+            {/* User Profile */}
+            <div className={`relative flex items-center ${
+              isSidebarCollapsed ? "justify-center mx-2 px-3 py-3" : "gap-3 mx-2 px-4 py-3"
+            } rounded-xl bg-gray-700/30 mb-3 cursor-pointer hover:bg-gray-700/50 transition-all`}
+            onClick={() => {
+              if (!isSidebarCollapsed) {
+                openSettings("profile");
+              }
+            }}
+            title={isSidebarCollapsed ? user?.email : undefined}
+            >
+              <div className="relative">
+                <div className="w-10 h-10 bg-cyan-600 rounded-full flex items-center justify-center flex-shrink-0 relative z-10">
+                  <User className="w-6 h-6 text-white" />
+                </div>
+                {/* Green checkmark indicator */}
+                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center border-2 border-gray-800">
+                  <svg className="w-3 h-3 text-white" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
+                    <path d="M5 13l4 4L19 7"></path>
+                  </svg>
+                </div>
+              </div>
+              {!isSidebarCollapsed && (
+                <div className="flex-1 overflow-hidden">
+                  <p className="text-sm font-medium text-white truncate">
+                    {user?.user_metadata?.firstName || user?.email?.split('@')[0] || "User"}
+                  </p>
+                  <p className="text-xs text-gray-400 truncate">{user?.email}</p>
+                </div>
+              )}
+              {!isSidebarCollapsed && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleSignOut();
+                  }}
+                  title="Sign Out"
+                  className="p-1.5 hover:bg-gray-600 rounded-lg transition-colors"
+                >
+                  <LogOut className="w-4 h-4 text-gray-400 hover:text-white" />
+                </button>
+              )}
+            </div>
+
             {/* Membership & Billing Button */}
             <Link
               href="/dashboard/billing"
@@ -503,18 +513,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             >
               <Cog className="w-5 h-5 flex-shrink-0 relative z-10" />
               {!isSidebarCollapsed && <span className="font-medium relative z-10">Settings</span>}
-            </button>
-
-            {/* Sign Out Button */}
-            <button
-              onClick={handleSignOut}
-              title={isSidebarCollapsed ? "Sign Out" : undefined}
-              className={`w-full relative flex items-center ${
-                isSidebarCollapsed ? "justify-center mx-2 px-3 py-3" : "gap-3 mx-2 px-4 py-3"
-              } rounded-xl transition-all duration-200 text-gray-400 hover:text-white hover:bg-gray-700/50`}
-            >
-              <LogOut className="w-5 h-5 flex-shrink-0 relative z-10" />
-              {!isSidebarCollapsed && <span className="font-medium relative z-10">Sign Out</span>}
             </button>
           </div>
         </aside>
