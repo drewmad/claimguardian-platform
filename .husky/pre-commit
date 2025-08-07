@@ -22,12 +22,21 @@ if [ -f "scripts/auto-fix-lint.js" ]; then
   node scripts/auto-fix-lint.js || true
 fi
 
-# 4. Run type check (warn but don't block for now)
-echo "🔍 Type checking..."
-pnpm type-check || {
-  echo "⚠️  Type errors found. These should be fixed soon."
-  echo "   Continuing with commit..."
-}
+# 4. Run TypeScript type check
+echo "🔍 TypeScript type checking..."
+if pnpm typecheck 2>&1 | tee ts-errors.log; then
+  echo "✅ No TypeScript errors found"
+  rm -f ts-errors.log
+else
+  echo "⚠️  TypeScript errors found:"
+  if [ -f "ts-errors.log" ]; then
+    ERROR_COUNT=$(wc -l < ts-errors.log)
+    echo "   Total errors: $ERROR_COUNT"
+    echo "   Run 'pnpm typecheck:group' to see error summary"
+    echo "   Run 'pnpm validate' to see all issues"
+  fi
+  echo "   Continuing with commit (will be caught in CI)..."
+fi
 
 # 5. Database checks if Supabase is running
 if command -v supabase >/dev/null 2>&1 && supabase status 2>/dev/null | grep -q "API URL"; then

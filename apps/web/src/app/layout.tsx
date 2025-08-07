@@ -1,3 +1,10 @@
+// Make the entire app default to Node.js runtime.
+// Opt-in individual routes to 'edge' only if they are confirmed edge-safe.
+export const runtime = 'nodejs';
+
+// If you have streaming heavy pages you can still mark them edge locally.
+// export const preferredRegion = 'iad1'; // optional, if you use regions
+
 /**
  * @fileMetadata
  * @purpose "Root layout component for the Next.js application, defining the HTML structure, metadata, and global styles."

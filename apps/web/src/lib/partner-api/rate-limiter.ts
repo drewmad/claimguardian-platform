@@ -10,7 +10,7 @@
  */
 
 import { logger } from "@/lib/logger/production-logger";
-import type { PartnerRateLimit } from "@claimguardian/db/types/partner-api.types";
+import type { PartnerRateLimit } from '@claimguardian/db';
 
 export interface RateLimitResult {
   allowed: boolean;

@@ -1,0 +1,60 @@
+name: TypeScript Type Check
+
+on:
+  pull_request:
+    paths:
+      - '**/*.ts'
+      - '**/*.tsx'
+      - '**/tsconfig*.json'
+      - '**/package.json'
+      - 'pnpm-lock.yaml'
+  push:
+    branches: [main]
+    paths:
+      - '**/*.ts'
+      - '**/*.tsx'
+      - '**/tsconfig*.json'
+      - '**/package.json'
+      - 'pnpm-lock.yaml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  typecheck:
+    name: TypeScript Type Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: '10.14.0'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run TypeScript type check
+        run: pnpm typecheck
+
+      - name: Generate error summary on failure
+        if: failure()
+        run: |
+          echo "## TypeScript Errors Summary" >> $GITHUB_STEP_SUMMARY
+          pnpm typecheck:log || true
+          pnpm typecheck:group || true
+          if [ -f "ts-errors.log" ]; then
+            echo "Total TypeScript errors:" >> $GITHUB_STEP_SUMMARY
+            wc -l < ts-errors.log >> $GITHUB_STEP_SUMMARY
+          fi

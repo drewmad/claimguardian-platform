@@ -1,2 +1,376 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0"\n\n/**\n * Property Weather Monitor\n * Monitors all properties for severe weather conditions and sends real-time alerts\n */\n\nconst corsHeaders = {\n  'Access-Control-Allow-Origin': '*',\n  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',\n}\n\ninterface PropertyAlert {\n  property_id: string\n  user_id: string\n  alert_type: string\n  severity: string\n  conditions: any\n  distance_from_event: number\n}\n\nDeno.serve(async (req: Request) => {\n  if (req.method === 'OPTIONS') {\n    return new Response('ok', { headers: corsHeaders })\n  }\n\n  const supabase = createClient(\n    Deno.env.get('SUPABASE_URL') ?? '',\n    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''\n  )\n\n  try {\n    const { action } = await req.json().catch(() => ({ action: 'monitor-all' }))\n    console.log(`Property Weather Monitor: ${action}`)\n\n    switch (action) {\n      case 'monitor-all':\n        return await monitorAllProperties(supabase)\n      case 'check-property':\n        const { property_id } = await req.json()\n        return await checkSingleProperty(supabase, property_id)\n      case 'generate-alerts':\n        return await generateWeatherAlerts(supabase)\n      default:\n        return await monitorAllProperties(supabase)\n    }\n  } catch (error) {\n    console.error('Property Weather Monitor error:', error)\n    return new Response(\n      JSON.stringify({ error: error.message }),\n      { \n        status: 500,\n        headers: { ...corsHeaders, 'Content-Type': 'application/json' }\n      }\n    )\n  }\n})\n\nasync function monitorAllProperties(supabase: any) {\n  console.log('Monitoring all properties for severe weather...')\n  \n  // Get all active properties with coordinates\n  const { data: properties, error: propError } = await supabase\n    .from('properties')\n    .select(`\n      id,\n      user_id,\n      full_address,\n      latitude,\n      longitude,\n      location\n    `)\n    .not('latitude', 'is', null)\n    .not('longitude', 'is', null)\n\n  if (propError) {\n    console.error('Error fetching properties:', propError)\n    throw propError\n  }\n\n  console.log(`Found ${properties.length} properties to monitor`)\n\n  const alerts = []\n  const processedProperties = []\n\n  for (const property of properties) {\n    try {\n      const propertyAlerts = await checkPropertyWeatherConditions(supabase, property)\n      alerts.push(...propertyAlerts)\n      processedProperties.push({\n        property_id: property.id,\n        address: property.full_address,\n        alerts_generated: propertyAlerts.length\n      })\n    } catch (error) {\n      console.error(`Error checking property ${property.id}:`, error)\n    }\n  }\n\n  // Store alerts in database\n  if (alerts.length > 0) {\n    const { error: insertError } = await supabase\n      .from('property_weather_alerts')\n      .insert(alerts)\n\n    if (insertError) {\n      console.error('Error inserting alerts:', insertError)\n    } else {\n      console.log(`Generated ${alerts.length} weather alerts`)\n    }\n\n    // Send real-time notifications\n    for (const alert of alerts) {\n      await supabase\n        .channel('property-alerts')\n        .send({\n          type: 'broadcast',\n          event: 'weather-alert',\n          payload: alert\n        })\n    }\n  }\n\n  // Log monitoring activity\n  await supabase\n    .from('noaa_ingestion_logs')\n    .insert({\n      data_type: 'property_monitoring',\n      severity_level: alerts.length > 0 ? 'elevated' : 'normal',\n      records_processed: properties.length,\n      metadata: {\n        alerts_generated: alerts.length,\n        properties_processed: processedProperties\n      }\n    })\n\n  return new Response(\n    JSON.stringify({\n      success: true,\n      properties_monitored: properties.length,\n      alerts_generated: alerts.length,\n      timestamp: new Date().toISOString()\n    }),\n    { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }\n  )\n}\n\nasync function checkPropertyWeatherConditions(supabase: any, property: any): Promise<PropertyAlert[]> {\n  const alerts: PropertyAlert[] = []\n  const lat = property.latitude\n  const lon = property.longitude\n\n  // 1. Check for active storm warnings/watches\n  const { data: stormAlerts } = await supabase\n    .rpc('is_property_in_alert_zone', {\n      property_lat: lat,\n      property_lon: lon\n    })\n\n  if (stormAlerts && stormAlerts.length > 0) {\n    for (const alert of stormAlerts) {\n      alerts.push({\n        property_id: property.id,\n        user_id: property.user_id,\n        alert_type: 'storm_warning',\n        severity: alert.severity?.toLowerCase() || 'moderate',\n        conditions: {\n          event_type: alert.event_type,\n          headline: alert.headline,\n          expires: alert.expires\n        },\n        distance_from_event: 0\n      })\n    }\n  }\n\n  // 2. Check for high winds at nearby stations\n  const { data: nearbyStations } = await supabase\n    .rpc('find_nearest_weather_station', {\n      user_lat: lat,\n      user_lon: lon,\n      max_distance_km: 50\n    })\n\n  if (nearbyStations && nearbyStations.length > 0) {\n    // Get recent observations from nearest stations\n    const stationIds = nearbyStations.slice(0, 3).map(s => s.station_id)\n    \n    const { data: observations } = await supabase\n      .from('noaa_weather_observations')\n      .select('*')\n      .in('station_id', stationIds)\n      .gte('observation_time', new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString())\n      .order('observation_time', { ascending: false })\n\n    if (observations) {\n      for (const obs of observations) {\n        const windSpeed = obs.wind_speed || 0\n        const windGust = obs.wind_gust || 0\n        \n        // High wind alert\n        if (windSpeed > 25 || windGust > 35) {\n          alerts.push({\n            property_id: property.id,\n            user_id: property.user_id,\n            alert_type: 'high_winds',\n            severity: windSpeed > 35 || windGust > 50 ? 'severe' : 'moderate',\n            conditions: {\n              wind_speed: windSpeed,\n              wind_gust: windGust,\n              station_id: obs.station_id,\n              observation_time: obs.observation_time\n            },\n            distance_from_event: nearbyStations.find(s => s.station_id === obs.station_id)?.distance_km || 0\n          })\n        }\n      }\n    }\n  }\n\n  // 3. Check for lightning strikes nearby\n  const { data: lightningStrikes } = await supabase\n    .from('noaa_lightning_strikes')\n    .select('*')\n    .gte('detection_time', new Date(Date.now() - 30 * 60 * 1000).toISOString()) // Last 30 minutes\n\n  if (lightningStrikes) {\n    // Count strikes within different radii\n    let nearbyStrikes = 0\n    let closeStrikes = 0\n    \n    for (const strike of lightningStrikes) {\n      if (strike.latitude && strike.longitude) {\n        const distance = calculateDistance(lat, lon, strike.latitude, strike.longitude)\n        \n        if (distance < 10) { // Within 10km\n          nearbyStrikes++\n          if (distance < 3) { // Within 3km\n            closeStrikes++\n          }\n        }\n      }\n    }\n    \n    if (closeStrikes > 0 || nearbyStrikes > 5) {\n      alerts.push({\n        property_id: property.id,\n        user_id: property.user_id,\n        alert_type: 'lightning_activity',\n        severity: closeStrikes > 0 ? 'severe' : 'moderate',\n        conditions: {\n          close_strikes: closeStrikes,\n          nearby_strikes: nearbyStrikes,\n          time_period: '30 minutes'\n        },\n        distance_from_event: closeStrikes > 0 ? 0 : 5 // Approximate\n      })\n    }\n  }\n\n  // 4. Check for coastal flooding (if near coast)\n  const { data: tideData } = await supabase\n    .from('noaa_tide_and_current_data')\n    .select('*')\n    .gte('observation_time', new Date(Date.now() - 60 * 60 * 1000).toISOString()) // Last hour\n    .order('observation_time', { ascending: false })\n    .limit(10)\n\n  if (tideData) {\n    for (const tide of tideData) {\n      // Check if property is near this tide station (rough approximation)\n      if (tide.water_level > 3.0) { // High water level threshold\n        alerts.push({\n          property_id: property.id,\n          user_id: property.user_id,\n          alert_type: 'coastal_flooding',\n          severity: tide.water_level > 4.0 ? 'severe' : 'moderate',\n          conditions: {\n            water_level: tide.water_level,\n            station_name: tide.station_name,\n            observation_time: tide.observation_time\n          },\n          distance_from_event: 20 // Approximate for coastal properties\n        })\n      }\n    }\n  }\n\n  return alerts\n}\n\nasync function checkSingleProperty(supabase: any, propertyId: string) {\n  const { data: property, error } = await supabase\n    .from('properties')\n    .select('*')\n    .eq('id', propertyId)\n    .single()\n\n  if (error || !property) {\n    throw new Error('Property not found')\n  }\n\n  const alerts = await checkPropertyWeatherConditions(supabase, property)\n  \n  return new Response(\n    JSON.stringify({\n      property_id: propertyId,\n      alerts,\n      alert_count: alerts.length\n    }),\n    { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }\n  )\n}\n\nasync function generateWeatherAlerts(supabase: any) {\n  // Get all unresolved alerts for notification\n  const { data: alerts, error } = await supabase\n    .from('property_weather_alerts')\n    .select(`\n      *,\n      properties!inner(full_address, user_id)\n    `)\n    .eq('resolved', false)\n    .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())\n\n  if (error) {\n    throw error\n  }\n\n  console.log(`Found ${alerts.length} active weather alerts`)\n\n  // Group alerts by user for batching\n  const userAlerts = alerts.reduce((acc, alert) => {\n    const userId = alert.user_id\n    if (!acc[userId]) {\n      acc[userId] = []\n    }\n    acc[userId].push(alert)\n    return acc\n  }, {})\n\n  // Send notifications (placeholder - would integrate with email/SMS service)\n  const notifications = []\n  for (const [userId, userAlertList] of Object.entries(userAlerts)) {\n    notifications.push({\n      user_id: userId,\n      alert_count: userAlertList.length,\n      most_severe: userAlertList.reduce((max, alert) => \n        alert.severity === 'severe' ? alert : max, userAlertList[0]\n      )\n    })\n  }\n\n  return new Response(\n    JSON.stringify({\n      alerts_processed: alerts.length,\n      users_notified: notifications.length,\n      notifications\n    }),\n    { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }\n  )\n}\n\n// Helper function to calculate distance between two points\nfunction calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {\n  const R = 6371 // Earth's radius in km\n  const dLat = (lat2 - lat1) * Math.PI / 180\n  const dLon = (lon2 - lon1) * Math.PI / 180\n  const a = \n    Math.sin(dLat / 2) * Math.sin(dLat / 2) +\n    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *\n    Math.sin(dLon / 2) * Math.sin(dLon / 2)\n  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))\n  return R * c\n}"
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0"
+
+/**
+ * Property Weather Monitor
+ * Monitors all properties for severe weather conditions and sends real-time alerts
+ */
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
+interface PropertyAlert {
+  property_id: string
+  user_id: string
+  alert_type: string
+  severity: string
+  conditions: any
+  distance_from_event: number
+}
+
+Deno.serve(async (req: Request) => {
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders })
+  }
+
+  const supabase = createClient(
+    Deno.env.get('SUPABASE_URL') ?? '',
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+  )
+
+  try {
+    const { action } = await req.json().catch(() => ({ action: 'monitor-all' }))
+    console.log(`Property Weather Monitor: ${action}`)
+
+    switch (action) {
+      case 'monitor-all':
+        return await monitorAllProperties(supabase)
+      case 'check-property':
+        const { property_id } = await req.json()
+        return await checkSingleProperty(supabase, property_id)
+      case 'generate-alerts':
+        return await generateWeatherAlerts(supabase)
+      default:
+        return await monitorAllProperties(supabase)
+    }
+  } catch (error) {
+    console.error('Property Weather Monitor error:', error)
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      { 
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      }
+    )
+  }
+})
+
+async function monitorAllProperties(supabase: any) {
+  console.log('Monitoring all properties for severe weather...')
+  
+  // Get all active properties with coordinates
+  const { data: properties, error: propError } = await supabase
+    .from('properties')
+    .select(`
+      id,
+      user_id,
+      full_address,
+      latitude,
+      longitude,
+      location
+    `)
+    .not('latitude', 'is', null)
+    .not('longitude', 'is', null)
+
+  if (propError) {
+    console.error('Error fetching properties:', propError)
+    throw propError
+  }
+
+  console.log(`Found ${properties.length} properties to monitor`)
+
+  const alerts = []
+  const processedProperties = []
+
+  for (const property of properties) {
+    try {
+      const propertyAlerts = await checkPropertyWeatherConditions(supabase, property)
+      alerts.push(...propertyAlerts)
+      processedProperties.push({
+        property_id: property.id,
+        address: property.full_address,
+        alerts_generated: propertyAlerts.length
+      })
+    } catch (error) {
+      console.error(`Error checking property ${property.id}:`, error)
+    }
+  }
+
+  // Store alerts in database
+  if (alerts.length > 0) {
+    const { error: insertError } = await supabase
+      .from('property_weather_alerts')
+      .insert(alerts)
+
+    if (insertError) {
+      console.error('Error inserting alerts:', insertError)
+    } else {
+      console.log(`Generated ${alerts.length} weather alerts`)
+    }
+
+    // Send real-time notifications
+    for (const alert of alerts) {
+      await supabase
+        .channel('property-alerts')
+        .send({
+          type: 'broadcast',
+          event: 'weather-alert',
+          payload: alert
+        })
+    }
+  }
+
+  // Log monitoring activity
+  await supabase
+    .from('noaa_ingestion_logs')
+    .insert({
+      data_type: 'property_monitoring',
+      severity_level: alerts.length > 0 ? 'elevated' : 'normal',
+      records_processed: properties.length,
+      metadata: {
+        alerts_generated: alerts.length,
+        properties_processed: processedProperties
+      }
+    })
+
+  return new Response(
+    JSON.stringify({
+      success: true,
+      properties_monitored: properties.length,
+      alerts_generated: alerts.length,
+      timestamp: new Date().toISOString()
+    }),
+    { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+  )
+}
+
+async function checkPropertyWeatherConditions(supabase: any, property: any): Promise<PropertyAlert[]> {
+  const alerts: PropertyAlert[] = []
+  const lat = property.latitude
+  const lon = property.longitude
+
+  // 1. Check for active storm warnings/watches
+  const { data: stormAlerts } = await supabase
+    .rpc('is_property_in_alert_zone', {
+      property_lat: lat,
+      property_lon: lon
+    })
+
+  if (stormAlerts && stormAlerts.length > 0) {
+    for (const alert of stormAlerts) {
+      alerts.push({
+        property_id: property.id,
+        user_id: property.user_id,
+        alert_type: 'storm_warning',
+        severity: alert.severity?.toLowerCase() || 'moderate',
+        conditions: {
+          event_type: alert.event_type,
+          headline: alert.headline,
+          expires: alert.expires
+        },
+        distance_from_event: 0
+      })
+    }
+  }
+
+  // 2. Check for high winds at nearby stations
+  const { data: nearbyStations } = await supabase
+    .rpc('find_nearest_weather_station', {
+      user_lat: lat,
+      user_lon: lon,
+      max_distance_km: 50
+    })
+
+  if (nearbyStations && nearbyStations.length > 0) {
+    // Get recent observations from nearest stations
+    const stationIds = nearbyStations.slice(0, 3).map(s => s.station_id)
+    
+    const { data: observations } = await supabase
+      .from('noaa_weather_observations')
+      .select('*')
+      .in('station_id', stationIds)
+      .gte('observation_time', new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString())
+      .order('observation_time', { ascending: false })
+
+    if (observations) {
+      for (const obs of observations) {
+        const windSpeed = obs.wind_speed || 0
+        const windGust = obs.wind_gust || 0
+        
+        // High wind alert
+        if (windSpeed > 25 || windGust > 35) {
+          alerts.push({
+            property_id: property.id,
+            user_id: property.user_id,
+            alert_type: 'high_winds',
+            severity: windSpeed > 35 || windGust > 50 ? 'severe' : 'moderate',
+            conditions: {
+              wind_speed: windSpeed,
+              wind_gust: windGust,
+              station_id: obs.station_id,
+              observation_time: obs.observation_time
+            },
+            distance_from_event: nearbyStations.find(s => s.station_id === obs.station_id)?.distance_km || 0
+          })
+        }
+      }
+    }
+  }
+
+  // 3. Check for lightning strikes nearby
+  const { data: lightningStrikes } = await supabase
+    .from('noaa_lightning_strikes')
+    .select('*')
+    .gte('detection_time', new Date(Date.now() - 30 * 60 * 1000).toISOString()) // Last 30 minutes
+
+  if (lightningStrikes) {
+    // Count strikes within different radii
+    let nearbyStrikes = 0
+    let closeStrikes = 0
+    
+    for (const strike of lightningStrikes) {
+      if (strike.latitude && strike.longitude) {
+        const distance = calculateDistance(lat, lon, strike.latitude, strike.longitude)
+        
+        if (distance < 10) { // Within 10km
+          nearbyStrikes++
+          if (distance < 3) { // Within 3km
+            closeStrikes++
+          }
+        }
+      }
+    }
+    
+    if (closeStrikes > 0 || nearbyStrikes > 5) {
+      alerts.push({
+        property_id: property.id,
+        user_id: property.user_id,
+        alert_type: 'lightning_activity',
+        severity: closeStrikes > 0 ? 'severe' : 'moderate',
+        conditions: {
+          close_strikes: closeStrikes,
+          nearby_strikes: nearbyStrikes,
+          time_period: '30 minutes'
+        },
+        distance_from_event: closeStrikes > 0 ? 0 : 5 // Approximate
+      })
+    }
+  }
+
+  // 4. Check for coastal flooding (if near coast)
+  const { data: tideData } = await supabase
+    .from('noaa_tide_and_current_data')
+    .select('*')
+    .gte('observation_time', new Date(Date.now() - 60 * 60 * 1000).toISOString()) // Last hour
+    .order('observation_time', { ascending: false })
+    .limit(10)
+
+  if (tideData) {
+    for (const tide of tideData) {
+      // Check if property is near this tide station (rough approximation)
+      if (tide.water_level > 3.0) { // High water level threshold
+        alerts.push({
+          property_id: property.id,
+          user_id: property.user_id,
+          alert_type: 'coastal_flooding',
+          severity: tide.water_level > 4.0 ? 'severe' : 'moderate',
+          conditions: {
+            water_level: tide.water_level,
+            station_name: tide.station_name,
+            observation_time: tide.observation_time
+          },
+          distance_from_event: 20 // Approximate for coastal properties
+        })
+      }
+    }
+  }
+
+  return alerts
+}
+
+async function checkSingleProperty(supabase: any, propertyId: string) {
+  const { data: property, error } = await supabase
+    .from('properties')
+    .select('*')
+    .eq('id', propertyId)
+    .single()
+
+  if (error || !property) {
+    throw new Error('Property not found')
+  }
+
+  const alerts = await checkPropertyWeatherConditions(supabase, property)
+  
+  return new Response(
+    JSON.stringify({
+      property_id: propertyId,
+      alerts,
+      alert_count: alerts.length
+    }),
+    { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+  )
+}
+
+async function generateWeatherAlerts(supabase: any) {
+  // Get all unresolved alerts for notification
+  const { data: alerts, error } = await supabase
+    .from('property_weather_alerts')
+    .select(`
+      *,
+      properties!inner(full_address, user_id)
+    `)
+    .eq('resolved', false)
+    .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+
+  if (error) {
+    throw error
+  }
+
+  console.log(`Found ${alerts.length} active weather alerts`)
+
+  // Group alerts by user for batching
+  const userAlerts = alerts.reduce((acc, alert) => {
+    const userId = alert.user_id
+    if (!acc[userId]) {
+      acc[userId] = []
+    }
+    acc[userId].push(alert)
+    return acc
+  }, {})
+
+  // Send notifications (placeholder - would integrate with email/SMS service)
+  const notifications = []
+  for (const [userId, userAlertList] of Object.entries(userAlerts)) {
+    notifications.push({
+      user_id: userId,
+      alert_count: userAlertList.length,
+      most_severe: userAlertList.reduce((max, alert) => 
+        alert.severity === 'severe' ? alert : max, userAlertList[0]
+      )
+    })
+  }
+
+  return new Response(
+    JSON.stringify({
+      alerts_processed: alerts.length,
+      users_notified: notifications.length,
+      notifications
+    }),
+    { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+  )
+}
+
+// Helper function to calculate distance between two points
+function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371 // Earth's radius in km
+  const dLat = (lat2 - lat1) * Math.PI / 180
+  const dLon = (lon2 - lon1) * Math.PI / 180
+  const a = 
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2)
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+  return R * c
+}

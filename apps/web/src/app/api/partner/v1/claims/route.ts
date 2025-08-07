@@ -17,7 +17,7 @@ import type {
   PartnerApiResponse,
   ClaimApiRequest,
   ClaimApiResponse,
-} from "@claimguardian/db/types/partner-api.types";
+} from '@claimguardian/db';
 import type { PartnerApiContext } from "@/lib/partner-api/middleware";
 
 /**

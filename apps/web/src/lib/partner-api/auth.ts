@@ -17,7 +17,7 @@ import {
   PartnerApiKey,
   PartnerOrganization,
   PartnerApiErrorCode,
-} from "@claimguardian/db/types/partner-api.types";
+} from '@claimguardian/db';
 
 export interface PartnerAuthResult {
   success: boolean;

@@ -1,120 +1,24 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "ui": "tui",
-  "tasks": {
-    "build": {
-      "dependsOn": ["^build"],
-      "outputs": [
-        ".next/**",
-        "!.next/cache/**",
-        "dist/**",
-        ".next/standalone/**",
-        ".next/static/**",
-        "public/**"
-      ],
-      "inputs": [
-        "src/**/*.{js,ts,jsx,tsx,mdx}",
-        "components/**/*.{js,ts,jsx,tsx}",
-        "pages/**/*.{js,ts,jsx,tsx,mdx}",
-        "app/**/*.{js,ts,jsx,tsx,mdx}",
-        "public/**/*",
-        "package.json",
-        "next.config.js",
-        "tsconfig.json",
-        "tailwind.config.js",
-        "postcss.config.js"
-      ],
-      "env": [
-        "NODE_ENV",
-        "NEXT_PUBLIC_*",
-        "SUPABASE_URL",
-        "SUPABASE_ANON_KEY",
-        "SUPABASE_SERVICE_ROLE_KEY",
-        "POSTGRES_URL",
-        "POSTGRES_PRISMA_URL",
-        "POSTGRES_URL_NON_POOLING",
-        "POSTGRES_USER",
-        "POSTGRES_HOST",
-        "POSTGRES_PASSWORD",
-        "POSTGRES_DATABASE",
-        "SUPABASE_JWT_SECRET",
-        "GEMINI_API_KEY",
-        "OPENAI_API_KEY",
-        "EXT_PUBLIC_GOOGLE_MAPS_API_KEY",
-        "RESEND_API_KEY",
-        "RESEND_FROM_EMAIL",
-        "ANTHROPIC_API_KEY",
-        "XAI_API_KEY",
-        "STRIPE_SECRET_KEY",
-        "STRIPE_WEBHOOK_SECRET"
-      ]
-    },
-    "dev": {
-      "cache": false,
-      "persistent": true,
-      "env": [
-        "NODE_ENV",
-        "NEXT_PUBLIC_*",
-        "GEMINI_API_KEY",
-        "OPENAI_API_KEY",
-        "ANTHROPIC_API_KEY",
-        "XAI_API_KEY",
-        "STRIPE_SECRET_KEY",
-        "STRIPE_WEBHOOK_SECRET"
-      ]
-    },
-    "lint": {
-      "dependsOn": ["^lint"],
-      "outputs": [],
-      "inputs": [
-        "src/**/*.{js,ts,jsx,tsx}",
-        "components/**/*.{js,ts,jsx,tsx}",
-        "app/**/*.{js,ts,jsx,tsx}",
-        ".eslintrc.json",
-        ".eslintignore"
-      ]
-    },
-    "test": {
-      "dependsOn": ["^build"],
-      "outputs": ["coverage/**"],
-      "inputs": [
-        "src/**/*.{js,ts,jsx,tsx}",
-        "components/**/*.{js,ts,jsx,tsx}",
-        "app/**/*.{js,ts,jsx,tsx}",
-        "**/*.test.{js,ts,jsx,tsx}",
-        "**/*.spec.{js,ts,jsx,tsx}",
-        "jest.config.js",
-        "vitest.config.ts"
-      ]
-    },
-    "type-check": {
-      "dependsOn": ["^build"],
-      "outputs": [],
-      "inputs": [
-        "src/**/*.{js,ts,jsx,tsx}",
-        "components/**/*.{js,ts,jsx,tsx}",
-        "app/**/*.{js,ts,jsx,tsx}",
-        "tsconfig.json"
-      ]
-    },
+  "pipeline": {
     "clean": {
       "cache": false
     },
-    "docs:build": {
-      "outputs": ["docs/.next/**"],
-      "inputs": ["docs/**/*.md", "docs/**/*.mdx"]
+    "lint": {
+      "outputs": [],
+      "dependsOn": []
     },
-    "docs:validate": {
+    "typecheck": {
       "dependsOn": ["^build"],
       "outputs": []
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**", "build/**", "tsconfig.tsbuildinfo", "coverage/**"]
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "outputs": ["coverage/**", "junit.xml"]
     }
-  },
-  "globalDependencies": ["**/.env.*local", "**/.env"],
-  "globalEnv": [
-    "NODE_ENV",
-    "CI",
-    "VERCEL",
-    "VERCEL_ENV",
-    "TURBO_TELEMETRY_DISABLED"
-  ]
+  }
 }

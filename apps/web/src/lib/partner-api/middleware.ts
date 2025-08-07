@@ -19,8 +19,8 @@ import type {
   PartnerApiKey,
   PartnerOrganization,
   PartnerApiResponse,
-} from "@claimguardian/db/types/partner-api.types";
-import { PartnerApiErrorCode } from "@claimguardian/db/types/partner-api.types";
+} from '@claimguardian/db';
+import { PartnerApiErrorCode } from '@claimguardian/db';
 
 export interface PartnerApiContext {
   partner: PartnerOrganization;
