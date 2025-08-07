@@ -17,6 +17,44 @@ import { rateLimiter, RateLimiter } from "@/lib/security/rate-limiter";
 import { logger } from "@/lib/logger/production-logger";
 import { toError } from "@claimguardian/utils";
 
+// Cache for user validations to reduce database calls
+const userValidationCache = new Map<string, { 
+  user: any; 
+  timestamp: number; 
+  ttl: number; 
+}>();
+const VALIDATION_CACHE_TTL = 30000; // 30 seconds
+
+// Cache for security headers to reduce computation
+const securityHeadersCache = new Map<string, any>();
+
+// Cache helper functions
+function getCachedUserValidation(userId: string): any | null {
+  const cached = userValidationCache.get(userId);
+  if (cached && Date.now() - cached.timestamp < cached.ttl) {
+    return cached.user;
+  }
+  return null;
+}
+
+function setCachedUserValidation(userId: string, user: any): void {
+  userValidationCache.set(userId, {
+    user,
+    timestamp: Date.now(),
+    ttl: VALIDATION_CACHE_TTL
+  });
+  
+  // Clean up old entries periodically
+  if (userValidationCache.size > 1000) {
+    const cutoff = Date.now() - VALIDATION_CACHE_TTL;
+    for (const [key, value] of userValidationCache.entries()) {
+      if (value.timestamp < cutoff) {
+        userValidationCache.delete(key);
+      }
+    }
+  }
+}
+
 // Type guards for middleware safety
 type MiddlewareRequest = NextRequest & {
   cookies: {
@@ -327,31 +365,39 @@ export async function middleware(request: NextRequest) {
     // Double-validate session for extra security on protected routes only
     let validatedUser = null;
     if (user && !error && !isPublicPage) {
-      const {
-        data: { user: validatedUserFromGet },
-        error: userError,
-      } = await supabase.auth.getUser();
+      // Check cache first to avoid unnecessary database calls
+      const cachedValidation = getCachedUserValidation(user.id);
+      
+      if (cachedValidation) {
+        validatedUser = cachedValidation;
+      } else {
+        const {
+          data: { user: validatedUserFromGet },
+          error: userError,
+        } = await supabase.auth.getUser();
 
-      if (!userError && validatedUserFromGet) {
-        validatedUser = validatedUserFromGet;
-      } else if (userError) {
-        logger.warn("[MIDDLEWARE] User validation failed:", {
-          error: userError.message,
-          path: pathname,
-          sessionUser: user.email,
-        });
+        if (!userError && validatedUserFromGet) {
+          validatedUser = validatedUserFromGet;
+          setCachedUserValidation(user.id, validatedUserFromGet);
+        } else if (userError) {
+          logger.warn("[MIDDLEWARE] User validation failed:", {
+            error: userError.message,
+            path: pathname,
+            sessionUser: user.email,
+          });
 
-        // Clear cookies on validation failure
-        if (
-          userError.message?.includes("refresh_token") ||
-          userError.message?.includes("Invalid") ||
-          userError.message?.includes(
-            "User from sub claim in JWT does not exist",
-          )
-        ) {
-          clearAuthCookies(request, response);
-          // Sign out to clear server-side session
-          await supabase.auth.signOut();
+          // Clear cookies on validation failure
+          if (
+            userError.message?.includes("refresh_token") ||
+            userError.message?.includes("Invalid") ||
+            userError.message?.includes(
+              "User from sub claim in JWT does not exist",
+            )
+          ) {
+            clearAuthCookies(request, response);
+            // Sign out to clear server-side session
+            await supabase.auth.signOut();
+          }
         }
       }
     } else if (user && !error && isPublicPage) {

@@ -9,11 +9,17 @@
  * @florida-specific true
  */
 
-import Anthropic from "@anthropic-ai/sdk";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import OpenAI from "openai";
-
 import { logger } from "../logger";
+
+// Lazy load AI providers to reduce initial bundle size
+const loadOpenAI = () => import("openai");
+const loadAnthropic = () => import("@anthropic-ai/sdk");
+const loadGoogleAI = () => import("@google/generative-ai");
+
+// Type imports only (no runtime impact)
+import type { GoogleGenerativeAI } from "@google/generative-ai";
+import type OpenAI from "openai";
+import type Anthropic from "@anthropic-ai/sdk";
 
 // Type definitions for better type safety
 export type DocumentType = 
@@ -384,6 +390,7 @@ export class MultiModalAIOrchestrator {
     });
     
     try {
+      const { default: OpenAI } = await loadOpenAI();
       const openai = new OpenAI({ apiKey: this.config.openaiKey! });
       const base64 = await this.fileToBase64(data.fileData);
 
@@ -446,6 +453,7 @@ export class MultiModalAIOrchestrator {
     });
     
     try {
+      const { GoogleGenerativeAI } = await loadGoogleAI();
       const gemini = new GoogleGenerativeAI(this.config.geminiKey!);
       const model = gemini.getGenerativeModel({ model: "gemini-1.5-pro-vision" });
 
@@ -492,6 +500,7 @@ export class MultiModalAIOrchestrator {
     });
     
     try {
+      const { default: Anthropic } = await loadAnthropic();
       const anthropic = new Anthropic({ apiKey: this.config.anthropicKey! });
       const base64 = await this.fileToBase64(data.fileData);
 
@@ -950,12 +959,17 @@ export class MultiModalAIOrchestrator {
   }
 
   private async fileToBase64(file: Blob): Promise<string> {
-    const arrayBuffer = await file.arrayBuffer();
-    const bytes = new Uint8Array(arrayBuffer);
-    let binary = "";
-    for (let i = 0; i < bytes.byteLength; i++) {
-      binary += String.fromCharCode(bytes[i]);
-    }
-    return btoa(binary);
+    // Use FileReader API for better performance with large files
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = reader.result as string;
+        // Extract base64 part (remove data:mime;base64, prefix)
+        const base64 = result.split(',')[1];
+        resolve(base64);
+      };
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(file);
+    });
   }
 }
