@@ -167,31 +167,42 @@ export function Hero() {
               </div>
               <div className="flex-1 text-center md:text-left md:order-2">
                 <h1
-                  className="font-slab text-[clamp(2.5rem,5vw,4rem)] font-bold text-white leading-none mb-4"
+                  className="font-slab text-[clamp(2.75rem,5.5vw,4.5rem)] font-bold text-white leading-none mb-6"
                   aria-label="ClaimGuardian - AI-powered property intelligence"
                 >
-                  ClaimGuardian
+                  Claim<span className="text-green-400">Guardian</span>
                 </h1>
-                <p className="text-[clamp(1.5rem,3vw,2rem)] font-bold text-white">
+                <p className="text-[clamp(1.25rem,2.5vw,1.75rem)] font-semibold text-gray-200 opacity-90">
                   Your Property Intelligence, Not Theirs
                 </p>
+                {/* A/B Test Alternative Taglines (commented for future testing) */}
+                {/* <p className="text-[clamp(1.25rem,2.5vw,1.75rem)] font-semibold text-gray-200 opacity-90">AI That Works For You—Not The Industry</p> */}
+                {/* <p className="text-[clamp(1.25rem,2.5vw,1.75rem)] font-semibold text-gray-200 opacity-90">Intelligent Property Management, On Your Side</p> */}
+                {/* <p className="text-[clamp(1.25rem,2.5vw,1.75rem)] font-semibold text-gray-200 opacity-90">Your Property, Your Data, Your Guardian</p> */}
               </div>
             </header>
           </AnimatedSection>
 
           <AnimatedSection delay={100}>
-            <p className="mt-3 text-[clamp(1.125rem,2vw,1.5rem)] font-medium text-gray-200 max-w-4xl mx-auto">
-              From purchase documents to generational transfer—every asset, every phase, every decision intelligently managed by independent AI that serves only your interests.
-            </p>
-            <p className="mt-2 text-lg text-gray-300 max-w-3xl mx-auto">
-              ClaimGuardian is your AI-powered digital property guardian—an independent intelligence platform that protects, manages, and optimizes everything you own, from real estate to personal property—without industry bias or data surveillance.
-            </p>
+            <div className="mt-6 max-w-4xl mx-auto space-y-3">
+              <p className="text-[clamp(1.25rem,2.2vw,1.625rem)] font-medium text-gray-200 leading-relaxed">
+                From purchase to transfer, every asset and every phase is protected.
+              </p>
+              <p className="text-[clamp(1.125rem,2vw,1.5rem)] font-medium text-gray-300 leading-relaxed">
+                ClaimGuardian's AI manages your property with one goal: protecting your interests—not theirs.
+              </p>
+              <p className="text-[clamp(1rem,1.8vw,1.375rem)] text-gray-400 leading-relaxed">
+                An AI-powered guardian that protects, manages, and optimizes everything you own—without bias or surveillance.
+              </p>
+            </div>
           </AnimatedSection>
 
           <AnimatedSection delay={200}>
-            {/* Audience Pills - Positioned before CTA for better hierarchy */}
-            <div className="mt-8 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              <div className="flex gap-3 justify-center min-w-max px-4">
+            {/* Audience Pills with "Built For" heading */}
+            <div className="mt-10 space-y-4">
+              <h3 className="text-lg font-semibold text-gray-300 text-center">Built For</h3>
+              <div className="overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <div className="flex gap-3 justify-center min-w-max px-4">
                 {pills.map((pill) => (
                   <button
                     key={pill.label}
@@ -211,6 +222,7 @@ export function Hero() {
                     </span>
                   </button>
                 ))}
+                </div>
               </div>
             </div>
           </AnimatedSection>
@@ -263,39 +275,31 @@ export function Hero() {
             </div>
           </AnimatedSection>
 
-          {/* Trust Signals */}
+          {/* Trust Signals - Enhanced with icons and separators */}
           <AnimatedSection delay={500}>
             <div className="mt-12 pt-8 border-t border-white/10">
-              <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-400">
+              <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-400">
                 <div className="flex items-center gap-2">
-                  <svg
-                    className="w-4 h-4 text-green-400"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span>Bank-Level Security</span>
+                  <span className="text-lg">🏦</span>
+                  <span className="font-medium">Bank-Level Security</span>
                 </div>
+                <span className="text-gray-600 hidden sm:inline">·</span>
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-green-400 text-lg">On Guard</span>
-                  <span>24/7</span>
+                  <span className="text-lg">🛡️</span>
+                  <span className="font-bold text-green-400">On Guard</span>
+                  <span className="font-medium">24/7</span>
                 </div>
+                <span className="text-gray-600 hidden sm:inline">·</span>
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-blue-400 text-lg">
-                    15 min
-                  </span>
-                  <span>property setup</span>
+                  <span className="text-lg">⏱️</span>
+                  <span className="font-bold text-blue-400">15 min</span>
+                  <span className="font-medium">setup</span>
                 </div>
+                <span className="text-gray-600 hidden sm:inline">·</span>
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-yellow-400 text-lg">
-                    100%
-                  </span>
-                  <span>Florida focused</span>
+                  <span className="text-lg">🌴</span>
+                  <span className="font-bold text-yellow-400">100%</span>
+                  <span className="font-medium">Florida Focused</span>
                 </div>
               </div>
             </div>
