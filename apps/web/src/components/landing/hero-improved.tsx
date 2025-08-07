@@ -163,14 +163,13 @@ export function Hero() {
 
           <AnimatedSection delay={100}>
             <p className="mt-4 text-[clamp(1.5rem,3vw,2rem)] font-bold text-white max-w-4xl mx-auto">
-              Prepare for the Disaster That Comes After the Storm
+              Your Property Intelligence, Not Theirs
             </p>
             <p className="mt-3 text-[clamp(1.125rem,2vw,1.5rem)] font-medium text-gray-200 max-w-4xl mx-auto">
-              The hurricane is only half the battle. ClaimGuardian transforms your property into a living digital twin.
+              From purchase documents to generational transfer—every asset, every phase, every decision intelligently managed by independent AI that serves only your interests.
             </p>
             <p className="mt-2 text-lg text-gray-300 max-w-3xl mx-auto">
-              Arming you with undisputed proof to get claims paid, streamline maintenance, and master your assets.
-              Because your biggest investment deserves more than a shoebox of receipts and a prayer.
+              Complete property lifecycle management through your private digital twin—instantly capturing every document, actively tracking warranties, continuously optimizing maintenance, rapidly accelerating claims, and seamlessly managing transfers. Enhanced by Florida community intelligence from 10,000+ property owners that keeps your data completely private while maximizing your outcomes. Florida-engineered by survivors who refuse to let property owners get burned again—saving you hours daily and protecting thousands throughout ownership.
             </p>
           </AnimatedSection>
 

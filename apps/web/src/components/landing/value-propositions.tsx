@@ -64,85 +64,55 @@ const AnimatedCard: React.FC<{
 
 const valueProps = [
   {
-    icon: Shield,
-    iconEmoji: "🛡️",
-    title: "Complete Independence",
-    headline: "Zero conflicts. Zero bias. Zero compromises.",
+    icon: Clock,
+    iconEmoji: "⏰",
+    title: "Reclaim Your Life From Property Paperwork",
+    headline: "Stop drowning in documents, start living your life",
     benefits: [
-      "No insurance company funding",
-      "No contractor partnerships", 
-      "No data monetization",
-      "Your advocate, period."
-    ],
-    gradient: "from-green-500 to-emerald-500",
-    shadowColor: "shadow-green-500/25",
-    badge: "ZERO CONFLICTS",
-    badgeColor: "bg-green-500/20 text-green-400 border-green-400/50"
-  },
-  {
-    icon: Lock,
-    iconEmoji: "🔒",
-    title: "Privacy-First Architecture",
-    headline: "Private backend now, in-house AI coming soon",
-    benefits: [
-      "Private backend infrastructure",
-      "Bank-level encryption + SOC 2",
-      "In-house AI development roadmap",
-      "Zero data sales to insurers"
+      "90% automated documentation capture",
+      "AI handles warranty tracking & deadlines",
+      "No more phone tag with adjusters",
+      "Instant photo analysis & reporting"
     ],
     gradient: "from-blue-500 to-cyan-500",
     shadowColor: "shadow-blue-500/25",
-    badge: "BUILDING INDEPENDENCE",
+    badge: "35+ HOURS SAVED",
     badgeColor: "bg-blue-500/20 text-blue-400 border-blue-400/50",
-    roadmap: "🚧 Currently developing proprietary AI to eliminate all third-party dependencies"
+    description: "Transform property management from a time-consuming burden into an automated background process. Your digital twin handles the paperwork while you focus on what matters most."
   },
   {
     icon: TrendingUp,
-    iconEmoji: "📈",
-    title: "Maximum Recovery",
-    headline: "47% average claims increase through AI optimization",
+    iconEmoji: "💰",
+    title: "Maximize Every Dollar of Property Value",
+    headline: "Turn property ownership into wealth building",
     benefits: [
-      "AI-powered policy interpretation",
-      "Complete damage documentation",
-      "Settlement negotiation leverage",
-      "Beats human adjusters consistently"
+      "47% average claims increase through AI",
+      "Optimal maintenance timing saves thousands",
+      "Market value optimization strategies",
+      "Complete depreciation & tax documentation"
+    ],
+    gradient: "from-green-500 to-emerald-500",
+    shadowColor: "shadow-green-500/25",
+    badge: "47% MORE RECOVERY",
+    badgeColor: "bg-green-500/20 text-green-400 border-green-400/50",
+    description: "Every repair decision, every upgrade, every claim optimized for maximum financial return. Stop leaving money on the table—let AI find every dollar you deserve."
+  },
+  {
+    icon: Shield,
+    iconEmoji: "🏛️",
+    title: "Build Generational Property Intelligence",
+    headline: "Transform scattered knowledge into family wealth",
+    benefits: [
+      "Every improvement documented permanently",
+      "Institutional knowledge preserved across generations",
+      "Seamless property transfer with complete records",
+      "Community wisdom compounds your decisions"
     ],
     gradient: "from-purple-500 to-pink-500",
     shadowColor: "shadow-purple-500/25",
-    badge: "47% INCREASE",
-    badgeColor: "bg-purple-500/20 text-purple-400 border-purple-400/50"
-  },
-  {
-    icon: Clock,
-    iconEmoji: "⏱️",
-    title: "Time Liberation",
-    headline: "35+ hours saved annually through automation",
-    benefits: [
-      "90% automated documentation",
-      "Multi-modal AI processing",
-      "No adjuster phone tag",
-      "Instant photo/document analysis"
-    ],
-    gradient: "from-orange-500 to-red-500",
-    shadowColor: "shadow-orange-500/25",
-    badge: "35+ HOURS SAVED",
-    badgeColor: "bg-orange-500/20 text-orange-400 border-orange-400/50"
-  },
-  {
-    icon: Zap,
-    iconEmoji: "🌪️",
-    title: "Hurricane-Tested Expertise",
-    headline: "Built by survivors, powered by Florida-specific AI",
-    benefits: [
-      "Hurricane Ian survivor-built",
-      "Florida PE-engineered",
-      "25+ years storm data training",
-      "10,000+ member network"
-    ],
-    gradient: "from-cyan-500 to-teal-500",
-    shadowColor: "shadow-cyan-500/25",
-    badge: "HURRICANE TESTED",
-    badgeColor: "bg-cyan-500/20 text-cyan-400 border-cyan-400/50"
+    badge: "GENERATIONAL WEALTH",
+    badgeColor: "bg-purple-500/20 text-purple-400 border-purple-400/50",
+    description: "Every improvement documented. Every lesson learned preserved. Every property decision optimized for maximum value transfer. Transform scattered property knowledge into organized family wealth that compounds across generations—because your biggest investment deserves permanent intelligence."
   }
 ];
 
@@ -153,22 +123,21 @@ export function ValuePropositions() {
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="font-slab text-3xl md:text-4xl font-bold text-white mb-4">
-            Why ClaimGuardian Dominates
+            Time, Money, Legacy
           </h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Strategic advantages that deliver measurable results, not empty promises
+            The three pillars of intelligent property ownership
           </p>
         </div>
 
         {/* Value Props Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
           {valueProps.map((prop, index) => {
             const Icon = prop.icon;
             return (
               <AnimatedCard
                 key={index}
-                delay={index * 100}
-                className={index === 4 ? "md:col-span-2 lg:col-span-1" : ""}
+                delay={index * 150}
               >
                 <div className="h-full bg-gradient-to-br from-gray-800/60 to-gray-900/40 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 hover:scale-105 hover:border-gray-600 transition-all duration-300 group relative overflow-hidden">
                   {/* Background gradient on hover */}
@@ -195,7 +164,7 @@ export function ValuePropositions() {
                   </p>
 
                   {/* Benefits */}
-                  <ul className="space-y-2 mb-4">
+                  <ul className="space-y-2 mb-6">
                     {prop.benefits.map((benefit, idx) => (
                       <li key={idx} className="flex items-start gap-2">
                         <span className="text-green-400 mt-0.5">✓</span>
@@ -206,14 +175,12 @@ export function ValuePropositions() {
                     ))}
                   </ul>
 
-                  {/* Roadmap Note (if applicable) */}
-                  {prop.roadmap && (
-                    <div className="mt-4 pt-4 border-t border-gray-700/50">
-                      <p className="text-xs text-gray-500 italic">
-                        {prop.roadmap}
-                      </p>
-                    </div>
-                  )}
+                  {/* Description */}
+                  <div className="mt-4 pt-4 border-t border-gray-700/50">
+                    <p className="text-sm text-gray-300 leading-relaxed italic">
+                      {prop.description}
+                    </p>
+                  </div>
                 </div>
               </AnimatedCard>
             );
