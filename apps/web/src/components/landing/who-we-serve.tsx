@@ -131,6 +131,57 @@ export function WhoWeServe() {
             </div>
 
             <div className="group relative overflow-hidden rounded-xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50">
+              <div className="aspect-video relative bg-gradient-to-br from-blue-600 to-purple-700">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-white text-6xl">🏢</div>
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                <div className="absolute bottom-4 left-4 right-4">
+                  <h4 className="text-white font-semibold text-lg">
+                    Condominiums
+                  </h4>
+                  <p className="text-gray-300 text-sm">
+                    HOA coordination & shared structure documentation
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="group relative overflow-hidden rounded-xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50">
+              <div className="aspect-video relative bg-gradient-to-br from-green-600 to-emerald-700">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-white text-6xl">🌴</div>
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                <div className="absolute bottom-4 left-4 right-4">
+                  <h4 className="text-white font-semibold text-lg">
+                    Land & Vacant Lots
+                  </h4>
+                  <p className="text-gray-300 text-sm">
+                    Pre-development assessment & environmental tracking
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="group relative overflow-hidden rounded-xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50">
+              <div className="aspect-video relative bg-gradient-to-br from-orange-600 to-red-700">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-white text-6xl">🏘️</div>
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                <div className="absolute bottom-4 left-4 right-4">
+                  <h4 className="text-white font-semibold text-lg">
+                    Multi-Family Properties
+                  </h4>
+                  <p className="text-gray-300 text-sm">
+                    Portfolio management & bulk claim processing
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="group relative overflow-hidden rounded-xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50">
               <div className="aspect-video relative">
                 <Image
                   src="/landingpage/mobile-first.png"

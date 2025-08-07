@@ -11,39 +11,45 @@ import { Cookie } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { logger } from "@/lib/logger";
+import { cookieManager } from "@/lib/cookie-manager";
 
 export function CookieConsentSimple() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const consent = localStorage.getItem("cookie-consent");
-    if (!consent) {
+    // Check if consent is needed
+    const consent = cookieManager.getConsent();
+    const needsRenewal = cookieManager.needsRenewal();
+    
+    if (!consent || needsRenewal) {
+      // Show banner after a short delay for better UX
       setTimeout(() => setIsVisible(true), 1000);
+    } else {
+      // Apply existing preferences on page load
+      const prefs = cookieManager.getPreferences();
+      logger.info("Applying existing cookie preferences", prefs);
     }
   }, []);
 
   const handleAccept = () => {
     // Accept ALL cookies with single click
-    localStorage.setItem("cookie-consent", "accepted");
-    localStorage.setItem("cookie-consent-date", new Date().toISOString());
-
+    cookieManager.setConsent('accepted');
+    
     logger.track("cookie_consent_accepted_simple");
-
-    // Initialize all analytics/tracking
-    if (typeof window !== "undefined") {
-      // Google Analytics, Sentry, etc.
-      logger.info("All tracking initialized");
-    }
+    logger.info("All tracking initialized with user consent");
 
     setIsVisible(false);
   };
 
   const handleReject = () => {
     // Reject ALL optional cookies (only necessary cookies remain)
-    localStorage.setItem("cookie-consent", "necessary-only");
-    localStorage.setItem("cookie-consent-date", new Date().toISOString());
-
+    cookieManager.setConsent('necessary-only');
+    
+    // Clear any existing non-essential cookies
+    cookieManager.clearNonEssentialCookies();
+    
     logger.track("cookie_consent_necessary_only");
+    logger.info("Only necessary cookies enabled");
 
     setIsVisible(false);
   };

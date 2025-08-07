@@ -474,8 +474,10 @@ bundle-analyzer-report.html
 docker-volumes/
 .docker-data/
 
-# Redis dumps
+# Redis dumps and logs
 dump.rdb
+redis-*.log
+*.rdb
 
 # PostgreSQL backups
 *.dump

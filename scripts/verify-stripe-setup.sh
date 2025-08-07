@@ -1,90 +1,121 @@
 #!/bin/bash
 
-# Stripe Setup Verification Script
-# Run this to verify your Stripe integration is ready for production
+# Stripe Setup Verification Script for ClaimGuardian
+# This script helps verify and set up Stripe webhook endpoints
 
-echo "🔍 Verifying Stripe Setup for ClaimGuardian..."
-echo "============================================"
+echo "🔍 ClaimGuardian Stripe Setup Verification"
+echo "=========================================="
 
-# Check environment variables
-echo ""
-echo "1️⃣ Checking Environment Variables..."
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
 
-check_env() {
-    if [ -z "$1" ]; then
-        echo "   ❌ $2 is not set"
-        return 1
-    else
-        echo "   ✅ $2 is set"
-        return 0
-    fi
-}
-
-# Load environment variables
-if [ -f .env.local ]; then
-    export $(cat .env.local | grep -v '^#' | xargs)
+# Check if Stripe CLI is installed
+if ! command -v stripe &> /dev/null; then
+    echo -e "${RED}❌ Stripe CLI is not installed${NC}"
+    echo "Install it from: https://stripe.com/docs/stripe-cli"
+    exit 1
 fi
 
-ALL_GOOD=true
+echo -e "${GREEN}✅ Stripe CLI found${NC}"
 
-check_env "$STRIPE_SECRET_KEY" "STRIPE_SECRET_KEY" || ALL_GOOD=false
-check_env "$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY" "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY" || ALL_GOOD=false
-check_env "$STRIPE_WEBHOOK_SECRET" "STRIPE_WEBHOOK_SECRET" || ALL_GOOD=false
-
-# Check for price IDs
-echo ""
-echo "2️⃣ Checking Stripe Price IDs..."
-check_env "$NEXT_PUBLIC_STRIPE_PRICE_HOMEOWNER_MONTHLY" "HOMEOWNER_MONTHLY" || ALL_GOOD=false
-check_env "$NEXT_PUBLIC_STRIPE_PRICE_HOMEOWNER_ANNUALLY" "HOMEOWNER_ANNUALLY" || ALL_GOOD=false
-check_env "$NEXT_PUBLIC_STRIPE_PRICE_LANDLORD_MONTHLY" "LANDLORD_MONTHLY" || echo "   ⚠️  LANDLORD_MONTHLY not set (optional)"
-check_env "$NEXT_PUBLIC_STRIPE_PRICE_LANDLORD_ANNUALLY" "LANDLORD_ANNUALLY" || echo "   ⚠️  LANDLORD_ANNUALLY not set (optional)"
-check_env "$NEXT_PUBLIC_STRIPE_PRICE_ENTERPRISE_MONTHLY" "ENTERPRISE_MONTHLY" || echo "   ⚠️  ENTERPRISE_MONTHLY not set (optional)"
-check_env "$NEXT_PUBLIC_STRIPE_PRICE_ENTERPRISE_ANNUALLY" "ENTERPRISE_ANNUALLY" || echo "   ⚠️  ENTERPRISE_ANNUALLY not set (optional)"
-
-# Check database tables
-echo ""
-echo "3️⃣ Checking Database Tables..."
-echo "   Run: supabase migration up"
-echo "   To apply: supabase/migrations/20250807_billing_history.sql"
-
-# Check webhook endpoint
-echo ""
-echo "4️⃣ Webhook Endpoint Configuration..."
-echo "   Your webhook endpoint should be:"
-echo "   🔗 https://claimguardianai.com/api/stripe/webhook"
-echo ""
-echo "   Events to listen for:"
-echo "   • checkout.session.completed"
-echo "   • customer.subscription.created"
-echo "   • customer.subscription.updated"
-echo "   • customer.subscription.deleted"
-echo "   • invoice.payment_succeeded"
-echo "   • invoice.payment_failed"
-
-# Summary
-echo ""
-echo "============================================"
-if [ "$ALL_GOOD" = true ]; then
-    echo "✅ Basic Stripe setup looks good!"
-    echo ""
-    echo "Next steps:"
-    echo "1. Apply database migration: supabase migration up"
-    echo "2. Verify webhook is configured in Stripe Dashboard"
-    echo "3. Test with Stripe test mode first"
-    echo "4. Use test card: 4242 4242 4242 4242"
-else
-    echo "⚠️  Some configuration is missing"
-    echo ""
-    echo "Please ensure all environment variables are set in:"
-    echo "• Local: .env.local"
-    echo "• Production: Vercel Dashboard → Settings → Environment Variables"
+# Check if logged in
+if ! stripe config --list &> /dev/null; then
+    echo -e "${YELLOW}⚠️  Not logged in to Stripe${NC}"
+    echo "Run: stripe login"
+    exit 1
 fi
 
+echo -e "${GREEN}✅ Logged in to Stripe${NC}"
+
+# Production webhook endpoint
+PROD_WEBHOOK_URL="https://claimguardianai.com/api/stripe/webhook"
+
 echo ""
-echo "📝 Test Checklist:"
-echo "□ Visit /pricing page"
-echo "□ Click Subscribe on a plan"
-echo "□ Complete checkout with test card"
-echo "□ Check /dashboard/billing shows subscription"
-echo "□ Test cancel/resume subscription"
-echo "□ Verify webhook logs in Stripe Dashboard"
+echo "📌 Webhook Endpoint Configuration"
+echo "================================="
+echo "Production URL: $PROD_WEBHOOK_URL"
+
+# Check existing webhooks
+echo ""
+echo "📋 Existing Webhooks:"
+stripe webhook_endpoints list --limit 10
+
+echo ""
+echo "🔧 To create a new webhook endpoint, run:"
+echo ""
+echo "stripe webhook_endpoints create \\"
+echo "  --url $PROD_WEBHOOK_URL \\"
+echo "  --enabled-events checkout.session.completed \\"
+echo "  --enabled-events customer.subscription.created \\"
+echo "  --enabled-events customer.subscription.updated \\"
+echo "  --enabled-events customer.subscription.deleted \\"
+echo "  --enabled-events invoice.payment_succeeded \\"
+echo "  --enabled-events invoice.payment_failed"
+
+echo ""
+echo "🔑 After creating, add the webhook secret to Vercel:"
+echo "1. Copy the webhook secret (whsec_...)"
+echo "2. Go to Vercel Dashboard → Settings → Environment Variables"
+echo "3. Add STRIPE_WEBHOOK_SECRET with the value"
+
+echo ""
+echo "📦 Required Environment Variables:"
+echo "- STRIPE_SECRET_KEY (starts with sk_)"
+echo "- STRIPE_PUBLISHABLE_KEY (starts with pk_)"
+echo "- STRIPE_WEBHOOK_SECRET (starts with whsec_)"
+
+echo ""
+echo "🧪 For local testing, use:"
+echo "stripe listen --forward-to localhost:3000/api/stripe/webhook"
+
+echo ""
+echo "📚 Stripe Products Configuration:"
+echo "================================="
+
+# List products
+echo "Current Products:"
+stripe products list --limit 10
+
+echo ""
+echo "💳 To create subscription products:"
+echo ""
+echo "# Homeowner Essentials ($19/month)"
+echo "stripe products create \\"
+echo "  --name \"ClaimGuardian Homeowner Essentials\" \\"
+echo "  --description \"Essential tools for Florida homeowners\""
+echo ""
+echo "stripe prices create \\"
+echo "  --product PRODUCT_ID \\"
+echo "  --unit-amount 1900 \\"
+echo "  --currency usd \\"
+echo "  --recurring[interval]=month"
+
+echo ""
+echo "# Landlord Pro ($49/month)"
+echo "stripe products create \\"
+echo "  --name \"ClaimGuardian Landlord Pro\" \\"
+echo "  --description \"Multi-property management and claim tools\""
+echo ""
+echo "stripe prices create \\"
+echo "  --product PRODUCT_ID \\"
+echo "  --unit-amount 4900 \\"
+echo "  --currency usd \\"
+echo "  --recurring[interval]=month"
+
+echo ""
+echo "# Enterprise ($199/month)"
+echo "stripe products create \\"
+echo "  --name \"ClaimGuardian Enterprise\" \\"
+echo "  --description \"Full platform access with priority support\""
+echo ""
+echo "stripe prices create \\"
+echo "  --product PRODUCT_ID \\"
+echo "  --unit-amount 19900 \\"
+echo "  --currency usd \\"
+echo "  --recurring[interval]=month"
+
+echo ""
+echo "✅ Setup verification complete!"

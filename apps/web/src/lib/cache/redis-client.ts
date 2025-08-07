@@ -435,6 +435,16 @@ let redisClient: RedisClient | null = null;
 
 export function createRedisClient(): RedisClient {
   if (!redisClient) {
+    // Skip Redis initialization during build
+    if (process.env.NODE_ENV === 'production' && !process.env.REDIS_HOST) {
+      logger.info("Redis disabled - no REDIS_HOST configured", {
+        module: "redis-client",
+        environment: process.env.NODE_ENV
+      });
+      // Return a dummy client that won't try to connect
+      return null as any;
+    }
+
     const config: RedisConfig = {
       host: process.env.REDIS_HOST || "localhost",
       port: parseInt(process.env.REDIS_PORT || "6379", 10),
