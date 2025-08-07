@@ -163,16 +163,14 @@ export function Hero() {
 
           <AnimatedSection delay={100}>
             <p className="mt-4 text-[clamp(1.5rem,3vw,2rem)] font-bold text-white max-w-4xl mx-auto">
-              Build the Digital Twin. Activate Your Digital Guardian
+              Prepare for the Disaster That Comes After the Storm
             </p>
             <p className="mt-3 text-[clamp(1.125rem,2vw,1.5rem)] font-medium text-gray-200 max-w-4xl mx-auto">
-              Track it, Maintain it, Fix it, Warranty It, Claim it. Replace it.
-              Donate it. Dispose
+              The hurricane is only half the battle. ClaimGuardian transforms your property into a living digital twin.
             </p>
             <p className="mt-2 text-lg text-gray-300 max-w-3xl mx-auto">
-              AI-powered property intelligence that creates living digital twins
-              of everything you own—tracking every warranty, scheduling every
-              maintenance, documenting every upgrade.
+              Arming you with undisputed proof to get claims paid, streamline maintenance, and master your assets.
+              Because your biggest investment deserves more than a shoebox of receipts and a prayer.
             </p>
           </AnimatedSection>
 
@@ -181,26 +179,26 @@ export function Hero() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                 <div className="bg-gray-800/40 backdrop-blur-xl border border-gray-700/50 rounded-xl p-4">
                   <h3 className="font-bold text-green-400 mb-1">
-                    Prepare for the Storm
+                    Reclaim Your Time
                   </h3>
                   <p className="text-sm text-gray-300">
-                    Pre-disaster documentation & readiness
+                    Stop spending hundreds of hours on paperwork. Automate documentation, track warranties, and manage maintenance effortlessly.
                   </p>
                 </div>
                 <div className="bg-gray-800/40 backdrop-blur-xl border border-gray-700/50 rounded-xl p-4">
                   <h3 className="font-bold text-blue-400 mb-1">
-                    Command During Crisis
+                    Protect Your Wallet
                   </h3>
                   <p className="text-sm text-gray-300">
-                    Real-time damage tracking & claims
+                    Maximize claim settlements, avoid costly surprise repairs with proactive maintenance, and uncover insurance savings.
                   </p>
                 </div>
                 <div className="bg-gray-800/40 backdrop-blur-xl border border-gray-700/50 rounded-xl p-4">
                   <h3 className="font-bold text-purple-400 mb-1">
-                    Build Generational Wealth
+                    Command Peace of Mind
                   </h3>
                   <p className="text-sm text-gray-300">
-                    Asset optimization & legacy preservation
+                    Know your property is protected, your coverage is solid, and you're ready for anything. You're not a victim; you're prepared.
                   </p>
                 </div>
               </div>

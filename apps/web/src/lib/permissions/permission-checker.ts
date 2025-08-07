@@ -8,7 +8,7 @@
 
 import { createClient } from "@/lib/supabase/client";
 
-export type UserTier = "free" | "renter" | "essential" | "plus" | "pro" | "contractor" | "enterprise" | "developer";
+export type UserTier = "free" | "basic" | "essential" | "plus" | "renter" | "homeowner" | "pro" | "enterprise";
 
 export type PermissionType =
   | "access_dashboard"
@@ -320,8 +320,9 @@ class PermissionChecker {
         suggestions.push(
           `You've used ${aiCheck.currentUsage}/${aiCheck.limit} AI requests this month`,
         );
-        if (userPermissions.tier === "free") suggestedTier = "renter";
-        else if (userPermissions.tier === "renter") suggestedTier = "essential";
+        if (userPermissions.tier === "free") suggestedTier = "basic";
+        else if (userPermissions.tier === "basic") suggestedTier = "essential";
+        else if (userPermissions.tier === "essential") suggestedTier = "plus";
       }
 
       // Check storage usage
@@ -334,7 +335,7 @@ class PermissionChecker {
         suggestions.push(
           `You've used ${storageCheck.currentUsage}MB/${storageCheck.limit}MB of storage`,
         );
-        if (userPermissions.tier === "free") suggestedTier = "renter";
+        if (userPermissions.tier === "free") suggestedTier = "basic";
       }
 
       // Check properties usage
@@ -347,8 +348,9 @@ class PermissionChecker {
         suggestions.push(
           `You have ${propertiesCheck.currentUsage}/${propertiesCheck.limit} properties`,
         );
-        if (userPermissions.tier === "free") suggestedTier = "renter";
-        else if (userPermissions.tier === "renter") suggestedTier = "essential";
+        if (userPermissions.tier === "free") suggestedTier = "basic";
+        else if (userPermissions.tier === "basic") suggestedTier = "essential";
+        else if (userPermissions.tier === "essential") suggestedTier = "plus";
       }
 
       if (suggestions.length > 0) {

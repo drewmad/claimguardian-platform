@@ -63,11 +63,11 @@ const AnimatedSection: React.FC<{
 export function Testimonials() {
   const testimonial = {
     quote:
-      "ClaimGuardian has greatly improved my productivity and quality. The AI has been impressively accurate, and the UI is clean and intuitive. This is the best AI-powered property management tool I've used, and I believe it will be the leading solution for Florida homeowners. Keep up the great work!",
-    author: "A. Richards",
-    location: "Florida",
-    userSince: "Beta Tester",
-    highlight: "Best AI-powered property management tool",
+      "Documenting everything after the storm used to take weeks. With ClaimGuardian, I had a complete, undeniable evidence package in under an hour. My claim was paid while my neighbors were still taking pictures. It's a game-changer.",
+    author: "Marissa M.",
+    location: "Port Charlotte, FL",
+    userSince: "ClaimGuardian Member Since 2023",
+    highlight: "Claim paid in record time",
   };
 
   return (

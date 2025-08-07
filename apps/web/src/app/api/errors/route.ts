@@ -20,15 +20,14 @@ export async function GET(request: NextRequest) {
       config: {
         windowMs: 60 * 1000, // 1 minute
         maxRequests: 100, // 100 requests per minute
-        message: "Too many error API requests",
       },
     });
 
-    if (!rateLimitResult.success) {
+    if (!rateLimitResult.allowed) {
       return NextResponse.json(
         { 
           error: "Rate limit exceeded",
-          retryAfter: rateLimitResult.retryAfter,
+          retryAfter: rateLimitResult.resetTime,
         },
         { status: 429 }
       );
@@ -121,15 +120,14 @@ export async function POST(request: NextRequest) {
       config: {
         windowMs: 60 * 1000, // 1 minute
         maxRequests: 50, // 50 error reports per minute
-        message: "Too many error reports",
       },
     });
 
-    if (!rateLimitResult.success) {
+    if (!rateLimitResult.allowed) {
       return NextResponse.json(
         { 
           error: "Rate limit exceeded",
-          retryAfter: rateLimitResult.retryAfter,
+          retryAfter: rateLimitResult.resetTime,
         },
         { status: 429 }
       );
@@ -305,15 +303,14 @@ export async function DELETE(request: NextRequest) {
       config: {
         windowMs: 60 * 1000, // 1 minute
         maxRequests: 10, // 10 deletions per minute
-        message: "Too many error deletion requests",
       },
     });
 
-    if (!rateLimitResult.success) {
+    if (!rateLimitResult.allowed) {
       return NextResponse.json(
         { 
           error: "Rate limit exceeded",
-          retryAfter: rateLimitResult.retryAfter,
+          retryAfter: rateLimitResult.resetTime,
         },
         { status: 429 }
       );

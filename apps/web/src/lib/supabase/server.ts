@@ -57,3 +57,6 @@ export async function createClient() {
     throw error;
   }
 }
+
+// Alias for backward compatibility
+export const createServerSupabaseClient = createClient;

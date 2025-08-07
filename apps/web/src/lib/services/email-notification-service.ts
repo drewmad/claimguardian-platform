@@ -453,51 +453,84 @@ export class EmailNotificationService {
    * Helper methods
    */
   private getTierLevel(tier: UserTier): number {
-    const levels = { free: 0, renter: 1, essential: 2, plus: 3, pro: 4 };
+    const levels = { 
+      free: 0, 
+      basic: 1, 
+      essential: 2, 
+      plus: 3, 
+      renter: 4, 
+      homeowner: 5, 
+      pro: 6, 
+      enterprise: 7 
+    };
     return levels[tier] || 0;
   }
 
   private getTierBenefits(tier: UserTier): string[] {
     const benefits: Record<UserTier, string[]> = {
       free: [
-        "100 AI requests per month",
+        "10 AI requests per month",
         "100MB storage",
+        "1 property",
+        "2 claims",
+      ],
+      basic: [
+        "50 AI requests per month",
+        "500MB storage",
         "3 properties",
         "5 claims",
-      ],
-      renter: [
-        "500 AI requests per month",
-        "500MB storage",
-        "1 property",
-        "10 claims",
         "Basic damage analyzer",
       ],
       essential: [
-        "2,000 AI requests per month",
+        "200 AI requests per month",
         "2GB storage",
         "5 properties",
-        "25 claims",
+        "15 claims",
         "Full AI toolkit",
         "Document generator",
-        "Priority support",
+        "Priority email support",
       ],
       plus: [
-        "5,000 AI requests per month",
+        "500 AI requests per month",
         "10GB storage",
         "15 properties",
-        "100 claims",
+        "50 claims",
         "Advanced analytics",
         "Bulk operations",
-        "Premium support",
+        "Phone and email support",
+      ],
+      renter: [
+        "300 AI requests per month",
+        "5GB storage",
+        "25 properties",
+        "100 claims",
+        "Rental property specialization",
+        "Priority email support",
+      ],
+      homeowner: [
+        "400 AI requests per month",
+        "8GB storage",
+        "25 properties",
+        "100 claims",
+        "Homeowner specialization",
+        "Phone and email support",
       ],
       pro: [
         "Unlimited AI requests",
         "Unlimited storage",
         "Unlimited properties",
         "Unlimited claims",
+        "All features",
+        "Priority phone support",
+      ],
+      enterprise: [
+        "Unlimited AI requests",
+        "Unlimited storage",
+        "Unlimited properties",
+        "Unlimited claims",
         "Custom integrations",
-        "API access",
-        "Dedicated support",
+        "White label options",
+        "Dedicated account manager",
       ],
     };
 

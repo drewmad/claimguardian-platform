@@ -295,10 +295,13 @@ export function UsersManagement() {
 
       const tierBreakdown: Record<UserTier, number> = {
         free: 0,
-        renter: 0,
+        basic: 0,
         essential: 0,
         plus: 0,
+        renter: 0,
+        homeowner: 0,
         pro: 0,
+        enterprise: 0,
       };
 
       // Count free users (those without active subscriptions)

@@ -649,9 +649,9 @@ export async function createTierCheckoutSession({
     const tierPriceIds: Record<UserTier, { monthly: string; yearly: string }> =
       {
         free: { monthly: "", yearly: "" }, // Free tier doesn't have price IDs
-        renter: {
-          monthly: "price_renter_monthly",
-          yearly: "price_renter_yearly",
+        basic: {
+          monthly: "price_basic_monthly",
+          yearly: "price_basic_yearly",
         },
         essential: {
           monthly: "price_essential_monthly",
@@ -661,14 +661,23 @@ export async function createTierCheckoutSession({
           monthly: "price_plus_monthly",
           yearly: "price_plus_yearly",
         },
+        renter: {
+          monthly: "price_renter_monthly",
+          yearly: "price_renter_yearly",
+        },
+        homeowner: {
+          monthly: "price_homeowner_monthly",
+          yearly: "price_homeowner_yearly",
+        },
         pro: {
           monthly: "price_pro_monthly",
           yearly: "price_pro_yearly",
         },
+        enterprise: { monthly: "", yearly: "" }, // Enterprise is contact for pricing
       };
 
-    if (tier === "free") {
-      return { error: "Cannot create checkout for free tier" };
+    if (tier === "free" || tier === "enterprise") {
+      return { error: `Cannot create checkout for ${tier} tier` };
     }
 
     const priceId = tierPriceIds[tier][billingInterval];
@@ -807,11 +816,14 @@ export async function getPropertyPricing(userId: string) {
       UserTier,
       { pricePerProperty: number; freeLimit: number }
     > = {
-      free: { pricePerProperty: 15, freeLimit: 3 },
-      renter: { pricePerProperty: 12, freeLimit: 1 },
+      free: { pricePerProperty: 15, freeLimit: 1 },
+      basic: { pricePerProperty: 12, freeLimit: 3 },
       essential: { pricePerProperty: 10, freeLimit: 5 },
       plus: { pricePerProperty: 8, freeLimit: 15 },
+      renter: { pricePerProperty: 5, freeLimit: 25 },
+      homeowner: { pricePerProperty: 6, freeLimit: 25 },
       pro: { pricePerProperty: 0, freeLimit: 999999 }, // Unlimited
+      enterprise: { pricePerProperty: 0, freeLimit: 999999 }, // Unlimited
     };
 
     const pricing = propertyPricing[currentTier as UserTier];
@@ -838,7 +850,7 @@ export async function getPropertyPricing(userId: string) {
         additionalPropertiesNeeded,
         monthlyAdditionalCost,
         nextPropertyCost: pricing.pricePerProperty,
-        isUnlimited: currentTier === "pro",
+        isUnlimited: currentTier === "pro" || currentTier === "enterprise",
       },
       error: null,
     };
@@ -869,8 +881,8 @@ export async function createAdditionalPropertySubscription({
 
     const { pricePerProperty, currentTier } = pricingResult.data;
 
-    if (currentTier === "pro") {
-      return { data: null, error: "Pro tier has unlimited properties" };
+    if (currentTier === "pro" || currentTier === "enterprise") {
+      return { data: null, error: `${currentTier} tier has unlimited properties` };
     }
 
     const monthlyCharge = additionalProperties * pricePerProperty;

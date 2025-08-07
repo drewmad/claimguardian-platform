@@ -8,6 +8,7 @@
 
 "use client";
 
+import React from "react";
 import { errorTracker } from "./error-tracker";
 
 interface ClientErrorConfig {
@@ -300,10 +301,10 @@ class ClientErrorIntegration {
         // Log successful requests as breadcrumbs
         this.addBreadcrumb({
           category: "http",
-          message: `${options?.method || "GET"} ${typeof url === "string" ? url : url.url} ${response.status}`,
+          message: `${options?.method || "GET"} ${typeof url === "string" ? url : url instanceof Request ? url.url : url.href} ${response.status}`,
           level: response.ok ? "info" : "error",
           data: {
-            url: typeof url === "string" ? url : url.url,
+            url: typeof url === "string" ? url : url instanceof Request ? url.url : url.href,
             method: options?.method || "GET",
             status: response.status,
             duration: Date.now() - startTime,
@@ -315,7 +316,7 @@ class ClientErrorIntegration {
           await this.captureAPIError(
             new Error(`HTTP ${response.status}: ${response.statusText}`),
             {
-              url: typeof url === "string" ? url : url.url,
+              url: typeof url === "string" ? url : url instanceof Request ? url.url : url.href,
               method: options?.method || "GET",
               status: response.status,
               statusText: response.statusText,
@@ -331,7 +332,7 @@ class ClientErrorIntegration {
         await this.captureAPIError(
           error instanceof Error ? error : new Error(String(error)),
           {
-            url: typeof url === "string" ? url : url.url,
+            url: typeof url === "string" ? url : url instanceof Request ? url.url : url.href,
             method: options?.method || "GET",
             headers: options?.headers as Record<string, string>,
             body: options?.body,

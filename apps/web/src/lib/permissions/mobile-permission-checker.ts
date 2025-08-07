@@ -128,12 +128,13 @@ const MOBILE_FEATURE_PERMISSIONS: Record<string, MobilePermissionConfig> = {
 
 // Tier-based mobile feature access
 const TIER_MOBILE_FEATURES: Record<UserTier, string[]> = {
+  // Consumer progression tiers
   free: [
     "mobile_damage_photo",
     "mobile_inventory_scan",
     "mobile_maintenance_log",
   ],
-  renter: [
+  basic: [
     "mobile_damage_photo",
     "mobile_damage_analysis",
     "mobile_inventory_scan",
@@ -164,7 +165,37 @@ const TIER_MOBILE_FEATURES: Record<UserTier, string[]> = {
     "mobile_offline_sync",
     "mobile_bulk_upload",
   ],
+  // Standalone professional tiers
+  renter: [
+    "mobile_damage_photo",
+    "mobile_damage_analysis",
+    "mobile_property_inspection",
+    "mobile_inspection_report",
+    "mobile_inventory_scan",
+    "mobile_barcode_scan",
+    "mobile_maintenance_log",
+    "mobile_maintenance_schedule",
+    "mobile_offline_sync",
+    "mobile_bulk_upload",
+  ],
+  homeowner: [
+    "mobile_damage_photo",
+    "mobile_damage_analysis",
+    "mobile_property_inspection",
+    "mobile_inspection_report",
+    "mobile_inventory_scan",
+    "mobile_barcode_scan",
+    "mobile_maintenance_log",
+    "mobile_maintenance_schedule",
+    "mobile_video_documentation",
+    "mobile_offline_sync",
+    "mobile_bulk_upload",
+  ],
   pro: [
+    // All features available
+    ...Object.keys(MOBILE_FEATURE_PERMISSIONS),
+  ],
+  enterprise: [
     // All features available
     ...Object.keys(MOBILE_FEATURE_PERMISSIONS),
   ],
@@ -317,7 +348,7 @@ export class MobilePermissionChecker {
     });
 
     // Check features available in higher tiers
-    const allTiers: UserTier[] = ["free", "renter", "essential", "plus", "pro", "contractor", "enterprise", "developer"];
+    const allTiers: UserTier[] = ["free", "basic", "essential", "plus", "renter", "homeowner", "pro", "enterprise"];
     const currentTierIndex = allTiers.indexOf(userTier);
 
     for (let i = currentTierIndex + 1; i < allTiers.length; i++) {

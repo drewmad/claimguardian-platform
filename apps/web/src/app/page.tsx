@@ -25,6 +25,7 @@ import { GetStarted } from "@/components/landing/get-started";
 import { Header } from "@/components/landing/header-improved";
 import { Hero } from "@/components/landing/hero-improved";
 import { HowItWorks } from "@/components/landing/how-it-works";
+import { PowerfulFeatures } from "@/components/landing/powerful-features";
 import { Pricing } from "@/components/landing/pricing";
 import { PropertyLifecycle } from "@/components/landing/property-lifecycle";
 import { Testimonials } from "@/components/landing/testimonials";
@@ -70,6 +71,7 @@ export default function HomePage() {
 
       <main className="relative safe-area-bottom">
         <Hero />
+        <PowerfulFeatures />
         <PropertyLifecycle />
         <WhoWeServe />
         <Features />

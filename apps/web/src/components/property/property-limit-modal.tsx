@@ -176,21 +176,30 @@ export function PropertyLimitModal({
     { name: string; price: number; limit: number }[]
   > = {
     free: [
-      { name: "Essential", price: 19, limit: 5 },
-      { name: "Plus", price: 49, limit: 15 },
-      { name: "Pro", price: 199, limit: 999999 },
+      { name: "Basic", price: 9.99, limit: 3 },
+      { name: "Essential", price: 29.99, limit: 5 },
+      { name: "Plus", price: 49.99, limit: 15 },
     ],
-    renter: [
-      { name: "Essential", price: 19, limit: 5 },
-      { name: "Plus", price: 49, limit: 15 },
-      { name: "Pro", price: 199, limit: 999999 },
+    basic: [
+      { name: "Essential", price: 29.99, limit: 5 },
+      { name: "Plus", price: 49.99, limit: 15 },
     ],
     essential: [
-      { name: "Plus", price: 49, limit: 15 },
-      { name: "Pro", price: 199, limit: 999999 },
+      { name: "Plus", price: 49.99, limit: 15 },
     ],
-    plus: [{ name: "Pro", price: 199, limit: 999999 }],
+    plus: [
+      { name: "Pro", price: 99.99, limit: 999999 },
+    ],
+    renter: [
+      { name: "Pro", price: 99.99, limit: 999999 },
+      { name: "Enterprise", price: 0, limit: 999999 },
+    ],
+    homeowner: [
+      { name: "Pro", price: 99.99, limit: 999999 },
+      { name: "Enterprise", price: 0, limit: 999999 },
+    ],
     pro: [],
+    enterprise: [],
   };
 
   if (loading) {

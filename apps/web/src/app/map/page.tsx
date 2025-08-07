@@ -1,25 +1,18 @@
 'use client';
 
 import { useState } from 'react';
-import { PropertyMap } from '@/components/map/PropertyMap';
+import { EnhancedPropertyMap } from '@/components/map/EnhancedPropertyMap';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, MapPin, Home, TrendingUp, AlertTriangle, Shield } from 'lucide-react';
-import DashboardLayout from '@/components/layouts/dashboard-layout';
+import { Home, TrendingUp, AlertTriangle, Shield } from 'lucide-react';
+import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
 
 export default function MapPage() {
   const [selectedProperty, setSelectedProperty] = useState<any>(null);
-  const [searchQuery, setSearchQuery] = useState('');
 
   const handlePropertySelect = (property: any) => {
     setSelectedProperty(property);
-  };
-
-  const handleSearch = async () => {
-    // Implement search functionality
-    console.log('Searching for:', searchQuery);
   };
 
   return (
@@ -27,7 +20,7 @@ export default function MapPage() {
       <div className="flex h-[calc(100vh-4rem)]">
         {/* Map Section */}
         <div className="flex-1 relative">
-          <PropertyMap 
+          <EnhancedPropertyMap 
             className="h-full"
             onPropertySelect={handlePropertySelect}
           />
@@ -36,21 +29,6 @@ export default function MapPage() {
         {/* Sidebar */}
         <div className="w-96 bg-gray-900 border-l border-gray-800 overflow-y-auto">
           <div className="p-4">
-            {/* Search Bar */}
-            <div className="flex gap-2 mb-4">
-              <Input
-                type="text"
-                placeholder="Search by address, owner, or parcel ID..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-gray-800 border-gray-700 text-white"
-                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-              />
-              <Button onClick={handleSearch} size="icon">
-                <Search className="h-4 w-4" />
-              </Button>
-            </div>
-
             {/* Property Details or Statistics */}
             {selectedProperty ? (
               <Card className="bg-gray-800 border-gray-700">

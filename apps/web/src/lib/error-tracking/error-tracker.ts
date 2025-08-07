@@ -928,7 +928,7 @@ export class ErrorTracker {
           this.captureAPIError(
             new Error(`HTTP ${response.status}: ${response.statusText}`),
             {
-              url: typeof url === "string" ? url : url.url,
+              url: typeof url === "string" ? url : url instanceof Request ? url.url : url.href,
               method: options?.method || "GET",
               headers: options?.headers as Record<string, string>,
               body: options?.body,
@@ -944,7 +944,7 @@ export class ErrorTracker {
         // Add network breadcrumb
         this.addBreadcrumb({
           category: "http",
-          message: `${options?.method || "GET"} ${typeof url === "string" ? url : url.url}`,
+          message: `${options?.method || "GET"} ${typeof url === "string" ? url : url instanceof Request ? url.url : url.href}`,
           level: response.ok ? "info" : "error",
           data: {
             status: response.status,
@@ -957,7 +957,7 @@ export class ErrorTracker {
         this.captureAPIError(
           error instanceof Error ? error : new Error(String(error)),
           {
-            url: typeof url === "string" ? url : url.url,
+            url: typeof url === "string" ? url : url instanceof Request ? url.url : url.href,
             method: options?.method || "GET",
             headers: options?.headers as Record<string, string>,
             body: options?.body,
