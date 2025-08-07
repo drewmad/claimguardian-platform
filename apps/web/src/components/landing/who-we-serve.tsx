@@ -36,7 +36,7 @@ const segments = [
     icon: Users,
     title: "Growing Families",
     description:
-      "Build and transfer generational wealth. Every repair, upgrade, and lesson learned becomes part of your family's property legacy, preserved forever.",
+      "Protect your family's most important asset. Every repair, upgrade, and lesson learned becomes part of your property's documented history, preserved forever.",
   },
   {
     icon: Briefcase,
