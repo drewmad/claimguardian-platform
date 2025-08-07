@@ -1,9 +1,9 @@
 /**
  * @fileMetadata
  * @owner @ai-team
- * @purpose "Brief description of file purpose"
- * @dependencies ["package1", "package2"]
- * @status stable
+ * @purpose "Enhanced AI damage analyzer with comprehensive analysis capabilities"
+ * @dependencies ["@claimguardian/ai-services", "react-dropzone", "framer-motion", "recharts"]
+ * @status enhanced
  * @ai-integration multi-provider
  * @insurance-context claims
  * @supabase-integration edge-functions
@@ -29,6 +29,16 @@ import {
   ThumbsUp,
   ThumbsDown,
   Star,
+  Brain,
+  TrendingUp,
+  AlertCircle,
+  DollarSign,
+  Clock,
+  Users,
+  MapPin,
+  Phone,
+  Activity,
+  Info,
 } from "lucide-react";
 import { useState, useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
@@ -45,6 +55,7 @@ import { ProtectedRoute } from "@/components/auth/protected-route";
 import { PermissionGuard } from "@/components/auth/permission-guard";
 import { CameraCapture } from "@/components/camera/camera-capture";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import { EnhancedDamageAnalyzer } from "@/components/ai/enhanced-damage-analyzer";
 import { AIBreadcrumb } from "@/components/ui/breadcrumb";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -978,6 +989,7 @@ function ResultStep({
 
 export default function DamageAnalyzerPage() {
   useAuthDebug("DamageAnalyzerPage");
+  const [useEnhanced, setUseEnhanced] = useState(true);
 
   return (
     <ProtectedRoute>
@@ -986,9 +998,184 @@ export default function DamageAnalyzerPage() {
           permission={AI_TOOLS_PERMISSIONS.DAMAGE_ANALYZER}
           featureName="AI Damage Analyzer"
         >
-          <DamageAnalyzerContent />
+          <div className="space-y-4">
+            {/* Toggle between classic and enhanced analyzer */}
+            <div className="flex justify-end">
+              <div className="flex items-center gap-2 bg-gray-800 rounded-lg px-4 py-2">
+                <span className="text-sm text-gray-400">Version:</span>
+                <Button
+                  size="sm"
+                  variant={!useEnhanced ? "default" : "outline"}
+                  onClick={() => setUseEnhanced(false)}
+                  className="h-7"
+                >
+                  Classic
+                </Button>
+                <Button
+                  size="sm"
+                  variant={useEnhanced ? "default" : "outline"}
+                  onClick={() => setUseEnhanced(true)}
+                  className="h-7 bg-gradient-to-r from-blue-600 to-cyan-600"
+                >
+                  <Brain className="h-3 w-3 mr-1" />
+                  Enhanced
+                </Button>
+              </div>
+            </div>
+            
+            {useEnhanced ? (
+              <EnhancedDamageAnalyzerWrapper />
+            ) : (
+              <DamageAnalyzerContent />
+            )}
+          </div>
         </PermissionGuard>
       </DashboardLayout>
     </ProtectedRoute>
+  );
+}
+
+// Wrapper component for the enhanced analyzer
+function EnhancedDamageAnalyzerWrapper() {
+  const [propertyId, setPropertyId] = useState<string | undefined>();
+  const [policyData, setPolicyData] = useState<any>(undefined);
+  const supabase = createClient();
+
+  useEffect(() => {
+    // Load user's primary property and policy data
+    async function loadData() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        // Get primary property
+        const { data: properties } = await supabase
+          .from("properties")
+          .select("id, name, address")
+          .eq("user_id", user.id)
+          .eq("is_primary", true)
+          .single();
+
+        if (properties) {
+          setPropertyId(properties.id);
+
+          // Get policy data
+          const { data: policies } = await supabase
+            .from("policies")
+            .select("*")
+            .eq("property_id", properties.id)
+            .eq("status", "active");
+
+          if (policies && policies.length > 0) {
+            setPolicyData(policies[0]);
+          }
+        }
+      } catch (error) {
+        logger.error("Failed to load property/policy data:", {}, toError(error));
+      }
+    }
+
+    loadData();
+  }, [supabase]);
+
+  return (
+    <div className="p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Enhanced Header */}
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="p-3 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl">
+              <Brain className="h-8 w-8 text-white" />
+            </div>
+            <h1 className="text-4xl font-bold text-white">
+              Enhanced AI Damage Analyzer
+            </h1>
+          </div>
+          <p className="text-lg text-gray-400 max-w-3xl mx-auto">
+            Advanced multi-image analysis with damage progression tracking, cost estimation,
+            contractor recommendations, and comprehensive reporting
+          </p>
+          <div className="flex justify-center gap-3 mt-4">
+            <Badge className="bg-green-600/20 text-green-400 border-green-600/30">
+              <CheckCircle className="h-3 w-3 mr-1" />
+              Multi-Image Support
+            </Badge>
+            <Badge className="bg-blue-600/20 text-blue-400 border-blue-600/30">
+              <TrendingUp className="h-3 w-3 mr-1" />
+              Progression Tracking
+            </Badge>
+            <Badge className="bg-purple-600/20 text-purple-400 border-purple-600/30">
+              <Users className="h-3 w-3 mr-1" />
+              Contractor Matching
+            </Badge>
+            <Badge className="bg-orange-600/20 text-orange-400 border-orange-600/30">
+              <DollarSign className="h-3 w-3 mr-1" />
+              Cost Estimation
+            </Badge>
+          </div>
+        </div>
+
+        {/* Feature Highlights */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <Card className="bg-gradient-to-br from-blue-900/20 to-blue-800/20 border-blue-700">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <Camera className="h-6 w-6 text-blue-400" />
+                <div>
+                  <p className="text-xs text-gray-400">Analyze</p>
+                  <p className="text-sm font-semibold text-white">Multiple Images</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-green-900/20 to-green-800/20 border-green-700">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <Activity className="h-6 w-6 text-green-400" />
+                <div>
+                  <p className="text-xs text-gray-400">Track</p>
+                  <p className="text-sm font-semibold text-white">Damage Progression</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-purple-900/20 to-purple-800/20 border-purple-700">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <DollarSign className="h-6 w-6 text-purple-400" />
+                <div>
+                  <p className="text-xs text-gray-400">Estimate</p>
+                  <p className="text-sm font-semibold text-white">Repair Costs</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-orange-900/20 to-orange-800/20 border-orange-700">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <Users className="h-6 w-6 text-orange-400" />
+                <div>
+                  <p className="text-xs text-gray-400">Connect</p>
+                  <p className="text-sm font-semibold text-white">With Contractors</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Load the enhanced component */}
+        <EnhancedDamageAnalyzer
+          propertyId={propertyId}
+          policyData={policyData}
+          onAnalysisComplete={(result) => {
+            toast.success("Analysis complete! Review your comprehensive report below.");
+            logger.info("Enhanced damage analysis completed", { result });
+          }}
+        />
+      </div>
+    </div>
   );
 }
