@@ -37,13 +37,13 @@ import {
   Target,
   Gauge,
   Timer,
-  Tool,
   CircleDollarSign,
   CalendarCheck,
   BellRing,
   ShieldCheck,
   Brain,
   Sparkles,
+  Users,
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";

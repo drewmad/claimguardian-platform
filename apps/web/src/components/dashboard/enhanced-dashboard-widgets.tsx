@@ -201,17 +201,20 @@ export function ActivityFeed({ limit = 5 }: { limit?: number }) {
         event: '*', 
         schema: 'public', 
         table: 'audit_logs' 
-      }, (payload) => {
+      }, (payload: any) => {
         // Add new activity to the feed
-        const newActivity: ActivityItem = {
-          id: payload.new?.id || Date.now().toString(),
-          type: "alert",
-          title: "New Activity",
-          description: payload.new?.action || "System event",
-          timestamp: new Date(),
-          status: "info",
-        };
-        setActivities(prev => [newActivity, ...prev].slice(0, limit));
+        const newData = payload.new as Record<string, any> | null;
+        if (newData) {
+          const newActivity: ActivityItem = {
+            id: newData.id || Date.now().toString(),
+            type: "alert",
+            title: "New Activity",
+            description: newData.action || "System event",
+            timestamp: new Date(),
+            status: "info",
+          };
+          setActivities(prev => [newActivity, ...prev].slice(0, limit));
+        }
       })
       .subscribe();
 
