@@ -29,12 +29,7 @@ const HeaderLogoIcon = () => (
 export function Header() {
   return (
     <header
-      className="sticky top-0 z-50 p-4 md:px-6 flex justify-between items-center transition-colors duration-300"
-      style={{
-        backgroundColor: "rgba(10, 14, 26, 0.8)",
-        backdropFilter: "blur(10px)",
-        borderBottom: `1px solid rgba(255, 255, 255, 0.1)`,
-      }}
+      className="sticky top-0 z-50 p-4 md:px-6 flex justify-between items-center transition-colors duration-300 bg-slate-950/80 backdrop-blur-lg border-b border-slate-300/10"
     >
       <div className="flex items-center gap-3">
         <HeaderLogoIcon />

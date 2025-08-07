@@ -60,12 +60,12 @@ export function Header() {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
           <div className="flex items-center gap-4">
-            <button
-              onClick={() => openModal("login")}
+            <Link
+              href="/auth/signup"
               className="text-gray-300 hover:text-white transition-colors duration-200"
             >
               Sign In
-            </button>
+            </Link>
             <Link
               href="/auth/signup"
               className="relative py-2 px-5 rounded-full font-semibold transition-all duration-300 hover:scale-105 overflow-hidden group"
@@ -126,15 +126,12 @@ export function Header() {
           >
             <div className="flex flex-col space-y-4">
               <div className="border-t border-gray-600 pt-4 space-y-3">
-                <button
-                  onClick={() => {
-                    openModal("login");
-                    setIsMobileMenuOpen(false);
-                  }}
+                <Link
+                  href="/auth/signin"
                   className="block w-full text-left text-gray-300 text-lg font-medium py-3 px-4 rounded-lg hover:bg-white/10 transition-colors a11y-touch-target"
                 >
                   Sign In
-                </button>
+                </Link>
                 <Link
                   href="/auth/signup"
                   className="block text-center py-3 px-6 rounded-full font-semibold transition-all duration-300 a11y-touch-target"
