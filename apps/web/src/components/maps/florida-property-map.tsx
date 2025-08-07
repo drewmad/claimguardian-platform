@@ -12,12 +12,13 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import mapboxgl from "mapbox-gl";
+import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
+import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import {
   MapPin,
   Home,
   AlertTriangle,
   Layers,
-  Search,
   Filter,
   Maximize2,
   Minimize2,
@@ -200,7 +201,6 @@ export function FloridaPropertyMap({
   // Enhanced State
   const [mapLoaded, setMapLoaded] = useState(false);
   const [layers, setLayers] = useState<MapLayer[]>(DEFAULT_LAYERS);
-  const [searchQuery, setSearchQuery] = useState("");
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [showLayerControls, setShowLayerControls] = useState(false);
   const [showMapStyleControls, setShowMapStyleControls] = useState(false);
@@ -297,6 +297,17 @@ export function FloridaPropertyMap({
         new mapboxgl.AttributionControl({ compact: true }),
         "bottom-right",
       );
+    }
+
+    if (showSearch) {
+      const geocoder = new MapboxGeocoder({
+        accessToken: mapboxgl.accessToken,
+        mapboxgl: mapboxgl,
+        marker: false,
+        placeholder: "Search properties, addresses, counties...",
+        bbox: FLORIDA_BOUNDS.flat(),
+      });
+      map.current.addControl(geocoder, "top-left");
     }
 
     // Map load event
@@ -728,13 +739,7 @@ export function FloridaPropertyMap({
     }
   }, [enableClustering, showHeatMap, layers]);
 
-  // Filter properties based on search
-  const filteredProperties = properties.filter(
-    (property) =>
-      property.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      property.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      property.county.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  
 
   // Enhanced layer visibility toggle
   const toggleLayer = (layerId: string) => {
@@ -840,21 +845,7 @@ export function FloridaPropertyMap({
       {/* Map Container */}
       <div ref={mapContainer} className="w-full" style={{ height: isFullscreen ? '100vh' : height }} />
 
-      {/* Enhanced Search Bar */}
-      {showSearch && (
-        <div className="absolute top-4 left-4 right-4 max-w-sm">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input
-              type="text"
-              placeholder="Search properties, addresses, counties..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-gray-800/90 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent backdrop-blur-sm shadow-lg"
-            />
-          </div>
-        </div>
-      )}
+      
 
       {/* Enhanced Controls Panel */}
       {showControls && (
@@ -975,49 +966,7 @@ export function FloridaPropertyMap({
         </div>
       )}
 
-      {/* Property List Sidebar (when searching) */}
-      {searchQuery && filteredProperties.length > 0 && (
-        <div className="absolute bottom-0 left-0 right-0 bg-gray-800/95 border-t border-gray-600 max-h-48 overflow-y-auto backdrop-blur-sm">
-          <div className="p-3">
-            <h3 className="font-medium text-white mb-2 text-sm">
-              {filteredProperties.length} Properties Found
-            </h3>
-            <div className="space-y-2">
-              {filteredProperties.slice(0, 5).map((property) => (
-                <button
-                  key={property.id}
-                  onClick={() => flyToProperty(property)}
-                  className="w-full text-left p-2 rounded bg-gray-700/50 hover:bg-gray-700 transition-colors"
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-white">
-                        {property.name}
-                      </p>
-                      <p className="text-xs text-gray-400">
-                        {property.address}
-                      </p>
-                    </div>
-                    <div className="flex items-center ml-2">
-                      <span
-                        className={`w-2 h-2 rounded-full ${
-                          property.insuranceStatus === "active"
-                            ? "bg-green-400"
-                            : property.insuranceStatus === "expired"
-                              ? "bg-red-400"
-                              : property.insuranceStatus === "pending"
-                                ? "bg-orange-400"
-                                : "bg-gray-400"
-                        }`}
-                      />
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+      
 
       {/* Enhanced Statistics Panel */}
       {showStats && (
