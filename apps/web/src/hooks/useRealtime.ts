@@ -77,7 +77,7 @@ export function useRealtime<T = any>(
         setError(error);
         setIsConnected(false);
         onError?.(error);
-        logger.error("Realtime subscription failed", { table }, error);
+        logger.error("Realtime subscription failed", { table, error: error.message });
       }
     };
 
@@ -320,7 +320,7 @@ export function usePresence(
         const error = err as Error;
         setError(error);
         setIsConnected(false);
-        logger.error("Presence subscription failed", { channel }, error);
+        logger.error("Presence subscription failed", { channel, error: error.message });
       }
     };
 
@@ -341,7 +341,7 @@ export function usePresence(
         await realtimeManager.current.updatePresence(channel, updates);
       } catch (err) {
         setError(err as Error);
-        logger.error("Presence update failed", { channel }, err as Error);
+        logger.error("Presence update failed", { channel, error: (err as Error).message });
       }
     },
     [channel],
@@ -404,8 +404,7 @@ export function useBroadcast(
         setIsConnected(false);
         logger.error(
           "Broadcast subscription failed",
-          { channel, eventType },
-          error,
+          { channel, eventType, error: error.message }
         );
       }
     };
@@ -429,7 +428,7 @@ export function useBroadcast(
         });
       } catch (err) {
         setError(err as Error);
-        logger.error("Broadcast failed", { channel, eventType }, err as Error);
+        logger.error("Broadcast failed", { channel, eventType, error: (err as Error).message });
       }
     },
     [channel, eventType],
@@ -502,7 +501,7 @@ export function useRealtimeQuery<T = any>(
       } catch (err) {
         const error = err as Error;
         setError(error);
-        logger.error("Query failed", { queryKey }, error);
+        logger.error("Query failed", { queryKey, error: error.message });
         throw error;
       } finally {
         setIsLoading(false);

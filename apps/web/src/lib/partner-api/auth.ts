@@ -94,8 +94,10 @@ class PartnerApiAuth {
 
         // Update last used timestamp asynchronously
         this.updateLastUsed(cached.key.id).catch((error) => {
-          logger.error("Failed to update API key last used timestamp", { error,
-            keyId: cached.key.id });
+          logger.error("Failed to update API key last used timestamp", { 
+            error: (error as Error).message,
+            keyId: cached.key.id 
+          });
         });
 
         return {
@@ -116,7 +118,9 @@ class PartnerApiAuth {
 
       return dbResult;
     } catch (error) {
-      logger.error("Partner API authentication error", {}, error instanceof Error ? error : new Error(String(error)));
+      logger.error("Partner API authentication error", { 
+        error: error instanceof Error ? error.message : String(error) 
+      });
       return {
         success: false,
         error: "Authentication service unavailable",
@@ -281,7 +285,9 @@ class PartnerApiAuth {
         apiKey: apiKeyRecord,
       };
     } catch (error) {
-      logger.error("Database error during API key validation", {}, error instanceof Error ? error : new Error(String(error)));
+      logger.error("Database error during API key validation", { 
+        error: error instanceof Error ? error.message : String(error) 
+      });
       return {
         success: false,
         error: "Authentication service error",
@@ -405,8 +411,10 @@ class PartnerApiAuth {
         .single();
 
       if (error) {
-        logger.error("Failed to create API key", { error,
-          partnerId: params.partnerId });
+        logger.error("Failed to create API key", { 
+          error: error.message,
+          partnerId: params.partnerId 
+        });
         return {
           success: false,
           error: "Failed to create API key",
@@ -425,7 +433,9 @@ class PartnerApiAuth {
         apiKey, // Return the raw key only once
       };
     } catch (error) {
-      logger.error("Error generating API key", {}, error instanceof Error ? error : new Error(String(error)));
+      logger.error("Error generating API key", { 
+        error: error instanceof Error ? error.message : String(error) 
+      });
       return {
         success: false,
         error: "Internal error",
@@ -469,7 +479,11 @@ class PartnerApiAuth {
         .eq("partner_id", partnerId);
 
       if (error) {
-        logger.error("Failed to revoke API key", { error, keyId, partnerId });
+        logger.error("Failed to revoke API key", { 
+          error: error.message, 
+          keyId, 
+          partnerId 
+        });
         return {
           success: false,
           error: "Failed to revoke API key",
@@ -487,7 +501,9 @@ class PartnerApiAuth {
 
       return { success: true };
     } catch (error) {
-      logger.error("Error revoking API key", {}, error instanceof Error ? error : new Error(String(error)));
+      logger.error("Error revoking API key", { 
+        error: error instanceof Error ? error.message : String(error) 
+      });
       return {
         success: false,
         error: "Internal error",
@@ -513,7 +529,10 @@ class PartnerApiAuth {
         .order("created_at", { ascending: false });
 
       if (error) {
-        logger.error("Failed to list API keys", { error, partnerId });
+        logger.error("Failed to list API keys", { 
+          error: error.message, 
+          partnerId 
+        });
         return {
           success: false,
           error: "Failed to retrieve API keys",
@@ -542,7 +561,9 @@ class PartnerApiAuth {
         keys: sanitizedKeys,
       };
     } catch (error) {
-      logger.error("Error listing API keys", {}, error instanceof Error ? error : new Error(String(error)));
+      logger.error("Error listing API keys", { 
+        error: error instanceof Error ? error.message : String(error) 
+      });
       return {
         success: false,
         error: "Internal error",

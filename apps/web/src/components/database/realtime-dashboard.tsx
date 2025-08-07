@@ -182,7 +182,7 @@ export function RealtimeDashboard({
       });
     } catch (err) {
       error("Failed to start real-time monitoring");
-      logger.error("Real-time monitoring startup failed", {}, err as Error);
+      logger.error("Real-time monitoring startup failed", { error: (err as Error).message });
     }
   };
 
@@ -201,7 +201,7 @@ export function RealtimeDashboard({
       info("Real-time monitoring stopped");
     } catch (err) {
       error("Failed to stop real-time monitoring");
-      logger.error("Real-time monitoring shutdown failed", {}, err as Error);
+      logger.error("Real-time monitoring shutdown failed", { error: (err as Error).message });
     }
   };
 
@@ -234,7 +234,7 @@ export function RealtimeDashboard({
   };
 
   const handleSubscriptionError = (table: RealtimeTable, err: Error) => {
-    logger.error("Subscription error", { table }, err);
+    logger.error("Subscription error", { table, error: err.message });
     setMetrics((prev) => ({
       ...prev,
       errorCount: prev.errorCount + 1,

@@ -31,7 +31,7 @@ export interface UploadedFile {
   error?: string;
 }
 
-interface DragDropUploadProps {
+export interface DragDropUploadProps {
   onUpload: (files: File[]) => Promise<void>;
   onRemove?: (fileId: string) => void;
   accept?: string;
