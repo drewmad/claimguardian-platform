@@ -262,8 +262,8 @@ export function Hero() {
                   <span>Bank-Level Security</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-green-400 text-lg">24/7</span>
-                  <span>AI monitoring</span>
+                  <span className="font-bold text-green-400 text-lg">On Guard</span>
+                  <span>24/7</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-blue-400 text-lg">
