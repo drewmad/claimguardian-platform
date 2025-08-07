@@ -77,8 +77,20 @@ export interface DocumentAnalysisResult {
     id: string;
     confidence: number;
   }>;
-  floridaSpecific?: FloridaContext;
   confidence?: number;
+  floridaSpecific?: FloridaContext;
+  providerInsights?: Array<{
+    provider: string;
+    uniqueFindings: Array<{
+      field: string;
+      value: unknown;
+    }>;
+  }>;
+}
+
+export interface AnalysisResponse {
+  result: DocumentAnalysisResult;
+  confidence: number;
   rawText?: string;
   metadata?: Record<string, unknown>;
   providerInsights?: Array<{
@@ -666,7 +678,7 @@ export class MultiModalAIOrchestrator {
     return consensus;
   }
 
-  private findConsensusValue(analyses: any[], field: string): any {
+  private findConsensusValue(analyses: ProviderAnalysis[], field: string): unknown {
     const values = analyses.map((a) => a.result[field]).filter((v) => v);
     if (values.length === 0) return null;
 
@@ -681,10 +693,9 @@ export class MultiModalAIOrchestrator {
     return JSON.parse(sorted[0][0]);
   }
 
-  private mergeDates(analyses: unknown[]): string[] {
+  private mergeDates(analyses: ProviderAnalysis[]): string[] {
     const allDates = new Set<string>();
-    analyses.forEach((a: unknown) => {
-      const analysis = a as any;
+    analyses.forEach((analysis) => {
       if (analysis.result?.dates && Array.isArray(analysis.result.dates)) {
         analysis.result.dates.forEach((d: string) => allDates.add(d));
       }
@@ -713,7 +724,7 @@ export class MultiModalAIOrchestrator {
     return amounts;
   }
 
-  private mergeEntities(analyses: any[]): any {
+  private mergeEntities(analyses: ProviderAnalysis[]): Record<string, ExtractedEntity> {
     const entities = {};
 
     analyses.forEach((a) => {
@@ -909,30 +920,32 @@ export class MultiModalAIOrchestrator {
   }
 
   private isValidAnomaly(item: unknown): item is DetectedAnomaly {
+    if (typeof item !== 'object' || item === null) return false;
+    
+    const obj = item as Record<string, unknown>;
     return (
-      typeof item === 'object' &&
-      item !== null &&
-      'type' in item &&
-      'description' in item &&
-      'confidence' in item &&
-      'severity' in item &&
-      typeof (item as any).type === 'string' &&
-      typeof (item as any).description === 'string' &&
-      typeof (item as any).confidence === 'number' &&
-      ['low', 'medium', 'high'].includes((item as any).severity)
+      'type' in obj &&
+      'description' in obj &&
+      'confidence' in obj &&
+      'severity' in obj &&
+      typeof obj.type === 'string' &&
+      typeof obj.description === 'string' &&
+      typeof obj.confidence === 'number' &&
+      ['low', 'medium', 'high'].includes(obj.severity as string)
     );
   }
 
   private isValidAssociation(item: unknown): item is { type: string; id: string; confidence: number; } {
+    if (typeof item !== 'object' || item === null) return false;
+    
+    const obj = item as Record<string, unknown>;
     return (
-      typeof item === 'object' &&
-      item !== null &&
-      'type' in item &&
-      'id' in item &&
-      'confidence' in item &&
-      typeof (item as any).type === 'string' &&
-      typeof (item as any).id === 'string' &&
-      typeof (item as any).confidence === 'number'
+      'type' in obj &&
+      'id' in obj &&
+      'confidence' in obj &&
+      typeof obj.type === 'string' &&
+      typeof obj.id === 'string' &&
+      typeof obj.confidence === 'number'
     );
   }
 
