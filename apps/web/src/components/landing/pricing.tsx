@@ -178,8 +178,8 @@ export function Pricing() {
   > = {
     free: {
       name: "Guardian Free",
-      price: {},
-      per: {},
+      price: { monthly: 0 },
+      per: { monthly: "" },
       subtitle:
         "Perfect for testing the waters. Get protection for your primary home.",
       features: [
@@ -202,7 +202,7 @@ export function Pricing() {
       name: "Guardian Essential",
       subtitle: "Full protection for serious homeowners. Most popular choice.",
       price: { monthly: 29, annual: 290 },
-      per: { monthly: "mo", annual: "yr" },
+      per: { monthly: "/mo", annual: "/yr" },
       recommended: true,
       features: [
         "Everything in Free, plus:",
@@ -234,8 +234,8 @@ export function Pricing() {
       name: "Guardian Plus",
       subtitle:
         "Scale protection across multiple properties. Perfect for small portfolios.",
-      price: {},
-      per: {},
+      price: { monthly: 49, annual: 490 },
+      per: { monthly: "/mo", annual: "/yr" },
       features: [
         "Everything in Essential, plus:",
         "Up to 3 Properties Protected",
@@ -253,8 +253,8 @@ export function Pricing() {
     pro: {
       name: "Guardian Professional",
       subtitle: "Enterprise-grade protection for serious property managers.",
-      price: {},
-      per: {},
+      price: { monthly: 199, annual: 1990 },
+      per: { monthly: "/mo", annual: "/yr" },
       features: [
         "Everything in Plus, plus:",
         "Up to 10 Properties Protected",
