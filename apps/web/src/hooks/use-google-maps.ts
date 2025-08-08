@@ -62,8 +62,32 @@ export function useGoogleMaps(
     // Check if API key is available
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
     if (!apiKey) {
-      setError("Google Maps API key not configured");
+      setError("Google Maps API key not configured - Check environment variables");
       setLoadError(true);
+      console.error("Google Maps API Error: MissingKeyMapError - NEXT_PUBLIC_GOOGLE_MAPS_API_KEY not found");
+      console.error("Solution: Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your environment variables");
+      return;
+    }
+
+    // Validate API key format
+    if (apiKey.length < 30) {
+      setError("Google Maps API key appears invalid - Check key format");
+      setLoadError(true);
+      console.error("Google Maps API Error: InvalidKeyMapError - API key too short");
+      return;
+    }
+
+    if (apiKey.startsWith('gme-')) {
+      setError("Client ID provided instead of API key - Use client parameter for Premium Plan");
+      setLoadError(true);
+      console.error("Google Maps API Error: KeyLooksLikeClientId - Use client parameter instead");
+      return;
+    }
+
+    if (/^\d+$/.test(apiKey)) {
+      setError("Project number provided instead of API key - Generate proper API key");
+      setLoadError(true);
+      console.error("Google Maps API Error: KeyLooksLikeProjectNumber - Generate API key from credentials");
       return;
     }
 
@@ -120,9 +144,12 @@ export function useGoogleMaps(
         () => {
           // Check if Google Maps loaded successfully
           if (window.google?.maps) {
+            console.log("Google Maps API loaded successfully");
             setIsLoaded(true);
             setIsLoading(false);
           } else {
+            console.error("Google Maps API Error: API loaded but google.maps is not available");
+            console.error("This might indicate a network or authentication issue");
             setError("Google Maps API loaded but is not available");
             setLoadError(true);
             setIsLoading(false);
@@ -133,9 +160,28 @@ export function useGoogleMaps(
           ];
         };
 
+      // Set up global error handler for Google Maps authentication errors
+      (window as typeof window & { gm_authFailure?: () => void }).gm_authFailure = () => {
+        console.error("Google Maps API Error: Authentication failed");
+        console.error("Common causes: RefererNotAllowedMapError, InvalidKeyMapError, BillingNotEnabledMapError");
+        console.error("Solution: Check API key restrictions and billing in Google Cloud Console");
+        setError("Google Maps authentication failed - Check API key and restrictions");
+        setLoadError(true);
+        setIsLoading(false);
+      };
+
       // Handle script loading errors
-      script.onerror = () => {
-        setError("Failed to load Google Maps API script");
+      script.onerror = (event) => {
+        console.error("Google Maps API Error: Script loading failed", event);
+        
+        // Check for common error patterns
+        const userAgent = navigator.userAgent;
+        if (userAgent.includes('Chrome')) {
+          console.error("Check Chrome Developer Tools Console for specific error details");
+          console.error("Common errors: RefererNotAllowedMapError, ApiNotActivatedMapError, BillingNotEnabledMapError");
+        }
+        
+        setError("Failed to load Google Maps API script - Check browser console for details");
         setLoadError(true);
         setIsLoading(false);
         delete (window as typeof window & Record<string, unknown>)[
