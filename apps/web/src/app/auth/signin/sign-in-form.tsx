@@ -16,9 +16,10 @@ import { authenticateAction } from "@/app/auth/actions";
 
 interface SignInFormProps {
   message?: string;
+  showResetOption?: boolean;
 }
 
-export function SignInForm({ message }: SignInFormProps) {
+export function SignInForm({ message, showResetOption }: SignInFormProps) {
   const [isPending, startTransition] = useTransition();
 
   const handleSubmit = (formData: FormData) => {
@@ -112,6 +113,23 @@ export function SignInForm({ message }: SignInFormProps) {
               )}
             </Button>
           </form>
+
+          {/* Session Reset Option */}
+          {showResetOption && (
+            <div className="mt-4 p-3 bg-amber-900/30 border border-amber-700 rounded-lg">
+              <p className="text-amber-300 text-sm mb-2">
+                Having trouble signing in?
+              </p>
+              <Link
+                href="/api/auth/reset"
+                className="text-amber-200 hover:text-amber-100 text-sm underline"
+                prefetch={false}
+              >
+                Reset session
+              </Link>
+              <span className="text-amber-400 text-sm"> to clear stale authentication data</span>
+            </div>
+          )}
 
           {/* Sign Up Link */}
           <div className="mt-6 text-center">

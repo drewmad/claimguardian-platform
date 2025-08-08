@@ -1,8 +1,8 @@
 /**
  * @fileMetadata
  * @owner @ai-team
- * @purpose "Brief description of file purpose"
- * @dependencies ["package1", "package2"]
+ * @purpose "Browser-side Supabase client with error handling and environment validation"
+ * @dependencies ["@claimguardian/db", "react"]
  * @status stable
  * @ai-integration multi-provider
  * @insurance-context claims
@@ -19,6 +19,20 @@ let browserClient: ReturnType<typeof createBrowserSupabaseClient> | undefined;
 
 export function createClient() {
   if (!browserClient) {
+    // Validate environment variables before creating client
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (!supabaseUrl || !supabaseAnonKey) {
+      const error = new Error("Missing Supabase environment variables");
+      authLogger.error("Supabase configuration missing", {
+        hasUrl: !!supabaseUrl,
+        hasKey: !!supabaseAnonKey,
+        location: "browser client"
+      });
+      throw error;
+    }
+
     try {
       browserClient = createBrowserSupabaseClient();
       if (process.env.NODE_ENV === "development") {
@@ -26,8 +40,11 @@ export function createClient() {
       }
     } catch (error) {
       authLogger.error(
-        "Failed to initialize Supabase client",
-        {},
+        "Failed to initialize Supabase browser client",
+        {
+          hasUrl: !!supabaseUrl,
+          hasKey: !!supabaseAnonKey,
+        },
         error as Error,
       );
       // Re-throw to prevent silent failures
