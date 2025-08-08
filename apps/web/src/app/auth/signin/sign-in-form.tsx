@@ -1,7 +1,7 @@
 /**
  * @fileMetadata
  * @purpose "Server-action based sign-in form with persistent session cookies"
- * @dependencies ["@/app/auth/actions","@claimguardian/ui","lucide-react","next"]
+ * @dependencies ["@/app/auth/signin/actions","@claimguardian/ui","lucide-react","react-dom"]
  * @owner frontend-team
  * @status stable
  */
@@ -10,23 +10,37 @@
 import { Button, Input, Label, Card } from "@claimguardian/ui";
 import { Shield, ArrowLeft, Loader2, AlertCircle } from "lucide-react";
 import Link from "next/link";
-import React, { useState, useTransition } from "react";
+import React from "react";
+import { useFormStatus } from "react-dom";
 
-import { authenticateAction } from "@/app/auth/actions";
+import { authenticateAction } from "./actions";
 
 interface SignInFormProps {
   message?: string;
   showResetOption?: boolean;
 }
 
-export function SignInForm({ message, showResetOption }: SignInFormProps) {
-  const [isPending, startTransition] = useTransition();
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button
+      type="submit"
+      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 disabled:opacity-50 disabled:cursor-not-allowed"
+      disabled={pending}
+    >
+      {pending ? (
+        <>
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          Signing in...
+        </>
+      ) : (
+        "Sign In"
+      )}
+    </Button>
+  );
+}
 
-  const handleSubmit = (formData: FormData) => {
-    startTransition(() => {
-      authenticateAction(formData);
-    });
-  };
+export function SignInForm({ message, showResetOption }: SignInFormProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 flex items-center justify-center p-4">
@@ -55,7 +69,7 @@ export function SignInForm({ message, showResetOption }: SignInFormProps) {
           )}
 
           {/* Sign In Form */}
-          <form action={handleSubmit} className="space-y-6">
+          <form action={authenticateAction} className="space-y-6">
             <div>
               <Label htmlFor="email" className="text-slate-300">
                 Email Address
@@ -68,7 +82,6 @@ export function SignInForm({ message, showResetOption }: SignInFormProps) {
                 className="mt-1 bg-slate-800 border-slate-600 text-white placeholder-slate-400"
                 placeholder="Enter your email"
                 autoComplete="email"
-                disabled={isPending}
               />
             </div>
 
@@ -85,8 +98,7 @@ export function SignInForm({ message, showResetOption }: SignInFormProps) {
                   className="bg-slate-800 border-slate-600 text-white placeholder-slate-400 pr-10"
                   placeholder="Enter your password"
                   autoComplete="current-password"
-                  disabled={isPending}
-                />
+                  />
               </div>
               <div className="mt-2 text-right">
                 <Link
@@ -98,20 +110,7 @@ export function SignInForm({ message, showResetOption }: SignInFormProps) {
               </div>
             </div>
 
-            <Button
-              type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={isPending}
-            >
-              {isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Signing in...
-                </>
-              ) : (
-                "Sign In"
-              )}
-            </Button>
+            <SubmitButton />
           </form>
 
           {/* Session Reset Option */}

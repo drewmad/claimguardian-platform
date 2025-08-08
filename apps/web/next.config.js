@@ -1,39 +1,85 @@
 /** @type {import('next').NextConfig} */
+
+const SUPABASE_CONNECT_SRCS = [
+  "'self'",
+  "https://*.supabase.co",
+  "wss://*.supabase.co",
+  "https://api.openai.com",
+  "https://generativelanguage.googleapis.com",
+  "https://*.google-analytics.com",
+  "https://*.googleapis.com",
+  "https://maps.googleapis.com",
+  "https://maps.google.com",
+  "https://maps.gstatic.com",
+  // Allow Mapbox (CSP reports show it's being blocked from /dashboard):
+  "https://api.mapbox.com",
+  "https://events.mapbox.com",
+];
+
+const CSP = `
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' 'unsafe-eval' https://maps.googleapis.com https://maps.google.com https://cdn.jsdelivr.net https://www.googletagmanager.com https://www.google-analytics.com;
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://maps.googleapis.com https://maps.gstatic.com;
+  img-src 'self' data: blob: https: http://localhost:*;
+  font-src 'self' data: https://fonts.gstatic.com;
+  connect-src ${SUPABASE_CONNECT_SRCS.join(' ')};
+  media-src 'self' blob: data:;
+  object-src 'none';
+  frame-ancestors 'none';
+  base-uri 'self';
+  form-action 'self';
+  upgrade-insecure-requests;
+  worker-src 'self' blob:;
+  manifest-src 'self';
+  frame-src 'self' https://www.google.com https://maps.google.com;
+`.replace(/\s{2,}/g, ' ').trim();
+
 const nextConfig = {
   reactStrictMode: true,
+  poweredByHeader: false,
 
-  // Do not set distDir here. Allow default ".next" in CWD (apps/web).
-  // distDir: '.next', // leave commented
-
-  // Temporarily you can set this to true if you need to ship while we fix types,
-  // but target is false. Keep it false for compliance with your success criteria.
   typescript: {
     ignoreBuildErrors: false,
   },
 
   eslint: {
-    // We lint in CI. Vercel builds should not fail on lint to avoid noisy blocking.
     ignoreDuringBuilds: true,
   },
 
-  // Transpile internal workspace packages for Next
   transpilePackages: [
-    // Replace this list with the package.json "name" fields of your 8 pkgs
-    // **REQUIRED**: fill out with your actual package names
     '@claimguardian/db',
     '@claimguardian/ui',
     '@claimguardian/utils',
     '@claimguardian/ai-services',
     '@claimguardian/monitoring',
     '@claimguardian/realtime'
-    // **ADD MORE AS NEEDED** to cover all internal packages used by apps/web
   ],
 
   experimental: {
-    // Turn on Turbopack in dev if you want, but stable builds stick to SWC for prod
-    // turbo: { rules: {} } // optional
     typedRoutes: true
-  }
+  },
+
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          { key: "Content-Security-Policy", value: CSP },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "X-XSS-Protection", value: "0" }
+        ],
+      },
+      // CSP report endpoint
+      {
+        source: "/api/csp-report",
+        headers: [
+          { key: "Content-Type", value: "application/csp-report" }
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

@@ -51,7 +51,6 @@ export async function GET() {
 
     // Construct redirect URL with proper base URL handling
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 
-                   process.env.NEXT_PUBLIC_BASE_URL || 
                    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
 
     const redirectUrl = new URL('/auth/signin?message=Session%20reset%20successfully', baseUrl);
@@ -76,7 +75,6 @@ export async function GET() {
     
     // Fallback redirect even if cookie clearing fails
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 
-                   process.env.NEXT_PUBLIC_BASE_URL || 
                    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
     
     return NextResponse.redirect(
