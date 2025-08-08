@@ -70,6 +70,10 @@ export const createMockSupabaseClient = (mockData = {}) => ({
     onAuthStateChange: jest.fn(() => ({
       data: { subscription: { unsubscribe: jest.fn() } },
     })),
+    signInWithOAuth: jest.fn().mockResolvedValue({ 
+      data: { provider: 'google', url: 'https://example.com' }, 
+      error: null 
+    }),
   },
   from: jest.fn((table: string) => ({
     select: jest.fn().mockReturnThis(),
