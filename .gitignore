@@ -46,6 +46,7 @@ dist/
 # Environment files
 .env
 .env*.local
+.env.local.backup.*
 .env.production
 !.env.example
 
