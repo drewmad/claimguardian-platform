@@ -50,6 +50,7 @@ export function Header() {
         <span className="text-gray-300/30">|</span>
         <Link
           href="/auth/signin"
+          prefetch={false}
           className="text-gray-300 hover:text-primary transition-colors"
         >
           Sign In

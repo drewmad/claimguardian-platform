@@ -65,6 +65,7 @@ export function Header() {
           <div className="flex items-center gap-4">
             <Link
               href="/auth/signin"
+              prefetch={false}
               className="text-gray-300 hover:text-white transition-colors duration-200"
             >
               Sign In
@@ -137,6 +138,7 @@ Start Free
               <div className="border-t border-gray-600 pt-4 space-y-3">
                 <Link
                   href="/auth/signin"
+                  prefetch={false}
                   className="block w-full text-left text-gray-300 text-lg font-medium py-3 px-4 rounded-lg hover:bg-white/10 transition-colors a11y-touch-target"
                 >
                   Sign In

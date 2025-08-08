@@ -12,43 +12,37 @@ export async function middleware(req: NextRequest) {
     {
       cookies: {
         get: (name) => req.cookies.get(name)?.value,
-        set: (name, value, options) => {
-          res.cookies.set({ name, value, ...options });
-        },
-        remove: (name, options) => {
-          res.cookies.set({ name, value: "", ...options, maxAge: 0 });
-        },
+        set: (name, value, options) => res.cookies.set({ name, value, ...options }),
+        remove: (name, options) => res.cookies.set({ name, value: "", ...options, maxAge: 0 }),
       },
     }
   );
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user }, error } = await supabase.auth.getUser();
   const { pathname } = req.nextUrl;
 
-  const isAuthPage = pathname.startsWith("/auth");
+  // Debug headers you can see in Network tab
+  res.headers.set("x-auth-path", pathname);
+  res.headers.set("x-auth-user", user ? "1" : "0");
+  if (error?.message) res.headers.set("x-auth-error", error.message);
+
   const isProtected = PROTECTED_PATHS.some((p) => pathname.startsWith(p));
 
-  // If hitting protected page without a user, send to sign-in.
   if (isProtected && !user) {
     const url = req.nextUrl.clone();
     url.pathname = "/auth/signin";
-    url.searchParams.set("message", "Please sign in to continue");
     return NextResponse.redirect(url);
   }
 
-  // If already signed in and hitting /auth/*, send to dashboard.
-  if (isAuthPage && user) {
-    const url = req.nextUrl.clone();
-    url.pathname = "/dashboard";
-    return NextResponse.redirect(url);
-  }
+  // IMPORTANT: do NOT redirect away from /auth/* here.
+  // Allow the sign-in page to load even if a cookie exists.
 
   return res;
 }
 
-// Skip static assets and the CSP reporting endpoint
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|api/csp-report|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|mp4|mov|webm|woff|woff2|ttf|otf)$).*)"
+    // Exclude static assets, CSP report endpoint, AND auth routes/api from middleware
+    "/((?!_next/static|_next/image|favicon.ico|api/csp-report|auth/.*|api/auth/.*|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|mp4|mov|webm|woff|woff2|ttf|otf)$).*)",
   ],
 };
