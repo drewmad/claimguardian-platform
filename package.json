@@ -18,12 +18,17 @@
     "build:pkgs": "turbo run build --filter=./packages/*",
     "build:web": "turbo run build --filter=web",
     "test": "turbo run test -- --run",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug",
     "storybook": "turbo run storybook --filter=@claimguardian/ui",
     "storybook:build": "turbo run storybook:build --filter=@claimguardian/ui",
     "fix:imports": "tsx ./scripts/fix-internal-imports.ts",
     "db:migrate:local": "supabase migration up",
     "db:types:local": "supabase gen types typescript --local > packages/db/src/generated.supabase.ts",
     "precommit": "pnpm -w run lint && pnpm -w run typecheck",
+    "install:playwright": "playwright install",
     "db:guard": "bash scripts/guard-privileges.sh",
     "db:fix": "bash scripts/apply-database-fixes.sh"
   },
@@ -58,7 +63,8 @@
     "type-coverage": "^2.29.1",
     "typescript": "^5.9.2",
     "typescript-eslint": "8.39.0",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "@playwright/test": "^1.49.0"
   },
   "workspaces": [
     "apps/*",
