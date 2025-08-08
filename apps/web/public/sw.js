@@ -83,6 +83,11 @@ self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
+  // Skip auth routes entirely - bypass service worker
+  if (url.pathname.startsWith('/auth/') || url.pathname.startsWith('/api/auth/')) {
+    return;
+  }
+
   // Skip non-GET requests
   if (request.method !== "GET") {
     return;

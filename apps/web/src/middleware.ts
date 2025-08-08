@@ -1,83 +1,107 @@
-import { NextResponse, type NextRequest } from "next/server";
-import { createServerClient } from "@supabase/ssr";
-import { clearSessionCookies, isSessionExpired, logSessionCleanup } from "@/lib/auth/session-cleanup";
+import { NextResponse, NextRequest } from 'next/server'
+import { createServerClient } from '@supabase/ssr'
 
-const PROTECTED_PATHS = ["/dashboard", "/settings", "/ai-tools", "/account", "/admin"];
+const PROTECTED = new Set(['/dashboard','/settings','/ai-tools','/account','/admin'])
+const isProtected = (p:string) => PROTECTED.has(p) || Array.from(PROTECTED).some(path => p.startsWith(path))
+
+function addDebug(res: NextResponse, path: string, user: boolean, err?: string) {
+  res.headers.set('x-auth-path', path)
+  res.headers.set('x-auth-user', user ? '1' : '0')
+  if (err) res.headers.set('x-auth-error', err)
+  // Prevent ALL caching - CDN, browser, edge
+  res.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
+  res.headers.set('x-middleware-cache', 'no-cache')
+  res.headers.set('Pragma', 'no-cache')
+  res.headers.set('Expires', '0')
+  res.headers.set('Surrogate-Control', 'no-store')
+}
+
+function clearAuthCookies(res: NextResponse) {
+  // Comprehensive list of all possible Supabase cookies
+  const names = [
+    'sb-access-token',
+    'sb-refresh-token',
+    'sb-provider-token',
+    'sb-provider-refresh-token',
+    'supabase-auth-token',
+    'supabase.auth.token',
+    'last_activity',
+    // Project-specific cookies if Supabase URL is available
+    ...(process.env.NEXT_PUBLIC_SUPABASE_URL 
+      ? [`sb-${process.env.NEXT_PUBLIC_SUPABASE_URL.split('://')[1]?.split('.')[0]}-auth-token`]
+      : [])
+  ]
+  
+  for (const name of names) {
+    res.cookies.set({
+      name,
+      value: '',
+      path: '/',
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      expires: new Date(0), // hard delete
+      maxAge: 0 // additional deletion signal
+    })
+  }
+}
 
 export async function middleware(req: NextRequest) {
-  const res = NextResponse.next();
+  const { pathname } = new URL(req.url)
 
-  try {
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll: () => req.cookies.getAll(),
-          setAll: (cookiesToSet) => {
-            cookiesToSet.forEach(({ name, value, options }) => {
-              res.cookies.set({ name, value, ...options });
-            });
-          },
-        },
-      }
-    );
-
-    const { data: { user }, error } = await supabase.auth.getUser();
-    const { pathname } = req.nextUrl;
-
-    // Debug headers you can see in Network tab
-    res.headers.set("x-auth-path", pathname);
-    res.headers.set("x-auth-user", user ? "1" : "0");
-    
-    // Handle authentication errors and expired sessions
-    if (error) {
-      res.headers.set("x-auth-error", error.message);
-      
-      // Check for session expiry or invalid auth errors using utility function
-      if (isSessionExpired(error)) {
-        clearSessionCookies(res);
-        logSessionCleanup("expired_session_detected", {
-          path: pathname,
-          error: error.message,
-          userAgent: req.headers.get('user-agent')
-        });
-        res.headers.set("x-auth-cleanup", "session-cleared");
-      }
-    }
-
-    const isProtected = PROTECTED_PATHS.some((p) => pathname.startsWith(p));
-
-    if (isProtected && !user) {
-      const url = req.nextUrl.clone();
-      url.pathname = "/auth/signin";
-      return NextResponse.redirect(url);
-    }
-
-    // IMPORTANT: do NOT redirect away from /auth/* here.
-    // Allow the sign-in page to load even if a cookie exists.
-
-    return res;
-  } catch (error) {
-    console.error("Middleware error:", error);
-    
-    // Clear potentially corrupted session cookies on middleware error
-    clearSessionCookies(res);
-    logSessionCleanup("middleware_error", {
-      path: req.nextUrl.pathname,
-      error: error instanceof Error ? error.message : 'Unknown error',
-      userAgent: req.headers.get('user-agent')
-    });
-    
-    res.headers.set("x-auth-error", "middleware-error");
-    res.headers.set("x-auth-cleanup", "error-recovery");
-    return res;
+  // Always allow /auth/* and make it uncached
+  if (pathname.startsWith('/auth')) {
+    const pass = NextResponse.next()
+    addDebug(pass, pathname, false)
+    return pass
   }
+
+  // Only check auth for protected paths
+  if (!isProtected(pathname)) {
+    const pass = NextResponse.next()
+    addDebug(pass, pathname, false)
+    return pass
+  }
+
+  // Create response object to update
+  let res = NextResponse.next()
+  
+  // Supabase SSR client with response for cookie updates
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get: (name: string) => req.cookies.get(name)?.value,
+        set: (name: string, value: string, options: any) => {
+          // Allow Supabase to update cookies on the response
+          res.cookies.set({ name, value, ...options })
+        },
+        remove: (name: string, options: any) => {
+          res.cookies.set({ name, value: '', ...options, maxAge: 0 })
+        }
+      }
+    }
+  )
+
+  const { data: { user }, error } = await supabase.auth.getUser()
+
+  // If Supabase reports error or no user, clear cookies and redirect
+  if (error || !user) {
+    // Create redirect response with 302 and no-cache headers
+    res = NextResponse.redirect(new URL('/auth/signin', req.url), { status: 302 })
+    clearAuthCookies(res)
+    addDebug(res, pathname, false, error?.message)
+    return res
+  }
+
+  // User is authenticated, return updated response with any refreshed cookies
+  addDebug(res, pathname, true)
+  return res
 }
 
 export const config = {
   matcher: [
-    // Exclude static assets, CSP report endpoint, AND auth routes/api from middleware
-    "/((?!_next/static|_next/image|favicon.ico|api/csp-report|auth/.*|api/auth/.*|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|mp4|mov|webm|woff|woff2|ttf|otf)$).*)",
+    '/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|.*\\.(?:png|jpg|jpeg|gif|svg|ico|webp|css|js)).*)'
   ],
-};
+}

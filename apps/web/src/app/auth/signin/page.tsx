@@ -10,21 +10,39 @@
  * @notes Server-rendered with dynamic session detection and reset capability
  */
 
-// Force dynamic rendering to prevent build-time execution
+// Force dynamic rendering and prevent ALL caching
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
+export const fetchCache = 'force-no-store';
+export const preferredRegion = 'auto';
 
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { unstable_noStore as noStore } from 'next/cache';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { SignInForm } from "./sign-in-form";
+
+// Ensure no caching via metadata
+export async function generateMetadata() {
+  return { 
+    other: { 
+      'Cache-Control': 'no-store, no-cache, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    } 
+  };
+}
 
 export default async function SignInPage({
   searchParams,
 }: {
   searchParams: Promise<{ message?: string }>;
 }) {
+  // Force dynamic rendering - opt into dynamic
+  noStore();
+  await headers();
+  
   const params = await searchParams;
 
   // Check current auth state - if already signed in, go to dashboard

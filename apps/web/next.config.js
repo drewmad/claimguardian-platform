@@ -71,6 +71,13 @@ const nextConfig = {
           { key: "X-XSS-Protection", value: "0" }
         ],
       },
+      // Prevent caching of auth pages
+      {
+        source: "/auth/:path*",
+        headers: [
+          { key: "Cache-Control", value: "no-store, must-revalidate" },
+        ],
+      },
       // CSP report endpoint
       {
         source: "/api/csp-report",
