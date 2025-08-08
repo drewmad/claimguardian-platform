@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { clearSessionCookies, logSessionCleanup } from "@/lib/auth/session-cleanup";
 
+// Force Node.js runtime to avoid Edge warnings with Supabase
+export const runtime = 'nodejs';
+
 export async function POST() {
   try {
     const supabase = await createSupabaseServerClient();

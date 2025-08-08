@@ -11,7 +11,9 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "@/lib/supabase/server-auth";
 
 // Force dynamic rendering for auth pages since they use cookies
+export const runtime = 'nodejs';
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default async function AuthLayout({
   children,

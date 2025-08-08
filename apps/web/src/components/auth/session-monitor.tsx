@@ -101,12 +101,12 @@ export function SessionMonitor({
     // Start the timer
     resetTimer();
 
-    // Check session on focus
+    // Check session on focus - use cached session instead of network call
     const handleFocus = async () => {
       const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session?.user) {
         router.push("/auth/signin?message=Session expired");
       } else {
         resetTimer();

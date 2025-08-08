@@ -5,6 +5,24 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".next/**", "build/**", "tsconfig.tsbuildinfo", "coverage/**"]
     },
+    "@claimguardian/ui#build": {
+      "outputs": ["dist/**"]
+    },
+    "@claimguardian/utils#build": {
+      "outputs": ["dist/**"]
+    },
+    "@claimguardian/db#build": {
+      "outputs": ["dist/**"]
+    },
+    "@claimguardian/ai-services#build": {
+      "outputs": []
+    },
+    "@claimguardian/config#build": {
+      "outputs": []
+    },
+    "@claimguardian/monitoring#build": {
+      "outputs": []
+    },
     "type-check": {
       "dependsOn": ["^build"],
       "outputs": []
