@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { clearSessionCookies, isSessionExpired, logSessionCleanup } from "@/lib/auth/session-cleanup";
 
 const PROTECTED_PATHS = ["/dashboard", "/settings", "/ai-tools", "/account", "/admin"];
 
@@ -28,7 +29,22 @@ export async function middleware(req: NextRequest) {
     // Debug headers you can see in Network tab
     res.headers.set("x-auth-path", pathname);
     res.headers.set("x-auth-user", user ? "1" : "0");
-    if (error?.message) res.headers.set("x-auth-error", error.message);
+    
+    // Handle authentication errors and expired sessions
+    if (error) {
+      res.headers.set("x-auth-error", error.message);
+      
+      // Check for session expiry or invalid auth errors using utility function
+      if (isSessionExpired(error)) {
+        clearSessionCookies(res);
+        logSessionCleanup("expired_session_detected", {
+          path: pathname,
+          error: error.message,
+          userAgent: req.headers.get('user-agent')
+        });
+        res.headers.set("x-auth-cleanup", "session-cleared");
+      }
+    }
 
     const isProtected = PROTECTED_PATHS.some((p) => pathname.startsWith(p));
 
@@ -44,8 +60,17 @@ export async function middleware(req: NextRequest) {
     return res;
   } catch (error) {
     console.error("Middleware error:", error);
-    // On middleware error, just continue - don't block the request
+    
+    // Clear potentially corrupted session cookies on middleware error
+    clearSessionCookies(res);
+    logSessionCleanup("middleware_error", {
+      path: req.nextUrl.pathname,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      userAgent: req.headers.get('user-agent')
+    });
+    
     res.headers.set("x-auth-error", "middleware-error");
+    res.headers.set("x-auth-cleanup", "error-recovery");
     return res;
   }
 }

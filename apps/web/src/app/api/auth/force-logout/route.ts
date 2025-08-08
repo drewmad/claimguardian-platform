@@ -1,17 +1,36 @@
 import { NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { clearSessionCookies, logSessionCleanup } from "@/lib/auth/session-cleanup";
 
 export async function POST() {
   try {
     const supabase = await createSupabaseServerClient();
     await supabase.auth.signOut(); // clears the HttpOnly cookie
-    return NextResponse.json({ ok: true, message: "Successfully logged out" });
+    
+    // Create response and clear all session cookies
+    const response = NextResponse.json({ ok: true, message: "Successfully logged out" });
+    clearSessionCookies(response);
+    
+    logSessionCleanup("force_logout", {
+      timestamp: new Date().toISOString(),
+      method: "POST"
+    });
+    
+    return response;
   } catch (error) {
     console.error("Force logout error:", error);
-    return NextResponse.json(
-      { ok: false, error: "Failed to logout" }, 
-      { status: 500 }
-    );
+    
+    // Even on error, clear cookies and return success to user
+    const response = NextResponse.json({ ok: true, message: "Session cleared" });
+    clearSessionCookies(response);
+    
+    logSessionCleanup("force_logout_error", {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      timestamp: new Date().toISOString(),
+      method: "POST"
+    });
+    
+    return response;
   }
 }
 
