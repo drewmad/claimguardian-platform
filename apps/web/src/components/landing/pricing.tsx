@@ -121,8 +121,14 @@ const PricingCard: React.FC<{
       <p className="text-primary font-semibold h-10">{plan.subtitle}</p>
       {displayPrice !== undefined && (
         <p className="my-4">
-          <span className="text-4xl font-bold">${displayPrice}</span>
-          <span className="text-gray-300">/{displayPer}</span>
+          {displayPrice === 0 ? (
+            <span className="text-4xl font-bold">Free</span>
+          ) : (
+            <>
+              <span className="text-4xl font-bold">${displayPrice}</span>
+              <span className="text-gray-300">{displayPer}</span>
+            </>
+          )}
         </p>
       )}
       <ul className="text-left space-y-3 my-8 flex-grow">
@@ -286,8 +292,11 @@ export function Pricing() {
       return;
     }
 
-    // Handle Stripe checkout for paid plans
-    if (planKey === "essential" && plans.essential.priceIds) {
+    // Handle different plan types
+    if (planKey === "free") {
+      // For free plan, just redirect to dashboard
+      router.push("/dashboard");
+    } else if (planKey === "essential" && plans.essential.priceIds) {
       try {
         setProcessingPlan(planKey);
 
@@ -301,8 +310,13 @@ export function Pricing() {
       } finally {
         setProcessingPlan(null);
       }
+    } else if (planKey === "plus" || planKey === "pro") {
+      // For waitlist plans, show coming soon message
+      toast.info(
+        "This plan is coming soon! Join our waitlist to be notified when it's available.",
+      );
     } else {
-      // For free plan, just redirect to dashboard
+      // For other plans, redirect to dashboard for now
       router.push("/dashboard");
     }
   };
@@ -373,18 +387,17 @@ export function Pricing() {
             cycle={billingCycle}
             isProcessing={processingPlan === "essential"}
           />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
           <PricingCard
             plan={plans.plus}
-            onClick={() => {}}
+            onClick={() => handlePlanClick("plus")}
             cycle={billingCycle}
+            isProcessing={processingPlan === "plus"}
           />
           <PricingCard
             plan={plans.pro}
-            onClick={() => {}}
+            onClick={() => handlePlanClick("pro")}
             cycle={billingCycle}
+            isProcessing={processingPlan === "pro"}
           />
         </div>
 
