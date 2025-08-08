@@ -6,38 +6,48 @@ const PROTECTED_PATHS = ["/dashboard", "/settings", "/ai-tools", "/account", "/a
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get: (name) => req.cookies.get(name)?.value,
-        set: (name, value, options) => res.cookies.set({ name, value, ...options }),
-        remove: (name, options) => res.cookies.set({ name, value: "", ...options, maxAge: 0 }),
-      },
+  try {
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll: () => req.cookies.getAll(),
+          setAll: (cookiesToSet) => {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              res.cookies.set({ name, value, ...options });
+            });
+          },
+        },
+      }
+    );
+
+    const { data: { user }, error } = await supabase.auth.getUser();
+    const { pathname } = req.nextUrl;
+
+    // Debug headers you can see in Network tab
+    res.headers.set("x-auth-path", pathname);
+    res.headers.set("x-auth-user", user ? "1" : "0");
+    if (error?.message) res.headers.set("x-auth-error", error.message);
+
+    const isProtected = PROTECTED_PATHS.some((p) => pathname.startsWith(p));
+
+    if (isProtected && !user) {
+      const url = req.nextUrl.clone();
+      url.pathname = "/auth/signin";
+      return NextResponse.redirect(url);
     }
-  );
 
-  const { data: { user }, error } = await supabase.auth.getUser();
-  const { pathname } = req.nextUrl;
+    // IMPORTANT: do NOT redirect away from /auth/* here.
+    // Allow the sign-in page to load even if a cookie exists.
 
-  // Debug headers you can see in Network tab
-  res.headers.set("x-auth-path", pathname);
-  res.headers.set("x-auth-user", user ? "1" : "0");
-  if (error?.message) res.headers.set("x-auth-error", error.message);
-
-  const isProtected = PROTECTED_PATHS.some((p) => pathname.startsWith(p));
-
-  if (isProtected && !user) {
-    const url = req.nextUrl.clone();
-    url.pathname = "/auth/signin";
-    return NextResponse.redirect(url);
+    return res;
+  } catch (error) {
+    console.error("Middleware error:", error);
+    // On middleware error, just continue - don't block the request
+    res.headers.set("x-auth-error", "middleware-error");
+    return res;
   }
-
-  // IMPORTANT: do NOT redirect away from /auth/* here.
-  // Allow the sign-in page to load even if a cookie exists.
-
-  return res;
 }
 
 export const config = {

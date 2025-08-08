@@ -3,21 +3,39 @@
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-export async function authenticateAction(formData: FormData) {
-  const email = String(formData.get("email") || "");
-  const password = String(formData.get("password") || "");
+export type AuthState = { ok: boolean; error: string | null };
 
-  if (!email || !password) {
-    redirect("/auth/signin?message=Email%20and%20password%20required");
+export async function authenticateAction(
+  _prev: AuthState,
+  formData: FormData
+): Promise<AuthState> {
+  try {
+    const email = String(formData.get("email") || "");
+    const password = String(formData.get("password") || "");
+    
+    if (!email || !password) {
+      return { ok: false, error: "Email and password required" };
+    }
+
+    const supabase = await createSupabaseServerClient();
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    
+    if (error) {
+      return { ok: false, error: error.message };
+    }
+
+    // Cookie is set by Supabase SSR helper; now it's safe to redirect
+    redirect("/dashboard");
+  } catch (err: unknown) {
+    // Let Next.js handle NEXT_REDIRECT properly
+    if (err && typeof err === 'object' && 'digest' in err && err.digest === "NEXT_REDIRECT") {
+      throw err;
+    }
+    
+    // Handle other errors
+    return { 
+      ok: false, 
+      error: err instanceof Error ? err.message : "Unexpected error occurred" 
+    };
   }
-
-  const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-
-  if (error) {
-    redirect(`/auth/signin?message=${encodeURIComponent(error.message)}`);
-  }
-
-  // Cookie is set by Supabase SSR helper; now it's safe to hit protected pages.
-  redirect("/dashboard");
 }

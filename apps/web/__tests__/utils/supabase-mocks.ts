@@ -20,6 +20,8 @@ export type MockSupabaseClient = {
     resetPasswordForEmail: jest.MockedFunction<any>;
     getUser: jest.MockedFunction<any>;
     getSession: jest.MockedFunction<any>;
+    onAuthStateChange: jest.MockedFunction<any>;
+    signInWithOAuth: jest.MockedFunction<any>;
   };
   from: jest.MockedFunction<any>;
   rpc: jest.MockedFunction<any>;
@@ -76,10 +78,12 @@ export function createSupabaseMock(): MockSupabaseClient & { _mockQuery: any } {
     auth: {
       signUp: jest.fn() as any,
       signInWithPassword: jest.fn() as any,
-      signOut: jest.fn() as any,
+      signOut: jest.fn().mockResolvedValue({ error: null }) as any,
       resetPasswordForEmail: jest.fn() as any,
       getUser: jest.fn() as any,
-      getSession: jest.fn() as any,
+      getSession: jest.fn().mockResolvedValue({ data: { session: null }, error: null }) as any,
+      onAuthStateChange: jest.fn().mockReturnValue({ data: { subscription: { unsubscribe: jest.fn() } } }) as any,
+      signInWithOAuth: jest.fn().mockResolvedValue({ data: { provider: 'google', url: 'https://example.com' }, error: null }) as any,
     },
     from: fromMock as any,
     rpc: jest.fn() as any,

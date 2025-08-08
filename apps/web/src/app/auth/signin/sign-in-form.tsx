@@ -11,9 +11,9 @@ import { Button, Input, Label, Card } from "@claimguardian/ui";
 import { Shield, ArrowLeft, Loader2, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import React from "react";
-import { useFormStatus } from "react-dom";
+import { useFormStatus, useFormState } from "react-dom";
 
-import { authenticateAction } from "./actions";
+import { authenticateAction, type AuthState } from "./actions";
 
 interface SignInFormProps {
   message?: string;
@@ -40,7 +40,10 @@ function SubmitButton() {
   );
 }
 
+const initialState: AuthState = { ok: false, error: null };
+
 export function SignInForm({ message, showResetOption }: SignInFormProps) {
+  const [state, formAction] = useFormState(authenticateAction, initialState);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 flex items-center justify-center p-4">
@@ -61,15 +64,17 @@ export function SignInForm({ message, showResetOption }: SignInFormProps) {
           </div>
 
           {/* Error Message */}
-          {message && (
+          {(message || state.error) && (
             <div className="mb-6 p-4 bg-red-900/50 border border-red-700 rounded-lg flex items-start space-x-2">
               <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
-              <p className="text-red-300 text-sm">{decodeURIComponent(message)}</p>
+              <p className="text-red-300 text-sm">
+                {state.error || (message ? decodeURIComponent(message) : "")}
+              </p>
             </div>
           )}
 
           {/* Sign In Form */}
-          <form action={authenticateAction} className="space-y-6">
+          <form action={formAction} className="space-y-6">
             <div>
               <Label htmlFor="email" className="text-slate-300">
                 Email Address
