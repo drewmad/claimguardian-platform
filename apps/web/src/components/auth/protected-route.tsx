@@ -11,7 +11,7 @@
  */
 "use client";
 
-import { useRouter } from "next/navigation";
+// Removed useRouter import - no client redirects
 import React, { useEffect } from "react";
 import { logger } from "@/lib/logger";
 
@@ -25,7 +25,6 @@ interface ProtectedRouteProps {
 
 function ProtectedRouteInner({ children }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
-  const router = useRouter();
 
   // Use secure debug logging only in development
   useEffect(() => {
@@ -41,13 +40,14 @@ function ProtectedRouteInner({ children }: ProtectedRouteProps) {
     }
   }, [user, loading]);
 
+  // Log when unauthenticated users attempt access (for monitoring only)
   useEffect(() => {
     if (!loading && !user) {
       const redirectInfo = {
         loading,
-        pathname: window.location.pathname,
+        pathname: typeof window !== "undefined" ? window.location.pathname : "server",
         timestamp: new Date().toISOString(),
-        referrer: document.referrer,
+        referrer: typeof document !== "undefined" ? document.referrer : "server",
       };
 
       logger.info(
@@ -55,28 +55,28 @@ function ProtectedRouteInner({ children }: ProtectedRouteProps) {
         redirectInfo,
       );
       logger.warn("Route blocked - unauthenticated user", {
-        path: window.location.pathname,
+        path: redirectInfo.pathname,
         reason: "unauthenticated",
         userId: undefined,
         ...redirectInfo,
       });
 
-      logger.warn(
-        '[ProtectedRoute] REDIRECT TO "/" - No authenticated user',
+      // NO CLIENT REDIRECT - let middleware handle this
+      logger.info(
+        '[ProtectedRoute] No client redirect - middleware will handle auth',
         redirectInfo,
       );
-      router.push("/");
     }
-  }, [user, loading, router]);
+  }, [user, loading]);
 
   // Show loading state while checking authentication
   if (loading) {
     return <AuthLoading />;
   }
 
-  // If no user after loading completes, show nothing (redirect will happen)
+  // If no user after loading completes, show loading (middleware will redirect)
   if (!user) {
-    return <AuthLoading />; // Show loading instead of null to prevent flashing
+    return <AuthLoading />; // Middleware will handle redirect to /auth/signin
   }
 
   // User is authenticated, render children

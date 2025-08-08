@@ -1,14 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { withRateLimit, rateLimiter } from '@/lib/security/rate-limiter';
+
+// Set CORS headers for public API
+function setCORSHeaders(response: NextResponse) {
+  response.headers.set('Access-Control-Allow-Origin', '*');
+  response.headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+  response.headers.set('Access-Control-Max-Age', '86400');
+  return response;
+}
+
+export async function OPTIONS() {
+  return setCORSHeaders(new NextResponse(null, { status: 200 }));
+}
 
 export async function GET(request: NextRequest) {
-  try {
-    const searchParams = request.nextUrl.searchParams;
-    const county = searchParams.get('county');
-    const limit = searchParams.get('limit') || '10000';
-    const bbox = searchParams.get('bbox'); // Format: minLng,minLat,maxLng,maxLat
-    
-    const supabase = await createServerSupabaseClient();
+  return withRateLimit(request, '/api/parcels/geojson', { maxRequests: 50, windowMs: 15 * 60 * 1000 }, async () => {
+    try {
+      const searchParams = request.nextUrl.searchParams;
+      const county = searchParams.get('county');
+      const limit = Math.min(parseInt(searchParams.get('limit') || '1000'), 10000); // Cap at 10k
+      const bbox = searchParams.get('bbox'); // Format: minLng,minLat,maxLng,maxLat
+      
+      const supabase = await createServerSupabaseClient();
     
     // Build query
     let query = supabase
@@ -16,7 +31,7 @@ export async function GET(request: NextRequest) {
       .select('PARCEL_ID, OWN_NAME, PHY_ADDR1, PHY_CITY, PHY_ZIPCD, latitude, longitude, JV, DOR_UC, CO_NO')
       .not('latitude', 'is', null)
       .not('longitude', 'is', null)
-      .limit(parseInt(limit));
+      .limit(limit);
     
     // Apply filters
     if (county) {
@@ -63,18 +78,23 @@ export async function GET(request: NextRequest) {
       }))
     };
     
-    return NextResponse.json(geojson, {
+    const response = NextResponse.json(geojson, {
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30'
+        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60', // 5 min cache
+        'X-Content-Type-Options': 'nosniff'
       }
     });
     
-  } catch (error) {
-    console.error('Error in parcels GeoJSON API:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
+    return setCORSHeaders(response);
+    
+    } catch (error) {
+      console.error('Error in parcels GeoJSON API:', error);
+      const response = NextResponse.json(
+        { error: 'Internal server error' },
+        { status: 500, headers: { 'X-Content-Type-Options': 'nosniff' } }
+      );
+      return setCORSHeaders(response);
+    }
+  });
 }

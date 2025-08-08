@@ -3,7 +3,7 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { costTrackingService } from "@/services/cost-tracking";
-import { createClient } from "@/lib/supabase/server";
+import { withAdminAuth } from "@/lib/auth/admin-auth";
 
 // Force Node.js runtime for AI operations (requires Supabase server client)
 export const runtime = 'nodejs';
@@ -14,29 +14,7 @@ if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
 }
 
 export async function GET(request: NextRequest) {
-  try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // Check if user is admin
-    const { data: profile } = await supabase
-      .from("user_profiles")
-      .select("role")
-      .eq("user_id", user.id)
-      .single();
-
-    if (!profile || profile.role !== "admin") {
-      return NextResponse.json(
-        { error: "Admin access required" },
-        { status: 403 });
-    }
+  return withAdminAuth(async (user, profile) => {
 
     // Get query parameters
     const { searchParams } = new URL(request.url);
@@ -49,11 +27,11 @@ export async function GET(request: NextRequest) {
       endDate,
     );
 
-    return NextResponse.json(analytics);
-  } catch (error) {
-    console.error("Failed to get admin cost analytics:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 });
-  }
+    return NextResponse.json(analytics, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate',
+        'X-Content-Type-Options': 'nosniff'
+      }
+    });
+  });
 }
