@@ -190,3 +190,62 @@ export async function checkVerificationStatusAction(): Promise<{
     return { isVerified: false };
   }
 }
+
+/**
+ * Server action to authenticate user with email and password
+ * Sets HTTP-only cookies for persistent sessions
+ */
+export async function authenticateAction(formData: FormData) {
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+
+  if (!email || !password) {
+    authLogger.warn("Authentication attempted with missing credentials");
+    redirect("/auth/signin?message=Please enter both email and password");
+  }
+
+  try {
+    authLogger.info("Server-side authentication attempt", { email });
+
+    const supabase = await createAuthClient();
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      authLogger.error("Authentication failed", { email }, error);
+      
+      // Handle specific error cases
+      if (error.message.includes("Invalid login credentials")) {
+        redirect("/auth/signin?message=Invalid email or password");
+      } else if (error.message.includes("Email not confirmed")) {
+        redirect("/auth/signin?message=Please check your email and click the confirmation link");
+      } else if (error.message.includes("Too many requests")) {
+        redirect("/auth/signin?message=Too many login attempts. Please try again later");
+      } else {
+        redirect(`/auth/signin?message=${encodeURIComponent(error.message)}`);
+      }
+    }
+
+    if (data.user) {
+      authLogger.info("Authentication successful", {
+        userId: data.user.id,
+        email: data.user.email,
+      });
+
+      // Revalidate layout to update auth state
+      revalidatePath("/", "layout");
+      
+      // Redirect to dashboard - cookies are now set by Supabase
+      redirect("/dashboard");
+    }
+
+    // This should not happen, but handle it just in case
+    authLogger.warn("Authentication returned no user data", { email });
+    redirect("/auth/signin?message=Authentication failed. Please try again");
+  } catch (error) {
+    authLogger.error("Unexpected authentication error", { email }, error as Error);
+    redirect("/auth/signin?message=An unexpected error occurred. Please try again");
+  }
+}

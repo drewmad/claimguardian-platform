@@ -1,7 +1,7 @@
 /**
  * @fileMetadata
- * @purpose "Client-side sign-in form component with proper error handling"
- * @dependencies ["@/components","@/lib","@claimguardian/ui","lucide-react","next"]
+ * @purpose "Server-action based sign-in form with persistent session cookies"
+ * @dependencies ["@/app/auth/actions","@claimguardian/ui","lucide-react","next"]
  * @owner frontend-team
  * @status stable
  */
@@ -10,81 +10,22 @@
 import { Button, Input, Label, Card } from "@claimguardian/ui";
 import { Shield, ArrowLeft, Loader2, AlertCircle } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import React, { useState, useEffect } from "react";
-import { logger } from "@/lib/logger/production-logger";
+import React, { useState, useTransition } from "react";
 
-import { useAuth } from "@/components/auth/auth-provider";
+import { authenticateAction } from "@/app/auth/actions";
 
 interface SignInFormProps {
   message?: string;
 }
 
 export function SignInForm({ message }: SignInFormProps) {
-  const router = useRouter();
-  const { signIn, error: authError, clearError } = useAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [formError, setFormError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
 
-  // Clear errors when component unmounts or when inputs change
-  useEffect(() => {
-    return () => {
-      clearError();
-    };
-  }, [clearError]);
-
-  useEffect(() => {
-    if (email || password) {
-      setFormError(null);
-      clearError();
-    }
-  }, [email, password, clearError]);
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    logger.info("[SIGNIN FORM] Submit started", {
-      email,
-      hasPassword: !!password,
+  const handleSubmit = (formData: FormData) => {
+    startTransition(() => {
+      authenticateAction(formData);
     });
-
-    // Clear any existing errors
-    setFormError(null);
-    clearError();
-
-    // Basic validation
-    if (!email || !password) {
-      setFormError("Please enter both email and password");
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      logger.info("[SIGNIN FORM] Calling signIn...");
-      const success = await signIn(email, password);
-      logger.info("[SIGNIN FORM] SignIn result:", { success });
-
-      if (success) {
-        logger.info("[SIGNIN FORM] Sign in successful, refreshing router...");
-        // Successful sign in - router will handle navigation via auth provider
-        router.refresh();
-      } else {
-        logger.info("[SIGNIN FORM] Sign in failed, auth error:", authError);
-        // Error will be set by auth provider
-        setIsLoading(false);
-      }
-    } catch (error) {
-      logger.error("[SIGNIN FORM] Unexpected error:", {}, error instanceof Error ? error : new Error(String(error)));
-      setFormError("An unexpected error occurred. Please try again.");
-      setIsLoading(false);
-    }
   };
-
-  // Combine all error sources
-  const displayError = formError || authError?.message || message;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 flex items-center justify-center p-4">
@@ -105,15 +46,15 @@ export function SignInForm({ message }: SignInFormProps) {
           </div>
 
           {/* Error Message */}
-          {displayError && (
+          {message && (
             <div className="mb-6 p-4 bg-red-900/50 border border-red-700 rounded-lg flex items-start space-x-2">
               <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
-              <p className="text-red-300 text-sm">{displayError}</p>
+              <p className="text-red-300 text-sm">{decodeURIComponent(message)}</p>
             </div>
           )}
 
           {/* Sign In Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form action={handleSubmit} className="space-y-6">
             <div>
               <Label htmlFor="email" className="text-slate-300">
                 Email Address
@@ -123,12 +64,10 @@ export function SignInForm({ message }: SignInFormProps) {
                 name="email"
                 type="email"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
                 className="mt-1 bg-slate-800 border-slate-600 text-white placeholder-slate-400"
                 placeholder="Enter your email"
                 autoComplete="email"
-                disabled={isLoading}
+                disabled={isPending}
               />
             </div>
 
@@ -142,12 +81,10 @@ export function SignInForm({ message }: SignInFormProps) {
                   name="password"
                   type="password"
                   required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
                   className="bg-slate-800 border-slate-600 text-white placeholder-slate-400 pr-10"
                   placeholder="Enter your password"
                   autoComplete="current-password"
-                  disabled={isLoading}
+                  disabled={isPending}
                 />
               </div>
               <div className="mt-2 text-right">
@@ -163,9 +100,9 @@ export function SignInForm({ message }: SignInFormProps) {
             <Button
               type="submit"
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={isLoading}
+              disabled={isPending}
             >
-              {isLoading ? (
+              {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Signing in...

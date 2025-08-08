@@ -1,0 +1,63 @@
+version: 2
+
+sources:
+  - name: cg
+    description: ClaimGuardian core schema
+    tables:
+      - name: parcels
+        description: Florida property parcels with SCD2 versioning
+        columns:
+          - name: parcel_id
+            description: Unique parcel identifier
+            tests:
+              - not_null
+              - unique
+          - name: county_fips
+            description: 5-digit FIPS county code
+            tests:
+              - not_null
+              - relationships:
+                  to: ref('dim_counties')
+                  field: county_fips
+                  
+      - name: hurricane_impacts
+        description: Hurricane impact geometries and intensities
+        
+      - name: carriers
+        description: Insurance carrier master data
+
+models:
+  - name: stg_parcels
+    description: Cleaned and enriched parcel staging layer
+    columns:
+      - name: parcel_id
+        description: Unique parcel identifier
+        tests:
+          - not_null
+          - unique
+      - name: is_valid_parcel
+        description: Data quality flag for valid parcels
+        tests:
+          - not_null
+    
+  - name: mart_parcel_risk
+    description: Parcel-level risk scoring for insurance and claims
+    columns:
+      - name: parcel_id
+        description: Unique parcel identifier
+        tests:
+          - not_null
+          - unique
+      - name: risk_score
+        description: Overall risk score from 0 (minimal) to 1 (extreme)
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 1
+      - name: risk_category
+        description: Categorical risk assessment
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['MINIMAL', 'LOW', 'MODERATE', 'HIGH', 'EXTREME']

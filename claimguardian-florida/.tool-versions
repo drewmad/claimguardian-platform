@@ -1,0 +1,8 @@
+# asdf tool versions for local dev parity on macOS Apple Silicon
+nodejs 20.11.1
+python 3.11.2
+postgres 16.3
+redis 7.2.4
+deno 1.43.6
+# optional
+# nats 2.10.0

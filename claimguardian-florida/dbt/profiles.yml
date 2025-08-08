@@ -1,0 +1,27 @@
+claimguardian_florida:
+  outputs:
+    dev:
+      type: postgres
+      host: localhost
+      user: postgres
+      password: postgres
+      port: 5432
+      dbname: claimguardian
+      schema: dbt_dev
+      threads: 4
+      keepalives_idle: 0
+      search_path: "cg,public"
+      
+    prod:
+      type: postgres
+      host: "{{ env_var('POSTGRES_HOST') }}"
+      user: "{{ env_var('POSTGRES_USER') }}"
+      password: "{{ env_var('POSTGRES_PASSWORD') }}"
+      port: 5432
+      dbname: "{{ env_var('POSTGRES_DB') }}"
+      schema: dbt_prod
+      threads: 8
+      keepalives_idle: 0
+      search_path: "cg,public"
+      
+  target: dev

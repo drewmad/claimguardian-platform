@@ -1,0 +1,35 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "pipeline": {
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**", "build/**"]
+    },
+    "lint": {
+      "outputs": []
+    },
+    "typecheck": {
+      "outputs": []
+    },
+    "test": {
+      "outputs": ["coverage/**", "junit.xml"]
+    }
+  },
+  "globalEnv": [
+    "NODE_ENV",
+    "POSTGRES_URL",
+    "SUPABASE_DB_URL",
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "REDIS_URL",
+    "TEMPORAL_ADDRESS",
+    "OBJECT_STORAGE_BUCKET",
+    "KMS_KEY_ID",
+    "RATE_LIMIT_REDIS_PREFIX",
+    "TILE_DATASET_VERSION"
+  ]
+}

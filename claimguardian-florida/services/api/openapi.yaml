@@ -1,0 +1,201 @@
+openapi: 3.1.0
+info:
+  title: ClaimGuardian Florida API
+  version: 1.0.0
+  description: Florida property intelligence and claims optimization API
+servers:
+  - url: https://api.claimguardian.com
+    description: Production
+  - url: http://localhost:3000/api
+    description: Development
+
+paths:
+  /parcels/{id}:
+    get:
+      summary: Get parcel details by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Parcel identifier
+      responses:
+        "200":
+          description: Parcel record
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Parcel"
+        "404":
+          description: Parcel not found
+
+  /parcels/lookup:
+    post:
+      summary: Lookup parcel by address or coordinates
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ParcelLookupRequest"
+      responses:
+        "200":
+          description: Parcel matches
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Parcel"
+
+  /parcels/{id}/risk:
+    get:
+      summary: Get risk score for a parcel
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Risk score and components
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ParcelRisk"
+
+  /tiles/parcels/{z}/{x}/{y}.mvt:
+    get:
+      summary: Get parcels vector tile
+      parameters:
+        - name: z
+          in: path
+          required: true
+          schema: { type: integer, minimum: 0, maximum: 22 }
+        - name: x
+          in: path
+          required: true
+          schema: { type: integer }
+        - name: y
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: MVT tile
+          content:
+            application/vnd.mapbox-vector-tile:
+              schema: { type: string, format: binary }
+
+  /hurricanes/{storm_id}/swath/tiles/{z}/{x}/{y}.mvt:
+    get:
+      summary: Get hurricane swath tile
+      parameters:
+        - name: storm_id
+          in: path
+          required: true
+          schema: { type: string }
+        - name: z
+          in: path
+          required: true
+          schema: { type: integer, minimum: 0, maximum: 22 }
+        - name: x
+          in: path
+          required: true
+          schema: { type: integer }
+        - name: y
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: MVT tile
+          content:
+            application/vnd.mapbox-vector-tile:
+              schema: { type: string, format: binary }
+
+  /carriers/metrics:
+    get:
+      summary: Get carrier behavior metrics
+      parameters:
+        - name: county_fips
+          in: query
+          schema: { type: string }
+          description: Filter by county FIPS code
+        - name: period_start
+          in: query
+          schema: { type: string, format: date }
+          description: Start of period (YYYY-MM-DD)
+      responses:
+        "200":
+          description: Carrier metrics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CarrierMetrics"
+
+components:
+  schemas:
+    Parcel:
+      type: object
+      properties:
+        parcel_id: { type: string }
+        county_fips: { type: string }
+        address: { type: string }
+        owner_name: { type: string }
+        just_value: { type: number, format: float }
+        assessed_value: { type: number, format: float }
+        site_centroid: 
+          type: object
+          properties:
+            lat: { type: number }
+            lon: { type: number }
+
+    ParcelLookupRequest:
+      type: object
+      properties:
+        address: 
+          type: string
+          description: Address to search for
+        lat: 
+          type: number
+          description: Latitude for proximity search
+        lon: 
+          type: number
+          description: Longitude for proximity search
+
+    ParcelRisk:
+      type: object
+      properties:
+        parcel_id: { type: string }
+        risk_score: { type: number, minimum: 0, maximum: 1 }
+        components: 
+          type: object
+          description: Risk component breakdown
+        uncertainty: { type: number, minimum: 0, maximum: 1 }
+        score_date: { type: string, format: date }
+
+    CarrierMetrics:
+      type: object
+      properties:
+        carrier_id: { type: string }
+        carrier_name: { type: string }
+        county_fips: { type: string }
+        period_month: { type: string, format: date }
+        market_share: { type: number, minimum: 0, maximum: 100 }
+        claim_approval_rate: { type: number, minimum: 0, maximum: 100 }
+        average_settlement_ratio: { type: number, minimum: 0, maximum: 100 }
+        typical_delay_days: { type: integer, minimum: 0 }
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - BearerAuth: []

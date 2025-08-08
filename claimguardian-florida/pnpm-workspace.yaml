@@ -1,0 +1,4 @@
+packages:
+  - "services/*"   # orchestrator and api are PNPM workspaces
+# Edge functions use Supabase Deno runtime and do not need package.json
+# If you decide to package edge functions for Node, add "edge-functions/*"

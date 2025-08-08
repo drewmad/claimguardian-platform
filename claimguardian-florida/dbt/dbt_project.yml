@@ -1,0 +1,48 @@
+name: 'claimguardian_florida'
+version: '1.0.0'
+config-version: 2
+
+# This setting configures which "profile" dbt uses for this project.
+profile: 'claimguardian_florida'
+
+# These configurations specify where dbt should look for different types of files.
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# Configuring models
+models:
+  claimguardian_florida:
+    # Config indicated by + and applies to all files under models/example/
+    staging:
+      +materialized: view
+      +schema: staging
+    marts:
+      +materialized: table
+      +schema: marts
+      +post-hook: "ANALYZE {{ this }}"
+
+snapshots:
+  claimguardian_florida:
+    +target_schema: snapshots
+    +strategy: timestamp
+    +updated_at: updated_at
+
+vars:
+  # Default county for testing
+  test_county_fips: '12015'  # Charlotte County
+  
+  # Date ranges for data processing
+  hurricane_start_year: 1851
+  current_tax_year: 2024
+  
+  # Quality thresholds
+  min_parcel_value: 1000
+  max_address_confidence: 0.9

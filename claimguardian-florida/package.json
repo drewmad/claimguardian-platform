@@ -1,0 +1,26 @@
+{
+  "name": "claimguardian-florida",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Florida data platform for ClaimGuardian. Vercel + Supabase compatible. Migration ready to dedicated Postgres, object storage, and alternative runtimes.",
+  "engines": {
+    "node": ">=20.10.0"
+  },
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "format": "prettier --write .",
+    "check": "pnpm -w typecheck && pnpm -w lint && pnpm -w test"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.30",
+    "eslint": "^9.5.0",
+    "prettier": "^3.3.2",
+    "turbo": "^2.0.6",
+    "typescript": "^5.5.4"
+  },
+  "packageManager": "pnpm@9.6.0"
+}
